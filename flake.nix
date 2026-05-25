@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "MechRevo-NixOS configuration";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
@@ -21,12 +21,13 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
-        ./configuration.nix
+        ./host/default.nix
         inputs.home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.lishangshui = import ./home.nix;
+          home-manager.backupFileExtension = "backup";
+          home-manager.users.lishangshui = import ./home/default.nix;
           home-manager.extraSpecialArgs = { inherit inputs; };
         }
       ];

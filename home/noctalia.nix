@@ -1,7 +1,6 @@
 { pkgs, inputs, ... }:
 
 {
-  # 这里的 imports 是给 Home Manager 用的，不要再套 home-manager.users 了
   imports = [
     inputs.noctalia.homeModules.default
   ];
@@ -130,7 +129,7 @@
         settingsPanelSideBarCardStyle = false;
       };
       location = {
-        name = "Beijing"; # 帮你顺便改成了北京，方便看天气
+        name = "Beijing";
         weatherEnabled = true;
         weatherShowEffects = true;
         useFahrenheit = false;

@@ -1,0 +1,58 @@
+{ pkgs, ... }:
+
+{
+  home.packages = with pkgs; [
+    # Terminal & Shell
+    starship
+    eza
+    zoxide
+    fzf
+    bat
+    fd
+
+    # Dev toolchain
+    nodejs_24
+    gcc
+    tree
+
+    # Hyprland 生态
+    swww
+    swaynotificationcenter
+    libnotify
+    grim
+    slurp
+    wl-clipboard
+    kitty
+    waybar
+    wofi
+
+    # 日常软件
+    obsidian
+    btop
+    gemini-cli
+    fastfetch
+    ghostty
+    vscode
+    vimPlugins.nvchad
+    google-chrome
+    qq
+    telegram-desktop
+
+    # 媒体 & 工具
+    claude-code
+    netease-cloud-music-gtk
+    go-musicfox
+    localsend
+    (wechat.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        wrapProgram $out/bin/wechat \
+        --add-flags "--force-device-scale-factor=1.5"
+      '';
+    }))
+    wpsoffice
+    libreoffice
+
+    steam-run
+    htop
+  ];
+}
