@@ -12,11 +12,59 @@
   # 必填：HM 版本号，建议与系统版本对应
   home.stateVersion = "25.11"; # 或者你当前的稳定版本
 
-  # 这里放置你想安装的用户级软件
   home.packages = with pkgs; [
+    # Terminal & Shell
+    starship
+    eza
+    zoxide
+    fzf
+    bat
+    fd
+
+    # Dev toolchain
+    nodejs_24
+    gcc
+    tree
+
+    # Hyprland 生态
+    swww
+    swaynotificationcenter
+    libnotify
+    grim
+    slurp
+    wl-clipboard
+    kitty
+    waybar
+    wofi
+
+    # 日常软件
+    obsidian
+    btop
+    gemini-cli
     fastfetch
+    ghostty
+    vscode
+    vimPlugins.nvchad
+    google-chrome
+    qq
+    telegram-desktop
+
+    # 媒体 & 工具
+    claude-code
+    netease-cloud-music-gtk
+    go-musicfox
+    localsend
+    (wechat.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        wrapProgram $out/bin/wechat \
+        --add-flags "--force-device-scale-factor=1.5"
+      '';
+    }))
+    wpsoffice
+    libreoffice
+
+    steam-run
     htop
-    git
   ];
   
   home.pointerCursor = {
@@ -39,8 +87,27 @@
       theme = "catppuccin-mocha";
     };
   };
-  # 让 HM 自动管理你的 shell (比如 bash 或 zsh)
-  programs.bash.enable = true;
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      # Starship prompt
+      eval "$(starship init bash)"
+
+      # zoxide 智能 cd
+      eval "$(zoxide init bash)"
+
+      # 别名
+      alias ls='eza --icons=auto'
+      alias ll='eza -l --icons=auto'
+      alias la='eza -la --icons=auto'
+      alias lt='eza -T --icons=auto'
+      alias cat='bat'
+      alias grep='rg'
+      alias find='fd'
+      alias top='btop'
+      alias tree='eza -T --icons=auto'
+    '';
+  };
 
   # 告诉系统，HM 已经准备好接管了
   programs.home-manager.enable = true;
