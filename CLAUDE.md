@@ -5,9 +5,9 @@
 - Username: `lishangshui`
 - 系统: NixOS 26.05 (Yarara) with flakes + Home Manager
 - WM: Hyprland (Wayland)
-- Shell: bash (通过 Home Manager 管理)
+- Shell: fish (通过 Home Manager 管理)
 - 代理工具: mihomo (TUN 模式，配置 `/persist/mihomo/config.yaml`)
-- 终端: Ghostty (HM 管理)
+- 终端: foot (系统级配置)
 - GPU: AMD (amdgpu 驱动)
 
 ## 目录结构
@@ -29,7 +29,7 @@ myNixOSConfig/
 ├── home/                      # Home Manager 用户级配置
 │   ├── default.nix            # 入口 — 导入子模块 + git 配置
 │   ├── packages.nix           # 用户包（日常软件、开发工具等）
-│   ├── shell.nix              # Bash、starship、zellij、ghostty
+│   ├── shell.nix              # Fish、starship、zellij、ghostty
 │   ├── hyprland.nix           # Hyprland WM 完整配置
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
 │   └── yazi.nix               # Yazi 文件管理器主题
@@ -61,6 +61,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 
 ## 注意事项
 - 修改后**不要自动 rebuild**，给出命令让我手动执行
+- 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
 - 优先用 Home Manager 管用户级配置，系统级才动 host/
 - 涉及 overlay 或 unstable channel 的包，说明原因
 - secrets 放 `/persist/secrets/`（如 `litellm.env`, `gh.env`），不进 git
