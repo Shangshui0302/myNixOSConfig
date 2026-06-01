@@ -32,7 +32,6 @@ myNixOSConfig/
 │   ├── shell.nix              # Bash、starship、zellij、ghostty
 │   ├── hyprland.nix           # Hyprland WM 完整配置
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
-│   ├── gh.nix                 # GitHub CLI 配置
 │   └── yazi.nix               # Yazi 文件管理器主题
 │
 ├── CLAUDE.md

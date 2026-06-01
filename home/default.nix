@@ -6,7 +6,6 @@
     ./hyprland.nix
     ./packages.nix
     ./shell.nix
-    ./gh.nix
     ./yazi.nix
   ];
 

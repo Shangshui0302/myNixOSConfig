@@ -125,8 +125,6 @@
       alias top='btop'
       alias tree='eza -T --icons=auto'
 
-      # GH token from persisted secret
-      [ -f /persist/secrets/gh.env ] && export GH_TOKEN=$(cat /persist/secrets/gh.env)
     '';
   };
 }
