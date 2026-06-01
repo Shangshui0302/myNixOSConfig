@@ -77,6 +77,10 @@
           command = "/run/current-system/sw/bin/nixos-rebuild";
           options = [ "NOPASSWD" ];
         }
+        {
+          command = "/run/current-system/sw/bin/nix";
+          options = [ "NOPASSWD" ];
+        }
       ];
     }
   ];

@@ -63,3 +63,4 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - 不要提交 secrets（密码、API key 等）到 git
 - 硬件相关（显卡、网卡驱动）改动要谨慎，先说明影响
 - 2K 显示屏，Hyprland scaling 已配置，涉及 DPI/scale 改动时注意
+- **所有改动必须通过 nixos-rebuild 应用，禁止用非 nix 方式（npm install、直接下载等）修改系统配置**

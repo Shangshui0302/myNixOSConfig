@@ -16,6 +16,22 @@
         };
       });
     })
+    # nvim-treesitter-legacy 已废弃，alias 到新版消除 eval warning
+    (final: prev: {
+      vimPlugins = prev.vimPlugins // {
+        nvim-treesitter-legacy = prev.vimPlugins.nvim-treesitter;
+      };
+    })
+    # nvchad 仍依赖已废弃的 nvim-treesitter-legacy，替换为新版
+    (final: prev: {
+      vimPlugins = prev.vimPlugins // {
+        nvchad = prev.vimPlugins.nvchad.overrideAttrs (old: {
+          dependencies = map
+            (dep: if dep.pname == "nvim-treesitter-legacy" then final.vimPlugins.nvim-treesitter else dep)
+            (old.dependencies or []);
+        });
+      };
+    })
   ];
 
   ####################################

@@ -14,9 +14,10 @@
     nodejs_24
     gcc
     tree
+    gh
 
     # Hyprland 生态
-    swww
+    awww
     swaynotificationcenter
     libnotify
     grim
