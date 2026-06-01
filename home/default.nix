@@ -6,7 +6,8 @@
     ./hyprland.nix
     ./packages.nix
     ./shell.nix
-    ./dotfiles.nix
+    ./gh.nix
+    ./yazi.nix
   ];
 
   # 必填：用户名和家目录路径
