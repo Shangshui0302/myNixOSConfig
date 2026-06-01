@@ -1,13 +1,6 @@
 # MechRevo-NixOS Config
 
-我的 NixOS 个人配置，基于 flakes + Home Manager。
-
-源文件在 `~/myNixOSConfig/`，直接在目录内 rebuild：
-
-```bash
-cd ~/myNixOSConfig
-sudo nixos-rebuild switch --flake .
-```
+NixOS 个人配置，基于 flakes + Home Manager。
 
 ## 系统概览
 
@@ -15,44 +8,55 @@ sudo nixos-rebuild switch --flake .
 |------|------|
 | 系统 | NixOS 26.05 (Yarara) |
 | WM | Hyprland (Wayland) |
-| Shell | bash |
+| Shell | bash + starship + zellij |
 | 桌面面板 | Noctalia Shell |
+| 终端 | Ghostty |
 | 输入法 | fcitx5 + rime-ice |
 | 代理 | mihomo (TUN 模式) |
 
 ## 目录结构
 
 ```
-flake.nix               # 入口，定义 inputs/outputs
-flake.lock              # 锁定依赖版本
-configuration.nix       # 系统级配置（服务、内核、驱动等）
-hardware-configuration.nix  # 硬件配置（自动生成，勿手动大改）
-home.nix                # Home Manager — 用户级软件和配置
-noctalia.nix            # Noctalia shell 自定义配置
-litellm.nix             # LiteLLM 代理服务配置
+├── flake.nix                  # 入口，inputs/outputs 定义
+├── flake.lock
+├── hardware-configuration.nix # 自动生成，不要手动改
+│
+├── host/                      # NixOS 系统级
+│   ├── default.nix            # 入口
+│   ├── core.nix               # 启动、内核、网络、时区、locale、用户
+│   ├── desktop.nix            # Hyprland、fcitx5、字体、AMD 显卡
+│   ├── services.nix           # PipeWire、蓝牙、CUPS、Mihomo
+│   ├── packages.nix           # overlay、系统包、programs
+│   └── litellm.nix            # LiteLLM 代理
+│
+├── home/                      # Home Manager 用户级
+│   ├── default.nix            # 入口 + git 配置
+│   ├── packages.nix           # 日常软件、开发工具
+│   ├── shell.nix              # bash + starship + zellij + ghostty
+│   ├── hyprland.nix           # Hyprland WM 配置
+│   ├── noctalia.nix           # Noctalia shell 面板
+│   ├── gh.nix                 # GitHub CLI
+│   └── yazi.nix               # Yazi 文件管理器
+│
+├── CLAUDE.md
+└── README.md
 ```
 
-## 常用命令
+## rebuild
 
 ```bash
-# 完整重建（系统 + Home Manager）
-sudo nixos-rebuild switch --flake .
-
-# 仅更新 flake inputs
-sudo nixos-rebuild switch --flake . --update-input nixpkgs
-
-# 手动更新 flake lock
-nix flake lock --update-input nixpkgs
+cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 ```
 
-## 包管理原则
+## 配置原则
 
-- **系统级** → `configuration.nix`（驱动、服务、系统工具）
-- **用户级** → `home.nix`（编辑器、浏览器、日常软件）
-- 改用户级配置不需要 sudo，`nixos-rebuild switch` 会自动处理
+- **系统级** → `host/`（驱动、服务、系统工具）
+- **用户级** → `home/`（编辑器、浏览器、日常软件）
+- 改用户级配置不需要 sudo，rebuild 自动处理
+- 所有改动必须通过 nixos-rebuild 应用，禁止非 nix 方式修改
+- secrets 走 `/persist/secrets/`，不进 git
 
 ## 注意事项
 
-- 不要在配置里硬编码 secrets（密码、API key 等）
-- 涉及显卡/网卡驱动的改动要谨慎
-- 2K 屏 Hyprland scaling 已配置，改 DPI/scale 时注意
+- 显卡/网卡驱动改动要谨慎
+- 2K 屏 Hyprland scaling 已配 (1.5)，改 DPI/scale 时注意

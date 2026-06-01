@@ -7,6 +7,7 @@
 - WM: Hyprland (Wayland)
 - Shell: bash (通过 Home Manager 管理)
 - 代理工具: mihomo (TUN 模式，配置 `/persist/mihomo/config.yaml`)
+- 终端: Ghostty (HM 管理)
 - GPU: AMD (amdgpu 驱动)
 
 ## 目录结构
@@ -26,10 +27,13 @@ myNixOSConfig/
 │   └── litellm.nix            # LiteLLM 代理服务
 │
 ├── home/                      # Home Manager 用户级配置
-│   ├── default.nix            # 入口 — 导入子模块 + 公共配置
+│   ├── default.nix            # 入口 — 导入子模块 + git 配置
 │   ├── packages.nix           # 用户包（日常软件、开发工具等）
-│   ├── shell.nix              # Bash 别名、starship、zellij
-│   └── noctalia.nix           # Noctalia shell 面板完整配置
+│   ├── shell.nix              # Bash、starship、zellij、ghostty
+│   ├── hyprland.nix           # Hyprland WM 完整配置
+│   ├── noctalia.nix           # Noctalia shell 面板完整配置
+│   ├── gh.nix                 # GitHub CLI 配置
+│   └── yazi.nix               # Yazi 文件管理器主题
 │
 ├── CLAUDE.md
 └── README.md
@@ -60,7 +64,8 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - 修改后**不要自动 rebuild**，给出命令让我手动执行
 - 优先用 Home Manager 管用户级配置，系统级才动 host/
 - 涉及 overlay 或 unstable channel 的包，说明原因
-- 不要提交 secrets（密码、API key 等）到 git
+- secrets 放 `/persist/secrets/`（如 `litellm.env`, `gh.env`），不进 git
+- sudo 已配 NOPASSWD: nix, nixos-rebuild, tee, chmod, chown, install, mv, cp, rm
 - 硬件相关（显卡、网卡驱动）改动要谨慎，先说明影响
 - 2K 显示屏，Hyprland scaling 已配置，涉及 DPI/scale 改动时注意
 - **所有改动必须通过 nixos-rebuild 应用，禁止用非 nix 方式（npm install、直接下载等）修改系统配置**
