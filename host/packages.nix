@@ -70,7 +70,33 @@
 
   programs.foot = {
     enable = true;
-    theme = "catppuccin-mocha";
+    settings = {
+      main = {
+        font = "monospace:size=8";
+        dpi-aware = "yes";
+      };
+      "colors-dark" = {
+        alpha = "0.8";
+        background = "0e1019";
+        foreground = "fffaf4";
+        regular0  = "666666";
+        regular1  = "ff000f";
+        regular2  = "8ce10b";
+        regular3  = "ffb900";
+        regular4  = "008df8";
+        regular5  = "6d43a6";
+        regular6  = "00d8eb";
+        regular7  = "ffffff";
+        bright0   = "888888";
+        bright1   = "ff2740";
+        bright2   = "abe15b";
+        bright3   = "ffd242";
+        bright4   = "0092ff";
+        bright5   = "9a5feb";
+        bright6   = "67fff0";
+        bright7   = "ffffff";
+      };
+    };
   };
 
   ####################################

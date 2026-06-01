@@ -4,17 +4,151 @@
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
+    enableFishIntegration = true;
     settings = {
       add_newline = true;
-      format = "$username$hostname$directory$git_branch$git_state$git_status$character";
-      directory.style = "cyan bold";
-      git_branch.style = "magenta bold";
-      git_state.style = "yellow";
-      git_status.style = "red";
+      command_timeout = 2000;
+
+      format = "$os $username$hostname $directory $git_branch$git_status$git_metrics $nix_shell $python $nodejs $rust $docker_context $fill$cmd_duration $time $battery$line_break$character";
+
+      fill = {
+        symbol = " ";
+      };
+      line_break = "\n";
+
+      os = {
+        disabled = false;
+        style = "#5277c3 bold";
+        format = "[$symbol]($style)";
+        symbols = {
+          NixOS = "󱄅";
+          Linux = "";
+        };
+      };
+
+      username = {
+        show_always = true;
+        style_user = "#abe15b bold";
+        style_root = "#ff2740 bold";
+        format = "[$user]($style)[@](dimmed white)";
+      };
+
+      hostname = {
+        ssh_only = false;
+        style = "#5fafd7 bold";
+        format = "[$hostname]($style)";
+        trim_at = ".local";
+      };
+
+      directory = {
+        style = "#33adff bold";
+        read_only = "󰌾";
+        read_only_style = "#ff2740";
+        truncation_length = 4;
+        truncate_to_repo = true;
+        format = "[📁$path]($style)[$read_only]($read_only_style)";
+        home_symbol = "~";
+      };
+
+      git_branch = {
+        symbol = "";
+        style = "#bb88ee bold";
+        format = "[$symbol$branch(:$remote_branch)]($style)";
+        truncation_length = 20;
+        truncation_symbol = "…";
+      };
+
+      git_status = {
+        style = "#ffd242 bold";
+        format = "([$all_status$ahead_behind]($style)[/](#ffffff))";
+        ahead = "⇡\${count}";
+        behind = "⇣\${count}";
+        diverged = "⇕⇡\${ahead_count}⇣\${behind_count}";
+        conflicted = "=\${count}";
+        untracked = "?\${count}";
+        stashed = "󰏗\${count}";
+        modified = "!\${count}";
+        staged = "+\${count}";
+        renamed = "»\${count}";
+        deleted = "✘\${count}";
+      };
+
+      git_metrics = {
+        disabled = false;
+        added_style = "#abe15b bold";
+        deleted_style = "#ff2740 bold";
+        format = "([+$added]($added_style)[/](#ffffff)[-$deleted]($deleted_style))";
+        only_nonzero_diffs = true;
+      };
+
+      nix_shell = {
+        symbol = "󱄅";
+        style = "#5277c3 bold";
+        format = "[$symbol $state]($style)";
+        impure_msg = "[impure](#ff2740 bold)";
+        pure_msg = "[pure](#abe15b bold)";
+        unknown_msg = "[?](#ffd242 bold)";
+      };
+
+      python = {
+        symbol = "󰌠";
+        style = "#ffd242 bold";
+        format = "[$symbol $version( \\($virtualenv\\))]($style)";
+        python_binary = [ "python3" "python" ];
+      };
+
+      nodejs = {
+        symbol = "";
+        style = "#abe15b bold";
+        format = "[$symbol $version]($style)";
+      };
+
+      rust = {
+        symbol = "󱘗";
+        style = "#ff2740 bold";
+        format = "[$symbol $version]($style)";
+      };
+
+      docker_context = {
+        symbol = "󰡨";
+        style = "#0092ff bold";
+        format = "[$symbol $context]($style)";
+        only_with_files = true;
+      };
+
+      cmd_duration = {
+        min_time = 2000;
+        style = "#ffd242 bold";
+        format = "[$duration]($style)";
+        show_milliseconds = false;
+      };
+
+      time = {
+        disabled = false;
+        style = "#888888 bold";
+        format = "[󰥔 $time]($style)";
+        time_format = "%H:%M";
+      };
+
+      battery = {
+        disabled = false;
+        full_symbol = "󰁹";
+        charging_symbol = "󰂄";
+        discharging_symbol = "󰂃";
+        unknown_symbol = "󰁽";
+        empty_symbol = "󰂎";
+
+        display = [
+          { threshold = 20; style = "#ff2740 bold"; }
+          { threshold = 50; style = "#ffd242 bold"; }
+          { threshold = 100; style = "#abe15b bold"; }
+        ];
+      };
+
       character = {
-        success_symbol = "✔ ";
-        error_symbol = "✖ ";
-        vicmd_symbol = "❮ ";
+        success_symbol = "[❯](#abe15b bold)";
+        error_symbol = "[❯](#ff2740 bold)";
+        vimcmd_symbol = "[❮](#ffd242 bold)";
       };
     };
   };
@@ -29,6 +163,7 @@
   xdg.configFile."ghostty/config.ghostty".text = ''
     scrollback-limit = 10000
     theme = MyGhostty Dark
+    font-size = 14
 
     keybind = ctrl+shift+c=copy_to_clipboard
     keybind = ctrl+shift+v=paste_from_clipboard
@@ -125,6 +260,28 @@
       alias top='btop'
       alias tree='eza -T --icons=auto'
 
+    '';
+  };
+
+  programs.fish = {
+    enable = true;
+    interactiveShellInit = ''
+      # zoxide
+      zoxide init fish | source
+
+      # 别名
+      alias ls='eza --icons=auto'
+      alias ll='eza -l --icons=auto'
+      alias la='eza -la --icons=auto'
+      alias lt='eza -T --icons=auto'
+      alias cat='bat'
+      alias grep='rg'
+      alias find='fd'
+      alias top='btop'
+      alias tree='eza -T --icons=auto'
+
+      # fish 问候
+      set -g fish_greeting
     '';
   };
 }
