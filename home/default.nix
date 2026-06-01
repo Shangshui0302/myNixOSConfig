@@ -3,8 +3,10 @@
 {
   imports = [
     ./noctalia.nix
+    ./hyprland.nix
     ./packages.nix
     ./shell.nix
+    ./dotfiles.nix
   ];
 
   # 必填：用户名和家目录路径
@@ -28,6 +30,7 @@
     enable = true;
     settings.user.name = "Li Shangshui";
     settings.user.email = "yomuwaterray@gmail.com";
+    ignores = [ "**/.claude/settings.local.json" ];
   };
 
   # 告诉系统，HM 已经准备好接管了
