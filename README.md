@@ -11,7 +11,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 | Shell | fish + starship + zellij |
 | 桌面面板 | Noctalia Shell |
 | 终端 | Ghostty |
-| 文件管理器 | Yazi (HM module + 8 插件 + Argonaut 主题) |
+| 文件管理器 | Yazi (HM module + 9 插件 + myargonaut 绿色主题 + 6 备选) |
 | 输入法 | fcitx5 + rime-ice |
 | 代理 | mihomo (TUN 模式) |
 | 云同步 | OneDrive (HM programs.onedrive) |
@@ -37,7 +37,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── shell.nix              # bash + starship + zellij + ghostty
 │   ├── hyprland.nix           # Hyprland WM 配置
 │   ├── noctalia.nix           # Noctalia shell 面板
-│   ├── yazi.nix               # Yazi (HM module + 主题 + 插件)
+│   ├── yazi.nix               # Yazi (HM module + starship/yatline + myargonaut 主题)
 │   └── onedrive.nix           # OneDrive 同步
 │
 ├── CLAUDE.md
