@@ -65,6 +65,15 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 
 ## 新机器首次部署
 
+### 0. 前置条件
+
+确保已从 U 盘或网络获取本仓库：
+
+```bash
+git clone <repo-url> ~/myNixOSConfig
+cd ~/myNixOSConfig
+```
+
 ### 1. 生成硬件配置
 
 ```bash
@@ -76,14 +85,14 @@ cp /mnt/etc/nixos/hardware-configuration.nix ~/myNixOSConfig/
 
 | 文件 | 需要修改的内容 |
 |------|---------------|
-| `host/core.nix` | `networking.hostName`、`time.timeZone`、`i18n.defaultLocale` |
+| `host/core.nix` | `networking.hostName`、`time.timeZone`、`i18n.defaultLocale`、`users.users.<name>` |
 | `home/default.nix` | `home.username`、`home.homeDirectory` |
 | `home/hyprland.nix` | `monitor` 显示器配置 |
 | `flake.nix` | `nixosConfigurations.<hostname>`、`home-manager.users.<name>` |
 
-### 3. 创建 /persist 分区和文件
+### 3. 挂载 /persist 子卷并创建文件
 
-mihomo 和 LiteLLM 依赖 `/persist/` 下的配置文件，首次部署需要手动创建：
+`/persist` 是 btrfs 子卷（`@persist`），需在分区时创建并挂载。mihomo 和 LiteLLM 依赖其下的配置文件，首次部署需手动准备：
 
 ```bash
 # 创建目录
@@ -96,12 +105,19 @@ sudo cp <your-mihomo-config.yaml> /persist/mihomo/config.yaml
 sudo cp <your-litellm.env> /persist/secrets/litellm.env
 ```
 
-`/persist/secrets/litellm.env` 格式（`KEY=VALUE`，fish shell 启动时自动加载）：
+`/persist/secrets/litellm.env` 格式（`KEY=VALUE`，fish shell 启动时自动加载到用户环境）：
 ```
 ANTHROPIC_AUTH_TOKEN=your-token
 ANTHROPIC_BASE_URL=http://127.0.0.1:4000
 DEEPSEEK_API_KEY=your-deepseek-key
 LITELLM_MASTER_KEY=your-litellm-master-key
+```
+
+> `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 是客户端变量，供 Claude Code 等工具连接 LiteLLM 代理使用。`DEEPSEEK_API_KEY` 和 `LITELLM_MASTER_KEY` 是 LiteLLM 服务端变量。
+
+GitHub CLI 等工具也可能依赖 `/persist/secrets/` 下的其他 env 文件：
+```bash
+sudo cp <your-gh.env> /persist/secrets/gh.env
 ```
 
 ### 4. 用户文件和缓存
