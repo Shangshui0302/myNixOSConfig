@@ -1,5 +1,220 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
+let
+  # ============================================================================
+  # myargonaut — Nix-generated Argonaut theme for Yazi
+  # Matches the foot terminal Argonaut palette: cool-toned, blue-accented
+  # ============================================================================
+  myargonaut = pkgs.writeTextFile {
+    name = "myargonaut.yazi";
+    destination = "/flavor.toml";
+    text = ''
+      # myargonaut — Argonaut palette for Yazi
+      # Generated via Nix for reproducibility
+
+      # : Manager [[[
+      [mgr]
+      cwd = { fg = "#fffaf4", bold = true }
+
+      hovered         = { bg = "#1a1a2e" }
+      preview_hovered = { underline = true }
+
+      find_keyword  = { fg = "#ffd242", reversed = true }
+      find_position = { fg = "#888888", bold = true }
+
+      marker_copied   = { fg = "#abe15b", bg = "#abe15b" }
+      marker_cut      = { fg = "#ff2740", bg = "#ff2740" }
+      marker_marked   = { fg = "#0092ff", bg = "#0092ff" }
+      marker_selected = { fg = "#67fff0", bg = "#67fff0" }
+
+      count_copied   = { fg = "#0e1019", bg = "#abe15b", bold = true }
+      count_cut      = { fg = "#0e1019", bg = "#ff2740", bold = true }
+      count_selected = { fg = "#0e1019", bg = "#67fff0", bold = true }
+
+      border_style = { fg = "#0092ff" }
+      syntect_theme = ""
+
+      # : ]]]
+
+      # : Status [[[
+      [status]
+      overall  = { fg = "#0092ff", bold = true }
+      sep_left  = { open = "", close = "" }
+      sep_right = { open = "", close = "" }
+
+      progress_label  = { bold = true }
+      progress_normal = { fg = "#0092ff", bg = "#1a1a2e" }
+      progress_error  = { fg = "#ff2740", bg = "#1a1a2e" }
+
+      perm_type  = { fg = "#0092ff" }
+      perm_read  = { fg = "#abe15b" }
+      perm_write = { fg = "#ffd242" }
+      perm_exec  = { fg = "#ff2740" }
+      perm_sep   = { fg = "#888888" }
+      # : ]]]
+
+      # : Mode [[[
+      [mode]
+      normal_main = { bg = "#0092ff", fg = "#0e1019", bold = true }
+      normal_alt  = { bg = "#1a1a2e", fg = "#0092ff" }
+
+      select_main = { bg = "#67fff0", fg = "#0e1019", bold = true }
+      select_alt  = { bg = "#1a1a2e", fg = "#67fff0" }
+
+      unset_main = { bg = "#888888", fg = "#0e1019", bold = true }
+      unset_alt  = { bg = "#1a1a2e", fg = "#888888" }
+      # : ]]]
+
+      # : Input [[[
+      [input]
+      border   = { fg = "#0092ff" }
+      title    = {}
+      value    = { fg = "#fffaf4" }
+      selected = { reversed = true }
+      # : ]]]
+
+      # : Tabs [[[
+      [tabs]
+      active   = { fg = "#0e1019", bg = "#0092ff", bold = true }
+      inactive = { fg = "#888888", bg = "#1a1a2e" }
+      sep_inner = { open = "", close = "" }
+      # : ]]]
+
+      # : Completion [[[
+      [cmp]
+      border = { fg = "#0092ff", bg = "#0e1019" }
+      # : ]]]
+
+      # : Tasks [[[
+      [tasks]
+      border  = { fg = "#0092ff" }
+      title   = {}
+      hovered = { fg = "#67fff0", underline = true }
+      # : ]]]
+
+      # : Which [[[
+      [which]
+      cols = 3
+      mask       = { bg = "#0e1019" }
+      cand       = { fg = "#67fff0" }
+      rest       = { fg = "#888888" }
+      desc       = { fg = "#fffaf4", bold = true }
+      separator  = "  "
+      separator_style = { fg = "#0092ff" }
+      # : ]]]
+
+      # : Help [[[
+      [help]
+      name   = { fg = "#0092ff", bold = true }
+      on     = { fg = "#abe15b" }
+      run    = { fg = "#67fff0" }
+      desc   = { fg = "#fffaf4" }
+      hover  = { reversed = true }
+      footer = { fg = "#0092ff", bold = true }
+      # : ]]]
+
+      # : Spot [[[
+      [spot]
+      border = { fg = "#0092ff" }
+      title  = { bold = true }
+      cell   = { fg = "#fffaf4" }
+      # : ]]]
+
+      # : Filetype [[[
+      [filetype]
+      rules = [
+        # Media
+        { mime = "image/*",            fg = "#94e2d5" },
+        { mime = "video/*",            fg = "#f9e2af" },
+        { mime = "audio/*",            fg = "#f9e2af" },
+        # Archives
+        { mime = "application/zip",         fg = "#f5c2e7" },
+        { mime = "application/gzip",        fg = "#f5c2e7" },
+        { mime = "application/x-tar",       fg = "#f5c2e7" },
+        { mime = "application/x-bzip*",     fg = "#f5c2e7" },
+        { mime = "application/x-7z*",       fg = "#f5c2e7" },
+        { mime = "application/x-rar*",      fg = "#f5c2e7" },
+        { mime = "application/x-xz",        fg = "#f5c2e7" },
+        # Documents
+        { mime = "application/pdf",         fg = "#a6e3a1" },
+        { mime = "text/markdown",           fg = "#0092ff" },
+        { mime = "text/html",               fg = "#ff2740" },
+        # Code
+        { name = "*.nix",             fg = "#5277c3" },
+        { name = "*.rs",              fg = "#ff2740" },
+        { name = "*.py",              fg = "#ffd242" },
+        { name = "*.js",              fg = "#ffd242" },
+        { name = "*.ts",              fg = "#0092ff" },
+        { name = "*.lua",             fg = "#0092ff" },
+        { name = "*.toml",            fg = "#888888" },
+        { name = "*.json",            fg = "#ffd242" },
+        { name = "*.yaml",            fg = "#ff2740" },
+        { name = "*.yml",             fg = "#ff2740" },
+        # Special
+        { name = "flake.lock",        fg = "#888888" },
+        { name = "flake.nix",         fg = "#5277c3" },
+        { name = "*.conf",            fg = "#888888" },
+        { name = "Makefile",          fg = "#abe15b" },
+        { name = "*.sh",              fg = "#abe15b" },
+        # Executables / special
+        { mime = "inode/x-empty",          fg = "#888888" },
+        { is = "orphan",             fg = "#ff2740" },
+      ]
+      # : ]]]
+    '';
+  };
+
+  # ============================================================================
+  # Community themes — fetched from GitHub
+  # ============================================================================
+
+  # yazi-rs/flavors catalog (contains catppuccin-* subdirectories)
+  yazi-flavors = pkgs.fetchFromGitHub {
+    owner = "yazi-rs";
+    repo = "flavors";
+    rev = "0f9204bc948c8313963f5c9d571a82edc201f8aa";
+    hash = "sha256-qWNArjWuxWL+rOjLzyIniW5hJgWiAWTCgXmMXJpaWZE=";
+  };
+
+  catppuccin-mocha = pkgs.runCommand "catppuccin-mocha.yazi" { } ''
+    cp -r ${yazi-flavors}/catppuccin-mocha.yazi $out
+  '';
+
+  tokyo-night = pkgs.fetchFromGitHub {
+    owner = "BennyOe";
+    repo = "tokyo-night.yazi";
+    rev = "8e6296f14daff24151c736ebd0b9b6cd89b02b03";
+    hash = "sha256-LArhRteD7OQRBguV1n13gb5jkl90sOxShkDzgEf3PA0=";
+  };
+
+  nord = pkgs.fetchFromGitHub {
+    owner = "AdithyanA2005";
+    repo = "nord.yazi";
+    rev = "1b1bf78deb30391095523acb94a6d9784744f92c";
+    hash = "sha256-CcQBpR9fqUCXEZVznSQ1Yo8JPVE+fhhgM9QApTXaWPU=";
+  };
+
+  synthwave84 = pkgs.fetchFromGitHub {
+    owner = "CFY98";
+    repo = "synthwave84.yazi";
+    rev = "b7bb92e406f6575979ed8fa8e602601620017d5f";
+    hash = "sha256-NmBjjiae91BY0x3OxtLWiI2wqh3x+V/PwrvWqRp4QPI=";
+  };
+
+  lain = pkgs.fetchFromGitHub {
+    owner = "identityapproved";
+    repo = "lain.yazi";
+    rev = "e2a3bb28412c92febd0152b762d3e0cf049ef139";
+    hash = "sha256-oxLgkIUzTJwCypqGf7mSlmNyxflYuuzox6oocrQaCb8=";
+  };
+
+  kanagawa-paper = pkgs.fetchFromGitHub {
+    owner = "melindachang";
+    repo = "kanagawa-paper.yazi";
+    rev = "7f3cd1d8a579cc8a38fca67fcb3cb018e4d7171c";
+    hash = "sha256-QSDcHvQwUABGM76OYW2rrFcSkpo/q7e0bBZLbpCIiqw=";
+  };
+in
 {
   programs.yazi = {
     enable = true;
@@ -17,99 +232,21 @@
       yatline-githead = pkgs.yaziPlugins.yatline-githead;
     };
 
+    flavors = {
+      myargonaut = myargonaut;
+      catppuccin-mocha = catppuccin-mocha;
+      tokyo-night = tokyo-night;
+      nord = nord;
+      synthwave84 = synthwave84;
+      lain = lain;
+      kanagawa-paper = kanagawa-paper;
+    };
+
+    # Active theme — change this to any flavor name below
+    # Available: myargonaut, catppuccin-mocha, tokyo-night, nord, synthwave84, lain, kanagawa-paper
     theme = {
-      manager = {
-        cwd = { fg = "#0092ff"; };
-        hovered = { fg = "#0e1019"; bg = "#008df8"; };
-        preview_hovered = { underline = true; };
-        find_keyword = { fg = "#ffd242"; bold = true; };
-        find_position = { fg = "#67fff0"; bold = true; };
-        marker_selected = { fg = "#ffd242"; bold = true; };
-        marker_copied = { fg = "#abe15b"; bold = true; };
-        marker_cut = { fg = "#ff2740"; bold = true; };
-        border = { fg = "#444444"; };
-        highlight = { fg = "#ffb900"; bold = true; };
-        tab_active = { fg = "#0e1019"; bg = "#0092ff"; bold = true; };
-        tab_inactive = { fg = "#9d9b99"; };
-        tab_width = 1;
-        count_copied = { fg = "#0e1019"; bg = "#abe15b"; };
-        count_cut = { fg = "#0e1019"; bg = "#ff2740"; };
-        count_selected = { fg = "#0e1019"; bg = "#ffd242"; };
-        syntect_theme = "base16";
-      };
-      status = {
-        separator_open = "";
-        separator_close = "";
-        separator_style = { fg = "#444444"; };
-        mode_normal = { fg = "#0e1019"; bg = "#abe15b"; bold = true; };
-        mode_select = { fg = "#0e1019"; bg = "#ffd242"; bold = true; };
-        mode_unset = { fg = "#0e1019"; bg = "#9d9b99"; bold = true; };
-        progress_label = { fg = "#fffaf4"; bold = true; };
-        progress_normal = { fg = "#008df8"; };
-        progress_error = { fg = "#ff2740"; };
-        permissions_t = { fg = "#008df8"; };
-        permissions_r = { fg = "#ffd242"; };
-        permissions_w = { fg = "#ff2740"; };
-        permissions_x = { fg = "#abe15b"; };
-        permissions_s = { fg = "#6d43a6"; };
-      };
-      select = {
-        border = { fg = "#0092ff"; };
-        active = { fg = "#ffd242"; bold = true; };
-      };
-      input = {
-        border = { fg = "#0092ff"; };
-        title = { };
-        value = { };
-        selected = { reversed = true; };
-      };
-      tasks = {
-        border = { fg = "#444444"; };
-        title = { };
-        hovered = { underline = true; };
-      };
-      which = {
-        mask = { bg = "#444444"; };
-        cand = { fg = "#67fff0"; };
-        rest = { fg = "#9d9b99"; };
-        desc = { fg = "#abe15b"; };
-        separator = "   ";
-        separator_style = { fg = "#444444"; };
-      };
-      help = {
-        on = { fg = "#ffd242"; };
-        exec = { fg = "#6d43a6"; };
-        desc = { fg = "#9d9b99"; };
-        hovered = { reversed = true; };
-        footer = { fg = "#444444"; };
-      };
-      filetype = {
-        rules = [
-          { mime = "image/*"; fg = "#67fff0"; }
-          { mime = "video/*"; fg = "#ffb900"; }
-          { mime = "audio/*"; fg = "#6d43a6"; }
-          { mime = "application/zip"; fg = "#ff2740"; }
-          { mime = "application/gzip"; fg = "#ff2740"; }
-          { mime = "application/x-tar"; fg = "#ff2740"; }
-          { mime = "application/x-bzip*"; fg = "#ff2740"; }
-          { mime = "application/x-7z-compressed"; fg = "#ff2740"; }
-          { mime = "application/x-rar"; fg = "#ff2740"; }
-          { mime = "application/x-xz"; fg = "#ff2740"; }
-          { mime = "application/pdf"; fg = "#ff2740"; }
-          { mime = "text/markdown"; fg = "#008df8"; }
-          { mime = "text/*"; fg = "#abe15b"; }
-          { name = "*.nix"; fg = "#5277c3"; }
-          { name = "*.rs"; fg = "#ff2740"; }
-          { name = "*.py"; fg = "#ffd242"; }
-          { name = "*.js"; fg = "#ffb900"; }
-          { name = "*.ts"; fg = "#0092ff"; }
-          { name = "*.json"; fg = "#ffd242"; }
-          { name = "*.toml"; fg = "#6d43a6"; }
-          { name = "*.yaml"; fg = "#6d43a6"; }
-        ];
-      };
-      spot = {
-        border = { fg = "#444444"; };
+      flavor = {
+        dark = "myargonaut";
       };
     };
 
@@ -121,6 +258,7 @@
         sort_sensitive = false;
         linemode = "none";
         show_symlink = true;
+        tab_width = 1;
         ratio = [ 2 3 4 ];
       };
       preview = {
@@ -138,17 +276,17 @@
       };
       open = {
         prepend_rules = [
-          { name = "*.md"; use = "edit"; }
-          { name = "*.nix"; use = "edit"; }
-          { name = "*.txt"; use = "edit"; }
-          { name = "*.rs"; use = "edit"; }
-          { name = "*.py"; use = "edit"; }
-          { name = "*.js"; use = "edit"; }
-          { name = "*.ts"; use = "edit"; }
-          { name = "*.json"; use = "edit"; }
-          { name = "*.toml"; use = "edit"; }
-          { name = "*.yaml"; use = "edit"; }
-          { name = "*.lua"; use = "edit"; }
+          { url = "*.md"; use = "edit"; }
+          { url = "*.nix"; use = "edit"; }
+          { url = "*.txt"; use = "edit"; }
+          { url = "*.rs"; use = "edit"; }
+          { url = "*.py"; use = "edit"; }
+          { url = "*.js"; use = "edit"; }
+          { url = "*.ts"; use = "edit"; }
+          { url = "*.json"; use = "edit"; }
+          { url = "*.toml"; use = "edit"; }
+          { url = "*.yaml"; use = "edit"; }
+          { url = "*.lua"; use = "edit"; }
         ];
       };
       plugin = {

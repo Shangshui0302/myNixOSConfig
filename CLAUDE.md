@@ -32,7 +32,7 @@ myNixOSConfig/
 │   ├── shell.nix              # Fish、starship、zellij、ghostty
 │   ├── hyprland.nix           # Hyprland WM 完整配置
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
-│   ├── yazi.nix               # Yazi 文件管理器 (HM programs.yazi + 插件 + Argonaut 主题)
+│   ├── yazi.nix               # Yazi 文件管理器 (HM programs.yazi + 插件 + myargonaut 主题 + 6 个备选社区主题)
 │   └── onedrive.nix           # OneDrive 同步 (HM programs.onedrive + systemd service)
 │
 ├── CLAUDE.md
