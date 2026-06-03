@@ -62,3 +62,68 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 
 - 显卡/网卡驱动改动要谨慎
 - 2K 屏 Hyprland scaling 已配 (1.5)，改 DPI/scale 时注意
+
+## 新机器首次部署
+
+### 1. 生成硬件配置
+
+```bash
+nixos-generate-config --root /mnt
+cp /mnt/etc/nixos/hardware-configuration.nix ~/myNixOSConfig/
+```
+
+### 2. 修改机器特定配置
+
+| 文件 | 需要修改的内容 |
+|------|---------------|
+| `host/core.nix` | `networking.hostName`、`time.timeZone`、`i18n.defaultLocale` |
+| `home/default.nix` | `home.username`、`home.homeDirectory` |
+| `home/hyprland.nix` | `monitor` 显示器配置 |
+| `flake.nix` | `nixosConfigurations.<hostname>`、`home-manager.users.<name>` |
+
+### 3. 创建 /persist 分区和文件
+
+mihomo 和 LiteLLM 依赖 `/persist/` 下的配置文件，首次部署需要手动创建：
+
+```bash
+# 创建目录
+sudo mkdir -p /persist/mihomo /persist/secrets
+
+# mihomo 代理配置（必需，否则 mihomo 服务启动失败）
+sudo cp <your-mihomo-config.yaml> /persist/mihomo/config.yaml
+
+# LiteLLM 环境变量（可选，仅当使用 LiteLLM 代理时需要）
+sudo cp <your-litellm.env> /persist/secrets/litellm.env
+```
+
+`/persist/secrets/litellm.env` 格式（`KEY=VALUE`，fish shell 启动时自动加载）：
+```
+ANTHROPIC_AUTH_TOKEN=your-token
+ANTHROPIC_BASE_URL=http://127.0.0.1:4000
+DEEPSEEK_API_KEY=your-deepseek-key
+LITELLM_MASTER_KEY=your-litellm-master-key
+```
+
+### 4. 用户文件和缓存
+
+以下文件路径使用 `config.home.homeDirectory` 动态解析，但文件本身需要存在：
+
+| 文件 | 用途 | 缺失时影响 |
+|------|------|-----------|
+| `~/Pictures/ProfiePictures/` | Noctalia 头像 | 头像不显示 |
+| `~/Pictures/Wallpapers/` | Noctalia 壁纸 | 壁纸功能不可用 |
+| `~/.cache/noctalia/HVE/` | Noctalia HVE 配置 | Hyprland 装饰配置缺失 |
+| `~/.config/hypr/noctalia/` | Noctalia 颜色配置 | Hyprland 颜色回退到默认 |
+
+首次启动 Noctalia 后，`~/.cache/noctalia/HVE/` 和 `~/.config/hypr/noctalia/` 会自动生成。
+
+### 5. 应用配置
+
+```bash
+sudo nixos-rebuild switch --flake ~/myNixOSConfig#
+```
+
+### 6. 首次认证
+
+- **OneDrive**: 终端运行 `onedrive` 完成 OAuth 认证
+- **mihomo**: 确保 `/persist/mihomo/config.yaml` 中的订阅链接有效
