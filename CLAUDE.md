@@ -68,7 +68,8 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
 - 优先用 Home Manager 管用户级配置，系统级才动 host/
 - 涉及 overlay 或 unstable channel 的包，说明原因
-- secrets 放 `/persist/secrets/`（如 `litellm.env`, `gh.env`），不进 git
+- secrets 放 `/persist/secrets/`（如 `litellm.env`, `gh.env`），不进 git；fish shell 启动时自动 source
+- API 密钥（ANTHROPIC_AUTH_TOKEN 等）通过 `/persist/secrets/litellm.env` 注入，不在 nix 配置中硬编码
 - sudo 已配 NOPASSWD: nix, nixos-rebuild, tee, chmod, chown, install, mv, cp, rm
 - 硬件相关（显卡、网卡驱动）改动要谨慎，先说明影响
 - 2K 显示屏，Hyprland scaling 已配置，涉及 DPI/scale 改动时注意
