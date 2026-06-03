@@ -32,7 +32,8 @@ myNixOSConfig/
 │   ├── shell.nix              # Fish、starship、zellij、ghostty
 │   ├── hyprland.nix           # Hyprland WM 完整配置
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
-│   └── yazi.nix               # Yazi 文件管理器主题
+│   ├── yazi.nix               # Yazi 文件管理器主题
+│   └── onedrive.nix           # OneDrive 同步 (HM programs.onedrive + systemd service)
 │
 ├── CLAUDE.md
 └── README.md
@@ -58,6 +59,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - **代理**: mihomo TUN 模式 (nftables 防火墙 + ip_forward)
 - **电源**: thermald + power-profiles-daemon + upower
 - **SSD**: fstrim
+- **云同步**: OneDrive (HM programs.onedrive, systemd user service `onedrive --monitor`，首次需手动 `onedrive` 认证)
 
 ## 注意事项
 - 修改后**不要自动 rebuild**，给出命令让我手动执行

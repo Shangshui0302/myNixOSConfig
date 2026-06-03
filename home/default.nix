@@ -7,6 +7,7 @@
     ./packages.nix
     ./shell.nix
     ./yazi.nix
+    ./onedrive.nix
   ];
 
   # 必填：用户名和家目录路径

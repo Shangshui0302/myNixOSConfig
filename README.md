@@ -35,8 +35,8 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── shell.nix              # bash + starship + zellij + ghostty
 │   ├── hyprland.nix           # Hyprland WM 配置
 │   ├── noctalia.nix           # Noctalia shell 面板
-│   ├── gh.nix                 # GitHub CLI
-│   └── yazi.nix               # Yazi 文件管理器
+│   ├── yazi.nix               # Yazi 文件管理器
+│   └── onedrive.nix           # OneDrive 同步
 │
 ├── CLAUDE.md
 └── README.md
