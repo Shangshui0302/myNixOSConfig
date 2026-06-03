@@ -242,6 +242,9 @@
   programs.bash = {
     enable = true;
     initExtra = ''
+      # ble.sh — 语法高亮、自动补全、Fish 风格建议
+      source ${pkgs.blesh}/share/blesh/ble.sh
+
       # zoxide 智能 cd
       eval "$(zoxide init bash)"
 
@@ -253,14 +256,29 @@
       alias cat='bat'
       alias grep='rg'
       alias find='fd'
+
       alias top='btop'
       alias tree='eza -T --icons=auto'
 
     '';
   };
 
+
+  xdg.configFile."blesh/init.sh".text = ''
+    # ble.sh color override — 内置命令不用红色
+    ble-face command_builtin=fg=#abe15b
+    ble-face command_file=fg=#33adff
+    ble-face syntax_varname=fg=#ffd242
+  '';
+
   programs.fish = {
     enable = true;
+    plugins = [
+      { name = "autopair"; src = pkgs.fishPlugins.autopair; }
+      { name = "done"; src = pkgs.fishPlugins.done; }
+      { name = "grc"; src = pkgs.fishPlugins.grc; }
+      { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages; }
+    ];
     interactiveShellInit = ''
       # 从 /persist/secrets/ 加载环境变量（如果存在）
       if test -f /persist/secrets/litellm.env

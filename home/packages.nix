@@ -9,6 +9,7 @@
     fzf
     bat
     fd
+    blesh
 
     # Dev toolchain
     nodejs_24
@@ -41,6 +42,7 @@
 
     # 媒体 & 工具
     claude-code
+    codex
     netease-cloud-music-gtk
     go-musicfox
     localsend

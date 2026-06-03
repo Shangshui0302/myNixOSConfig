@@ -76,6 +76,41 @@
             timeout = 600;
           };
         }
+        # OpenAI-compatible models routed to DeepSeek (for Codex CLI, etc.)
+        # deepseek-chat 将于 2026/07/24 弃用，已迁移到 v4 系列
+        {
+          model_name = "gpt-4o";
+          litellm_params = {
+            model = "openai/deepseek-v4-pro";
+            api_base = "https://api.deepseek.com";
+            api_key = "os.environ/DEEPSEEK_API_KEY";
+            max_tokens = 64000;
+            temperature = 0.7;
+            timeout = 600;
+          };
+        }
+        {
+          model_name = "gpt-4.1";
+          litellm_params = {
+            model = "openai/deepseek-v4-pro";
+            api_base = "https://api.deepseek.com";
+            api_key = "os.environ/DEEPSEEK_API_KEY";
+            max_tokens = 64000;
+            temperature = 0.7;
+            timeout = 600;
+          };
+        }
+        {
+          model_name = "gpt-4o-mini";
+          litellm_params = {
+            model = "openai/deepseek-v4-flash";
+            api_base = "https://api.deepseek.com";
+            api_key = "os.environ/DEEPSEEK_API_KEY";
+            max_tokens = 32000;
+            temperature = 0.7;
+            timeout = 600;
+          };
+        }
       ];
 
       router_settings = {
@@ -85,6 +120,8 @@
           { "claude-opus-4-6" = [ "claude-sonnet-4-6" ]; }
           { "claude-sonnet-4-6" = [ "claude-haiku-4-5" ]; }
           { "claude-sonnet-4-6-1m" = [ "claude-sonnet-4-6" ]; }
+          { "gpt-4o" = [ "gpt-4o-mini" ]; }
+          { "gpt-4.1" = [ "gpt-4o-mini" ]; }
         ];
       };
 

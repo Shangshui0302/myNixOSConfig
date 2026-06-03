@@ -8,7 +8,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 |------|------|
 | 系统 | NixOS 26.05 (Yarara) |
 | WM | Hyprland (Wayland) |
-| Shell | fish + starship + zellij |
+| Shell | fish (plugins) + bash (ble.sh) + starship + zellij |
 | 桌面面板 | Noctalia Shell |
 | 终端 | Ghostty |
 | 文件管理器 | Yazi (HM module + 9 插件 + myargonaut 绿色主题 + 6 备选) |
@@ -110,11 +110,13 @@ sudo cp <your-litellm.env> /persist/secrets/litellm.env
 ```
 ANTHROPIC_AUTH_TOKEN=your-token
 ANTHROPIC_BASE_URL=http://127.0.0.1:4000
+OPENAI_API_KEY=your-litellm-master-key
+OPENAI_BASE_URL=http://127.0.0.1:4000/v1
 DEEPSEEK_API_KEY=your-deepseek-key
 LITELLM_MASTER_KEY=your-litellm-master-key
 ```
 
-> `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 是客户端变量，供 Claude Code 等工具连接 LiteLLM 代理使用。`DEEPSEEK_API_KEY` 和 `LITELLM_MASTER_KEY` 是 LiteLLM 服务端变量。
+> `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 是客户端变量，供 Claude Code 等工具连接 LiteLLM 代理使用。`OPENAI_API_KEY` + `OPENAI_BASE_URL` 供 Codex 等 OpenAI 兼容工具使用。`DEEPSEEK_API_KEY` 和 `LITELLM_MASTER_KEY` 是 LiteLLM 服务端变量。
 
 GitHub CLI 等工具也可能依赖 `/persist/secrets/` 下的其他 env 文件：
 ```bash

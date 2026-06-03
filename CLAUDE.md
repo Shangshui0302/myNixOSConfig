@@ -5,7 +5,7 @@
 - Username: `lishangshui`
 - 系统: NixOS 26.05 (Yarara) with flakes + Home Manager
 - WM: Hyprland (Wayland)
-- Shell: fish (通过 Home Manager 管理)
+- Shell: fish (通过 Home Manager 管理, plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
 - 代理工具: mihomo (TUN 模式，配置 `/persist/mihomo/config.yaml`)
 - 终端: foot (系统级配置，默认启动 fish)
 - GPU: AMD (amdgpu 驱动)

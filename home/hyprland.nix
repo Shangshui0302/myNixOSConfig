@@ -116,7 +116,7 @@
         "SUPER, Q, exec, foot"
         "SUPER, C, killactive"
         "SUPER, M, exit"
-        "SUPER, E, exec, dolphin"
+        "SUPER, E, exec, nemo"
         "SUPER, V, togglefloating"
         "SUPER, P, pseudo"
 "SUPER, SPACE, exec, noctalia-shell ipc call launcher toggle"
@@ -171,7 +171,7 @@
     extraConfig = ''
       $mainMod = SUPER
       $terminal = foot
-      $fileManager = dolphin
+      $fileManager = nemo
 
       source = ${config.home.homeDirectory}/.config/hypr/noctalia/noctalia-colors.conf
       source = ${config.home.homeDirectory}/.cache/noctalia/HVE/overlay.conf
