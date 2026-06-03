@@ -262,6 +262,16 @@
   programs.fish = {
     enable = true;
     interactiveShellInit = ''
+      # 从 /persist/secrets/ 加载环境变量（如果存在）
+      if test -f /persist/secrets/litellm.env
+        while read -l line
+          if string match -qr '^\s*[A-Z_]+\s*=' -- "$line"
+            set -l kv (string split -m 1 "=" -- "$line")
+            set -gx $kv[1] (string trim -- $kv[2])
+          end
+        end < /persist/secrets/litellm.env
+      end
+
       # zoxide
       zoxide init fish | source
 
