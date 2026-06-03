@@ -38,6 +38,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── hyprland.nix           # Hyprland WM 配置
 │   ├── noctalia.nix           # Noctalia shell 面板
 │   ├── yazi.nix               # Yazi (HM module + starship/yatline + myargonaut 主题)
+│   ├── btop.nix               # btop 系统监控 (blackgolden 主题 + 透明背景)
 │   └── onedrive.nix           # OneDrive 同步
 │
 ├── CLAUDE.md

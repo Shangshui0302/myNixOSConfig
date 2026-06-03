@@ -75,6 +75,9 @@
         font = "monospace:size=8";
         dpi-aware = "yes";
       };
+      shell = {
+        shell = "${pkgs.fish}/bin/fish";
+      };
       "colors-dark" = {
         alpha = "0.8";
         background = "0e1019";

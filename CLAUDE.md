@@ -7,7 +7,7 @@
 - WM: Hyprland (Wayland)
 - Shell: fish (通过 Home Manager 管理)
 - 代理工具: mihomo (TUN 模式，配置 `/persist/mihomo/config.yaml`)
-- 终端: foot (系统级配置)
+- 终端: foot (系统级配置，默认启动 fish)
 - GPU: AMD (amdgpu 驱动)
 
 ## 目录结构
@@ -33,6 +33,7 @@ myNixOSConfig/
 │   ├── hyprland.nix           # Hyprland WM 完整配置
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
 │   ├── yazi.nix               # Yazi 文件管理器 (HM programs.yazi + 9 插件含 starship/yatline + myargonaut 绿色主题 + 6 个备选社区主题)
+│   ├── btop.nix               # btop 系统监控 (blackgolden 主题 + 透明背景)
 │   └── onedrive.nix           # OneDrive 同步 (HM programs.onedrive + systemd service)
 │
 ├── CLAUDE.md

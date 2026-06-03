@@ -3,6 +3,7 @@
 {
   imports = [
     ./noctalia.nix
+    ./btop.nix
     ./hyprland.nix
     ./packages.nix
     ./shell.nix
