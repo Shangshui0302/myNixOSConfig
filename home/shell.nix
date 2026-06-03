@@ -267,7 +267,8 @@
         while read -l line
           if string match -qr '^\s*[A-Z_]+\s*=' -- "$line"
             set -l kv (string split -m 1 "=" -- "$line")
-            set -gx $kv[1] (string trim -- $kv[2])
+            set -l name (string trim -- $kv[1])
+            set -gx $name (string trim -- $kv[2])
           end
         end < /persist/secrets/litellm.env
       end
