@@ -16,8 +16,6 @@
     EDITOR = "nvim";
     SUDO_EDITOR = "nvim";
     STEAM_FORCE_DESKTOPUI_SCALING = "1.5";
-    ANTHROPIC_BASE_URL = "http://127.0.0.1:4000";
-    ANTHROPIC_AUTH_TOKEN = "030222";
   };
 
   environment.sessionVariables = {
