@@ -32,7 +32,7 @@ myNixOSConfig/
 │   ├── shell.nix              # Fish、starship、zellij、ghostty
 │   ├── hyprland.nix           # Hyprland WM 完整配置
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
-│   ├── yazi.nix               # Yazi 文件管理器主题
+│   ├── yazi.nix               # Yazi 文件管理器 (HM programs.yazi + 插件 + Argonaut 主题)
 │   └── onedrive.nix           # OneDrive 同步 (HM programs.onedrive + systemd service)
 │
 ├── CLAUDE.md
@@ -62,6 +62,8 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - **云同步**: OneDrive (HM programs.onedrive, systemd user service `onedrive --monitor`，首次需手动 `onedrive` 认证)
 
 ## 注意事项
+- **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
+- **每次改动后必须**：更新 README.md 和 CLAUDE.md 反映变更 → commit → rebuild，但不 push
 - 修改后**不要自动 rebuild**，给出命令让我手动执行
 - 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
 - 优先用 Home Manager 管用户级配置，系统级才动 host/
