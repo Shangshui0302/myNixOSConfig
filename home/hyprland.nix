@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   wayland.windowManager.hyprland = {
@@ -15,7 +15,7 @@
       exec-once = [
         "fcitx5 -rd"
         "noctalia-shell"
-        "/home/lishangshui/.cache/noctalia/HVE/hve_watchdog.sh"
+        "${config.home.homeDirectory}/.cache/noctalia/HVE/hve_watchdog.sh"
       ];
 
       general = {
@@ -173,8 +173,8 @@
       $terminal = foot
       $fileManager = dolphin
 
-      source = /home/lishangshui/.config/hypr/noctalia/noctalia-colors.conf
-      source = /home/lishangshui/.cache/noctalia/HVE/overlay.conf
+      source = ${config.home.homeDirectory}/.config/hypr/noctalia/noctalia-colors.conf
+      source = ${config.home.homeDirectory}/.cache/noctalia/HVE/overlay.conf
     '';
   };
 }
