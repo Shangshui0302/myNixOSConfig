@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -321,7 +321,7 @@
         screenOverrides = [ ];
       };
       general = {
-        avatarImage = "/home/lishangshui/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
+        avatarImage = "${config.home.homeDirectory}/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
         dimmerOpacity = 0.0;
         showScreenCorners = false;
         forceBlackScreenCorners = false;
@@ -406,11 +406,11 @@
       wallpaper = {
         enabled = true;
         overviewEnabled = false;
-        directory = "/home/lishangshui/Pictures/Wallpapers";
+        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
         monitorDirectories = [
           {
             name = "eDP-1";
-            directory = "/home/lishangshui/Pictures/Wallpapers";
+            directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
             wallpaper = "";
           }
         ];
@@ -447,7 +447,7 @@
         sortOrder = "name";
         favorites = [
           {
-            path = "/home/lishangshui/Pictures/Wallpapers/th.jpg";
+            path = "${config.home.homeDirectory}/Pictures/Wallpapers/th.jpg";
             colorScheme = "Rose Pine Moon";
             darkMode = false;
             generationMethod = "muted";
