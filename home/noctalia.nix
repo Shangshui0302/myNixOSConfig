@@ -466,12 +466,7 @@
         clipboardWatchTextCommand = "wl-paste --type text --watch cliphist store";
         clipboardWatchImageCommand = "wl-paste --type image --watch cliphist store";
         position = "center";
-        pinnedApps = [
-          { id = "nemo"; name = "Nemo"; icon = "system-file-manager"; }
-          "google-chrome"
-          "obsidian"
-          "qq"
-        ];
+        pinnedApps = [ "nemo" "google-chrome" "obsidian" "qq" ];
         sortByMostUsed = true;
         terminalCommand = "foot";
         customLaunchPrefixEnabled = false;

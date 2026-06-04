@@ -58,6 +58,17 @@
     </fontconfig>
   '';
 
+  # 覆盖 nemo desktop：改显示名为 Nemo，图标用 system-file-manager
+  xdg.desktopEntries.nemo = {
+    name = "Nemo";
+    icon = "nemo";
+    exec = "nemo %F";
+    type = "Application";
+    categories = [ "System" "FileTools" "FileManager" "GTK" ];
+    mimeType = [ "inode/directory" ];
+    noDisplay = false;
+  };
+
   # 深色模式 dconf 默认值（darkman 接管动态更新）
   dconf.settings = {
     "org/gnome/desktop/interface" = {
