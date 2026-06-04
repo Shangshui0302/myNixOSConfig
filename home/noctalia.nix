@@ -671,7 +671,7 @@
         useWallpaperColors = false;
         predefinedScheme = "yamadaRyou";
         darkMode = false;
-        schedulingMode = "location";
+        schedulingMode = "disabled";
         manualSunrise = "06:30";
         manualSunset = "18:30";
         generationMethod = "monochrome";
@@ -699,16 +699,10 @@
         manualSunset = "18:30";
       };
       hooks = {
-        enabled = false;
-        wallpaperChange = "";
-        darkModeChange = "";
-        screenLock = "";
-        screenUnlock = "";
-        performanceModeEnabled = "";
-        performanceModeDisabled = "";
-        startup = "";
-        session = "";
-        colorGeneration = "";
+        enabled = true;
+        darkModeChange = "if [ \"$1\" = \"true\" ]; then ${pkgs.darkman}/bin/darkman set dark; else ${pkgs.darkman}/bin/darkman set light; fi";
+        startup = "${pkgs.systemd}/bin/systemctl --user restart darkman";
+        screenUnlock = "${pkgs.systemd}/bin/systemctl --user restart darkman";
       };
       plugins = {
         autoUpdate = true;

@@ -35,6 +35,50 @@
     ignores = [ "**/.claude/settings.local.json" ];
   };
 
+  # 深色模式 dconf 默认值（darkman 接管动态更新）
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      gtk-theme = "Adwaita-dark";
+      gtk-application-prefer-dark-theme = true;
+    };
+  };
+
+  services.darkman = {
+    enable = true;
+    settings = {
+      lat = 30.57;
+      lng = 104.07;
+    };
+    darkModeScripts.dconf = ''
+      DCONF="${pkgs.dconf}/bin/dconf"
+      $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+      $DCONF write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
+      $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "true"
+    '';
+    darkModeScripts.qt5ct = ''
+      mkdir -p ~/.config/qt5ct
+      cat > ~/.config/qt5ct/qt5ct.conf << 'EOF'
+      [Appearance]
+      style=Fusion
+      color_scheme=darker
+      EOF
+    '';
+    lightModeScripts.dconf = ''
+      DCONF="${pkgs.dconf}/bin/dconf"
+      $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
+      $DCONF write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"
+      $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "false"
+    '';
+    lightModeScripts.qt5ct = ''
+      mkdir -p ~/.config/qt5ct
+      cat > ~/.config/qt5ct/qt5ct.conf << 'EOF'
+      [Appearance]
+      style=Fusion
+      EOF
+    '';
+  };
+
   # 告诉系统，HM 已经准备好接管了
   programs.home-manager.enable = true;
 }

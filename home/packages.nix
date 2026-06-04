@@ -54,6 +54,7 @@
     }))
     wpsoffice
     libreoffice
+    libsForQt5.qt5ct
 
     steam-run
     htop

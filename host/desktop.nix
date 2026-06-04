@@ -20,6 +20,7 @@
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
+    QT_QPA_PLATFORMTHEME = "qt5ct";
   };
 
   ####################################
@@ -104,4 +105,17 @@
   ####################################
 
   services.libinput.enable = true;
+
+  services.geoclue2.enable = true;
+
+  ####################################
+  #
+  # XDG Desktop Portal
+  #
+  ####################################
+
+  xdg.portal.config.hyprland = {
+    default = [ "hyprland" "gtk" ];
+    "org.freedesktop.impl.portal.Settings" = [ "darkman" ];
+  };
 }
