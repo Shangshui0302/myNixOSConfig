@@ -83,5 +83,6 @@ in
   services.displayManager.sddm = {
     enable = true;
     theme = "custom";
+    extraPackages = with pkgs.qt6; [ qtmultimedia ];
   };
 }
