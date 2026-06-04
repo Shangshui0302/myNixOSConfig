@@ -11,7 +11,7 @@ let
       cp -r $theme/* $out/share/sddm/themes/custom/
       chmod -R +w $out/share/sddm/themes/custom/
       cp ${wallpaper} $out/share/sddm/themes/custom/Backgrounds/wallpaper.png
-      cat > $out/share/sddm/themes/custom/theme.conf.user << 'CONF'
+      cat > $out/share/sddm/themes/custom/Themes/astronaut.conf.user << 'CONF'
       [General]
       Font="JetBrains Mono"
       FontSize="12"
