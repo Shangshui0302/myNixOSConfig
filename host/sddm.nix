@@ -9,6 +9,9 @@ let
       mkdir -p $out/share/sddm/themes/custom
       cp -r $src/share/sddm/themes/sddm-astronaut-theme/* $out/share/sddm/themes/custom/
       chmod -R +w $out/share/sddm/themes/custom/
+      # 删除 metadata 中的 preset 引用 + 所有 preset 背景
+      sed -i '/^ConfigFile=/d' $out/share/sddm/themes/custom/metadata.desktop
+      rm -rf $out/share/sddm/themes/custom/Themes
       cp ${wallpaper} $out/share/sddm/themes/custom/Backgrounds/wallpaper.png
       cat > $out/share/sddm/themes/custom/theme.conf << 'CONF'
       [General]
