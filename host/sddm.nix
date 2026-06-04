@@ -11,65 +11,41 @@ let
       cp -r $theme/* $out/share/sddm/themes/custom/
       chmod -R +w $out/share/sddm/themes/custom/
       cp ${wallpaper} $out/share/sddm/themes/custom/Backgrounds/wallpaper.png
-      cat > $out/share/sddm/themes/custom/Themes/astronaut.conf << 'CONF'
-      [General]
-      ScreenWidth=""
-      ScreenHeight=""
-      Font="JetBrains Mono"
-      FontSize="12"
-      RoundCorners="12"
-      HeaderText=""
-
-      [Background]
-      Background="Backgrounds/wallpaper.png"
-      CropBackground="true"
-      DimBackground="0.25"
-
-      [Colors]
-      HeaderTextColor="#ffffff"
-      DateTextColor="#dddddd"
-      TimeTextColor="#ffffff"
-      FormBackgroundColor="#1a1b26"
-      BackgroundColor="#1a1b26"
-      DimBackgroundColor="#000000"
-      LoginFieldBackgroundColor="#24253a"
-      PasswordFieldBackgroundColor="#24253a"
-      LoginFieldTextColor="#ffffff"
-      PasswordFieldTextColor="#ffffff"
-      UserIconColor="#7aa2f7"
-      PasswordIconColor="#7aa2f7"
-      PlaceholderTextColor="#888888"
-      WarningColor="#f7768e"
-      LoginButtonTextColor="#ffffff"
-      LoginButtonBackgroundColor="#7aa2f7"
-      SystemButtonsIconsColor="#cccccc"
-      SessionButtonTextColor="#cccccc"
-      VirtualKeyboardButtonTextColor="#cccccc"
-      DropdownTextColor="#ffffff"
-      DropdownSelectedBackgroundColor="#343746"
-      DropdownBackgroundColor="#21222C"
-      HoverUserIconColor="#89b4fa"
-      HoverPasswordIconColor="#89b4fa"
-      HoverSystemButtonsIconsColor="#89b4fa"
-      HoverSessionButtonTextColor="#89b4fa"
-      HoverVirtualKeyboardButtonTextColor="#89b4fa"
-      HighlightTextColor="#89b4fa"
-      HighlightBackgroundColor="#24253a"
-      HighlightBorderColor="#7aa2f7"
-
-      [Form]
-      PartialBlur="false"
-      FullBlur="true"
-      BlurMax="64"
-      Blur="1.5"
-      HaveFormBackground="false"
-      FormPosition="center"
-
-      [Interface]
-      ForceLastUser="true"
-      PasswordFocus="true"
-      HideCompletePassword="true"
-      CONF
+      sed -i \
+        -e 's|^ScreenWidth=.*|ScreenWidth=""|' \
+        -e 's|^ScreenHeight=.*|ScreenHeight=""|' \
+        -e 's|^Font=.*|Font="JetBrains Mono"|' \
+        -e 's|^FontSize=.*|FontSize="12"|' \
+        -e 's|^RoundCorners=.*|RoundCorners="12"|' \
+        -e 's|^Background=.*|Background="Backgrounds/wallpaper.png"|' \
+        -e 's|^DimBackground=.*|DimBackground="0.25"|' \
+        -e 's|^FormBackgroundColor=.*|FormBackgroundColor="#1a1b26"|' \
+        -e 's|^BackgroundColor=.*|BackgroundColor="#1a1b26"|' \
+        -e 's|^DimBackgroundColor=.*|DimBackgroundColor="#000000"|' \
+        -e 's|^LoginFieldBackgroundColor=.*|LoginFieldBackgroundColor="#24253a"|' \
+        -e 's|^PasswordFieldBackgroundColor=.*|PasswordFieldBackgroundColor="#24253a"|' \
+        -e 's|^PlaceholderTextColor=.*|PlaceholderTextColor="#888888"|' \
+        -e 's|^WarningColor=.*|WarningColor="#f7768e"|' \
+        -e 's|^LoginButtonBackgroundColor=.*|LoginButtonBackgroundColor="#7aa2f7"|' \
+        -e 's|^SystemButtonsIconsColor=.*|SystemButtonsIconsColor="#cccccc"|' \
+        -e 's|^SessionButtonTextColor=.*|SessionButtonTextColor="#cccccc"|' \
+        -e 's|^VirtualKeyboardButtonTextColor=.*|VirtualKeyboardButtonTextColor="#cccccc"|' \
+        -e 's|^UserIconColor=.*|UserIconColor="#7aa2f7"|' \
+        -e 's|^PasswordIconColor=.*|PasswordIconColor="#7aa2f7"|' \
+        -e 's|^HoverUserIconColor=.*|HoverUserIconColor="#89b4fa"|' \
+        -e 's|^HoverPasswordIconColor=.*|HoverPasswordIconColor="#89b4fa"|' \
+        -e 's|^HoverSystemButtonsIconsColor=.*|HoverSystemButtonsIconsColor="#89b4fa"|' \
+        -e 's|^HoverSessionButtonTextColor=.*|HoverSessionButtonTextColor="#89b4fa"|' \
+        -e 's|^HoverVirtualKeyboardButtonTextColor=.*|HoverVirtualKeyboardButtonTextColor="#89b4fa"|' \
+        -e 's|^HighlightTextColor=.*|HighlightTextColor="#89b4fa"|' \
+        -e 's|^HighlightBackgroundColor=.*|HighlightBackgroundColor="#24253a"|' \
+        -e 's|^HighlightBorderColor=.*|HighlightBorderColor="#7aa2f7"|' \
+        -e 's|^PartialBlur=.*|PartialBlur="false"|' \
+        -e 's|^FullBlur=.*|FullBlur="true"|' \
+        -e 's|^BlurMax=.*|BlurMax="64"|' \
+        -e 's|^Blur=.*|Blur="1.5"|' \
+        -e 's|^FormPosition=.*|FormPosition="center"|' \
+        $out/share/sddm/themes/custom/Themes/astronaut.conf
     '';
   };
 in
