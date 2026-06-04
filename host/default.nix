@@ -8,5 +8,6 @@
     ./services.nix
     ./packages.nix
     ./litellm.nix
+    ./sddm.nix
   ];
 }

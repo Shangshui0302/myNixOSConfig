@@ -33,11 +33,6 @@
   services.xserver.enable = true;
   services.xserver.xkb.layout = "us";
 
-  services.displayManager.sddm = {
-    enable = true;
-    theme = "${pkgs.sddm-sugar-dark}";
-  };
-
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
