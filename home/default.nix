@@ -9,6 +9,7 @@
     ./shell.nix
     ./yazi.nix
     ./onedrive.nix
+    ./fonts-extra.nix
   ];
 
   # 必填：用户名和家目录路径
