@@ -117,6 +117,12 @@
     unzip
     file-roller
     nemo
+    nemo-emblems
+    nemo-fileroller
+    loupe
+    mpv
+    ffmpegthumbnailer
+    tumbler
     xarchiver
 
     # 网络诊断
