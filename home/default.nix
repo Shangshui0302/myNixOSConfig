@@ -73,7 +73,7 @@
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
-      gtk-theme = "Adwaita-dark";
+      gtk-theme = "adw-gtk3-dark";
       icon-theme = "Papirus";
       gtk-application-prefer-dark-theme = true;
     };
@@ -92,7 +92,7 @@
     darkModeScripts.dconf = ''
       DCONF="${pkgs.dconf}/bin/dconf"
       $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-      $DCONF write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
+      $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3-dark'"
       $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "true"
     '';
     darkModeScripts.qt5ct = ''
@@ -106,7 +106,7 @@
     lightModeScripts.dconf = ''
       DCONF="${pkgs.dconf}/bin/dconf"
       $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
-      $DCONF write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"
+      $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3'"
       $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "false"
     '';
     lightModeScripts.qt5ct = ''

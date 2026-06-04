@@ -116,6 +116,8 @@
     p7zip
     unzip
     file-roller
+    gnome-themes-extra
+    adw-gtk3
     nemo
     nemo-emblems
     nemo-fileroller
