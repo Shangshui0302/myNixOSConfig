@@ -679,13 +679,13 @@
       };
       templates = {
         activeTemplates = [
-          { enabled = true; id = "btop"; }
-          { enabled = true; id = "hyprland"; }
-          { enabled = true; id = "qt"; }
-          { enabled = true; id = "yazi"; }
-          { enabled = true; id = "steam"; }
-          { enabled = true; id = "telegram"; }
-          { enabled = true; id = "gtk"; }
+          { enabled = false; id = "btop"; }
+          { enabled = true;  id = "hyprland"; }
+          { enabled = false; id = "qt"; }
+          { enabled = false; id = "yazi"; }
+          { enabled = true;  id = "steam"; }
+          { enabled = true;  id = "telegram"; }
+          { enabled = false; id = "gtk"; }
         ];
         enableUserTheming = false;
       };
