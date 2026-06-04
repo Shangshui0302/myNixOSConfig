@@ -35,6 +35,28 @@
     ignores = [ "**/.claude/settings.local.json" ];
   };
 
+  # CJK 字体回退：解决 Steam/WPS 等自备字体的应用找不到中文字形
+  xdg.configFile."fontconfig/conf.d/10-cjk-fallback.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+      <alias>
+        <family>sans-serif</family>
+        <prefer>
+          <family>WenQuanYi Micro Hei</family>
+          <family>Noto Sans CJK SC</family>
+          <family>WenQuanYi Zen Hei</family>
+        </prefer>
+      </alias>
+      <alias>
+        <family>serif</family>
+        <prefer>
+          <family>Noto Serif CJK SC</family>
+        </prefer>
+      </alias>
+    </fontconfig>
+  '';
+
   # 深色模式 dconf 默认值（darkman 接管动态更新）
   dconf.settings = {
     "org/gnome/desktop/interface" = {

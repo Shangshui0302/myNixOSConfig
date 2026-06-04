@@ -90,7 +90,9 @@
 
   fonts.packages = with pkgs; [
     wqy_zenhei
+    wqy_microhei
     noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
     nerd-fonts.symbols-only
