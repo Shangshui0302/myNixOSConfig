@@ -15,12 +15,13 @@
     NIXOS_OZONE_WL = "1";
     EDITOR = "nvim";
     SUDO_EDITOR = "nvim";
-    STEAM_FORCE_DESKTOPUI_SCALING = "1.5";
+    STEAM_FORCE_DESKTOPUI_SCALING = "2.0";
   };
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     QT_QPA_PLATFORMTHEME = "qt5ct";
+    GDK_SCALE = "2";
   };
 
   ####################################
@@ -107,8 +108,6 @@
   ####################################
 
   services.libinput.enable = true;
-
-  services.geoclue2.enable = true;
 
   ####################################
   #

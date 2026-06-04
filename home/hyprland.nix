@@ -91,6 +91,10 @@
         disable_hyprland_logo = false;
       };
 
+      xwayland = {
+        force_zero_scaling = true;
+      };
+
       input = {
         kb_layout = "us";
         follow_mouse = 1;
