@@ -40,11 +40,13 @@ let
         -e 's|^HighlightTextColor=.*|HighlightTextColor="#89b4fa"|' \
         -e 's|^HighlightBackgroundColor=.*|HighlightBackgroundColor="#24253a"|' \
         -e 's|^HighlightBorderColor=.*|HighlightBorderColor="#7aa2f7"|' \
-        -e 's|^PartialBlur=.*|PartialBlur="false"|' \
-        -e 's|^FullBlur=.*|FullBlur="true"|' \
+        -e 's|^PartialBlur=.*|PartialBlur="true"|' \
+        -e 's|^FullBlur=.*|FullBlur="false"|' \
         -e 's|^BlurMax=.*|BlurMax="64"|' \
         -e 's|^Blur=.*|Blur="1.5"|' \
-        -e 's|^FormPosition=.*|FormPosition="center"|' \
+        -e 's|^FormPosition=.*|FormPosition="left"|' \
+        -e 's|^BypassSystemButtonsChecks=.*|BypassSystemButtonsChecks="true"|' \
+        -e 's|^HideSystemButtons=.*|HideSystemButtons="false"|' \
         $out/share/sddm/themes/custom/Themes/astronaut.conf
     '';
   };
