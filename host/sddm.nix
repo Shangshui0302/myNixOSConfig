@@ -14,8 +14,8 @@ let
       [General]
       ScreenWidth=""
       ScreenHeight=""
-      Font="PingFang SC"
-      FontSize=""
+      Font="JetBrains Mono"
+      FontSize="12"
       RoundCorners="12"
       HeaderText=""
 
@@ -65,21 +65,13 @@ let
       ForceLastUser="true"
       PasswordFocus="true"
       HideCompletePassword="true"
-
-      [Translation]
-      TranslatePlaceholderUsername="用户名"
-      TranslatePlaceholderPassword="密码"
-      TranslateLogin="登录"
-      TranslateSuspend="休眠"
-      TranslateReboot="重启"
-      TranslateShutdown="关机"
-      TranslateSessionSelection="桌面环境"
       CONF
     '';
   };
 in
 {
   environment.systemPackages = [ sddm-custom-theme ];
+
   services.displayManager.sddm = {
     enable = true;
     theme = "custom";
