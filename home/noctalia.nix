@@ -671,7 +671,7 @@
         useWallpaperColors = false;
         predefinedScheme = "yamadaRyou";
         darkMode = false;
-        schedulingMode = "disabled";
+        schedulingMode = "location";
         manualSunrise = "06:30";
         manualSunset = "18:30";
         generationMethod = "monochrome";
