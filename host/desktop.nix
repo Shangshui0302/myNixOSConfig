@@ -90,15 +90,30 @@
   ####################################
 
   fonts.packages = with pkgs; [
+    # CJK 基础字体
     wqy_zenhei
     wqy_microhei
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
+    source-han-serif
+    source-han-sans
     noto-fonts-color-emoji
+    # CJK 美术字体
+    lxgw-wenkai
+    sarasa-gothic
+    # Latin 衬线
+    eb-garamond
+    libertine
+    # Nerd 等宽
     nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+    nerd-fonts.caskaydia-mono
+    nerd-fonts.iosevka
+    nerd-fonts.geist-mono
+    nerd-fonts.monaspace
+    nerd-fonts.zed-mono
     nerd-fonts.symbols-only
     font-awesome
-    nerd-fonts.zed-mono
   ];
 
   ####################################
