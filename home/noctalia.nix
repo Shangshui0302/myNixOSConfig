@@ -681,11 +681,11 @@
         activeTemplates = [
           { enabled = false; id = "btop"; }
           { enabled = true;  id = "hyprland"; }
-          { enabled = false; id = "qt"; }
+          { enabled = true;  id = "qt"; }
           { enabled = false; id = "yazi"; }
           { enabled = true;  id = "steam"; }
           { enabled = true;  id = "telegram"; }
-          { enabled = false; id = "gtk"; }
+          { enabled = true; id = "gtk"; }
         ];
         enableUserTheming = false;
       };
