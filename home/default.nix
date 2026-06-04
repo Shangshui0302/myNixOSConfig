@@ -63,6 +63,7 @@
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       gtk-theme = "Adwaita-dark";
+      icon-theme = "Papirus";
       gtk-application-prefer-dark-theme = true;
     };
   };

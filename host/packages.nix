@@ -107,6 +107,7 @@
   ####################################
 
   environment.systemPackages = with pkgs; [
+    papirus-icon-theme
     neovim
     wget
     curl

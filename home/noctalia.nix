@@ -468,7 +468,7 @@
         position = "center";
         pinnedApps = [ "nemo" "google-chrome" "obsidian" "qq" ];
         sortByMostUsed = true;
-        terminalCommand = "kitty -e";
+        terminalCommand = "foot";
         customLaunchPrefixEnabled = false;
         customLaunchPrefix = "";
         viewMode = "list";
