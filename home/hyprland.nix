@@ -118,6 +118,8 @@
       # Keybinds
       bind = [
         "SUPER, Q, exec, foot"
+        ", PRINT, exec, screenshot screen"
+        "SUPER SHIFT, S, exec, screenshot area"
         "SUPER, C, killactive"
         "SUPER, M, exit"
         "SUPER, E, exec, nemo"

@@ -71,8 +71,16 @@
         done
       '';
     })
+    grimblast
     libreoffice
     libsForQt5.qt5ct
+    (pkgs.writeShellScriptBin "screenshot" ''
+      dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
+      mkdir -p "$dir"
+      file="$dir/$(date +%Y-%m-%d-%H%M%S).png"
+      ${pkgs.grimblast}/bin/grimblast save "$1" "$file"
+      ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
+    '')
 
     steam-run
     htop
