@@ -69,6 +69,20 @@
     noDisplay = false;
   };
 
+  # GTK3/4 设置文件——GTK 应用读 dconf 之前先读这里
+  xdg.configFile."gtk-3.0/settings.ini".text = ''
+    [Settings]
+    gtk-theme-name=adw-gtk3-dark
+    gtk-application-prefer-dark-theme=1
+    gtk-icon-theme-name=Papirus
+  '';
+  xdg.configFile."gtk-4.0/settings.ini".text = ''
+    [Settings]
+    gtk-theme-name=adw-gtk3-dark
+    gtk-application-prefer-dark-theme=1
+    gtk-icon-theme-name=Papirus
+  '';
+
   # 深色模式 dconf 默认值（darkman 接管动态更新）
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -95,6 +109,17 @@
       $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3-dark'"
       $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "true"
     '';
+    darkModeScripts.gtk-ini = ''
+      for v in 3.0 4.0; do
+        mkdir -p ~/.config/gtk-$v
+        cat > ~/.config/gtk-$v/settings.ini << EOF
+      [Settings]
+      gtk-theme-name=adw-gtk3-dark
+      gtk-application-prefer-dark-theme=1
+      gtk-icon-theme-name=Papirus
+      EOF
+      done
+    '';
     darkModeScripts.qt5ct = ''
       mkdir -p ~/.config/qt5ct
       cat > ~/.config/qt5ct/qt5ct.conf << 'EOF'
@@ -108,6 +133,17 @@
       $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
       $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3'"
       $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "false"
+    '';
+    lightModeScripts.gtk-ini = ''
+      for v in 3.0 4.0; do
+        mkdir -p ~/.config/gtk-$v
+        cat > ~/.config/gtk-$v/settings.ini << EOF
+      [Settings]
+      gtk-theme-name=adw-gtk3
+      gtk-application-prefer-dark-theme=0
+      gtk-icon-theme-name=Papirus
+      EOF
+      done
     '';
     lightModeScripts.qt5ct = ''
       mkdir -p ~/.config/qt5ct
