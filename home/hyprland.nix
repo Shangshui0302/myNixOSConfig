@@ -183,10 +183,11 @@ in
     hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia-shell ipc call plugin:workspace-overview toggle"))
 
     -- Window management
-    hl.bind("SUPER + C", hl.dsp.window.kill())
+    hl.bind("SUPER + W", hl.dsp.window.kill())
     hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
+      hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
     hl.bind("SUPER + P", hl.dsp.window.pseudo())
-    hl.bind("SUPER + M", hl.dsp.exit())
+    hl.bind("SUPER + SHIFT + M", hl.dsp.exit())
 
     -- Focus
     hl.bind("SUPER + left", hl.dsp.focus({ direction = "l" }))
@@ -222,7 +223,7 @@ in
     hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("magic"))
     hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
-    -- Window resize (Task #8)
+    -- Window resize
     hl.bind("SUPER + SHIFT + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
     hl.bind("SUPER + SHIFT + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
     hl.bind("SUPER + SHIFT + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
@@ -253,8 +254,8 @@ in
     hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
     -- Media / brightness (long-press for repeating)
-    hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true })
-    hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true })
+    hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 2%+"), { repeating = true })
+    hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"), { repeating = true })
     hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
     hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
     hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("noctalia-shell ipc call brightness increase"), { repeating = true })
