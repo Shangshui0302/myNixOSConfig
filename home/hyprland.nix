@@ -1,186 +1,272 @@
 { config, pkgs, ... }:
 
+let
+  homeDir = config.home.homeDirectory;
+in
 {
   wayland.windowManager.hyprland = {
     enable = true;
 
-    settings = {
-      monitor = [ ",preferred,auto,1.5" ];
+    settings = { };
+  };
 
-      env = [
-        "XCURSOR_SIZE,24"
-        "HYPRCURSOR_SIZE,24"
-      ];
+  # Noctalia user template: Lua color config
+  xdg.configFile."noctalia/templates/hyprland-colors.lua".text = ''
+    hl.config({
+      general = {
+        ["col.active_border"] = "{{colors.primary.default.hex}}",
+        ["col.inactive_border"] = "{{colors.surface.default.hex}}",
+      },
+      group = {
+        ["col.border_active"] = "{{colors.secondary.default.hex}}",
+        ["col.border_inactive"] = "{{colors.surface.default.hex}}",
+        ["col.border_locked_active"] = "{{colors.error.default.hex}}",
+        ["col.border_locked_inactive"] = "{{colors.surface.default.hex}}",
+        groupbar = {
+          ["col.active"] = "{{colors.secondary.default.hex}}",
+          ["col.inactive"] = "{{colors.surface.default.hex}}",
+          ["col.locked_active"] = "{{colors.error.default.hex}}",
+          ["col.locked_inactive"] = "{{colors.surface.default.hex}}",
+        },
+      },
+    })
+  '';
 
-      exec-once = [
-        "fcitx5 -rd"
-        "noctalia-shell"
-        "${config.home.homeDirectory}/.cache/noctalia/HVE/hve_watchdog.sh"
-      ];
+  # Noctalia user template registry
+  xdg.configFile."noctalia/user-templates.toml".text = ''
+    [templates.hyprland-lua]
+    input_path = "~/.config/noctalia/templates/hyprland-colors.lua"
+    output_path = "~/.config/hypr/noctalia-colors.lua"
+  '';
+
+  xdg.configFile."hypr/hyprland.lua".text = ''
+    local home = "${homeDir}"
+
+    -- Noctalia theme colors (generated on first theme load, safe-require)
+    pcall(require, "noctalia-colors")
+
+    hl.env("XCURSOR_SIZE", "24")
+    hl.env("HYPRCURSOR_SIZE", "24")
+
+    hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.5 })
+
+    hl.config({
 
       general = {
-        gaps_in = 5;
-        gaps_out = 20;
-        border_size = 2;
-        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
-        "col.inactive_border" = "rgba(595959aa)";
-        resize_on_border = true;
-        allow_tearing = false;
-        layout = "dwindle";
-      };
+        gaps_in = 5,
+        gaps_out = 20,
+        border_size = 2,
+        resize_on_border = true,
+        allow_tearing = false,
+        layout = "scrolling",
+      },
 
       decoration = {
-        rounding = 10;
-        rounding_power = 2;
-        active_opacity = 1.0;
-        inactive_opacity = 1.0;
+        rounding = 10,
+        rounding_power = 2,
+        active_opacity = 1.0,
+        inactive_opacity = 1.0,
         shadow = {
-          enabled = true;
-          range = 4;
-          render_power = 3;
-          color = "rgba(1a1a1aee)";
-        };
+          enabled = true,
+          range = 4,
+          render_power = 3,
+          color = "rgba(1a1a1aee)",
+        },
         blur = {
-          enabled = true;
-          size = 12;
-          passes = 3;
-          vibrancy = 0.1;
-        };
-      };
+          enabled = true,
+          size = 12,
+          passes = 3,
+          vibrancy = 0.1,
+        },
+      },
 
       animations = {
-        enabled = "yes, please :)";
-        bezier = [
-          "easeOutQuint, 0.23, 1, 0.32, 1"
-          "easeInOutCubic, 0.65, 0.05, 0.36, 1"
-          "linear, 0, 0, 1, 1"
-          "almostLinear, 0.5, 0.5, 0.75, 1"
-          "quick, 0.15, 0, 0.1, 1"
-        ];
-        animation = [
-          "global, 1, 10, default"
-          "border, 1, 5.39, easeOutQuint"
-          "windows, 1, 4.79, easeOutQuint"
-          "windowsIn, 1, 4.1, easeOutQuint, popin 87%"
-          "windowsOut, 1, 1.49, linear, popin 87%"
-          "fadeIn, 1, 1.73, almostLinear"
-          "fadeOut, 1, 1.46, almostLinear"
-          "fade, 1, 3.03, quick"
-          "layers, 1, 3.81, easeOutQuint"
-          "layersIn, 1, 4, easeOutQuint, fade"
-          "layersOut, 1, 1.5, linear, fade"
-          "fadeLayersIn, 1, 1.79, almostLinear"
-          "fadeLayersOut, 1, 1.39, almostLinear"
-          "workspaces, 1, 1.94, almostLinear, fade"
-          "workspacesIn, 1, 1.21, almostLinear, fade"
-          "workspacesOut, 1, 1.94, almostLinear, fade"
-          "zoomFactor, 1, 7, quick"
-        ];
-      };
+        enabled = true,
+        workspace_wraparound = true,
+      },
 
-      dwindle = {
-        preserve_split = true;
-      };
+      scrolling = {
+        column_width = 0.5,
+        direction = "right",
+        follow_focus = true,
+        fullscreen_on_one_column = true,
+        explicit_column_widths = "0.33, 0.5, 0.67, 0.81, 0.96",
+      },
 
       master = {
-        new_status = "master";
-      };
+        new_status = "master",
+      },
 
       misc = {
-        force_default_wallpaper = -1;
-        disable_hyprland_logo = false;
-      };
+        force_default_wallpaper = -1,
+        disable_hyprland_logo = false,
+      },
 
       xwayland = {
-        force_zero_scaling = true;
-      };
+        force_zero_scaling = true,
+      },
 
       input = {
-        kb_layout = "us";
-        follow_mouse = 1;
-        sensitivity = 0;
+        kb_layout = "us",
+        follow_mouse = 1,
+        sensitivity = 0,
         touchpad = {
-          natural_scroll = true;
-        };
-      };
+          natural_scroll = true,
+        },
+      },
 
-      gesture = [
-        "3, horizontal, workspace"
-      ];
-
-      device = [
+      device = {
         {
-          name = "epic-mouse-v1";
-          sensitivity = -0.5;
-        }
-      ];
+          name = "epic-mouse-v1",
+          sensitivity = -0.5,
+        },
+      },
 
-      # Keybinds
-      bind = [
-        "SUPER, Q, exec, foot"
-        ", PRINT, exec, screenshot screen"
-        "SHIFT, PRINT, exec, screenshot area"
-        "SUPER, C, killactive"
-        "SUPER, M, exit"
-        "SUPER, E, exec, nemo"
-        "SUPER, V, togglefloating"
-        "SUPER, P, pseudo"
-"SUPER, SPACE, exec, noctalia-shell ipc call launcher toggle"
-        "SUPER, K, exec, noctalia-shell ipc call controlCenter toggle"
-        "SUPER, comma, exec, noctalia-shell ipc call settings toggle"
-        "SUPER, left, movefocus, l"
-        "SUPER, right, movefocus, r"
-        "SUPER, up, movefocus, u"
-        "SUPER, down, movefocus, d"
-        "SUPER, 1, workspace, 1"
-        "SUPER, 2, workspace, 2"
-        "SUPER, 3, workspace, 3"
-        "SUPER, 4, workspace, 4"
-        "SUPER, 5, workspace, 5"
-        "SUPER, 6, workspace, 6"
-        "SUPER, 7, workspace, 7"
-        "SUPER, 8, workspace, 8"
-        "SUPER, 9, workspace, 9"
-        "SUPER, 0, workspace, 10"
-        "SUPER SHIFT, 1, movetoworkspace, 1"
-        "SUPER SHIFT, 2, movetoworkspace, 2"
-        "SUPER SHIFT, 3, movetoworkspace, 3"
-        "SUPER SHIFT, 4, movetoworkspace, 4"
-        "SUPER SHIFT, 5, movetoworkspace, 5"
-        "SUPER SHIFT, 6, movetoworkspace, 6"
-        "SUPER SHIFT, 7, movetoworkspace, 7"
-        "SUPER SHIFT, 8, movetoworkspace, 8"
-        "SUPER SHIFT, 9, movetoworkspace, 9"
-        "SUPER SHIFT, 0, movetoworkspace, 10"
-        "SUPER, TAB, exec, noctalia-shell ipc call plugin:workspace-overview toggle"
-        "SUPER, S, togglespecialworkspace, magic"
-        "SUPER SHIFT, S, movetoworkspace, special:magic"
-        "SUPER, mouse_down, workspace, e+1"
-        "SUPER, mouse_up, workspace, e-1"
-      ];
+      binds = {
+        drag_threshold = 10,
+        workspace_back_and_forth = true,
+        allow_workspace_cycles = true,
+      },
+    })
 
-      bindm = [
-        "SUPER, mouse:272, movewindow"
-        "SUPER, mouse:273, resizewindow"
-      ];
+    -- ===== Animation curves =====
+    hl.curve("easeOutQuint",  { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
+    hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1} } })
+    hl.curve("linear",         { type = "bezier", points = { {0, 0}, {1, 1} } })
+    hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5}, {0.75, 1} } })
+    hl.curve("quick",          { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
+    hl.curve("easeInOutCirc",  { type = "bezier", points = { {0.85, 0}, {0.15, 1} } })
+    hl.curve("easeInCirc",     { type = "bezier", points = { {0.55, 0}, {1, 0.45} } })
+    hl.curve("easeOutCirc",    { type = "bezier", points = { {0, 0.55}, {0.45, 1} } })
 
-      bindel = [
-        ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
-        ",XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        ",XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-        ",XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-        ",XF86MonBrightnessUp, exec, noctalia-shell ipc call brightness increase"
-        ",XF86MonBrightnessDown, exec, noctalia-shell ipc call brightness decrease"
-      ];
-    };
+    -- ===== Animations =====
+    hl.animation({ leaf = "global",    enabled = true, speed = 10, bezier = "linear" })
+    hl.animation({ leaf = "border",    enabled = true, speed = 5.39, bezier = "easeOutQuint" })
+    hl.animation({ leaf = "windows",   enabled = true, speed = 4.79, bezier = "easeOutQuint" })
+    hl.animation({ leaf = "windowsIn",  enabled = true, speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
+    hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear",        style = "popin 87%" })
+    hl.animation({ leaf = "fadeIn",    enabled = true, speed = 3.0,  bezier = "easeInCirc" })
+    hl.animation({ leaf = "fadeOut",   enabled = true, speed = 1.46, bezier = "almostLinear" })
+    hl.animation({ leaf = "fade",      enabled = true, speed = 3.03, bezier = "quick" })
+    hl.animation({ leaf = "layers",    enabled = true, speed = 3.81, bezier = "easeOutQuint" })
+    hl.animation({ leaf = "layersIn",  enabled = true, speed = 4,    bezier = "easeOutQuint", style = "fade" })
+    hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5,  bezier = "linear",        style = "fade" })
+    hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 1.79, bezier = "almostLinear" })
+    hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
+    hl.animation({ leaf = "workspaces",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "slidefadevert" })
+    hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
+    hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
+    hl.animation({ leaf = "specialWorkspace",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "fade" })
+    hl.animation({ leaf = "specialWorkspaceIn",  enabled = true, speed = 3.6, bezier = "quick",          style = "fade" })
+    hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "fade" })
+    hl.animation({ leaf = "zoomFactor",  enabled = true, speed = 7, bezier = "quick" })
 
-    extraConfig = ''
-      $mainMod = SUPER
-      $terminal = foot
-      $fileManager = nemo
+    -- Startup commands
+    hl.on("hyprland.start", function()
+      hl.exec_cmd("fcitx5 -rd")
+      hl.exec_cmd("noctalia-shell")
+      hl.exec_cmd(home .. "/.cache/noctalia/HVE/hve_watchdog.sh")
+    end)
 
-      source = ${config.home.homeDirectory}/.config/hypr/noctalia/noctalia-colors.conf
-      source = ${config.home.homeDirectory}/.cache/noctalia/HVE/overlay.conf
-    '';
-  };
+    -- Noctalia colors/overlay not loaded (hyprlang .conf incompatible with Lua).
+
+    -- ===== Keybinds =====
+
+    -- Launch
+    hl.bind("SUPER + Q", hl.dsp.exec_cmd("foot"))
+    hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"))
+    hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"))
+    hl.bind("SUPER + E", hl.dsp.exec_cmd("nemo"))
+    hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("noctalia-shell ipc call launcher toggle"))
+    hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia-shell ipc call controlCenter toggle"))
+    hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia-shell ipc call settings toggle"))
+    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia-shell ipc call plugin:workspace-overview toggle"))
+
+    -- Window management
+    hl.bind("SUPER + C", hl.dsp.window.kill())
+    hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
+    hl.bind("SUPER + P", hl.dsp.window.pseudo())
+    hl.bind("SUPER + M", hl.dsp.exit())
+
+    -- Focus
+    hl.bind("SUPER + left", hl.dsp.focus({ direction = "l" }))
+    hl.bind("SUPER + right", hl.dsp.focus({ direction = "r" }))
+    hl.bind("SUPER + up", hl.dsp.focus({ direction = "u" }))
+    hl.bind("SUPER + down", hl.dsp.focus({ direction = "d" }))
+
+    -- Workspace
+    hl.bind("SUPER + 1", hl.dsp.focus({ workspace = 1 }))
+    hl.bind("SUPER + 2", hl.dsp.focus({ workspace = 2 }))
+    hl.bind("SUPER + 3", hl.dsp.focus({ workspace = 3 }))
+    hl.bind("SUPER + 4", hl.dsp.focus({ workspace = 4 }))
+    hl.bind("SUPER + 5", hl.dsp.focus({ workspace = 5 }))
+    hl.bind("SUPER + 6", hl.dsp.focus({ workspace = 6 }))
+    hl.bind("SUPER + 7", hl.dsp.focus({ workspace = 7 }))
+    hl.bind("SUPER + 8", hl.dsp.focus({ workspace = 8 }))
+    hl.bind("SUPER + 9", hl.dsp.focus({ workspace = 9 }))
+    hl.bind("SUPER + 0", hl.dsp.focus({ workspace = 10 }))
+
+    -- Move to workspace
+    hl.bind("SUPER + SHIFT + 1", hl.dsp.window.move({ workspace = "1" }))
+    hl.bind("SUPER + SHIFT + 2", hl.dsp.window.move({ workspace = "2" }))
+    hl.bind("SUPER + SHIFT + 3", hl.dsp.window.move({ workspace = "3" }))
+    hl.bind("SUPER + SHIFT + 4", hl.dsp.window.move({ workspace = "4" }))
+    hl.bind("SUPER + SHIFT + 5", hl.dsp.window.move({ workspace = "5" }))
+    hl.bind("SUPER + SHIFT + 6", hl.dsp.window.move({ workspace = "6" }))
+    hl.bind("SUPER + SHIFT + 7", hl.dsp.window.move({ workspace = "7" }))
+    hl.bind("SUPER + SHIFT + 8", hl.dsp.window.move({ workspace = "8" }))
+    hl.bind("SUPER + SHIFT + 9", hl.dsp.window.move({ workspace = "9" }))
+    hl.bind("SUPER + SHIFT + 0", hl.dsp.window.move({ workspace = "10" }))
+
+    -- Special workspace
+    hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("magic"))
+    hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+
+    -- Window resize (Task #8)
+    hl.bind("SUPER + SHIFT + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
+    hl.bind("SUPER + SHIFT + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
+    hl.bind("SUPER + SHIFT + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
+    hl.bind("SUPER + SHIFT + down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }))
+
+    -- Window move
+    hl.bind("SUPER + CTRL + left", hl.dsp.window.move({ direction = "l" }))
+    hl.bind("SUPER + CTRL + right", hl.dsp.window.move({ direction = "r" }))
+    hl.bind("SUPER + CTRL + up", hl.dsp.window.move({ direction = "u" }))
+    hl.bind("SUPER + CTRL + down", hl.dsp.window.move({ direction = "d" }))
+
+    -- Window swap
+    hl.bind("SUPER + ALT + left", hl.dsp.window.swap({ direction = "l" }))
+    hl.bind("SUPER + ALT + right", hl.dsp.window.swap({ direction = "r" }))
+    hl.bind("SUPER + ALT + up", hl.dsp.window.swap({ direction = "u" }))
+    hl.bind("SUPER + ALT + down", hl.dsp.window.swap({ direction = "d" }))
+
+    -- Mouse workspace scroll
+    hl.bind("SUPER + mouse_down", function()
+      hl.dispatch(hl.dsp.focus({ workspace = "e+1" }))
+    end)
+    hl.bind("SUPER + mouse_up", function()
+      hl.dispatch(hl.dsp.focus({ workspace = "e-1" }))
+    end)
+
+    -- Mouse window drag/resize
+    hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
+    hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+    -- Media / brightness (long-press for repeating)
+    hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true })
+    hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true })
+    hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
+    hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
+    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("noctalia-shell ipc call brightness increase"), { repeating = true })
+    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("noctalia-shell ipc call brightness decrease"), { repeating = true })
+
+    -- ===== Gestures =====
+
+    -- 3-finger vertical: workspace switch
+    hl.gesture({ fingers = 3, direction = "vertical", action = "workspace" })
+
+    -- 3-finger horizontal: smooth scroll_move (Task #6)
+    hl.gesture({ fingers = 3, direction = "left", action = "scroll_move" })
+    hl.gesture({ fingers = 3, direction = "right", action = "scroll_move" })
+  '';
 }

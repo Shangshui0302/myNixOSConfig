@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  wallpaper = ../assets/wallpaper.png;
+  wallpaper = ../assets/yamadaryou.png;
   sddm-custom-theme = pkgs.stdenv.mkDerivation {
     name = "sddm-astronaut-custom";
     src = pkgs.sddm-astronaut;

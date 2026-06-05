@@ -447,12 +447,12 @@
         sortOrder = "name";
         favorites = [
           {
-            path = "${config.home.homeDirectory}/Pictures/Wallpapers/th.jpg";
-            colorScheme = "Rose Pine Moon";
+            path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
+            colorScheme = "yamadaryou";
             darkMode = false;
-            generationMethod = "muted";
+            generationMethod = "monochrome";
             useWallpaperColors = false;
-            paletteColors = [ "#d7827e" "#56949f" "#286983" "#b4637a" ];
+            paletteColors = [ ];
           }
         ];
       };
@@ -669,7 +669,7 @@
       };
       colorSchemes = {
         useWallpaperColors = false;
-        predefinedScheme = "yamadaRyou";
+        predefinedScheme = "yamadaryou";
         darkMode = false;
         schedulingMode = "location";
         manualSunrise = "06:30";
@@ -679,15 +679,13 @@
       };
       templates = {
         activeTemplates = [
-          { enabled = false; id = "btop"; }
-          { enabled = true;  id = "hyprland"; }
+          { enabled = true; id = "hyprland"; }
           { enabled = true;  id = "qt"; }
-          { enabled = false; id = "yazi"; }
           { enabled = true;  id = "steam"; }
           { enabled = true;  id = "telegram"; }
           { enabled = true; id = "gtk"; }
         ];
-        enableUserTheming = false;
+        enableUserTheming = true;
       };
       nightLight = {
         enabled = false;
@@ -736,4 +734,104 @@
       };
     };
   };
+
+  # yamadaryou color scheme
+  xdg.configFile."noctalia/colorschemes/yamadaryou/yamadaryou.json".text = builtins.toJSON {
+    dark = {
+      mPrimary = "#ffec15";
+      mOnPrimary = "#000000";
+      mSecondary = "#006ff1";
+      mOnSecondary = "#ffffff";
+      mTertiary = "#c57358";
+      mOnTertiary = "#e0def4";
+      mError = "#ff3092";
+      mOnError = "#232136";
+      mSurface = "#000000";
+      mOnSurface = "#e0e2ef";
+      mSurfaceVariant = "#1a1817";
+      mOnSurfaceVariant = "#b3b7c2";
+      mOutline = "#44415a";
+      mShadow = "#232136";
+      mHover = "#56526e";
+      mOnHover = "#e0def4";
+      terminal = {
+        normal = {
+          black = "#000000";
+          red = "#FF3092";
+          green = "#11CC40";
+          yellow = "#CCBC11";
+          blue = "#FFEC15";
+          magenta = "#006FF1";
+          cyan = "#C57358";
+          white = "#E0E2EF";
+        };
+        bright = {
+          black = "#1A1817";
+          red = "#FF499F";
+          green = "#2CF25E";
+          yellow = "#F2E12C";
+          blue = "#FFEE2E";
+          magenta = "#1983FF";
+          cyan = "#EB9B81";
+          white = "#FFFFFF";
+        };
+        foreground = "#E0E2EF";
+        background = "#000000";
+        selectionFg = "#000000";
+        selectionBg = "#FFEC15";
+        cursor = "#FFEC15";
+        cursorText = "#000000";
+      };
+    };
+    light = {
+      mPrimary = "#0055ff";
+      mOnPrimary = "#faf4ed";
+      mSecondary = "#e6c814";
+      mOnSecondary = "#faf4ed";
+      mTertiary = "#a36e55";
+      mOnTertiary = "#faf4ed";
+      mError = "#f52956";
+      mOnError = "#faf4ed";
+      mSurface = "#fffaf3";
+      mOnSurface = "#000000";
+      mSurfaceVariant = "#f2e9e1";
+      mOnSurfaceVariant = "#353849";
+      mOutline = "#dfdad9";
+      mShadow = "#faf4ed";
+      mHover = "#cecacd";
+      mOnHover = "#575279";
+      terminal = {
+        normal = {
+          black = "#FFFAF3";
+          red = "#F52956";
+          green = "#008C23";
+          yellow = "#8C8100";
+          blue = "#0055FF";
+          magenta = "#E6C814";
+          cyan = "#A36E55";
+          white = "#000000";
+        };
+        bright = {
+          black = "#F2E9E1";
+          red = "#FF446D";
+          green = "#13BF3E";
+          yellow = "#BFB213";
+          blue = "#1966FF";
+          magenta = "#FFE130";
+          cyan = "#D69F85";
+          white = "#333333";
+        };
+        foreground = "#000000";
+        background = "#FFFAF3";
+        selectionFg = "#FAF4ED";
+        selectionBg = "#0055FF";
+        cursor = "#0055FF";
+        cursorText = "#FAF4ED";
+      };
+    };
+  };
+
+  # yamadaryou wallpaper
+  home.file."Pictures/Wallpapers/yamadaryou.png".source = ../assets/yamadaryou.png;
+
 }

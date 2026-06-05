@@ -44,6 +44,7 @@
     claude-code
     codex
     netease-cloud-music-gtk
+    obs-studio
     go-musicfox
     localsend
     (wechat.overrideAttrs (old: {
