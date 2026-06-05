@@ -1,0 +1,122 @@
+# Shell 环境指南
+
+本机使用 fish 作为默认 shell，bash 作为备选（带 ble.sh 增强），starship 作为统一提示符。
+
+## Shell 选择
+
+| Shell | 角色 | 特点 |
+|-------|------|------|
+| **fish** | 默认 | 语法高亮、自动建议、4 个插件 |
+| **bash** | 备选 | ble.sh 语法高亮/补全、脚本兼容 |
+
+终端模拟器：**foot**（系统级）和 **ghostty**（用户级），均默认启动 fish。
+
+## 别名速查
+
+两个 shell 共享相同别名：
+
+| 别名 | 实际命令 | 说明 |
+|------|----------|------|
+| `ls` | `eza --icons=auto` | 彩色文件列表 + Nerd 图标 |
+| `ll` | `eza -l --icons=auto` | 详细列表 |
+| `la` | `eza -la --icons=auto` | 显示隐藏文件 |
+| `lt` | `eza -T --icons=auto` | 树形展示 |
+| `tree` | `eza -T --icons=auto` | 同上 |
+| `cat` | `bat` | 语法高亮预览 |
+| `grep` | `rg` | ripgrep 搜索 |
+| `find` | `fd` | fd 查找文件 |
+| `top` | `btop` | 系统监视器 |
+
+## Starship 提示符
+
+格式：`OS NixOS 用户@主机 📁路径 分支 状态 语言模块 时间 电池` + 换行 + `❯`
+
+模块说明：
+
+| 模块 | 显示内容 | 示例 |
+|------|----------|------|
+| `os` | NixOS Logo (蓝色) | `󱄅` |
+| `username` | 用户名 (绿色) | `lishangshui` |
+| `hostname` | 主机名 (蓝色) | `MechRevo-NixOS` |
+| `directory` | 当前路径 (蓝色) | `📁~/myNixOSConfig` |
+| `git_branch` | 分支名 (紫色) | `main` |
+| `git_status` | 工作区状态 (黄色) | `+1 !2 ?3` |
+| `git_metrics` | 增删行数 | `+10 -3` |
+| `nix_shell` | Nix shell 状态 | `󱄅 pure/impure` |
+| `python` | Python 版本+虚拟环境 | `󰌠 3.12 (.venv)` |
+| `nodejs` | Node.js 版本 | ` 22.0` |
+| `rust` | Rust 版本 | `󱘗 1.85` |
+| `docker_context` | Docker 上下文 | `󰡨 default` |
+| `time` | 当前时间 | `󰥔 14:30` |
+| `battery` | 电池电量 | 颜色随电量变化 |
+| `cmd_duration` | 命令耗时 | ≥2s 时显示 |
+| `character` | 提示符 `❯` | 绿色(成功)/红色(失败) |
+
+## Zellij
+
+终端多路复用器，Catppuccin Mocha 主题。
+
+```bash
+zellij           # 启动
+zellij attach    # 重新连接已有会话
+```
+
+常用快捷键见 Zellij 内置帮助 (`Ctrl+g` → `?`)。
+
+## Ghostty 保留快捷键
+
+大部分默认绑定已解除（让 Hyprland 管理），仅保留以下：
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Ctrl+Shift+C` | 复制到剪贴板 |
+| `Ctrl+Shift+V` | 从剪贴板粘贴 |
+| `Ctrl+Shift+F` | 搜索 |
+| `Ctrl+Shift+I` | 打开检查器 |
+| `Ctrl+Shift+P` | 命令面板 |
+| `Ctrl++` | 放大字号 |
+| `Ctrl+-` | 缩小字号 |
+| `Ctrl+0` | 重置字号 |
+| `Ctrl+Shift+PageUp` | 跳到上一条提示符 |
+| `Ctrl+Shift+PageDown` | 跳到下一条提示符 |
+
+Ghostty 配置：`Catppuccin Mocha` 深色主题，字号 14，滚动限制 10000 行。
+
+## Fish 插件
+
+| 插件 | 功能 |
+|------|------|
+| `autopair` | 自动补全括号、引号 |
+| `done` | 长时间命令完成后发送通知 |
+| `grc` | 给 `ping`/`traceroute`/`df` 等输出上色 |
+| `colored-man-pages` | man 手册语法高亮 |
+
+## Bash ble.sh 配置
+
+- 语法高亮：内置命令绿色 (`#abe15b`)、可执行文件蓝色 (`#33adff`)、变量黄色 (`#ffd242`)
+- `zoxide` 智能跳转（`z <关键词>`）
+- 共享 fish 的所有别名
+
+## 环境变量
+
+fish 启动时自动加载 `/persist/secrets/litellm.env` 中的 `KEY=VALUE` 格式变量，包括 API 密钥等敏感信息。
+
+## 常用工作流
+
+```bash
+# 快速导航
+z myNixOSConfig    # 跳转到配置目录
+z Projects         # 跳转到项目目录
+
+# 文件操作
+la                 # 查看所有文件
+lt                 # 树形查看目录结构
+bat README.md      # 高亮预览文件
+
+# 搜索
+rg "search term"   # 全文搜索
+fd "*.nix"         # 按文件名查找
+
+# 解压
+ouch x file.zip    # 通用解压
+```
