@@ -23,6 +23,7 @@
       ExecStart = "${pkgs.onedrive}/bin/onedrive --monitor";
       Restart = "on-failure";
       RestartSec = 10;
+      TimeoutStopSec = 15;
     };
     Install = {
       WantedBy = [ "default.target" ];

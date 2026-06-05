@@ -473,7 +473,7 @@
         customLaunchPrefix = "";
         viewMode = "list";
         showCategories = true;
-        iconMode = "tabler";
+        iconMode = "native";
         showIconBackground = true;
         enableSettingsSearch = true;
         enableWindowsSearch = true;
