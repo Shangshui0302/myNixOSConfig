@@ -281,13 +281,6 @@ LSP 服务器配置在 init.lua 的 `vim.lsp.config()` 部分，装完后要添�
 Treesitter 驱动的注释插件。`gcc` 注释/取消当前行，`gc` + 文本对象注释区域。开箱即用。
 
 ---
-
-## 插件 UI 能汉化吗？
-
-不能。这些插件界面（mason、telescope、which-key 等）都是英文硬编码的，不支持 i18n。好消息是都是高频短词（install、delete、search、find），用几次就记住了。
-
----
-
 ## 哪些插件需要我配置？
 
 | 优先级 | 插件 | 什么时候要动 |
