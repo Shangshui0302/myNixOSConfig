@@ -45,8 +45,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── env/                   # 桌面环境
 │   ├── dev/                   # 开发工具
 │   ├── productivity/          # 办公与通讯
-│   ├── media/                 # 影音与浏览器
-│   └── services/              # Home Manager 服务
+│   └── media/                 # 影音与浏览器
 │
 ├── docs/                      # 使用指南
 │   ├── hyprland.md
