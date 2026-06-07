@@ -156,7 +156,8 @@
     };
   };
 
-  xdg.configFile."ghostty/config.ghostty".text = ''
+  # ghostty 已切换到 foot
+  /* xdg.configFile."ghostty/config.ghostty".text = ''
     scrollback-limit = 10000
     theme = MyGhostty Dark
     font-size = 14
@@ -237,7 +238,7 @@
     keybind = shift+insert=unbind
     keybind = copy=unbind
     keybind = paste=unbind
-  '';
+  ''; */
 
   programs.bash = {
     enable = true;

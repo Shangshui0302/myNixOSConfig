@@ -24,7 +24,7 @@
     grim
     slurp
     wl-clipboard
-    kitty
+    # kitty  # 已切换到 foot
     waybar
     wofi
 
@@ -33,7 +33,7 @@
     btop
     gemini-cli
     fastfetch
-    ghostty
+    # ghostty  # 已切换到 foot
     vscode
     vimPlugins.nvchad
     google-chrome
