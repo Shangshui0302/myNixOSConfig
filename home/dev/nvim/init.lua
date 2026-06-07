@@ -107,6 +107,11 @@ require("lazy").setup({
       { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
       { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
       { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help Tags" },
+      { "<leader>fw", "<cmd>Telescope grep_string<cr>", desc = "Grep word" },
+      { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent files" },
+      { "<leader>fk", "<cmd>Telescope keymaps<cr>", desc = "Keymaps" },
+      { "<leader>fc", "<cmd>Telescope commands<cr>", desc = "Commands" },
+      { "<leader>s/", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Find in buffer" },
     },
     opts = {},
   },
@@ -233,11 +238,31 @@ vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
--- Window navigation
+-- Buffer
+vim.keymap.set("n", "<leader>bd", "<cmd>bd<cr>", { desc = "Delete buffer" })
+vim.keymap.set("n", "<leader>bn", "<cmd>bnext<cr>", { desc = "Next buffer" })
+vim.keymap.set("n", "<leader>bp", "<cmd>bprev<cr>", { desc = "Prev buffer" })
+vim.keymap.set("n", "<leader><leader>", "<cmd>e #<cr>", { desc = "Last buffer" })
+
+-- Window
 vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
 vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+vim.keymap.set("n", "<leader>wv", "<cmd>vsplit<cr>", { desc = "Split vertical" })
+vim.keymap.set("n", "<leader>ws", "<cmd>split<cr>", { desc = "Split horizontal" })
+vim.keymap.set("n", "<leader>wq", "<cmd>close<cr>", { desc = "Close window" })
+
+-- File
+vim.keymap.set("n", "<leader>fs", "<cmd>w<cr>", { desc = "Save file" })
+
+-- Toggle
+vim.keymap.set("n", "<leader>tn", "<cmd>set nu!<cr>", { desc = "Line numbers" })
+vim.keymap.set("n", "<leader>tr", "<cmd>set rnu!<cr>", { desc = "Relative numbers" })
+vim.keymap.set("n", "<leader>tw", "<cmd>set wrap!<cr>", { desc = "Line wrap" })
+
+-- Quit
+vim.keymap.set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit nvim" })
 
 -- ===== Theme picker (live preview) =====
 vim.keymap.set("n", "<leader>tC", function()
