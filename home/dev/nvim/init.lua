@@ -165,19 +165,6 @@ require("lazy").setup({
     opts = {},
   },
 
-  -- ===== nvzone extras =====
-  {
-    "nvzone/volt",
-    lazy = false,
-  },
-  {
-    "nvzone/menu",
-    dependencies = { "nvzone/volt" },
-  },
-  {
-    "nvzone/minty",
-    cmd = { "Huefy", "Shades" },
-  },
 })
 
 -- ===== LSP (built-in, Neovim 0.11+) =====
