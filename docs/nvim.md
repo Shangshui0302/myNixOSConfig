@@ -4,211 +4,216 @@
 
 ## 基本概念
 
+### CapsLock = Esc
+
+CapsLock 已全局映射为 Esc（通过 Hyprland `kb_options: caps:escape`）。按 CapsLock 等于按 Esc，不需要 `jk` 了。
+
 ### 模式（Mode）
 
 Neovim 是模态编辑器，有四种核心模式：
 
 | 模式 | 进入方式 | 用途 |
 |------|---------|------|
-| **Normal** | `Esc` 或 `jk` | 浏览、操作文本（默认模式） |
+| **Normal** | `Esc` / `CapsLock` | 浏览、操作文本（默认模式） |
 | **Insert** | `i` / `a` / `o` 等 | 输入文字 |
 | **Visual** | `v` / `V` / `Ctrl+v` | 选中文本 |
 | **Command** | `;` 或 `:` | 执行命令 |
 
 ### Leader 键
 
-本配置的 Leader 键是 **Space**。按一下 Space 后会有弹窗提示后续按键（which-key）。
+本配置的 Leader 键是 **Space**。按下 Space 后弹窗提示可用快捷键（which-key）。
 
 ---
 
 ## 基础操作
+
+> 按键后的英文提示词帮助记忆：`d`(elete) = 删除，`y`(ank) = 复制，`p`(aste) = 粘贴，`i`(nsert) = 插入，`a`(ppend) = 追加，`o`(pen) = 新行，`w`(ord) = 单词，`b`(ack) = 回退，`u`(ndo) = 撤销
 
 ### 移动光标
 
 | 按键 | 功能 |
 |------|------|
 | `h` / `j` / `k` / `l` | 左 / 下 / 上 / 右 |
-| `w` / `b` | 跳到下一个/上一个单词开头 |
-| `0` / `$` | 跳到行首 / 行尾 |
-| `gg` / `G` | 跳到文件开头 / 末尾 |
-| `Ctrl+d` / `Ctrl+u` | 向下/上翻半页 |
+| `w` / `b` | 下一个 / 上一个单词开头 (w=word, b=back) |
+| `0` / `$` | 行首 / 行尾 |
+| `gg` / `G` | 文件开头 / 末尾 (g=go) |
+| `Ctrl+d` / `Ctrl+u` | 向下 / 上翻半页 (d=down, u=up) |
 
 ### 编辑
 
-| 按键 | 功能 |
-|------|------|
-| `i` | 在光标前进入插入模式 |
-| `a` | 在光标后进入插入模式 |
-| `o` | 在下方新建一行进入插入模式 |
-| `u` / `Ctrl+r` | 撤销 / 重做 |
-| `dd` | 删除当前行 |
-| `yy` | 复制当前行 |
-| `p` | 粘贴 |
-| `x` | 删除光标所在字符 |
+| 按键 | 助记 | 功能 |
+|------|------|------|
+| `i` | insert | 光标前进入插入模式 |
+| `a` | append | 光标后进入插入模式 |
+| `o` | open | 下方新建一行，进入插入模式 |
+| `u` / `Ctrl+r` | undo / redo | 撤销 / 重做 |
+| `dd` | delete | 删除当前行 |
+| `yy` | yank | 复制当前行 |
+| `p` | paste | 粘贴 |
+| `x` | cut | 删除光标所在字符 |
 
 ### 自定义快捷键
 
 | 按键 | 功能 |
 |------|------|
-| `jk` | 退出插入模式（回到 Normal） |
-| `;` | 进入命令行模式（等同于 `:`） |
-| `Esc` | 清除搜索高亮 |
+| `;` | 进入命令行模式（等同于 `:`，少按一个 Shift） |
+| `Esc` / `CapsLock` | 清除搜索高亮 |
 
 ---
 
-## 插件功能速览
+## 快捷键总览
 
-### 文件导航
+> `<leader>` = Space 键。按下 `<leader>` 后 which-key 会自动弹窗提示。
+
+### 文件与搜索
 
 | 按键 | 插件 | 功能 |
 |------|------|------|
-| `Ctrl+n` | nvim-tree | 切换侧边文件树 |
-| `<leader>ff` | telescope | 搜索文件名 |
-| `<leader>fg` | telescope | 全文搜索（grep） |
-| `<leader>fb` | telescope | 切换已打开的文件 |
-| `<leader>fh` | telescope | 搜索帮助文档 |
+| `<leader>e` | nvim-tree | 切换侧边文件树 (e=explore) |
+| `Ctrl+n` | nvim-tree | 同上（备选） |
+| `<leader>ff` | telescope | 按文件名搜索 (f=find, f=file) |
+| `<leader>fg` | telescope | 全文搜索 (f=find, g=grep) |
+| `<leader>fb` | telescope | 已打开文件列表 (f=find, b=buffer) |
+| `<leader>fh` | telescope | 搜索帮助文档 (f=find, h=help) |
 
-### 代码跳转（LSP）
+### 代码（LSP）
 
-打开 `.html` / `.css` / `.lua` 等文件后，LSP 自动激活：
+LSP 在打开 `.html` / `.css` / `.lua` 等文件时自动激活。
+
+| 按键 | 助记 | 功能 |
+|------|------|------|
+| `gd` | go to definition | 跳转到定义 |
+| `gr` | go to references | 查找所有引用 |
+| `K` | — | 查看符号文档（悬浮窗） |
+| `<leader>rn` | rename | 重命名符号 |
+| `<leader>ca` | code action | 代码操作（快速修复） |
+
+### 补全
+
+输入代码时自动弹出补全菜单。
 
 | 按键 | 功能 |
 |------|------|
-| `gd` | 跳转到定义 |
-| `gr` | 查找所有引用 |
-| `K` | 查看符号文档（悬浮窗） |
-| `<leader>rn` | 重命名符号 |
-| `<leader>ca` | 代码操作（快速修复等） |
-
-### 代码补全
-
-输入代码时自动弹出补全菜单，补全来源包括 LSP 符号、文件中的词、路径、代码片段。
-
-| 按键 | 功能 |
-|------|------|
-| `Tab` / `Shift+Tab` | 在补全列表中下/上移动 |
+| `Tab` / `Shift+Tab` | 补全列表中下 / 上移动 |
 | `Ctrl+Space` | 手动触发补全 |
 | `Enter` | 确认选择 |
 | `Ctrl+e` | 关闭补全菜单 |
 
-### 保存时自动格式化
+### 主题
 
-`conform.nvim` 会在保存文件时自动格式化代码：
-- `.lua` 文件：用 `stylua` 格式化
-- 其他文件类型可通过 LSP 回退格式化（如有可用的 LSP formatter）
-
-### Git 标记
-
-`gitsigns.nvim` 在行号左侧显示 Git 状态：
-
-| 标记 | 含义 |
+| 按键 | 功能 |
 |------|------|
-| `┃` (绿) | 新增行 |
-| `~` (橙) | 修改行 |
-| `▸` (红) | 删除行 |
+| `<leader>tc` | 切换配色 (t=theme, c=cycle)：night → storm → day → moon 循环 |
 
-### Markdown 预览
-
-打开 `.md` 文件时，`markview.nvim` 自动渲染格式——标题、链接、代码块等会以不同颜色和高亮显示，所见即所得。
+内置四种 tokyonight 变体：`night`(暗)、`storm`(风暴)、`day`(亮)、`moon`(月)。
 
 ---
 
-## 各插件详解
+## 插件详解
+
+> 大部分插件开箱即用。标 ⚙️ 的需要你手动配置。
 
 ### tokyonight.nvim — 主题
 
-深色配色方案 `tokyonight-night`。无需操作，开机即用。
+深色配色方案，`<leader>tc` 在四种变体间循环切换，立即生效。
 
 ### nvim-treesitter — 语法高亮
 
-提供精准的代码高亮和智能缩进。已预装 `lua`、`vim`、`html`、`css`、`markdown`、`bash`、`nix` 等语言的解析器，打开新文件类型时自动下载对应解析器。
+精准的代码高亮和智能缩进。预装解析器覆盖 `lua`、`vim`、`html`、`css`、`markdown`、`bash`、`nix`，打开新类型时自动安装。
 
-### mason.nvim — LSP 安装器
+### nvim-tree.lua — 文件树 `⚙️`
 
-管理语言服务器（language server）的安装。需要新语言支持时：
-
-```
-:Mason
-```
-
-打开 Mason 面板，按 `i` 安装服务器。常用服务器已预装：`html`、`cssls`。
-
-### nvim-cmp — 补全引擎
-
-提供智能补全窗口。补全来源（自动生效）：
-
-| 来源 | 说明 |
-|------|------|
-| nvim_lsp | LSP 提供的函数名、字段、类型等 |
-| buffer | 当前文件中出现过的词 |
-| async_path | 文件系统路径 |
-| nvim_lua | Neovim Lua API 函数名 |
-| luasnip | 代码片段（if/then、for 等模板） |
-
-### LuaSnip + friendly-snippets — 代码片段
-
-提供常用代码模板。输入关键词后按 `Tab` 展开。例如：
-- `fun` + `Tab` → 展开为函数模板
-- `if` + `Tab` → 展开为 if 语句模板
-
-### telescope.nvim — 模糊搜索
-
-最常用的查找工具。支持模糊匹配文件名和内容。
-
-```
-<leader>ff    → 按文件名查找文件
-<leader>fg    → 全文搜索（ripgrep）
-<leader>fb    → 浏览已打开的文件列表
-<leader>fh    → 搜索帮助文档
-```
-
-在 telescope 窗口内：`Ctrl+j/k` 上下移动，`Enter` 打开，`Esc` 退出。
-
-### nvim-tree.lua — 文件树
-
-侧边栏文件浏览器。`Ctrl+n` 开关。
+侧边栏文件浏览器，`<leader>e` 或 `Ctrl+n` 开关。
 
 | 操作 | 按键 |
 |------|------|
-| 打开文件夹 | `Enter` |
-| 打开文件 | `Enter` |
-| 新建文件 | `a` |
-| 删除文件 | `d` |
-| 重命名 | `r` |
+| 打开文件/文件夹 | `Enter` |
+| 新建文件 | `a` (add) |
+| 删除 | `d` (delete) |
+| 重命名 | `r` (rename) |
+
+### telescope.nvim — 模糊搜索 `⚙️`
+
+最常用的查找工具，模糊匹配文件名和内容。
+
+在 telescope 窗口内：`Ctrl+j/k` 移动光标，`Enter` 打开，`Esc` 退出。
 
 ### which-key.nvim — 快捷键提示
 
-按 Leader（Space）后自动弹出可用快捷键菜单。按任意前缀键也会显示后续可用按键，免去记忆负担。
+按 `<leader>` 后自动弹窗显示可用快捷键，无需记忆。
 
-### conform.nvim — 代码格式化
+### conform.nvim — 格式化 `⚙️`
 
-保存 `.lua` 文件时自动调用 `stylua` 格式化。其他文件类型如需格式化，通过 LSP 回退。手动格式化：`<leader>fm`（未绑定，可通过 `:Conform format` 手动触发）。
+保存时自动格式化。当前配置：`.lua` → `stylua`，其他文件通过 LSP 回退。
 
-### gitsigns.nvim — Git 状态标记
+**你要改的**：给新语言加 formatter，在 `formatters_by_ft` 里加。比如要格式化 Python：
 
-在行号左侧显示 Git 增/删/改状态。
+```lua
+formatters_by_ft = {
+  lua = { "stylua" },
+  python = { "isort", "black" },
+},
+```
 
-- 行内操作：`:Gitsigns preview_hunk` 预览变更，`:Gitsigns reset_hunk` 撤销变更
+### 补全系统（nvim-cmp + 依赖）
 
-### nvim-autopairs — 括号自动配对
+| 插件 | 作用 | 需要配吗 |
+|------|------|---------|
+| nvim-cmp | 补全引擎核心 | 否 |
+| cmp-nvim-lsp | LSP 补全（函数名、字段） | 否 |
+| cmp-buffer | 文件中出现过的词 | 否 |
+| cmp-async-path | 文件路径补全 | 否 |
+| cmp-nvim-lua | Neovim Lua API | 否 |
+| LuaSnip | 代码片段引擎 | 否 |
+| friendly-snippets | 预置片段（if/for/fun 等） | 否 |
 
-输入 `(`、`{`、`[`、`"` 等符号时自动补全后半部分，进入插入模式即生效，无需额外操作。
+### mason.nvim — LSP 安装器 `⚙️`
 
-### indent-blankline.nvim — 缩进引导线
+`:Mason` 打开面板，`i` 安装，`X` 卸载。你目前装了 `html`、`cssls`。需要新语言（如 Python 的 `pyright`）时自己装。
 
-在代码块中添加竖向缩进对齐线，帮助看清嵌套层级。始终开启，无需操作。
+LSP 服务器配置在 init.lua 的 `vim.lsp.config()` 部分，装完后要添加对应的 `vim.lsp.config` + `vim.lsp.enable`。
 
-### markview.nvim — Markdown 实时预览
+### gitsigns.nvim — Git 标记
 
-打开 `.md` 文件时自动渲染，标题以不同大小显示，链接/代码块/表格有专门配色。完全自动，无需操作。
+行号左侧显示 Git 状态：`┃` 绿=新增，`~` 橙=修改，`▸` 红=删除。
+
+### nvim-autopairs — 括号配对
+
+输入 `(` `{` `[` `"` 自动补后半。开箱即用。
+
+### indent-blankline.nvim — 缩进线
+
+代码块竖线对齐，帮助看清嵌套。开箱即用。
+
+### markview.nvim — Markdown 预览
+
+打开 `.md` 时自动渲染排版，标题/链接/代码块有独立配色。开箱即用。
 
 ### nvzone 系列
 
-| 插件 | 命令 | 说明 |
+| 插件 | 命令 | 作用 |
 |------|------|------|
-| minty | `:Huefy` / `:Shades` | 颜色选择器，Hex 色值实时预览 |
-| volt | — | 依赖框架，后台运行 |
-| menu | — | 右键菜单框架 |
+| minty | `:Huefy` / `:Shades` | 颜色选择器 |
+| volt | 后台运行 | menu 的依赖框架 |
+| menu | 右键菜单 | 弹出菜单框架 |
+
+---
+
+## 插件 UI 能汉化吗？
+
+不能。这些插件界面（mason、telescope、which-key 等）都是英文硬编码的，不支持 i18n。好消息是都是高频短词（install、delete、search、find），用几次就记住了。
+
+---
+
+## 哪些插件需要我配置？
+
+| 优先级 | 插件 | 什么时候要动 |
+|--------|------|-------------|
+| 必配 | `conform.nvim` | 每增加一个需要格式化的语言 |
+| 必配 | LSP (`vim.lsp.config`) | 每增加一个需要代码提示的语言 |
+| 选配 | `telescope.nvim` | 想加更多搜索快捷键时 |
+| 选配 | `nvim-tree.lua` | 想改文件树行为时 |
+| 永不 | 其余 13 个插件 | 默认配置够用 |
 
 ---
 
@@ -217,74 +222,58 @@ Neovim 是模态编辑器，有四种核心模式：
 ### 编辑 Nix 配置
 
 ```
-# 1. 打开文件
-<leader>ff   → 输入 nix 文件名
-
-# 2. 搜索配置项
-<leader>fg   → 输入关键词
-
-# 3. 编辑 + 自动格式化
-保存时 stylua 自动格式化 .lua 文件
-
-# 4. 查看 Git 改动
-gitsigns 在行号旁显示修改标记
-
-# 5. 浏览器文件
-Ctrl+n       → 在文件树中浏览仓库
+<leader>e    → 打开文件树，在仓库里浏览
+<leader>ff   → 搜索 nix 文件名
+<leader>fg   → 全文搜索配置项关键词
+# 编辑 → 保存时自动格式化 → gitsigns 显示改动
 ```
 
-### 阅读 Markdown 文档
+### 阅读 Markdown
 
 ```
-# 打开 .md 文件后，markview 自动渲染排版
-<leader>ff   → 输入 .md 文件名
-# 阅读完成
+<leader>ff   → 打开 .md 文件，markview 自动渲染
+<leader>tc   → 调到喜欢的配色
 ;q           → 退出
 ```
 
-### 写 HTML/CSS
+### 写代码
 
 ```
-# 打开 .html 文件后 LSP 自动激活
-gd           → 跳转到 CSS 类定义
-K            → 查看属性文档
-# 输入时自动补全标签和属性
+# LSP 自动激活
+gd           → 跳到定义
+<leader>rn   → 重命名
+# 补全自动弹出，Tab 选择确认
 ```
 
 ---
 
 ## 插件管理
 
-插件管理器是 **lazy.nvim**。管理命令：
-
 | 命令 | 功能 |
 |------|------|
-| `:Lazy` | 打开插件管理面板 |
-| `:Lazy sync` | 同步（安装/更新/清理）插件 |
-| `:Lazy update` | 更新所有插件 |
-| `:Lazy clean` | 删除未使用的插件 |
+| `:Lazy` | 打开插件面板，查看状态/更新 |
+| `:Lazy sync` | 安装/更新/清理插件 |
+| `:Lazy clean` | 删除不再使用的插件 |
+| `:Mason` | 管理 LSP 语言服务器 |
 
-插件配置位于 `~/.config/nvim/init.lua`（由 Nix 管理，源码在 `~/myNixOSConfig/home/nvim/init.lua`）。
-
-修改后运行 `nixos-rebuild switch` 或直接编辑符号链接指向的 nix store 文件（不推荐，会被 rebuild 覆盖）。
+---
 
 ## 故障排查
 
 ### 补全不工作
 
-检查 LSP 是否运行：`:LspInfo`。如果 html/cssls 未启动，运行 `:Mason` 确认语言服务器已安装。
+`:LspInfo` — 检查 LSP 是否运行。未启动则 `:Mason` 确认服务器已安装。
 
 ### 插件报错
 
-运行 `:Lazy` 查看插件状态。红色标记的插件需要 `:Lazy sync` 重新安装。
+`:Lazy` — 红色标记的插件需要 `:Lazy sync`。
 
-### 配置文件报错
+### 启动报错
 
-如果 nvim 启动后报 Lua 错误，检查配置文件：
 ```bash
 nvim --headless -c 'qa!' 2>&1 | head -20
 ```
 
-### 还原配置
+### 配置被覆盖
 
-Nix rebuild 会重置 `~/.config/nvim/init.lua` 到仓库版本，所有本地修改丢失。如需永久修改，改 `~/myNixOSConfig/home/nvim/init.lua` 然后 rebuild。
+Nix rebuild 重置 `~/.config/nvim/init.lua`。永久修改改 `~/myNixOSConfig/home/nvim/init.lua` 然后 rebuild。

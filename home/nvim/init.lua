@@ -111,7 +111,10 @@ require("lazy").setup({
   -- ===== File tree =====
   {
     "nvim-tree/nvim-tree.lua",
-    keys = { { "<C-n>", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file tree" } },
+    keys = {
+      { "<C-n>", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file tree" },
+      { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file tree" },
+    },
     opts = {},
   },
 
@@ -221,5 +224,14 @@ vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
+-- ===== Theme switcher =====
+local themes = { "tokyonight-night", "tokyonight-storm", "tokyonight-day", "tokyonight-moon" }
+local theme_idx = 1
+vim.keymap.set("n", "<leader>tc", function()
+  theme_idx = theme_idx % #themes + 1
+  vim.cmd.colorscheme(themes[theme_idx])
+  vim.notify("Theme: " .. themes[theme_idx])
+end, { desc = "Cycle colorscheme" })
+
 -- ===== Colorscheme =====
-vim.cmd.colorscheme("tokyonight-night")
+vim.cmd.colorscheme(themes[theme_idx])
