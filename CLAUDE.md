@@ -54,6 +54,8 @@ myNixOSConfig/
 │   ├── shell.nix              # Fish + bash + starship(全模块配置) + zellij + ghostty
 │   ├── hyprland.nix           # Hyprland Lua 配置 (scrolling layout, 动画, 按键, 手势, noctalia 模板)
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
+│   ├── nvim.nix               # Neovim 配置 (kickstart 风格 + lazy.nvim, LSP/completion/telescope)
+│   │   └── nvim/init.lua      # 实际的 neovim 配置文件
 │   ├── yazi.nix               # Yazi 文件管理器 (9 插件 + myargonaut 主题)
 │   ├── btop.nix               # btop 系统监控 (blackgolden 主题)
 │   ├── onedrive.nix           # OneDrive 同步 (systemd user service)

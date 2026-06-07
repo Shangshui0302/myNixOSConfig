@@ -5,6 +5,7 @@
     ./noctalia.nix
     ./btop.nix
     ./hyprland.nix
+    ./nvim.nix
     ./packages.nix
     ./shell.nix
     ./yazi.nix
