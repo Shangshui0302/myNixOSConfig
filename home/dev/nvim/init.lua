@@ -12,8 +12,11 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  -- ===== Colorscheme =====
+  -- ===== Colorschemes =====
   { "folke/tokyonight.nvim", priority = 1000, opts = { style = "night" } },
+  { "catppuccin/nvim", name = "catppuccin", opts = { flavour = "mocha" } },
+  { "rose-pine/neovim", name = "rose-pine", opts = { variant = "moon" } },
+  { "rebelot/kanagawa.nvim", opts = {} },
 
   -- ===== Core utils =====
   "nvim-lua/plenary.nvim",
@@ -236,14 +239,8 @@ vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
 
--- ===== Theme switcher =====
-local themes = { "tokyonight-night", "tokyonight-storm", "tokyonight-day", "tokyonight-moon" }
-local theme_idx = 1
-vim.keymap.set("n", "<leader>tc", function()
-  theme_idx = theme_idx % #themes + 1
-  vim.cmd.colorscheme(themes[theme_idx])
-  vim.notify("Theme: " .. themes[theme_idx])
-end, { desc = "Cycle colorscheme" })
+-- ===== Theme picker =====
+vim.keymap.set("n", "<leader>tC", "<cmd>Telescope colorscheme<cr>", { desc = "Theme browser" })
 
 -- ===== Colorscheme =====
-vim.cmd.colorscheme(themes[theme_idx])
+vim.cmd.colorscheme("tokyonight-night")
