@@ -54,15 +54,14 @@ myNixOSConfig/
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
 │   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
-│   ├── packages.nix           # 纯包安装: CLI工具, 系统工具, 主题, 文件管理器, Wayland截图
 │   ├── git.nix                # Git 用户配置
-│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, darkman
+│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, darkman, 图标主题
 │   ├── env/                   # 桌面环境
-│   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish
-│   │   ├── hyprland.nix       # Hyprland Lua 配置
+│   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具 (eza/fzf/bat/...)
+│   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
 │   │   ├── terminal.nix       # (foot 在 host/desktop.nix)
 │   │   ├── noctalia.nix       # Noctalia shell 面板
-│   │   ├── systools.nix       # btop, yazi, fastfetch
+│   │   ├── systools.nix       # btop, yazi, fastfetch, 系统/网络工具
 │   │   └── onedrive.nix       # OneDrive 同步
 │   ├── dev/                   # 开发工具
 │   │   ├── nvim.nix           # Neovim
@@ -73,9 +72,9 @@ myNixOSConfig/
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # WPS(缩放), LibreOffice, Obsidian
 │   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend
-│   │   └── files.nix          # Nemo 桌面配置
+│   │   └── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
 │   └── media/                 # 影音与浏览器
-│       ├── player.nix         # 网易云, OBS, go-musicfox
+│       ├── player.nix         # mpv, 网易云, OBS, go-musicfox, loupe, thumbnails
 │       └── browser.nix        # Firefox, Chrome
 │
 ├── docs/                      # 使用指南

@@ -57,6 +57,7 @@
       '';
     })
     libsForQt5.qt5ct
+    papirus-icon-theme gnome-themes-extra adw-gtk3
   ];
 
   # Dark mode defaults

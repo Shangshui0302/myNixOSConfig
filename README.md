@@ -37,11 +37,10 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── sddm.nix               # 登录管理器
 │   └── litellm.nix            # AI 代理
 │
-├── home/                      # 用户配置 (5 子目录)
+├── home/                      # 用户配置 (4 子目录)
 │   ├── default.nix            # 入口汇总
-│   ├── packages.nix           # CLI 工具、系统工具包
 │   ├── git.nix                # Git 配置
-│   ├── theme.nix              # 主题、字体、深色模式
+│   ├── theme.nix              # 主题、字体、深色模式、图标
 │   ├── env/                   # 桌面环境
 │   ├── dev/                   # 开发工具
 │   ├── productivity/          # 办公与通讯

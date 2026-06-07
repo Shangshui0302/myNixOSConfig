@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./packages.nix
     ./git.nix
     ./theme.nix
     ./env

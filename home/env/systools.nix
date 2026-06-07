@@ -211,7 +211,11 @@ let
   };
 in
 {
-  home.packages = with pkgs; [ yazi fastfetch ];
+  home.packages = with pkgs; [
+    yazi fastfetch
+    wget curl pciutils usbutils nix-index htop steam-run
+    dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables
+  ];
 
   # ---- btop ----
   xdg.configFile."btop/btop.conf".text = ''

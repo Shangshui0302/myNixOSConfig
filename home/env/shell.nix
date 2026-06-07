@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  home.packages = with pkgs; [
+    eza zoxide fzf bat fd blesh
+  ];
+
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
