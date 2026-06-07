@@ -44,6 +44,15 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── onedrive.nix           # OneDrive 同步
 │   └── fonts-extra.nix        # 额外字体: PingFang, HarmonyOS Sans
 │
+├── docs/                      # 使用指南
+│   ├── hyprland.md
+│   ├── noctalia.md
+│   ├── nvim.md
+│   ├── shell.md
+│   ├── litellm.md
+│   ├── mihomo.md
+│   └── yazi.md
+│
 ├── CLAUDE.md
 └── README.md
 ```

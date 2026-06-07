@@ -37,27 +37,6 @@ require("lazy").setup({
     build = ":MasonUpdate",
     opts = {},
   },
-  {
-    "neovim/nvim-lspconfig",
-    dependencies = { "mason.nvim" },
-    config = function()
-      local lspconfig = require("lspconfig")
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
-          local map = function(keys, func, desc)
-            vim.keymap.set("n", keys, func, { buffer = args.buf, desc = desc })
-          end
-          map("gd", vim.lsp.buf.definition, "[G]o to [D]efinition")
-          map("gr", vim.lsp.buf.references, "[G]o to [R]eferences")
-          map("K", vim.lsp.buf.hover, "Hover")
-          map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
-          map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
-        end,
-      })
-      lspconfig.html.setup({})
-      lspconfig.cssls.setup({})
-    end,
-  },
 
   -- ===== Completion =====
   {
@@ -197,6 +176,25 @@ require("lazy").setup({
     cmd = { "Huefy", "Shades" },
   },
 })
+
+-- ===== LSP (built-in, Neovim 0.11+) =====
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local map = function(keys, func, desc)
+      vim.keymap.set("n", keys, func, { buffer = args.buf, desc = desc })
+    end
+    map("gd", vim.lsp.buf.definition, "[G]o to [D]efinition")
+    map("gr", vim.lsp.buf.references, "[G]o to [R]eferences")
+    map("K", vim.lsp.buf.hover, "Hover")
+    map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+    map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
+  end,
+})
+
+vim.lsp.config("html", {})
+vim.lsp.config("cssls", {})
+vim.lsp.enable("html")
+vim.lsp.enable("cssls")
 
 -- ===== Options =====
 vim.opt.clipboard = "unnamedplus"

@@ -61,6 +61,15 @@ myNixOSConfig/
 │   ├── onedrive.nix           # OneDrive 同步 (systemd user service)
 │   └── fonts-extra.nix        # 额外字体: PingFang (苹方), HarmonyOS Sans (鸿蒙)
 │
+├── docs/                      # 使用指南
+│   ├── hyprland.md
+│   ├── noctalia.md
+│   ├── nvim.md
+│   ├── shell.md
+│   ├── litellm.md
+│   ├── mihomo.md
+│   └── yazi.md
+│
 ├── CLAUDE.md
 └── README.md
 ```
