@@ -37,23 +37,16 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── sddm.nix               # 登录管理器
 │   └── litellm.nix            # AI 代理
 │
-├── home/                      # 用户配置 (16 文件)
+├── home/                      # 用户配置 (5 子目录)
 │   ├── default.nix            # 入口汇总
-│   ├── packages.nix           # CLI 工具、系统工具、影音包
-│   ├── theme.nix              # 主题、字体、深色模式
+│   ├── packages.nix           # CLI 工具、系统工具包
 │   ├── git.nix                # Git 配置
-│   ├── shell.nix              # fish/bash/starship/zellij
-│   ├── hyprland.nix           # Hyprland 窗口管理
-│   ├── nvim.nix               # Neovim 编辑器
-│   ├── yazi.nix               # Yazi 文件管理
-│   ├── btop.nix               # 系统监控
-│   ├── noctalia.nix           # 桌面面板
-│   ├── onedrive.nix           # 云同步
-│   ├── apps-dev.nix           # 开发工具与 AI CLI
-│   ├── apps-comms.nix         # 通讯软件
-│   ├── apps-office.nix        # 办公软件
-│   ├── apps-media.nix         # 浏览器与影音
-│   └── apps-files.nix         # 文件管理器配置
+│   ├── theme.nix              # 主题、字体、深色模式
+│   ├── env/                   # 桌面环境
+│   ├── dev/                   # 开发工具
+│   ├── productivity/          # 办公与通讯
+│   ├── media/                 # 影音与浏览器
+│   └── services/              # Home Manager 服务
 │
 ├── docs/                      # 使用指南
 │   ├── hyprland.md

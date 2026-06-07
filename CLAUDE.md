@@ -52,24 +52,30 @@ myNixOSConfig/
 │   ├── sddm.nix               # SDDM 显示管理器 (astronaut 主题定制)
 │   └── litellm.nix            # LiteLLM 代理 (0.0.0.0:4000, DeepSeek API 后端)
 │
-├── home/                      # Home Manager 用户级配置（按关注点分模块）
+├── home/                      # Home Manager 用户级配置（按用途分子目录）
 │   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
-│   ├── packages.nix           # 纯包安装: CLI工具, 系统工具, 主题, 文件管理器, 影音, Wayland截图
-│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, darkman 深色模式
+│   ├── packages.nix           # 纯包安装: CLI工具, 系统工具, 主题, 文件管理器, Wayland截图
 │   ├── git.nix                # Git 用户配置
-│   ├── shell.nix              # starship, zellij, bash/ble.sh, fish
-│   ├── hyprland.nix           # Hyprland Lua 配置 (scrolling layout, 动画, 按键, 手势)
-│   ├── nvim.nix               # Neovim 配置 (kickstart 风格 + lazy.nvim)
-│   │   └── nvim/init.lua      # 实际的 neovim 配置文件
-│   ├── yazi.nix               # Yazi 文件管理器
-│   ├── btop.nix               # btop 系统监控
-│   ├── noctalia.nix           # Noctalia shell 面板
-│   ├── onedrive.nix           # OneDrive 同步
-│   ├── apps-dev.nix           # 开发: nodejs/gcc/gh/vscode + claude-code/codex/gemini-cli + direnv
-│   ├── apps-comms.nix         # 通讯: QQ, Telegram, WeChat(缩放), LocalSend
-│   ├── apps-office.nix        # 办公: Obsidian, LibreOffice, WPS(缩放)
-│   ├── apps-media.nix         # 影音: Firefox, Chrome, 网易云, OBS, go-musicfox
-│   └── apps-files.nix         # 文件: Nemo 桌面配置
+│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, darkman
+│   ├── env/                   # 桌面环境
+│   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish
+│   │   ├── hyprland.nix       # Hyprland Lua 配置
+│   │   └── noctalia.nix       # Noctalia shell 面板
+│   ├── dev/                   # 开发工具
+│   │   ├── nvim.nix           # Neovim
+│   │   ├── nvim/init.lua      # Neovim 配置文件
+│   │   ├── vscode.nix         # VS Code
+│   │   ├── tools.nix          # direnv, yazi, btop, gh, CLI 工具
+│   │   └── ai.nix             # claude-code, codex, gemini-cli
+│   ├── productivity/          # 办公与通讯
+│   │   ├── office.nix         # WPS(缩放), LibreOffice, Obsidian
+│   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend
+│   │   └── files.nix          # Nemo 桌面配置
+│   ├── media/                 # 影音与浏览器
+│   │   ├── player.nix         # 网易云, OBS, go-musicfox
+│   │   └── browser.nix        # Firefox, Chrome
+│   └── services/              # Home Manager 服务
+│       └── onedrive.nix       # OneDrive 同步
 │
 ├── docs/                      # 使用指南
 │   ├── hyprland.md

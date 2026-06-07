@@ -832,6 +832,6 @@
   };
 
   # yamadaryou wallpaper
-  home.file."Pictures/Wallpapers/yamadaryou.png".source = ../assets/yamadaryou.png;
+  home.file."Pictures/Wallpapers/yamadaryou.png".source = ../../assets/yamadaryou.png;
 
 }

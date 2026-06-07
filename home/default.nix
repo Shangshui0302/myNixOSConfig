@@ -3,20 +3,13 @@
 {
   imports = [
     ./packages.nix
-    ./theme.nix
     ./git.nix
-    ./shell.nix
-    ./hyprland.nix
-    ./nvim.nix
-    ./yazi.nix
-    ./btop.nix
-    ./noctalia.nix
-    ./onedrive.nix
-    ./apps-dev.nix
-    ./apps-comms.nix
-    ./apps-office.nix
-    ./apps-media.nix
-    ./apps-files.nix
+    ./theme.nix
+    ./env
+    ./dev
+    ./productivity
+    ./media
+    ./services
   ];
 
   home.username = "lishangshui";
