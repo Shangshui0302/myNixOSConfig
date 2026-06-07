@@ -141,7 +141,19 @@ require("lazy").setup({
   -- ===== Git =====
   {
     "lewis6991/gitsigns.nvim",
-    opts = {},
+    opts = {
+      on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
+        local map = function(k, v, d)
+          vim.keymap.set("n", k, v, { buffer = bufnr, desc = d })
+        end
+        map("]c", gs.next_hunk, "Next hunk")
+        map("[c", gs.prev_hunk, "Prev hunk")
+        map("<leader>hs", gs.stage_hunk, "Stage hunk")
+        map("<leader>hr", gs.reset_hunk, "Reset hunk")
+        map("<leader>hp", gs.preview_hunk, "Preview hunk")
+      end,
+    },
   },
 
   -- ===== Autopairs =====
@@ -162,6 +174,13 @@ require("lazy").setup({
   {
     "OXY2DEV/markview.nvim",
     ft = "markdown",
+    opts = {},
+  },
+
+  -- ===== Comment =====
+  {
+    "folke/ts-comments.nvim",
+    event = "VeryLazy",
     opts = {},
   },
 
@@ -210,6 +229,12 @@ vim.opt.timeoutlen = 400
 vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
+
+-- Window navigation
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
 
 -- ===== Theme switcher =====
 local themes = { "tokyonight-night", "tokyonight-storm", "tokyonight-day", "tokyonight-moon" }

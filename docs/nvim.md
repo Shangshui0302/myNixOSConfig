@@ -52,6 +52,22 @@ Neovim 是模态编辑器，有四种核心模式：
 | `p` | paste | 粘贴 |
 | `x` | cut | 删除光标所在字符 |
 
+### 窗口操作
+
+| 按键 | 助记 | 功能 |
+|------|------|------|
+| `Ctrl+h` | left | 跳到左边窗口 |
+| `Ctrl+j` | down | 跳到下面窗口 |
+| `Ctrl+k` | up | 跳到上面窗口 |
+| `Ctrl+l` | right | 跳到右边窗口 |
+
+### 代码注释
+
+| 按键 | 功能 |
+|------|------|
+| `gcc` | 注释 / 取消注释当前行 |
+| `gc` + 动作 | 注释 / 取消注释目标区域（如 `gcip` 注释段落） |
+
 ### 自定义快捷键
 
 | 按键 | 功能 |
@@ -173,9 +189,17 @@ formatters_by_ft = {
 
 LSP 服务器配置在 init.lua 的 `vim.lsp.config()` 部分，装完后要添加对应的 `vim.lsp.config` + `vim.lsp.enable`。
 
-### gitsigns.nvim — Git 标记
+### gitsigns.nvim — Git 标记 `⚙️`
 
 行号左侧显示 Git 状态：`┃` 绿=新增，`~` 橙=修改，`▸` 红=删除。
+
+| 按键 | 功能 |
+|------|------|
+| `]c` | 跳到下一个 Git 改动块 |
+| `[c` | 跳到上一个 Git 改动块 |
+| `<leader>hs` | 暂存当前改动块 (stage hunk) |
+| `<leader>hr` | 撤销当前改动块 (reset hunk) |
+| `<leader>hp` | 预览当前改动块 (preview hunk) |
 
 ### nvim-autopairs — 括号配对
 
@@ -189,13 +213,9 @@ LSP 服务器配置在 init.lua 的 `vim.lsp.config()` 部分，装完后要添�
 
 打开 `.md` 时自动渲染排版，标题/链接/代码块有独立配色。开箱即用。
 
-### nvzone 系列
+### ts-comments.nvim — 代码注释
 
-| 插件 | 命令 | 作用 |
-|------|------|------|
-| minty | `:Huefy` / `:Shades` | 颜色选择器 |
-| volt | 后台运行 | menu 的依赖框架 |
-| menu | 右键菜单 | 弹出菜单框架 |
+Treesitter 驱动的注释插件。`gcc` 注释/取消当前行，`gc` + 文本对象注释区域。开箱即用。
 
 ---
 
@@ -213,7 +233,7 @@ LSP 服务器配置在 init.lua 的 `vim.lsp.config()` 部分，装完后要添�
 | 必配 | LSP (`vim.lsp.config`) | 每增加一个需要代码提示的语言 |
 | 选配 | `telescope.nvim` | 想加更多搜索快捷键时 |
 | 选配 | `nvim-tree.lua` | 想改文件树行为时 |
-| 永不 | 其余 13 个插件 | 默认配置够用 |
+| 永不 | 其余 10 个插件 | 默认配置够用 |
 
 ---
 
@@ -225,7 +245,10 @@ LSP 服务器配置在 init.lua 的 `vim.lsp.config()` 部分，装完后要添�
 <leader>e    → 打开文件树，在仓库里浏览
 <leader>ff   → 搜索 nix 文件名
 <leader>fg   → 全文搜索配置项关键词
-# 编辑 → 保存时自动格式化 → gitsigns 显示改动
+gcc          → 注释/取消注释配置行
+]c / [c      → 浏览 Git 改动
+<leader>hs   → 暂存当前改动
+# 保存时 stylua 自动格式化 .lua 文件
 ```
 
 ### 阅读 Markdown
