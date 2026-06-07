@@ -349,32 +349,32 @@ in
         play = [{ run = "${pkgs.mpv}/bin/mpv \$@"; block = false; for = "unix"; }];
       };
       open.prepend_rules = [
-        { url = "*.md"; use = "edit"; },
-        { url = "*.nix"; use = "edit"; },
-        { url = "*.txt"; use = "edit"; },
-        { url = "*.rs"; use = "edit"; },
-        { url = "*.py"; use = "edit"; },
-        { url = "*.js"; use = "edit"; },
-        { url = "*.ts"; use = "edit"; },
-        { url = "*.json"; use = "edit"; },
-        { url = "*.toml"; use = "edit"; },
-        { url = "*.yaml"; use = "edit"; },
+        { url = "*.md"; use = "edit"; }
+        { url = "*.nix"; use = "edit"; }
+        { url = "*.txt"; use = "edit"; }
+        { url = "*.rs"; use = "edit"; }
+        { url = "*.py"; use = "edit"; }
+        { url = "*.js"; use = "edit"; }
+        { url = "*.ts"; use = "edit"; }
+        { url = "*.json"; use = "edit"; }
+        { url = "*.toml"; use = "edit"; }
+        { url = "*.yaml"; use = "edit"; }
         { url = "*.lua"; use = "edit"; }
       ];
       plugin.preloaders = [
-        { mime = "image/*"; run = "magick"; },
+        { mime = "image/*"; run = "magick"; }
         { mime = "video/*"; run = "ffmpeg"; }
       ];
     };
 
     keymap = {
       manager.prepend_keymap = [
-        { on = "f"; run = "plugin jump-to-char"; desc = "Jump to char"; },
-        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; },
+        { on = "f"; run = "plugin jump-to-char"; desc = "Jump to char"; }
+        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
         { on = "<Enter>"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
       ];
       tasks.prepend_keymap = [
-        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; },
+        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
         { on = "<Enter>"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
       ];
     };
