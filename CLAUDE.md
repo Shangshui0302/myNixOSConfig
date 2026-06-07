@@ -60,22 +60,23 @@ myNixOSConfig/
 │   ├── env/                   # 桌面环境
 │   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish
 │   │   ├── hyprland.nix       # Hyprland Lua 配置
-│   │   └── noctalia.nix       # Noctalia shell 面板
+│   │   ├── terminal.nix       # (foot 在 host/desktop.nix)
+│   │   ├── noctalia.nix       # Noctalia shell 面板
+│   │   ├── systools.nix       # btop, yazi, fastfetch
+│   │   └── onedrive.nix       # OneDrive 同步
 │   ├── dev/                   # 开发工具
 │   │   ├── nvim.nix           # Neovim
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
-│   │   ├── tools.nix          # direnv, yazi, btop, gh, CLI 工具
+│   │   ├── tools.nix          # direnv, gh, CLI 工具
 │   │   └── ai.nix             # claude-code, codex, gemini-cli
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # WPS(缩放), LibreOffice, Obsidian
 │   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend
 │   │   └── files.nix          # Nemo 桌面配置
-│   ├── media/                 # 影音与浏览器
-│   │   ├── player.nix         # 网易云, OBS, go-musicfox
-│   │   └── browser.nix        # Firefox, Chrome
-│   └── services/              # Home Manager 服务
-│       └── onedrive.nix       # OneDrive 同步
+│   └── media/                 # 影音与浏览器
+│       ├── player.nix         # 网易云, OBS, go-musicfox
+│       └── browser.nix        # Firefox, Chrome
 │
 ├── docs/                      # 使用指南
 │   ├── hyprland.md

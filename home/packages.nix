@@ -7,7 +7,7 @@
 
     # System utils
     wget curl pciutils usbutils nix-index
-    htop fastfetch steam-run
+    htop steam-run
 
     # Network diag
     dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables
