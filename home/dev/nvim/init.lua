@@ -239,8 +239,22 @@ vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
 
--- ===== Theme picker =====
-vim.keymap.set("n", "<leader>tC", "<cmd>Telescope colorscheme<cr>", { desc = "Theme browser" })
+-- ===== Theme picker (live preview) =====
+vim.keymap.set("n", "<leader>tC", function()
+  local apply = function(buf)
+    local entry = require("telescope.actions.state").get_selected_entry()
+    if entry then vim.cmd.colorscheme(entry.value) end
+  end
+  require("telescope.builtin").colorscheme({
+    attach_mappings = function(_, map)
+      map("i", "<Down>", function(buf) require("telescope.actions").move_selection_next(buf); apply(buf) end)
+      map("i", "<Up>",   function(buf) require("telescope.actions").move_selection_previous(buf); apply(buf) end)
+      map("n", "j",      function(buf) require("telescope.actions").move_selection_next(buf); apply(buf) end)
+      map("n", "k",      function(buf) require("telescope.actions").move_selection_previous(buf); apply(buf) end)
+      return true
+    end,
+  })
+end, { desc = "Theme browser (live)" })
 
 -- ===== Colorscheme =====
 vim.cmd.colorscheme("tokyonight-night")
