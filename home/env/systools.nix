@@ -81,95 +81,95 @@ let
 
       [filetype]
       rules = [
-        { mime = "image/*", fg = "#94e2d5" }
-        { mime = "video/*", fg = "#f9e2af" }
-        { mime = "audio/*", fg = "#f9e2af" }
-        { mime = "application/zip", fg = "#f5c2e7" }
-        { mime = "application/gzip", fg = "#f5c2e7" }
-        { mime = "application/x-tar", fg = "#f5c2e7" }
-        { mime = "application/x-7z*", fg = "#f5c2e7" }
-        { mime = "application/x-rar*", fg = "#f5c2e7" }
-        { mime = "application/pdf", fg = "#a6e3a1" }
-        { mime = "text/markdown", fg = "#abe15b" }
-        { mime = "text/html", fg = "#ff2740" }
-        { url = "*.nix", fg = "#8ce10b" }
-        { url = "*.rs", fg = "#ff2740" }
-        { url = "*.py", fg = "#ffd242" }
-        { url = "*.js", fg = "#ffd242" }
-        { url = "*.ts", fg = "#00d8eb" }
-        { url = "*.lua", fg = "#00d8eb" }
-        { url = "*.toml", fg = "#888888" }
-        { url = "*.json", fg = "#ffd242" }
-        { url = "*.yaml", fg = "#ff2740" }
-        { url = "*.yml", fg = "#ff2740" }
-        { url = "flake.lock", fg = "#888888" }
-        { url = "flake.nix", fg = "#8ce10b" }
-        { url = "*.conf", fg = "#888888" }
-        { url = "Makefile", fg = "#abe15b" }
-        { url = "*.sh", fg = "#abe15b" }
-        { mime = "inode/x-empty", fg = "#888888" }
+        { mime = "image/*", fg = "#94e2d5" },
+        { mime = "video/*", fg = "#f9e2af" },
+        { mime = "audio/*", fg = "#f9e2af" },
+        { mime = "application/zip", fg = "#f5c2e7" },
+        { mime = "application/gzip", fg = "#f5c2e7" },
+        { mime = "application/x-tar", fg = "#f5c2e7" },
+        { mime = "application/x-7z*", fg = "#f5c2e7" },
+        { mime = "application/x-rar*", fg = "#f5c2e7" },
+        { mime = "application/pdf", fg = "#a6e3a1" },
+        { mime = "text/markdown", fg = "#abe15b" },
+        { mime = "text/html", fg = "#ff2740" },
+        { url = "*.nix", fg = "#8ce10b" },
+        { url = "*.rs", fg = "#ff2740" },
+        { url = "*.py", fg = "#ffd242" },
+        { url = "*.js", fg = "#ffd242" },
+        { url = "*.ts", fg = "#00d8eb" },
+        { url = "*.lua", fg = "#00d8eb" },
+        { url = "*.toml", fg = "#888888" },
+        { url = "*.json", fg = "#ffd242" },
+        { url = "*.yaml", fg = "#ff2740" },
+        { url = "*.yml", fg = "#ff2740" },
+        { url = "flake.lock", fg = "#888888" },
+        { url = "flake.nix", fg = "#8ce10b" },
+        { url = "*.conf", fg = "#888888" },
+        { url = "Makefile", fg = "#abe15b" },
+        { url = "*.sh", fg = "#abe15b" },
+        { mime = "inode/x-empty", fg = "#888888" },
         { url = "*", is = "orphan", fg = "#ff2740" }
       ]
 
       [icon]
       prepend_dirs = [
-        { name = "Desktop", text = "", fg = "#8ce10b" }
-        { name = "Documents", text = "󱔗", fg = "#8ce10b" }
-        { name = "Downloads", text = "", fg = "#8ce10b" }
-        { name = "Pictures", text = "", fg = "#8ce10b" }
-        { name = "Videos", text = "󰑈", fg = "#8ce10b" }
-        { name = "Music", text = "󰝚", fg = "#8ce10b" }
-        { name = "home", text = "", fg = "#8ce10b" }
-        { name = "Projects", text = "", fg = "#8ce10b" }
-        { name = "myNixOSConfig", text = "󱄅", fg = "#8ce10b" }
-        { name = ".git", text = "", fg = "#abe15b" }
-        { name = ".config", text = "", fg = "#8ce10b" }
-        { name = ".cache", text = "", fg = "#888888" }
-        { name = ".local", text = "", fg = "#888888" }
+        { name = "Desktop", text = "", fg = "#8ce10b" },
+        { name = "Documents", text = "󱔗", fg = "#8ce10b" },
+        { name = "Downloads", text = "", fg = "#8ce10b" },
+        { name = "Pictures", text = "", fg = "#8ce10b" },
+        { name = "Videos", text = "󰑈", fg = "#8ce10b" },
+        { name = "Music", text = "󰝚", fg = "#8ce10b" },
+        { name = "home", text = "", fg = "#8ce10b" },
+        { name = "Projects", text = "", fg = "#8ce10b" },
+        { name = "myNixOSConfig", text = "󱄅", fg = "#8ce10b" },
+        { name = ".git", text = "", fg = "#abe15b" },
+        { name = ".config", text = "", fg = "#8ce10b" },
+        { name = ".cache", text = "", fg = "#888888" },
+        { name = ".local", text = "", fg = "#888888" },
         { name = "node_modules", text = "", fg = "#888888" }
       ]
       prepend_exts = [
-        { name = "nix", text = "󰋗", fg = "#8ce10b" }
-        { name = "lock", text = "󰋗", fg = "#888888" }
-        { name = "rs", text = "", fg = "#ff2740" }
-        { name = "py", text = "", fg = "#ffd242" }
-        { name = "js", text = "", fg = "#ffd242" }
-        { name = "ts", text = "", fg = "#00d8eb" }
-        { name = "lua", text = "", fg = "#00d8eb" }
-        { name = "json", text = "", fg = "#ffd242" }
-        { name = "yaml", text = "", fg = "#ff2740" }
-        { name = "yml", text = "", fg = "#ff2740" }
-        { name = "toml", text = "", fg = "#888888" }
-        { name = "md", text = "󰉿", fg = "#abe15b" }
-        { name = "txt", text = "󰉿", fg = "#888888" }
-        { name = "sh", text = "", fg = "#abe15b" }
-        { name = "bash", text = "", fg = "#abe15b" }
-        { name = "fish", text = "", fg = "#abe15b" }
-        { name = "conf", text = "", fg = "#888888" }
-        { name = "css", text = "", fg = "#00d8eb" }
-        { name = "html", text = "", fg = "#ff2740" }
-        { name = "svg", text = "󰜘", fg = "#ffd242" }
-        { name = "png", text = "󰉏", fg = "#94e2d5" }
-        { name = "jpg", text = "󰉏", fg = "#94e2d5" }
-        { name = "jpeg", text = "󰉏", fg = "#94e2d5" }
-        { name = "gif", text = "󰉏", fg = "#94e2d5" }
-        { name = "mp4", text = "", fg = "#f9e2af" }
-        { name = "mkv", text = "", fg = "#f9e2af" }
-        { name = "mp3", text = "", fg = "#f9e2af" }
-        { name = "flac", text = "", fg = "#f9e2af" }
-        { name = "wav", text = "", fg = "#f9e2af" }
-        { name = "zip", text = "󰛫", fg = "#f5c2e7" }
-        { name = "tar.gz", text = "󰛫", fg = "#f5c2e7" }
-        { name = "tar.xz", text = "󰛫", fg = "#f5c2e7" }
-        { name = "rar", text = "󰛫", fg = "#f5c2e7" }
-        { name = "7z", text = "󰛫", fg = "#f5c2e7" }
-        { name = "pdf", text = "", fg = "#a6e3a1" }
+        { name = "nix", text = "󰋗", fg = "#8ce10b" },
+        { name = "lock", text = "󰋗", fg = "#888888" },
+        { name = "rs", text = "", fg = "#ff2740" },
+        { name = "py", text = "", fg = "#ffd242" },
+        { name = "js", text = "", fg = "#ffd242" },
+        { name = "ts", text = "", fg = "#00d8eb" },
+        { name = "lua", text = "", fg = "#00d8eb" },
+        { name = "json", text = "", fg = "#ffd242" },
+        { name = "yaml", text = "", fg = "#ff2740" },
+        { name = "yml", text = "", fg = "#ff2740" },
+        { name = "toml", text = "", fg = "#888888" },
+        { name = "md", text = "󰉿", fg = "#abe15b" },
+        { name = "txt", text = "󰉿", fg = "#888888" },
+        { name = "sh", text = "", fg = "#abe15b" },
+        { name = "bash", text = "", fg = "#abe15b" },
+        { name = "fish", text = "", fg = "#abe15b" },
+        { name = "conf", text = "", fg = "#888888" },
+        { name = "css", text = "", fg = "#00d8eb" },
+        { name = "html", text = "", fg = "#ff2740" },
+        { name = "svg", text = "󰜘", fg = "#ffd242" },
+        { name = "png", text = "󰉏", fg = "#94e2d5" },
+        { name = "jpg", text = "󰉏", fg = "#94e2d5" },
+        { name = "jpeg", text = "󰉏", fg = "#94e2d5" },
+        { name = "gif", text = "󰉏", fg = "#94e2d5" },
+        { name = "mp4", text = "", fg = "#f9e2af" },
+        { name = "mkv", text = "", fg = "#f9e2af" },
+        { name = "mp3", text = "", fg = "#f9e2af" },
+        { name = "flac", text = "", fg = "#f9e2af" },
+        { name = "wav", text = "", fg = "#f9e2af" },
+        { name = "zip", text = "󰛫", fg = "#f5c2e7" },
+        { name = "tar.gz", text = "󰛫", fg = "#f5c2e7" },
+        { name = "tar.xz", text = "󰛫", fg = "#f5c2e7" },
+        { name = "rar", text = "󰛫", fg = "#f5c2e7" },
+        { name = "7z", text = "󰛫", fg = "#f5c2e7" },
+        { name = "pdf", text = "", fg = "#a6e3a1" },
         { name = "desktop", text = "", fg = "#8ce10b" }
       ]
       prepend_conds = [
-        { if = "dir & hovered", text = "", fg = "#abe15b" }
-        { if = "dir", text = "", fg = "#8ce10b" }
-        { if = "exec", text = "", fg = "#abe15b" }
+        { if = "dir & hovered", text = "", fg = "#abe15b" },
+        { if = "dir", text = "", fg = "#8ce10b" },
+        { if = "exec", text = "", fg = "#abe15b" },
         { if = "!dir & !exec", text = "", fg = "#888888" }
       ]
     '';
@@ -349,32 +349,32 @@ in
         play = [{ run = "${pkgs.mpv}/bin/mpv \$@"; block = false; for = "unix"; }];
       };
       open.prepend_rules = [
-        { url = "*.md"; use = "edit"; }
-        { url = "*.nix"; use = "edit"; }
-        { url = "*.txt"; use = "edit"; }
-        { url = "*.rs"; use = "edit"; }
-        { url = "*.py"; use = "edit"; }
-        { url = "*.js"; use = "edit"; }
-        { url = "*.ts"; use = "edit"; }
-        { url = "*.json"; use = "edit"; }
-        { url = "*.toml"; use = "edit"; }
-        { url = "*.yaml"; use = "edit"; }
+        { url = "*.md"; use = "edit"; },
+        { url = "*.nix"; use = "edit"; },
+        { url = "*.txt"; use = "edit"; },
+        { url = "*.rs"; use = "edit"; },
+        { url = "*.py"; use = "edit"; },
+        { url = "*.js"; use = "edit"; },
+        { url = "*.ts"; use = "edit"; },
+        { url = "*.json"; use = "edit"; },
+        { url = "*.toml"; use = "edit"; },
+        { url = "*.yaml"; use = "edit"; },
         { url = "*.lua"; use = "edit"; }
       ];
       plugin.preloaders = [
-        { mime = "image/*"; run = "magick"; }
+        { mime = "image/*"; run = "magick"; },
         { mime = "video/*"; run = "ffmpeg"; }
       ];
     };
 
     keymap = {
       manager.prepend_keymap = [
-        { on = "f"; run = "plugin jump-to-char"; desc = "Jump to char"; }
-        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
+        { on = "f"; run = "plugin jump-to-char"; desc = "Jump to char"; },
+        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; },
         { on = "<Enter>"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
       ];
       tasks.prepend_keymap = [
-        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
+        { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; },
         { on = "<Enter>"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
       ];
     };
