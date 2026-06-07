@@ -77,51 +77,95 @@ Neovim 是模态编辑器，有四种核心模式：
 
 ---
 
-## 快捷键总览
+## Leader 键菜单
 
-> `<leader>` = Space 键。按下 `<leader>` 后 which-key 会自动弹窗提示。
+> `<leader>` = Space 键。按下 Space 后 which-key 弹窗，**不需要背**，翻菜单就能找到。
 
-### 文件与搜索
+### 文件与搜索 (f)
 
-| 按键 | 插件 | 功能 |
-|------|------|------|
-| `<leader>e` | nvim-tree | 切换侧边文件树 (e=explore) |
-| `Ctrl+n` | nvim-tree | 同上（备选） |
-| `<leader>ff` | telescope | 按文件名搜索 (f=find, f=file) |
-| `<leader>fg` | telescope | 全文搜索 (f=find, g=grep) |
-| `<leader>fb` | telescope | 已打开文件列表 (f=find, b=buffer) |
-| `<leader>fh` | telescope | 搜索帮助文档 (f=find, h=help) |
+| 按键 | 功能 |
+|------|------|
+| `<leader>ff` | 按文件名搜索 |
+| `<leader>fg` | 全文搜索 (grep) |
+| `<leader>fw` | 搜索光标下的词 |
+| `<leader>fb` | 已打开文件列表 |
+| `<leader>fr` | 最近打开的文件 |
+| `<leader>fh` | 搜索帮助文档 |
+| `<leader>fk` | 搜索快捷键列表 |
+| `<leader>fc` | 搜索命令列表 |
+| `<leader>s/` | 当前文件内模糊搜索 |
 
-### 代码（LSP）
+### 文件树 (e)
+
+| 按键 | 功能 |
+|------|------|
+| `<leader>e` / `Ctrl+n` | 切换侧边文件树 |
+
+### 缓冲区 (b)
+
+| 按键 | 功能 |
+|------|------|
+| `<leader>bd` | 关闭当前文件 |
+| `<leader>bn` | 下一个文件 |
+| `<leader>bp` | 上一个文件 |
+| `<leader><leader>` | 切回上一个文件（最常用） |
+
+### 窗口 (w)
+
+| 按键 | 功能 |
+|------|------|
+| `Ctrl+h/j/k/l` | 跳到左右下上窗口 |
+| `<leader>wv` | 竖直拆分 |
+| `<leader>ws` | 水平拆分 |
+| `<leader>wq` | 关闭当前窗口 |
+
+### 代码 LSP
 
 LSP 在打开 `.html` / `.css` / `.lua` 等文件时自动激活。
 
-| 按键 | 助记 | 功能 |
-|------|------|------|
-| `gd` | go to definition | 跳转到定义 |
-| `gr` | go to references | 查找所有引用 |
-| `K` | — | 查看符号文档（悬浮窗） |
-| `<leader>rn` | rename | 重命名符号 |
-| `<leader>ca` | code action | 代码操作（快速修复） |
+| 按键 | 功能 |
+|------|------|
+| `gd` | 跳转到定义 |
+| `gr` | 查找所有引用 |
+| `K` | 查看符号文档 |
+| `<leader>rn` | 重命名符号 |
+| `<leader>ca` | 代码操作（快速修复） |
 
 ### 补全
 
-输入代码时自动弹出补全菜单。
+输入时自动弹出。
 
 | 按键 | 功能 |
 |------|------|
-| `Tab` / `Shift+Tab` | 补全列表中下 / 上移动 |
-| `Ctrl+Space` | 手动触发补全 |
-| `Enter` | 确认选择 |
-| `Ctrl+e` | 关闭补全菜单 |
+| `Tab` / `Shift+Tab` | 下 / 上移动 |
+| `Ctrl+Space` | 手动触发 |
+| `Enter` | 确认 |
+| `Ctrl+e` | 关闭 |
 
-### 主题
+### Git (hunk)
 
 | 按键 | 功能 |
 |------|------|
-| `<leader>tc` | 切换配色 (t=theme, c=cycle)：night → storm → day → moon 循环 |
+| `]c` / `[c` | 下 / 上一个改动块 |
+| `<leader>hs` | 暂存改动 |
+| `<leader>hr` | 撤销改动 |
+| `<leader>hp` | 预览改动 |
 
-内置四种 tokyonight 变体：`night`(暗)、`storm`(风暴)、`day`(亮)、`moon`(月)。
+### 开关 (t)
+
+| 按键 | 功能 |
+|------|------|
+| `<leader>tn` | 行号开关 |
+| `<leader>tr` | 相对行号开关 |
+| `<leader>tw` | 换行开关 |
+| `<leader>tC` | 主题浏览器（实时预览） |
+
+### 其他
+
+| 按键 | 功能 |
+|------|------|
+| `<leader>fs` | 保存文件 |
+| `<leader>qq` | 退出 nvim |
 
 ---
 
@@ -129,9 +173,16 @@ LSP 在打开 `.html` / `.css` / `.lua` 等文件时自动激活。
 
 > 大部分插件开箱即用。标 ⚙️ 的需要你手动配置。
 
-### tokyonight.nvim — 主题
+### 主题（4 个）
 
-深色配色方案，`<leader>tc` 在四种变体间循环切换，立即生效。
+| 主题 | 变体 | 风格 |
+|------|------|------|
+| tokyonight | night, storm, day, moon | 蓝紫冷色 |
+| catppuccin | mocha, latte, frappe, macchiato | 暖灰底 |
+| rose-pine | moon, dawn, main | 玫瑰暖色 |
+| kanagawa | wave, dragon, lotus | 浮世绘复古 |
+
+`<leader>tC` 打开 telescope 主题浏览器，**上下移动实时预览**，回车选中。
 
 ### nvim-treesitter — 语法高亮
 
@@ -150,9 +201,21 @@ LSP 在打开 `.html` / `.css` / `.lua` 等文件时自动激活。
 
 ### telescope.nvim — 模糊搜索 `⚙️`
 
-最常用的查找工具，模糊匹配文件名和内容。
+最常用的查找工具，模糊匹配文件名和内容。在 telescope 窗口内：`Ctrl+j/k` 移动，`Enter` 打开，`Esc` 退出。
 
-在 telescope 窗口内：`Ctrl+j/k` 移动光标，`Enter` 打开，`Esc` 退出。
+已映射的搜索入口：
+
+| 按键 | 搜索内容 |
+|------|---------|
+| `<leader>ff` | 文件名 |
+| `<leader>fg` | 全文 |
+| `<leader>fw` | 光标下单词 |
+| `<leader>fb` | 已打开文件 |
+| `<leader>fr` | 最近文件 |
+| `<leader>fh` | 帮助文档 |
+| `<leader>fk` | 快捷键 |
+| `<leader>fc` | 命令 |
+| `<leader>s/` | 当前文件内 |
 
 ### which-key.nvim — 快捷键提示
 
@@ -255,7 +318,7 @@ gcc          → 注释/取消注释配置行
 
 ```
 <leader>ff   → 打开 .md 文件，markview 自动渲染
-<leader>tc   → 调到喜欢的配色
+<leader>tC   → 打开主题浏览器，挑配色
 ;q           → 退出
 ```
 
