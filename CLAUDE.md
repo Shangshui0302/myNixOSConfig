@@ -39,25 +39,37 @@ myNixOSConfig/
 ├── assets/
 │   └── yamadaryou.png         # SDDM 壁纸 + Hyprland 锁屏
 │
-├── host/                      # NixOS 系统级配置
-│   ├── default.nix            # 入口 — 导入所有子模块
-│   ├── core.nix               # systemd-boot, NetworkManager, 时区/locale, nix settings, 用户, sudo + 基础包/programs
-│   ├── desktop.nix            # Hyprland, fcitx5, AMD 显卡, 字体, 环境变量, XDG portal + 桌面应用包
+├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
+│   ├── default.nix            # 入口 — 仅 imports
+│   ├── boot.nix               # systemd-boot, EFI, /boot 安全设置, stateVersion
+│   ├── hardware.nix           # AMD GPU, udev rules, nix-ld, steam (基础硬件设施)
+│   ├── locale.nix             # 时区, locale, console 字体/键盘
+│   ├── nix.nix                # nix 配置: flakes, substituters, allowUnfree
+│   ├── users.nix              # 用户声明, groups, sudo rules
+│   ├── network.nix            # NetworkManager, mihomo TUN, nftables, firewall, 网络诊断工具
+│   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
+│   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
 │   ├── sddm.nix               # SDDM 显示管理器 (astronaut 主题定制)
-│   ├── services.nix           # PipeWire, 蓝牙, CUPS, Mihomo, 电源管理, fstrim, gvfs, udev + 网络工具包
 │   └── litellm.nix            # LiteLLM 代理 (0.0.0.0:4000, DeepSeek API 后端)
 │
-├── home/                      # Home Manager 用户级配置
-│   ├── default.nix            # 入口 — 导入子模块, git 配置, darkman, dconf, CJK font fallback, nemo desktop + 日常应用
-│   ├── shell.nix              # Fish + bash + starship(全模块配置) + zellij + foot + CLI/dev 工具
-│   ├── hyprland.nix           # Hyprland Lua 配置 (scrolling layout, 动画, 按键, 手势, noctalia 模板)
-│   ├── noctalia.nix           # Noctalia shell 面板完整配置
-│   ├── nvim.nix               # Neovim 配置 (kickstart 风格 + lazy.nvim, LSP/completion/telescope)
+├── home/                      # Home Manager 用户级配置（按关注点分模块）
+│   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
+│   ├── packages.nix           # 纯包安装: CLI工具, 系统工具, 主题, 文件管理器, 影音, Wayland截图
+│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, darkman 深色模式
+│   ├── git.nix                # Git 用户配置
+│   ├── shell.nix              # starship, zellij, bash/ble.sh, fish
+│   ├── hyprland.nix           # Hyprland Lua 配置 (scrolling layout, 动画, 按键, 手势)
+│   ├── nvim.nix               # Neovim 配置 (kickstart 风格 + lazy.nvim)
 │   │   └── nvim/init.lua      # 实际的 neovim 配置文件
-│   ├── yazi.nix               # Yazi 文件管理器 (9 插件 + myargonaut 主题)
-│   ├── btop.nix               # btop 系统监控 (blackgolden 主题)
-│   ├── onedrive.nix           # OneDrive 同步 (systemd user service)
-│   └── fonts-extra.nix        # 额外字体: PingFang (苹方), HarmonyOS Sans (鸿蒙)
+│   ├── yazi.nix               # Yazi 文件管理器
+│   ├── btop.nix               # btop 系统监控
+│   ├── noctalia.nix           # Noctalia shell 面板
+│   ├── onedrive.nix           # OneDrive 同步
+│   ├── apps-dev.nix           # 开发: nodejs/gcc/gh/vscode + claude-code/codex/gemini-cli + direnv
+│   ├── apps-comms.nix         # 通讯: QQ, Telegram, WeChat(缩放), LocalSend
+│   ├── apps-office.nix        # 办公: Obsidian, LibreOffice, WPS(缩放)
+│   ├── apps-media.nix         # 影音: Firefox, Chrome, 网易云, OBS, go-musicfox
+│   └── apps-files.nix         # 文件: Nemo 桌面配置
 │
 ├── docs/                      # 使用指南
 │   ├── hyprland.md

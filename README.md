@@ -24,23 +24,36 @@ NixOS 个人配置，基于 flakes + Home Manager。
 ├── flake.lock
 ├── hardware-configuration.nix # 自动生成，不要手动改
 │
-├── host/                      # NixOS 系统级
-│   ├── default.nix            # 入口
-│   ├── core.nix               # 系统基础 + 基础包/programs + 启动/网络/用户
-│   ├── desktop.nix            # Hyprland、fcitx5、字体、桌面应用包
-│   ├── services.nix           # PipeWire、蓝牙、CUPS、Mihomo、网络工具包
-│   └── litellm.nix            # LiteLLM 代理
+├── host/                      # 系统基础设施 (11 文件)
+│   ├── default.nix            # 入口汇总
+│   ├── boot.nix               # 启动与内核
+│   ├── hardware.nix           # GPU、udev、nix-ld、Steam
+│   ├── locale.nix             # 时区、locale、键盘
+│   ├── nix.nix                # Nix 配置
+│   ├── users.nix              # 用户与 sudo
+│   ├── network.nix            # 网络、mihomo、防火墙
+│   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
+│   ├── desktop.nix            # Hyprland、fcitx5、字体、foot
+│   ├── sddm.nix               # 登录管理器
+│   └── litellm.nix            # AI 代理
 │
-├── home/                      # Home Manager 用户级
-│   ├── default.nix            # 入口 + git 配置 + 日常应用
-│   ├── shell.nix              # fish/bash + starship + zellij + foot + CLI工具
-│   ├── hyprland.nix           # Hyprland WM 配置
-│   ├── noctalia.nix           # Noctalia shell 面板
-│   ├── nvim.nix               # Neovim (kickstart 风格, lazy.nvim)
-│   ├── yazi.nix               # Yazi (HM module + starship/yatline + myargonaut 主题)
-│   ├── btop.nix               # btop 系统监控 (blackgolden 主题 + 透明背景)
-│   ├── onedrive.nix           # OneDrive 同步
-│   └── fonts-extra.nix        # 额外字体: PingFang, HarmonyOS Sans
+├── home/                      # 用户配置 (16 文件)
+│   ├── default.nix            # 入口汇总
+│   ├── packages.nix           # CLI 工具、系统工具、影音包
+│   ├── theme.nix              # 主题、字体、深色模式
+│   ├── git.nix                # Git 配置
+│   ├── shell.nix              # fish/bash/starship/zellij
+│   ├── hyprland.nix           # Hyprland 窗口管理
+│   ├── nvim.nix               # Neovim 编辑器
+│   ├── yazi.nix               # Yazi 文件管理
+│   ├── btop.nix               # 系统监控
+│   ├── noctalia.nix           # 桌面面板
+│   ├── onedrive.nix           # 云同步
+│   ├── apps-dev.nix           # 开发工具与 AI CLI
+│   ├── apps-comms.nix         # 通讯软件
+│   ├── apps-office.nix        # 办公软件
+│   ├── apps-media.nix         # 浏览器与影音
+│   └── apps-files.nix         # 文件管理器配置
 │
 ├── docs/                      # 使用指南
 │   ├── hyprland.md

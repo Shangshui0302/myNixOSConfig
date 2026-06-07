@@ -1,32 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  ####################################
-  #
-  # Shell & Dev Packages
-  #
-  ####################################
-
-  home.packages = with pkgs; [
-    # Shell tools
-    starship eza zoxide fzf bat fd blesh
-
-    # Dev toolchain
-    nodejs_24 gcc tree gh tree-sitter ripgrep
-
-    # AI CLI
-    claude-code codex
-
-    # System info
-    fastfetch htop steam-run
-  ];
-
-  ####################################
-  #
-  # Starship
-  #
-  ####################################
-
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
