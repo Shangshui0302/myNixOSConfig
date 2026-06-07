@@ -26,16 +26,14 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │
 ├── host/                      # NixOS 系统级
 │   ├── default.nix            # 入口
-│   ├── core.nix               # 启动、内核、网络、时区、locale、用户
-│   ├── desktop.nix            # Hyprland、fcitx5、字体、AMD 显卡
-│   ├── services.nix           # PipeWire、蓝牙、CUPS、Mihomo
-│   ├── packages.nix           # overlay、系统包、programs
+│   ├── core.nix               # 系统基础 + 基础包/programs + 启动/网络/用户
+│   ├── desktop.nix            # Hyprland、fcitx5、字体、桌面应用包
+│   ├── services.nix           # PipeWire、蓝牙、CUPS、Mihomo、网络工具包
 │   └── litellm.nix            # LiteLLM 代理
 │
 ├── home/                      # Home Manager 用户级
-│   ├── default.nix            # 入口 + git 配置
-│   ├── packages.nix           # 日常软件、开发工具
-│   ├── shell.nix              # bash + starship + zellij + ghostty
+│   ├── default.nix            # 入口 + git 配置 + 日常应用
+│   ├── shell.nix              # fish/bash + starship + zellij + foot + CLI工具
 │   ├── hyprland.nix           # Hyprland WM 配置
 │   ├── noctalia.nix           # Noctalia shell 面板
 │   ├── nvim.nix               # Neovim (kickstart 风格, lazy.nvim)

@@ -3,6 +3,16 @@
 {
   ####################################
   #
+  # Network Diagnostic Tools
+  #
+  ####################################
+
+  environment.systemPackages = with pkgs; [
+    dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables
+  ];
+
+  ####################################
+  #
   # Audio (PipeWire)
   #
   ####################################

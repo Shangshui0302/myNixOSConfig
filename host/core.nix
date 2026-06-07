@@ -3,6 +3,37 @@
 {
   ####################################
   #
+  # System Packages
+  #
+  ####################################
+
+  environment.systemPackages = with pkgs; [
+    wget curl
+    pciutils usbutils
+    nix-index
+  ];
+
+  ####################################
+  #
+  # System Programs
+  #
+  ####################################
+
+  programs.firefox.enable = true;
+  programs.steam.enable = true;
+  programs.neovim.enable = true;
+  programs.direnv.enable = true;
+  programs.git.enable = true;
+  programs.starship.enable = true;
+
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc stdenv.cc.cc.lib zlib glib libGL freetype
+    libX11 fontconfig fuse3 icu nss openssl curl expat libgcc
+  ];
+
+  ####################################
+  #
   # Boot & Kernel
   #
   ####################################

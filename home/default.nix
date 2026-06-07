@@ -6,11 +6,60 @@
     ./btop.nix
     ./hyprland.nix
     ./nvim.nix
-    ./packages.nix
     ./shell.nix
     ./yazi.nix
     ./onedrive.nix
     ./fonts-extra.nix
+  ];
+
+  ####################################
+  #
+  # User Applications
+  #
+  ####################################
+
+  home.packages = with pkgs; [
+    # Notes & Productivity
+    obsidian btop gemini-cli
+    vscode
+
+    # Browser & Communication
+    google-chrome qq telegram-desktop
+
+    # Media
+    netease-cloud-music-gtk obs-studio go-musicfox localsend
+
+    # Office
+    libreoffice libsForQt5.qt5ct
+
+    # WeChat (scale fix)
+    (wechat.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        wrapProgram $out/bin/wechat \
+        --add-flags "--force-device-scale-factor=1.5"
+      '';
+    }))
+
+    # WPS Office (scale fix)
+    (pkgs.symlinkJoin {
+      name = "wpsoffice-wrapped";
+      paths = [ pkgs.wpsoffice ];
+      buildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        for bin in wps wpp et wpspdf; do
+          wrapProgram $out/bin/$bin \
+            --set QT_SCALE_FACTOR 2 \
+            --set QT_AUTO_SCREEN_SCALE_FACTOR 0
+        done
+        for desktop in $out/share/applications/wps-office-*.desktop; do
+          name=$(basename "$desktop")
+          rm "$desktop"
+          cp "${pkgs.wpsoffice}/share/applications/$name" "$desktop"
+          substituteInPlace "$desktop" \
+            --replace-fail '${pkgs.wpsoffice}' "$out"
+        done
+      '';
+    })
   ];
 
   # 必填：用户名和家目录路径

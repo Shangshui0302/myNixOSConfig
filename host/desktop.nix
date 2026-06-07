@@ -3,6 +3,63 @@
 {
   ####################################
   #
+  # Desktop Packages
+  #
+  ####################################
+
+  environment.systemPackages = with pkgs; [
+    # Icons & Themes
+    papirus-icon-theme gnome-themes-extra adw-gtk3
+
+    # File Manager
+    nemo nemo-emblems nemo-fileroller
+    file-roller xarchiver
+    ouch p7zip unzip
+
+    # Image & Media
+    loupe mpv ffmpegthumbnailer tumbler
+  ];
+
+  ####################################
+  #
+  # Terminal (Foot)
+  #
+  ####################################
+
+  programs.foot = {
+    enable = true;
+    settings = {
+      main = {
+        font = "monospace:size=8";
+        dpi-aware = "yes";
+        shell = "${pkgs.fish}/bin/fish";
+      };
+      "colors-dark" = {
+        alpha = "0.8";
+        background = "0e1019";
+        foreground = "fffaf4";
+        regular0  = "666666";
+        regular1  = "ff000f";
+        regular2  = "8ce10b";
+        regular3  = "ffb900";
+        regular4  = "008df8";
+        regular5  = "6d43a6";
+        regular6  = "00d8eb";
+        regular7  = "ffffff";
+        bright0   = "888888";
+        bright1   = "ff2740";
+        bright2   = "abe15b";
+        bright3   = "ffd242";
+        bright4   = "0092ff";
+        bright5   = "9a5feb";
+        bright6   = "67fff0";
+        bright7   = "ffffff";
+      };
+    };
+  };
+
+  ####################################
+  #
   # Environment Variables
   #
   ####################################

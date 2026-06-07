@@ -41,17 +41,15 @@ myNixOSConfig/
 │
 ├── host/                      # NixOS 系统级配置
 │   ├── default.nix            # 入口 — 导入所有子模块
-│   ├── core.nix               # systemd-boot, NetworkManager, 时区/locale, nix settings, 用户, sudo
-│   ├── desktop.nix            # Hyprland, fcitx5, AMD 显卡, 字体, 环境变量, XDG portal
+│   ├── core.nix               # systemd-boot, NetworkManager, 时区/locale, nix settings, 用户, sudo + 基础包/programs
+│   ├── desktop.nix            # Hyprland, fcitx5, AMD 显卡, 字体, 环境变量, XDG portal + 桌面应用包
 │   ├── sddm.nix               # SDDM 显示管理器 (astronaut 主题定制)
-│   ├── services.nix           # PipeWire, 蓝牙, CUPS, Mihomo, 电源管理, fstrim, gvfs, udev
-│   ├── packages.nix           # overlay, 系统包, programs (firefox/steam/foot/nix-ld/direnv/neovim), foot 配置
+│   ├── services.nix           # PipeWire, 蓝牙, CUPS, Mihomo, 电源管理, fstrim, gvfs, udev + 网络工具包
 │   └── litellm.nix            # LiteLLM 代理 (0.0.0.0:4000, DeepSeek API 后端)
 │
 ├── home/                      # Home Manager 用户级配置
-│   ├── default.nix            # 入口 — 导入子模块, git 配置, darkman, dconf, CJK font fallback, nemo desktop
-│   ├── packages.nix           # 用户包（终端工具/开发/日常软件/截图/wechat缩放/WPS缩放）
-│   ├── shell.nix              # Fish + bash + starship(全模块配置) + zellij + ghostty
+│   ├── default.nix            # 入口 — 导入子模块, git 配置, darkman, dconf, CJK font fallback, nemo desktop + 日常应用
+│   ├── shell.nix              # Fish + bash + starship(全模块配置) + zellij + foot + CLI/dev 工具
 │   ├── hyprland.nix           # Hyprland Lua 配置 (scrolling layout, 动画, 按键, 手势, noctalia 模板)
 │   ├── noctalia.nix           # Noctalia shell 面板完整配置
 │   ├── nvim.nix               # Neovim 配置 (kickstart 风格 + lazy.nvim, LSP/completion/telescope)
