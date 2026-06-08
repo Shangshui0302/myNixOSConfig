@@ -74,7 +74,7 @@ myNixOSConfig/
 │   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend
 │   │   └── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
 │   └── media/                 # 影音与浏览器
-│       ├── player.nix         # mpv, 网易云, OBS, go-musicfox, loupe, thumbnails
+│       ├── player.nix         # mpv, 网易云(gtk/web/yesplaymusic), OBS, go-musicfox, loupe
 │       └── browser.nix        # Firefox, Chrome
 │
 ├── docs/                      # 使用指南
