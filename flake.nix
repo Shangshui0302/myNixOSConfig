@@ -46,22 +46,6 @@
               };
             })
             (final: prev: {
-              open-orpheus = prev.appimageTools.wrapType2 {
-                pname = "open-orpheus";
-                version = "0.13.1";
-                src = prev.fetchurl {
-                  url = "https://github.com/YUCLing/open-orpheus/releases/download/v0.13.1/Open.Orpheus-0.13.1-x64.AppImage";
-                  sha256 = "0z0ns6fq30lmc63kwfkcgnrzvd3q38ynw4xyansy0pji0r3lj5f6";
-                };
-                extraPkgs = pkgs: with pkgs; [ ];
-                meta = with prev.lib; {
-                  description = "Open-source cross-platform Netease Cloud Music client";
-                  homepage = "https://github.com/YUCLing/open-orpheus";
-                  license = licenses.mit;
-                  platforms = [ "x86_64-linux" ];
-                };
-              };
-
               yesplaymusic = prev.appimageTools.wrapType2 {
                 pname = "yesplaymusic";
                 version = "0.4.10";
