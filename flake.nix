@@ -45,6 +45,75 @@
                 nvim-treesitter-legacy = prev.vimPlugins.nvim-treesitter;
               };
             })
+            (final: prev: {
+              open-orpheus = prev.appimageTools.wrapType2 {
+                pname = "open-orpheus";
+                version = "0.13.1";
+                src = prev.fetchurl {
+                  url = "https://github.com/YUCLing/open-orpheus/releases/download/v0.13.1/Open.Orpheus-0.13.1-x64.AppImage";
+                  sha256 = "0z0ns6fq30lmc63kwfkcgnrzvd3q38ynw4xyansy0pji0r3lj5f6";
+                };
+                extraPkgs = pkgs: with pkgs; [ ];
+                meta = with prev.lib; {
+                  description = "Open-source cross-platform Netease Cloud Music client";
+                  homepage = "https://github.com/YUCLing/open-orpheus";
+                  license = licenses.mit;
+                  platforms = [ "x86_64-linux" ];
+                };
+              };
+
+              yesplaymusic = prev.appimageTools.wrapType2 {
+                pname = "yesplaymusic";
+                version = "0.4.10";
+                src = prev.fetchurl {
+                  url = "https://github.com/qier222/YesPlayMusic/releases/download/v0.4.10/YesPlayMusic-0.4.10.AppImage";
+                  sha256 = "0vi9zp79x6pkfsdj6962m8zghgzynbbmlmqr83vabk7an50mjgs2";
+                };
+                extraPkgs = pkgs: with pkgs; [ ];
+                meta = with prev.lib; {
+                  description = "High-quality third-party Netease Cloud Music player";
+                  homepage = "https://github.com/qier222/YesPlayMusic";
+                  license = licenses.mit;
+                  platforms = [ "x86_64-linux" ];
+                };
+              };
+
+              netease-cloud-music-web-player = prev.stdenv.mkDerivation rec {
+                pname = "netease-cloud-music-web-player";
+                version = "1.6.0";
+
+                src = prev.fetchurl {
+                  url = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player/releases/download/${version}/${pname}-${version}.tar.gz";
+                  sha256 = "a923eb41d2c93be9e7853be4fbbe9b4742af40eaadad739a8c26e9db64afb689";
+                };
+
+                nativeBuildInputs = [ prev.autoPatchelfHook prev.makeWrapper ];
+
+                buildInputs = with prev; [
+                  stdenv.cc.cc.lib
+                  alsa-lib atk cairo cups dbus expat fontconfig freetype
+                  gdk-pixbuf glib gtk3 libdrm libnotify libxcb libxkbcommon
+                  libpulseaudio mesa nspr nss pango systemd
+                  libx11 libxcomposite libxcursor libxdamage
+                  libxext libxfixes libxi libxrandr
+                  libxrender libxtst libxshmfence
+                ];
+
+                installPhase = ''
+                  mkdir -p $out/{bin,opt/${pname}}
+                  cp -r * $out/opt/${pname}/
+                  makeWrapper $out/opt/${pname}/${pname} $out/bin/${pname} \
+                    --prefix LD_LIBRARY_PATH : "${prev.lib.makeLibraryPath buildInputs}"
+                '';
+
+                meta = with prev.lib; {
+                  description = "Unofficial NetEase Cloud Music web player desktop client";
+                  homepage = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player";
+                  license = licenses.mit;
+                  platforms = [ "x86_64-linux" ];
+                };
+              };
+            })
           ];
         }
       ];
