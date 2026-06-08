@@ -84,6 +84,8 @@
 
                 src = ./assets/netease-cloud-music-web-player-1.6.0.tar.gz;
 
+                sourceRoot = ".";
+
                 nativeBuildInputs = [ prev.makeWrapper ];
 
                 installPhase = ''
