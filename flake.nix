@@ -82,28 +82,23 @@
                 pname = "netease-cloud-music-web-player";
                 version = "1.6.0";
 
-                src = prev.fetchurl {
-                  url = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player/releases/download/${version}/${pname}-${version}.tar.gz";
-                  sha256 = "a923eb41d2c93be9e7853be4fbbe9b4742af40eaadad739a8c26e9db64afb689";
-                };
+                src = ./assets/netease-cloud-music-web-player-1.6.0.tar.gz;
 
-                nativeBuildInputs = [ prev.autoPatchelfHook prev.makeWrapper ];
-
-                buildInputs = with prev; [
-                  stdenv.cc.cc.lib
-                  alsa-lib atk cairo cups dbus expat fontconfig freetype
-                  gdk-pixbuf glib gtk3 libdrm libnotify libxcb libxkbcommon
-                  libpulseaudio mesa nspr nss pango systemd
-                  libx11 libxcomposite libxcursor libxdamage
-                  libxext libxfixes libxi libxrandr
-                  libxrender libxtst libxshmfence
-                ];
+                nativeBuildInputs = [ prev.makeWrapper ];
 
                 installPhase = ''
-                  mkdir -p $out/{bin,opt/${pname}}
-                  cp -r * $out/opt/${pname}/
-                  makeWrapper $out/opt/${pname}/${pname} $out/bin/${pname} \
-                    --prefix LD_LIBRARY_PATH : "${prev.lib.makeLibraryPath buildInputs}"
+                  mkdir -p $out/{bin,lib/${pname},share/{applications,icons/hicolor/scalable/apps}}
+
+                  cp app.asar $out/lib/${pname}/
+                  cp netease-cloud-music.svg $out/share/icons/hicolor/scalable/apps/
+
+                  substitute netease-cloud-music-web-player.desktop \
+                    $out/share/applications/${pname}.desktop \
+                    --replace-fail "/usr/bin/${pname}" "${pname}" \
+                    --replace-fail "Icon=netease-cloud-music" "Icon=netease-cloud-music"
+
+                  makeWrapper ${prev.electron}/bin/electron $out/bin/${pname} \
+                    --add-flags "$out/lib/${pname}/app.asar"
                 '';
 
                 meta = with prev.lib; {
