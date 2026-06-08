@@ -101,7 +101,7 @@
 
                   makeWrapper ${prev.electron}/bin/electron $out/bin/${pname} \
                     --add-flags "$out/lib/${pname}/app.asar" \
-                    --add-flags "--no-sandbox --disable-gpu-sandbox --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations" \
+                    --add-flags "--no-sandbox --disable-gpu-sandbox --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --password-store=basic" \
                     --set-default ELECTRON_FORCE_IS_PACKAGED 1
                 '';
 
