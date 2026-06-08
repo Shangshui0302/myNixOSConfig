@@ -449,7 +449,6 @@
           {
             path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
             colorScheme = "yamadaryou";
-            darkMode = false;
             generationMethod = "monochrome";
             useWallpaperColors = false;
             paletteColors = [ ];
@@ -670,7 +669,6 @@
       colorSchemes = {
         useWallpaperColors = false;
         predefinedScheme = "yamadaryou";
-        darkMode = false;
         schedulingMode = "location";
         manualSunrise = "06:30";
         manualSunset = "18:30";
