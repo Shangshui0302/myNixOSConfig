@@ -466,7 +466,7 @@
         clipboardWatchTextCommand = "wl-paste --type text --watch cliphist store";
         clipboardWatchImageCommand = "wl-paste --type image --watch cliphist store";
         position = "center";
-        pinnedApps = [ "nemo" "google-chrome" "obsidian" "qq" ];
+        pinnedApps = [ "musicfox" "nemo" "google-chrome" "obsidian" "qq" "netease-cloud-music-web-player" ];
         sortByMostUsed = true;
         terminalCommand = "foot";
         customLaunchPrefixEnabled = false;
