@@ -69,7 +69,7 @@
                   url = "https://github.com/qier222/YesPlayMusic/releases/download/v0.4.10/YesPlayMusic-0.4.10.AppImage";
                   sha256 = "0vi9zp79x6pkfsdj6962m8zghgzynbbmlmqr83vabk7an50mjgs2";
                 };
-                extraPkgs = pkgs: with pkgs; [ ];
+                extraPkgs = pkgs: with pkgs; [ libxshmfence ];
                 meta = with prev.lib; {
                   description = "High-quality third-party Netease Cloud Music player";
                   homepage = "https://github.com/qier222/YesPlayMusic";
@@ -100,7 +100,9 @@
                     --replace-fail "Icon=netease-cloud-music" "Icon=netease-cloud-music"
 
                   makeWrapper ${prev.electron}/bin/electron $out/bin/${pname} \
-                    --add-flags "$out/lib/${pname}/app.asar"
+                    --add-flags "$out/lib/${pname}/app.asar" \
+                    --add-flags "--no-sandbox --disable-gpu-sandbox --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations" \
+                    --set-default ELECTRON_FORCE_IS_PACKAGED 1
                 '';
 
                 meta = with prev.lib; {

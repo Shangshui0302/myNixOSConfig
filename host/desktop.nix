@@ -61,6 +61,8 @@
 
   services.libinput.enable = true;
 
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+
   xdg.portal.config.hyprland = {
     default = [ "hyprland" "gtk" ];
     "org.freedesktop.impl.portal.Settings" = [ "darkman" ];
