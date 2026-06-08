@@ -284,6 +284,7 @@
       { name = "grc"; src = pkgs.fishPlugins.grc; }
       { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages; }
     ];
+
     interactiveShellInit = ''
       # 从 /persist/secrets/ 加载环境变量（如果存在）
       if test -f /persist/secrets/litellm.env
@@ -314,4 +315,7 @@
       set -g fish_greeting
     '';
   };
+
+  # darkman fish completions: services.darkman 不自动暴露给 fish，需手动链接
+  xdg.configFile."fish/completions/darkman.fish".source = "${pkgs.darkman}/share/fish/vendor_completions.d/darkman.fish";
 }
