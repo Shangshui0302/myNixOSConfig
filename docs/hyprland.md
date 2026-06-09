@@ -33,7 +33,6 @@
 | `Super + ,` | 设置面板 (Noctalia) |
 | `Super + Tab` | 工作区总览 (Noctalia) |
 | `Super + .` | Emoji / 符号选择器 |
-| `Super + Shift + V` | 剪切板历史 (GPaste) |
 
 ### 截图
 
@@ -110,7 +109,6 @@
 1. **fcitx5** — 输入法
 2. **Noctalia Shell** — 顶栏/侧边栏面板
 3. **HVE Watchdog** — Noctalia 主题热加载守护进程
-4. **GPaste** — 剪切板管理 daemon
 
 ---
 

@@ -8,7 +8,7 @@ in
     awww swaynotificationcenter libnotify
     grim slurp wl-clipboard grimblast swappy
     waybar wofi
-    gpaste wofi-emoji
+    wofi-emoji typora zettlr apostrophe
   ] ++ [
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
@@ -37,10 +37,6 @@ in
 
     settings = { };
   };
-
-  # GPaste D-Bus service files: 让 gpaste-client 能找到 daemon
-  xdg.dataFile."dbus-1/services/org.gnome.GPaste.service".source = "${pkgs.gpaste}/share/dbus-1/services/org.gnome.GPaste.service";
-  xdg.dataFile."dbus-1/services/org.gnome.GPaste.Ui.service".source = "${pkgs.gpaste}/share/dbus-1/services/org.gnome.GPaste.Ui.service";
 
   # Noctalia user template: Lua color config
   xdg.configFile."noctalia/templates/hyprland-colors.lua".text = ''
@@ -199,8 +195,6 @@ in
       hl.exec_cmd("fcitx5 -rd")
       hl.exec_cmd("noctalia-shell")
       hl.exec_cmd(home .. "/.cache/noctalia/HVE/hve_watchdog.sh")
-      hl.exec_cmd("gpaste-client start")
-      hl.exec_cmd("${pkgs.gpaste}/libexec/gpaste/gpaste-daemon &")
     end)
 
     -- Noctalia colors/overlay not loaded (hyprlang .conf incompatible with Lua).
@@ -217,7 +211,6 @@ in
     hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia-shell ipc call settings toggle"))
     hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia-shell ipc call plugin:workspace-overview toggle"))
     hl.bind("SUPER + period", hl.dsp.exec_cmd("wofi-emoji"))
-    hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("${pkgs.gpaste}/libexec/gpaste/gpaste-ui"))
 
     -- Window management
     hl.bind("SUPER + W", hl.dsp.window.kill())

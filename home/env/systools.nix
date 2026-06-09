@@ -212,7 +212,7 @@ let
 in
 {
   home.packages = with pkgs; [
-    yazi fastfetch
+    yazi fastfetch btop
     wget curl pciutils usbutils nix-index htop steam-run
     dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables
   ];
