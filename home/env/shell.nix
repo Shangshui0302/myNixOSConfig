@@ -50,7 +50,6 @@
         home_symbol = "~";
       };
 
-      # --- module symbols from Windows starship.toml ---
       aws.symbol = " ";
       azure.symbol = " ";
       buf.symbol = " ";
@@ -388,4 +387,5 @@
 
   # darkman fish completions: services.darkman 不自动暴露给 fish，需手动链接
   xdg.configFile."fish/completions/darkman.fish".source = "${pkgs.darkman}/share/fish/vendor_completions.d/darkman.fish";
+  xdg.configFile."fish/completions/hyprctl.fish".source = "${pkgs.hyprland}/share/fish/vendor_completions.d/hyprctl.fish";
 }

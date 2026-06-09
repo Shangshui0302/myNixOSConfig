@@ -119,6 +119,8 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - **AI 代理**: LiteLLM (0.0.0.0:4000, 将 Claude/GPT API 路由到 DeepSeek 后端)
 - **二进制兼容**: nix-ld (运行非 NixOS 编译的二进制)
 - **文件管理**: gvfs
+- **剪切板**: GPaste (daemon 开机启动, Super+Shift+V 历史面板)
+- **Emoji**: wofi-emoji (Super+. 符号/emoji 选择器)
 - **udev**: stlink, openocd
 
 ## LiteLLM 模型映射 (端口 4000)
