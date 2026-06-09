@@ -74,38 +74,4 @@
     };
   };
 
-  services.darkman = {
-    enable = true;
-    settings = {
-      lat = 30.57;
-      lng = 104.07;
-    };
-    darkModeScripts.dconf = ''
-      DCONF="${pkgs.dconf}/bin/dconf"
-      $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-      $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3-dark'"
-      $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "true"
-    '';
-    darkModeScripts.qt5ct = ''
-      mkdir -p ~/.config/qt5ct
-      cat > ~/.config/qt5ct/qt5ct.conf << 'EOF'
-      [Appearance]
-      style=Fusion
-      color_scheme=darker
-      EOF
-    '';
-    lightModeScripts.dconf = ''
-      DCONF="${pkgs.dconf}/bin/dconf"
-      $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
-      $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3'"
-      $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "false"
-    '';
-    lightModeScripts.qt5ct = ''
-      mkdir -p ~/.config/qt5ct
-      cat > ~/.config/qt5ct/qt5ct.conf << 'EOF'
-      [Appearance]
-      style=Fusion
-      EOF
-    '';
-  };
 }

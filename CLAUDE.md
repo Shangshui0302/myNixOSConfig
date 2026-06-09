@@ -55,7 +55,7 @@ myNixOSConfig/
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
 │   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
 │   ├── git.nix                # Git 用户配置
-│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, darkman, 图标主题
+│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, 图标主题, dconf 默认
 │   ├── env/                   # 桌面环境
 │   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具 (eza/fzf/bat/...)
 │   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
@@ -113,8 +113,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - **代理**: mihomo TUN 模式 (nftables 防火墙 + ip_forward + metacubexd webui)
 - **电源**: thermald + power-profiles-daemon + upower
 - **SSD**: fstrim
-- **深色模式**: darkman (经纬度 30.57/104.07 成都, 自动切换 dconf/qt5ct)
-- **XDG Portal**: Hyprland + darkman settings backend
+- **深色模式**: Noctalia 调度 (dconf/qt5ct) + xdg-desktop-portal-gtk 暴露 Settings portal
 - **云同步**: OneDrive (systemd user service, 首次需 `onedrive` 认证)
 - **AI 代理**: LiteLLM (0.0.0.0:4000, 将 Claude/GPT API 路由到 DeepSeek 后端)
 - **二进制兼容**: nix-ld (运行非 NixOS 编译的二进制)

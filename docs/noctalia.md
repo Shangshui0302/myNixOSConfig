@@ -111,7 +111,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 **调度模式**：根据地理位置（成都）自动切换暗色/亮色模式。
 **模板同步**：Hyprland 边框、Qt/GTK 主题、Steam、Telegram 皮肤自动跟随配色。
 
-暗色模式切换时，自动触发 `darkman` 同步 dconf 和 qt5ct。
+暗色模式切换时，hook 直接写入 dconf 和 qt5ct，xdg-desktop-portal-gtk 暴露给应用。
 
 ## 锁屏与空闲
 
@@ -148,7 +148,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 ```
 Super + K        # 打开控制中心
 点击 DarkMode    # 切换暗色/亮色模式
-# 自动触发 darkman 同步 dconf 和 qt5ct
+# 自动触发 hook 写入 dconf 和 qt5ct
 ```
 
 ### 更换壁纸
@@ -183,10 +183,7 @@ pkill noctalia-shell; noctalia-shell &
 # 查看日志
 journalctl --user -u noctalia-shell -f
 
-# 重新加载主题模板
-systemctl --user restart darkman
-
 # 强制切换暗色模式
-darkman set dark
-darkman set light
+noctalia-shell ipc call darkMode setDark
+noctalia-shell ipc call darkMode setLight
 ```

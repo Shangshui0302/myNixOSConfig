@@ -65,7 +65,7 @@
 
   xdg.portal.config.hyprland = {
     default = [ "hyprland" "gtk" ];
-    "org.freedesktop.impl.portal.Settings" = [ "darkman" ];
+    "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
   };
 
   # Terminal
