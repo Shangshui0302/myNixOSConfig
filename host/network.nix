@@ -25,6 +25,8 @@
     enable = true;
     trustedInterfaces = [ "Meta" ];
     checkReversePath = "loose";
+    allowedTCPPorts = [ 53317 ];
+    allowedUDPPorts = [ 53317 ];
   };
 
   environment.systemPackages = with pkgs; [
