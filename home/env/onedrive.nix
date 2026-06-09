@@ -13,6 +13,15 @@
     };
   };
 
+  xdg.configFile."onedrive/sync_list".text = ''
+    1_Inbox
+    4_Bookshelf
+    6_Personal
+    7_MediaLibrary
+    图片
+    Videos
+  '';
+
   systemd.user.services.onedrive = {
     Unit = {
       Description = "OneDrive Sync Service";
