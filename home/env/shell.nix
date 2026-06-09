@@ -50,8 +50,78 @@
         home_symbol = "~";
       };
 
+      # --- module symbols from Windows starship.toml ---
+      aws.symbol = " ";
+      azure.symbol = " ";
+      buf.symbol = " ";
+      bun.symbol = " ";
+      c.symbol = " ";
+      cmake.symbol = " ";
+      cobol.symbol = " ";
+      conda.symbol = " ";
+      container.symbol = " ";
+      crystal.symbol = " ";
+      dart.symbol = " ";
+      deno.symbol = " ";
+      dotnet.symbol = " ";
+      elixir.symbol = " ";
+      elm.symbol = " ";
+      erlang.symbol = " ";
+      fennel.symbol = " ";
+      fortran.symbol = " ";
+      fossil_branch.symbol = " ";
+      gcloud.symbol = "󱇶 ";
+      gleam.symbol = " ";
+      golang.symbol = " ";
+      gradle.symbol = " ";
+      guix_shell.symbol = " ";
+      haskell.symbol = " ";
+      haxe.symbol = " ";
+      helm.symbol = " ";
+      hg_branch.symbol = " ";
+      java.symbol = " ";
+      julia.symbol = " ";
+      kotlin.symbol = " ";
+      kubernetes.symbol = "󱃾 ";
+      lua.symbol = " ";
+      maven.symbol = " ";
+      meson.symbol = "󰔷 ";
+      mojo.symbol = "󰈸 ";
+      nats.symbol = " ";
+      netns.symbol = "󰛳 ";
+      nim.symbol = " ";
+      ocaml.symbol = " ";
+      odin.symbol = "󰟢 ";
+      opa.symbol = " ";
+      openstack.symbol = " ";
+      package.symbol = "󰏗 ";
+      perl.symbol = " ";
+      php.symbol = " ";
+      pijul_channel.symbol = " ";
+      pixi.symbol = "󰏗 ";
+      pulumi.symbol = " ";
+      purescript.symbol = " ";
+      raku.symbol = "󱖊 ";
+      red.symbol = "󱍼 ";
+      rlang.symbol = "󰟔 ";
+      ruby.symbol = " ";
+      scala.symbol = " ";
+      shlvl.symbol = "󰹍 ";
+      singularity.symbol = " ";
+      solidity.symbol = " ";
+      spack.symbol = " ";
+      status.symbol = " ";
+      sudo.symbol = " ";
+      swift.symbol = " ";
+      terraform.symbol = " ";
+      typst.symbol = " ";
+      vagrant.symbol = " ";
+      vlang.symbol = " ";
+      xmake.symbol = " ";
+      zig.symbol = " ";
+
       git_branch = {
-        symbol = "";
+        symbol = "";
         style = "#bb88ee bold";
         format = "[$symbol$branch(:$remote_branch)]($style)";
         truncation_length = 20;
@@ -82,7 +152,7 @@
       };
 
       nix_shell = {
-        symbol = "󱄅";
+        symbol = "";
         style = "#5277c3 bold";
         format = "[$symbol $state]($style)";
         impure_msg = "[impure](#ff2740 bold)";
@@ -91,7 +161,7 @@
       };
 
       python = {
-        symbol = "󰌠";
+        symbol = "";
         style = "#ffd242 bold";
         format = "[$symbol $version( \\($virtualenv\\))]($style)";
         python_binary = [ "python3" "python" ];
@@ -110,7 +180,7 @@
       };
 
       docker_context = {
-        symbol = "󰡨";
+        symbol = "";
         style = "#0092ff bold";
         format = "[$symbol $context]($style)";
         only_with_files = true;
@@ -135,7 +205,7 @@
         full_symbol = "󰁹";
         charging_symbol = "󰂄";
         discharging_symbol = "󰂃";
-        unknown_symbol = "󰁽";
+        unknown_symbol = "󰂑";
         empty_symbol = "󰂎";
 
         display = [
