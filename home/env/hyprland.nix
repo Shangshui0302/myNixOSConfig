@@ -9,7 +9,16 @@ in
     grim slurp wl-clipboard grimblast swappy
     waybar wofi
     wofi-emoji typora zettlr kdePackages.ghostwriter
+    cursor-clip
+    # clipse  # 和 cursor-clip 定位冲突，先注释
   ] ++ [
+    (pkgs.writeShellScriptBin "clipd-toggle" ''
+      if pgrep -f 'cursor-clip$' >/dev/null 2>&1; then
+        pkill -f 'cursor-clip$'
+      else
+        exec cursor-clip
+      fi
+    '')
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
       mkdir -p "$dir"
@@ -195,6 +204,7 @@ in
       hl.exec_cmd("fcitx5 -rd")
       hl.exec_cmd("noctalia-shell")
       hl.exec_cmd(home .. "/.cache/noctalia/HVE/hve_watchdog.sh")
+      hl.exec_cmd("cursor-clip --daemon &")
     end)
 
     -- Noctalia colors/overlay not loaded (hyprlang .conf incompatible with Lua).
@@ -211,6 +221,7 @@ in
     hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia-shell ipc call settings toggle"))
     hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia-shell ipc call plugin:workspace-overview toggle"))
     hl.bind("SUPER + period", hl.dsp.exec_cmd("wofi-emoji"))
+    hl.bind("SUPER + C", hl.dsp.exec_cmd("clipd-toggle"))
 
     -- Window management
     hl.bind("SUPER + W", hl.dsp.window.kill())
