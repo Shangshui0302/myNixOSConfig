@@ -8,7 +8,7 @@ in
     awww swaynotificationcenter libnotify
     grim slurp wl-clipboard grimblast swappy
     waybar wofi
-    wofi-emoji typora zettlr apostrophe
+    wofi-emoji typora zettlr kdePackages.ghostwriter
   ] ++ [
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
