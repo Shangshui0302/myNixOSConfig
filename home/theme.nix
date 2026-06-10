@@ -60,6 +60,10 @@
     papirus-icon-theme gnome-themes-extra adw-gtk3
   ];
 
+  # GTK4/libadwaita apps need gsettings schemas to read color-scheme
+  home.sessionVariables.XDG_DATA_DIRS =
+    "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:\${XDG_DATA_DIRS}";
+
   # Dark mode defaults
   dconf.settings = {
     "org/gnome/desktop/interface" = {

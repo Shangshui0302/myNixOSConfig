@@ -9,7 +9,22 @@ in
     grim slurp wl-clipboard grimblast swappy
     waybar wofi
     wofi-emoji typora zettlr kdePackages.ghostwriter
-    cursor-clip
+    (let
+      cursor-clip-src = pkgs.fetchFromGitHub {
+        owner = "Sirulex";
+        repo = "cursor-clip";
+        rev = "7e12054e55b7b2c34eff8638b88488403686e8dd";
+        hash = "sha256-nppWnTJck1pCXucLUOas9mFQKCg7Ck0DENoPA9wUxkI=";
+      };
+    in cursor-clip.overrideAttrs (old: {
+      src = cursor-clip-src;
+      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+        src = cursor-clip-src;
+        hash = "sha256-QG9PR5aI76rgP+Z1dtWJvn5IX2t+vvuN6Y4/OKyBjfM=";
+      };
+      nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.dbus ];
+      PKG_CONFIG_PATH = "${pkgs.dbus.dev}/lib/pkgconfig";
+    }))
     # clipse  # 和 cursor-clip 定位冲突，先注释
   ] ++ [
     (pkgs.writeShellScriptBin "clipd-toggle" ''
