@@ -10,6 +10,9 @@
 
     settings = {
       model_list = [
+        # Anthropic-compatible models routed to DeepSeek backend.
+        # model_name = Anthropic alias seen by clients (Claude Code, etc.)
+        # litellm_params.model = actual backend model on DeepSeek's API.
         {
           model_name = "claude-opus-4-7";
           litellm_params = {

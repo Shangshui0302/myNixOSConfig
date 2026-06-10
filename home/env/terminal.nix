@@ -1,5 +1,6 @@
 { ... }:
 {
-  # Foot terminal is configured at NixOS level in host/desktop.nix
-  # (programs.foot is a NixOS option, not available via Home Manager)
+  # Foot is configured system-wide in host/desktop.nix to ensure
+  # all users share the same terminal config. HM programs.foot
+  # is available but intentionally not used here.
 }

@@ -22,6 +22,9 @@
     Videos
   '';
 
+  # programs.onedrive only manages ~/.config/onedrive/config;
+  # it does NOT create a systemd user service. The manual service
+  # below is required for onedrive to auto-start on login.
   systemd.user.services.onedrive = {
     Unit = {
       Description = "OneDrive Sync Service";

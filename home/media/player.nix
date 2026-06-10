@@ -4,7 +4,8 @@
   home.packages = with pkgs; [
     loupe mpv ffmpegthumbnailer tumbler
     netease-cloud-music-gtk obs-studio go-musicfox
-    yesplaymusic netease-cloud-music-web-player
+    (import ../../pkgs/yesplaymusic.nix { inherit pkgs; })
+    (import ../../pkgs/netease-cloud-music-web-player.nix { inherit pkgs; src = ../../assets/netease-cloud-music-web-player-1.6.0.tar.gz; })
   ];
 
   xdg.desktopEntries.musicfox = {

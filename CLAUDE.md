@@ -16,8 +16,8 @@
 - 显示管理器: SDDM (sddm-astronaut 主题，自定义 yamadaryou 壁纸，猫ppuccin 配色)
 - WM: Hyprland (Wayland), **Lua 配置** (`hyprland.lua`), scrolling layout
 - Shell: fish (plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
-- 终端: foot (系统级) + ghostty (用户级), 默认启动 fish
-- 代理: mihomo TUN 模式 + nftables 防火墙，webui: metacubexd (127.0.0.1:9090, secret: 030222)
+- 终端: foot (系统级配置，host/desktop.nix)，默认 shell: fish
+- 代理: mihomo TUN 模式 + nftables 防火墙，webui: metacubexd (127.0.0.1:9090)
 
 ## 文件系统 (Btrfs subvolumes)
 ```
@@ -33,11 +33,20 @@
 
 ```
 myNixOSConfig/
-├── flake.nix                  # 入口，inputs: nixpkgs, home-manager, noctalia, noctalia-qs
+├── flake.nix                  # 入口 — 依赖声明 + 模块引用，不含 inline 包定义
 ├── flake.lock                 # root 拥有，更新需 sudo
 ├── hardware-configuration.nix # 自动生成，不要手动大改
 ├── assets/
 │   └── yamadaryou.png         # SDDM 壁纸 + Hyprland 锁屏
+│
+├── overlays/                  # nixpkgs overlays，按文件分离
+│   ├── default.nix            # 入口 — imports 所有 overlay 为 list
+│   └── vim-plugins.nix        # vimPlugins 别名
+│
+├── pkgs/                      # 自定义包（不在 nixpkgs 中的全新包）
+│   ├── yesplaymusic.nix
+│   ├── netease-cloud-music-web-player.nix
+│   └── fonts.nix              # PingFang, HarmonyOS Sans 等字体
 │
 ├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
 │   ├── default.nix            # 入口 — 仅 imports
@@ -55,13 +64,13 @@ myNixOSConfig/
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
 │   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
 │   ├── git.nix                # Git 用户配置
-│   ├── theme.nix              # 指针光标, CJK字体回退, 额外字体, qt5ct, 图标主题, dconf 默认
+│   ├── theme.nix              # 指针光标, CJK字体回退, 字体, qt5ct, 图标主题, dconf 默认
 │   ├── env/                   # 桌面环境
 │   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具 (eza/fzf/bat/...)
 │   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
 │   │   ├── terminal.nix       # (foot 在 host/desktop.nix)
 │   │   ├── noctalia.nix       # Noctalia shell 面板
-│   │   ├── systools.nix       # btop, yazi, fastfetch, 系统/网络工具
+│   │   ├── systools.nix       # btop, yazi, fastfetch, 系统工具
 │   │   └── onedrive.nix       # OneDrive 同步
 │   ├── dev/                   # 开发工具
 │   │   ├── nvim.nix           # Neovim
@@ -77,7 +86,8 @@ myNixOSConfig/
 │       ├── player.nix         # mpv, 网易云(gtk/web/yesplaymusic), OBS, go-musicfox, loupe
 │       └── browser.nix        # Firefox, Chrome
 │
-├── docs/                      # 使用指南
+├── docs/                      # 使用指南 + 约束
+│   ├── nixos-constraints.md   # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
 │   ├── hyprland.md
 │   ├── noctalia.md
 │   ├── nvim.md
@@ -94,13 +104,71 @@ myNixOSConfig/
 - **按职责分模块**：每个文件只负责一个关注点
 - **系统级** → `host/`，**用户级** → `home/`
 - `hardware-configuration.nix` 由 nixos-generate-config 自动生成，不手动修改
-- 包管理：基础 CLI/系统服务走系统包（`host/packages.nix`），桌面应用走用户包（`home/packages.nix`）
+- 包管理：基础 CLI/系统服务走系统包（`host/`），桌面应用走用户包（`home/`）
 - Hyprland 配置走 Lua（`hyprland.lua`），不是 hyprlang `.conf` 文件
+
+### Overlay / override / direct import 选择规则
+
+**用 `nixpkgs.overlays` 仅当：**
+- 向已有 attrset 添加名字，且其他模块通过 `pkgs.*` 引用（如 `pkgs.vimPlugins.some-alias`）
+- 被修改的包有反向依赖也需要看到新版本
+
+**用 `overrideAttrs` 内联（不要 overlay）当：**
+- 修补一个只在一处使用的包
+- 该包没有反向依赖需要变更
+
+**用 `pkgs/*.nix` + 直接 import 当：**
+- 定义一个不在 nixpkgs 中的全新包
+- 模式：`(import ../pkgs/foo.nix { inherit pkgs; })`
+- 如果 derivation 需要本地 `assets/` 路径，把 `src` 作为参数传入：
+  ```nix
+  # pkgs/foo.nix
+  { pkgs, src }: pkgs.stdenv.mkDerivation { inherit src; ... }
+  # 调用方
+  (import ../pkgs/foo.nix { inherit pkgs; src = ../assets/foo.tar.gz; })
+  ```
+
+**禁止把新包定义放进 `nixpkgs.overlays`。**
+
+### flake.nix
+- `flake.nix` 只做入口和依赖声明
+- Overlays 放 `overlays/`，通过 `nixpkgs.overlays = import ./overlays` 导入
+- 不允许 inline derivations、inline `mkDerivation`、inline `appimageTools`
+
+### 去重规则
+- 网络诊断工具 (`dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables`) **只在** `host/network.nix` 的 `environment.systemPackages` 中声明
+  → 不要加到任何 `home/` 模块
+- 字体包放 `pkgs/fonts.nix`，由 `home/theme.nix` 导入
+- 不要把一个包的 override 拆到两个模块（如 src 在 overlay、flags 在 home 模块 → 合并到一处）
+
+### 链式 override
+当一个包需要多个修改（新 src + 额外 flags + desktop entry），在一个 `overrideAttrs` 调用中完成。
+
+如果通过 `xdg.desktopEntries` 定义了 `.desktop` 文件，`exec` 行**不**应重复 `postInstall` 中 `wrapProgram` 已经注入的 flags。
+
+### systemd user services
+`programs.onedrive` (HM) 只管理配置文件 — 它**不**生成 systemd user service。`home/env/onedrive.nix` 中手写的 `systemd.user.services.onedrive` 是有意为之且必须的。不要删除它。
+
+### sudo rules
+`host/users.nix` 中的 NOPASSWD 规则（`nix`, `nixos-rebuild`, `tee`, `chmod`, `chown`, `install`, `mv`, `cp`, `rm`）是**有意为之**的（单用户笔记本）。不要删除或收紧它们。
+
+### 作用域与风格
+`home.packages = with pkgs; [ ... ]` 内，裸名（不带 `pkgs.` 前缀）即使在嵌套 `let...in` 表达式中也能正确解析。两种写法都可以接受，不要仅为风格一致性做批量重命名。
 
 ## rebuild 命令
 ```bash
 cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 ```
+
+## 验证命令
+```bash
+# 语法检查（只查语法，不跑 evaluation）
+nix-instantiate --parse <file>
+
+# 完整 evaluation 检查（捕获类型错误、缺参数、坏 import）
+cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
+```
+语法通过不代表 evaluation 通过。结构性的修改（新增文件、移动包、改 import 路径）必须跑 `dry-build`。
 
 ## 已启用服务
 - **启动**: systemd-boot (EFI)
