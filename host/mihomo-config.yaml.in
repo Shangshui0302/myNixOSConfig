@@ -1,0 +1,186 @@
+# API 秘钥（从环境变量注入）
+secret: "${MIHOMO_SECRET}"
+
+# 基础配置
+mixed-port: 7890
+geodata-mode: true
+tcp-concurrent: true
+unified-delay: true
+allow-lan: false
+bind-address: "127.0.0.1"
+find-process-mode: strict
+ipv6: true
+log-level: info
+mode: rule
+tcp-concurrent-users: 64
+keep-alive-interval: 15
+inbound-tfo: true
+outbound-tfo: true
+
+# TUN
+tun:
+  enable: true
+  stack: system
+  auto-route: true
+  enable-ipv6: true
+  auto-detect-interface: true
+  dns-hijack:
+    - 'any:53'
+
+# DNS
+dns:
+  enable: true
+  prefer-h3: true
+  ipv6: true
+  listen: 127.0.0.1:1053
+  enhanced-mode: fake-ip
+  use-hosts: true
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "+.lan"
+    - "+.local"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.market.xiaomi.com"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "work.weixin.qq.com"
+    - "imap.*"
+  use-system-hosts: true
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 1.1.1.1
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+  fallback:
+    - https://1.1.1.1/dns-query
+  nameserver-policy:
+    '+.google.com': 'https://dns.google/dns-query'
+    '+.facebook.com': 'https://dns.google/dns-query'
+    '+.cn': 'https://doh.pub/dns-query'
+  proxy-server-nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+
+# Sniffer
+sniffer:
+  enable: true
+  parse-pure-ip: true
+  force-dns-mapping: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports: [80, 443]
+      override-destination: true
+    TLS:
+      ports: [443]
+  skip-domain:
+    - +.push.apple.com
+  skip-dst-address:
+    - 91.105.192.0/23
+    - 91.108.4.0/22
+    - 91.108.8.0/21
+    - 91.108.16.0/21
+    - 91.108.56.0/22
+    - 95.161.64.0/20
+    - 149.154.160.0/20
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+geo-update-interval: 24
+geox-url:
+  geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb"
+
+# 机场订阅（proxy: DIRECT 避免鸡生蛋：provider下载不走代理链）
+proxy-providers:
+  sub:
+    type: http
+    url: "${MIHOMO_SUBSCRIPTION_URL}"
+    path: ./providers/proxies.yaml
+    proxy: DIRECT
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
+# 机场规则（preStart 从订阅提取为 text 格式，随订阅自动更新）
+rule-providers:
+  sub-rules:
+    type: file
+    path: ./providers/rules.yaml
+    behavior: classical
+    format: text
+
+# 代理组
+proxy-groups:
+  - name: "🔰 选择节点"
+    type: select
+    use: [sub]
+
+  - name: "🌏 爱奇艺&哔哩哔哩"
+    type: select
+    use: [sub]
+    filter: "香港|台湾|澳门"
+
+  - name: "📺 动画疯"
+    type: select
+    proxies: ["🔰 选择节点", "DIRECT"]
+
+  - name: "🎮 Steam 登录/下载"
+    type: select
+    proxies: ["DIRECT", "🔰 选择节点"]
+
+  - name: "🎮 Steam 商店/社区"
+    type: select
+    proxies: ["🔰 选择节点", "DIRECT"]
+
+  - name: "🌩️ Cloudflare"
+    type: select
+    proxies: ["🔰 选择节点", "DIRECT"]
+
+  - name: "☁️ OneDrive"
+    type: select
+    use: [sub]
+    filter: "日本|香港"
+
+  - name: "🎓 学术网站"
+    type: select
+    proxies: ["DIRECT", "🔰 选择节点"]
+
+  - name: "🇨🇳 国内网站"
+    type: select
+    proxies: ["DIRECT", "🔰 选择节点"]
+
+  - name: "🛑 拦截广告"
+    type: select
+    proxies: ["REJECT", "DIRECT", "🔰 选择节点"]
+
+  - name: "🐟 漏网之鱼"
+    type: select
+    proxies: ["🔰 选择节点", "DIRECT"]
+
+# 规则（自身依赖直连优先，然后走订阅规则集）
+rules:
+  - DOMAIN-SUFFIX,no-mad-sub.one,DIRECT
+  - DOMAIN-SUFFIX,jsdelivr.net,DIRECT
+  - DOMAIN-SUFFIX,gstatic.com,DIRECT
+  - DST-PORT,25,DIRECT
+  - DST-PORT,109,DIRECT
+  - DST-PORT,110,DIRECT
+  - DST-PORT,143,DIRECT
+  - DST-PORT,465,DIRECT
+  - DST-PORT,587,DIRECT
+  - DST-PORT,993,DIRECT
+  - DST-PORT,995,DIRECT
+  - RULE-SET,sub-rules
