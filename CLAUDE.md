@@ -211,7 +211,11 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 - **stateVersion**: 25.11
 
 ## 注意事项
-- **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
+
+### 分支隔离
+- **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行
+- 涉及 mihomo / TUN / nftables / DNS 等网络基础设施的改动，**一律开 feature 分支**。原因：网络组件出问题时可能阻断 nixos-rebuild（缓存下载走 TUN → 代理坏了 → SSL 失败 → 无法 rebuild 恢复），形成死锁
+- feature 分支验证通过（rebuild 成功 + 服务正常运行）后再合并回 main
 - **每次改动后**：更新 README.md 和 CLAUDE.md → commit → rebuild → push main（private repo，不需要 PR）
 - 修改后**不要自动 rebuild**，给出命令让我手动执行
 - 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
