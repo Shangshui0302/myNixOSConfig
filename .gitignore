@@ -4,3 +4,4 @@ result-*
 *.swp
 # 如果有硬件相关的 secrets
 secrets.nix
+issues/
