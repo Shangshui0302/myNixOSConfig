@@ -5,7 +5,7 @@
     loupe mpv ffmpegthumbnailer tumbler
     netease-cloud-music-gtk obs-studio go-musicfox
     (import ../../pkgs/yesplaymusic.nix { inherit pkgs; })
-    (import ../../pkgs/netease-cloud-music-web-player.nix { inherit pkgs; src = ../../assets/netease-cloud-music-web-player-1.6.0.tar.gz; })
+    (import ../../pkgs/netease-cloud-music-web-player.nix { inherit pkgs; })
   ];
 
   xdg.desktopEntries.musicfox = {
