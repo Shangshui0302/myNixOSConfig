@@ -334,6 +334,7 @@
       alias top='btop'
       alias tree='eza -T --icons=auto'
 
+      alias snvim='sudo HOME=$HOME XDG_CONFIG_HOME=$XDG_CONFIG_HOME XDG_DATA_HOME=$XDG_DATA_HOME nvim'
     '';
   };
 
@@ -379,6 +380,8 @@
       alias find='fd'
       alias top='btop'
       alias tree='eza -T --icons=auto'
+
+      alias snvim='sudo HOME=$HOME XDG_CONFIG_HOME=$XDG_CONFIG_HOME XDG_DATA_HOME=$XDG_DATA_HOME nvim'
 
       # fish 问候
       set -g fish_greeting
