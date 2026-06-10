@@ -241,7 +241,7 @@ in
     -- ===== Keybinds =====
 
     -- Launch
-    hl.bind("SUPER + Q", hl.dsp.exec_cmd("foot"))
+    hl.bind("SUPER + W", hl.dsp.exec_cmd("foot"))
     hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"))
     hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"))
     hl.bind("SUPER + E", hl.dsp.exec_cmd("nemo"))
@@ -253,7 +253,7 @@ in
     hl.bind("SUPER + C", hl.dsp.exec_cmd("clipd-toggle"))
 
     -- Window management
-    hl.bind("SUPER + W", hl.dsp.window.kill())
+    hl.bind("SUPER + Q", hl.dsp.window.close())
     hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
       hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
     hl.bind("SUPER + P", hl.dsp.window.pseudo())
