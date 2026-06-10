@@ -187,7 +187,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **二进制兼容**: nix-ld (运行非 NixOS 编译的二进制)
 - **文件管理**: gvfs
 - **剪切板**: cursor-clip (daemon 开机启动, Super+C 历史面板)
-- **Emoji**: wofi-emoji (Super+. 符号/emoji 选择器)
+- **Emoji**: wofi-emoji (Super+. 切换开关，normal-window 修复 fcitx5)
 - **udev**: stlink, openocd
 
 ## LiteLLM 模型映射 (端口 4000)

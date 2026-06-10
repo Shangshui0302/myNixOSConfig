@@ -34,6 +34,20 @@ in
         exec cursor-clip
       fi
     '')
+    (pkgs.writeShellScriptBin "wofi-emoji-toggle" ''
+      if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class == "wofi")' >/dev/null 2>&1; then
+        hyprctl clients -j | ${pkgs.jq}/bin/jq -r '.[] | select(.class == "wofi") | .address' | while read addr; do
+          hyprctl dispatch closewindow "address:$addr"
+        done
+      else
+        (sleep 0.3 && hyprctl dispatch focuswindow "class:wofi") &
+        FOCUS_PID=$!
+        EMOJI=$(${pkgs.gnused}/bin/sed '1,/^### DATA ###$/d' ${pkgs.wofi-emoji}/bin/wofi-emoji | ${pkgs.wofi}/bin/wofi -p "emoji" --show dmenu -i --normal-window | cut -d ' ' -f 1 | tr -d '\n')
+        kill $FOCUS_PID 2>/dev/null
+        [ -n "$EMOJI" ] && ${pkgs.wtype}/bin/wtype "$EMOJI"
+        [ -n "$EMOJI" ] && ${pkgs.wl-clipboard}/bin/wl-copy "$EMOJI"
+      fi
+    '')
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
       mkdir -p "$dir"
@@ -235,7 +249,7 @@ in
     hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia-shell ipc call controlCenter toggle"))
     hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia-shell ipc call settings toggle"))
     hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia-shell ipc call plugin:workspace-overview toggle"))
-    hl.bind("SUPER + period", hl.dsp.exec_cmd("wofi-emoji"))
+    hl.bind("SUPER + period", hl.dsp.exec_cmd("wofi-emoji-toggle"))
     hl.bind("SUPER + C", hl.dsp.exec_cmd("clipd-toggle"))
 
     -- Window management
