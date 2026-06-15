@@ -192,6 +192,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **AI 代理**: LiteLLM (0.0.0.0:4000, 将 Claude/GPT API 路由到 DeepSeek 后端)
 - **二进制兼容**: nix-ld (运行非 NixOS 编译的二进制)
 - **文件管理**: gvfs
+- **USB 自动挂载**: udiskie (systemd user service)
 - **剪切板**: cursor-clip (daemon 开机启动, Super+C 历史面板)
 - **Emoji**: wofi-emoji (Super+. 切换开关，normal-window 修复 fcitx5)
 - **udev**: stlink, openocd

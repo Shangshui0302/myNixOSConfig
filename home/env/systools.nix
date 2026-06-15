@@ -211,6 +211,8 @@ let
   };
 in
 {
+  services.udiskie.enable = true;
+
   home.packages = with pkgs; [
     yazi fastfetch btop
     wget curl pciutils usbutils nix-index htop steam-run
