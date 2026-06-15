@@ -293,17 +293,27 @@ in
     hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("magic"))
     hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
-    -- Window resize
-    hl.bind("SUPER + SHIFT + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
-    hl.bind("SUPER + SHIFT + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
-    hl.bind("SUPER + SHIFT + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
-    hl.bind("SUPER + SHIFT + down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }))
+    -- Window resize actions
+    hl.bind("SUPER + CTRL + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
+    hl.bind("SUPER + CTRL + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
+    hl.bind("SUPER + CTRL + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
+    hl.bind("SUPER + CTRL + down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }))
+
+    -- Window resize presets for a 2880x1800 @ 1.5x display.
+    -- Hyprland uses logical pixels here, so the effective size is 1920x1200.
+    local resize_width = 1920
+    local resize_height = 1200
+    for index = 1, 10 do
+      local key = index % 10
+      local width = math.floor(resize_width * index / 10)
+      hl.bind("SUPER + CTRL + " .. key, hl.dsp.window.resize({ width = width, height = resize_height }))
+    end
 
     -- Window move
-    hl.bind("SUPER + CTRL + left", hl.dsp.window.move({ direction = "l" }))
-    hl.bind("SUPER + CTRL + right", hl.dsp.window.move({ direction = "r" }))
-    hl.bind("SUPER + CTRL + up", hl.dsp.window.move({ direction = "u" }))
-    hl.bind("SUPER + CTRL + down", hl.dsp.window.move({ direction = "d" }))
+    hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "l" }))
+    hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "r" }))
+    hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "u" }))
+    hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "d" }))
 
     -- Window swap
     hl.bind("SUPER + ALT + left", hl.dsp.window.swap({ direction = "l" }))
