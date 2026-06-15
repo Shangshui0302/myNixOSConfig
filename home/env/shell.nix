@@ -388,7 +388,54 @@
     '';
   };
 
-  xdg.configFile."fish/completions/hyprctl.fish".source = "${pkgs.hyprland}/share/fish/vendor_completions.d/hyprctl.fish";
+  xdg.configFile."fish/completions/hyprctl.fish".text = ''
+    # Flags
+    complete -c hyprctl -s j -d "Output in JSON"
+    complete -c hyprctl -s r -d "Refresh state after issuing command"
+    complete -c hyprctl -l batch -d "Execute batch of commands separated by ;"
+    complete -c hyprctl -s i -l instance -d "Use a specific Hyprland instance" -x
+    complete -c hyprctl -s q -l quiet -d "Disable output"
+
+    # Commands (read-only)
+    complete -c hyprctl -n "__fish_use_subcommand" -a activewindow     -d "Get active window name and properties"
+    complete -c hyprctl -n "__fish_use_subcommand" -a activeworkspace  -d "Get active workspace and properties"
+    complete -c hyprctl -n "__fish_use_subcommand" -a animations       -d "Get current animation/bezier config"
+    complete -c hyprctl -n "__fish_use_subcommand" -a binds            -d "List all registered keybinds"
+    complete -c hyprctl -n "__fish_use_subcommand" -a clients          -d "List all windows with properties"
+    complete -c hyprctl -n "__fish_use_subcommand" -a configerrors     -d "List current config parsing errors"
+    complete -c hyprctl -n "__fish_use_subcommand" -a cursorpos        -d "Get current cursor position in layout coords"
+    complete -c hyprctl -n "__fish_use_subcommand" -a decorations      -d "List all decorations and info" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a devices          -d "List all connected keyboards and mice"
+    complete -c hyprctl -n "__fish_use_subcommand" -a globalshortcuts  -d "List all global shortcuts"
+    complete -c hyprctl -n "__fish_use_subcommand" -a instances        -d "List all running Hyprland instances"
+    complete -c hyprctl -n "__fish_use_subcommand" -a layers           -d "List all surface layers"
+    complete -c hyprctl -n "__fish_use_subcommand" -a layouts          -d "List all available layouts"
+    complete -c hyprctl -n "__fish_use_subcommand" -a monitors         -d "List active outputs with properties"
+    complete -c hyprctl -n "__fish_use_subcommand" -a rollinglog       -d "Print tail of the log"
+    complete -c hyprctl -n "__fish_use_subcommand" -a splash           -d "Get the current splash"
+    complete -c hyprctl -n "__fish_use_subcommand" -a status           -d "Get internal status information"
+    complete -c hyprctl -n "__fish_use_subcommand" -a systeminfo       -d "Get system info"
+    complete -c hyprctl -n "__fish_use_subcommand" -a version          -d "Print Hyprland version"
+    complete -c hyprctl -n "__fish_use_subcommand" -a workspacerules   -d "List all workspace rules"
+    complete -c hyprctl -n "__fish_use_subcommand" -a workspaces       -d "List all workspaces with properties"
+
+    # Commands (actions)
+    complete -c hyprctl -n "__fish_use_subcommand" -a dismissnotify  -d "Dismiss notifications [amount]"
+    complete -c hyprctl -n "__fish_use_subcommand" -a dispatch       -d "Call a keybind dispatcher with args" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a getoption      -d "Get config option status" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a keyword        -d "Set a config keyword dynamically" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a kill           -d "Enter kill mode (click to close app)"
+    complete -c hyprctl -n "__fish_use_subcommand" -a notify         -d "Send a built-in Hyprland notification" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a output         -d "Add/remove fake outputs" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a plugin         -d "Issue a plugin request" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a reload         -d "Force reload config [config-only]"
+    complete -c hyprctl -n "__fish_use_subcommand" -a setcursor      -d "Set cursor theme and size" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a seterror       -d "Set hyprctl error string" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a setprop        -d "Set a window property" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a getprop        -d "Get a window property" -x
+    complete -c hyprctl -n "__fish_use_subcommand" -a switchxkblayout -d "Set xkb layout index for keyboard" -x
+  '';
+
   xdg.configFile."fish/completions/hyprland.fish".text = ''
     complete -c hyprland -s h -l help -d "Show help message"
     complete -c hyprland -s v -l version -d "Print version"

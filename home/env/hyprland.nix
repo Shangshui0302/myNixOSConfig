@@ -301,15 +301,17 @@ in
 
     -- Window resize presets for a 2880x1800 @ 1.5x display.
     -- Hyprland uses logical pixels here, so the effective size is 1920x1200.
-    local resize_width = 1920
-    local resize_height = 1200
-    for index = 1, 10 do
-      local key = index % 10
-      local width = math.floor(resize_width * index / 10)
-      hl.bind("SUPER + CTRL + " .. key, function()
-        hl.hyprctl.dispatch("resizeactive", "exact " .. width .. " " .. resize_height)
-      end)
-    end
+    -- relative=false means absolute pixel size (maps to resizewindow x y exact).
+    hl.bind("SUPER + CTRL + 1", hl.dsp.window.resize({ x = 192, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 2", hl.dsp.window.resize({ x = 384, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 3", hl.dsp.window.resize({ x = 576, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 4", hl.dsp.window.resize({ x = 768, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 5", hl.dsp.window.resize({ x = 960, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 6", hl.dsp.window.resize({ x = 1152, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 7", hl.dsp.window.resize({ x = 1344, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 8", hl.dsp.window.resize({ x = 1536, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 9", hl.dsp.window.resize({ x = 1728, y = 1200, relative = false }))
+    hl.bind("SUPER + CTRL + 0", hl.dsp.window.resize({ x = 1920, y = 1200, relative = false }))
 
     -- Window move
     hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "l" }))
