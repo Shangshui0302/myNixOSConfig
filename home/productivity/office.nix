@@ -25,7 +25,7 @@
     })
   ];
 
-  home.activation.onlyofficeFonts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.onlyofficeFonts = ''
     mkdir -p $HOME/.local/share/fonts
     for font_dir in \
       ${pkgs.noto-fonts-cjk-sans}/share/fonts \
