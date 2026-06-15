@@ -38,7 +38,7 @@
           chmod 644 "$HOME/.local/share/fonts/$(basename "$f")" 2>/dev/null || true
         done
     done
-    $DRY_RUN_CMD fc-cache -f $HOME/.local/share/fonts/
+    $DRY_RUN_CMD ${pkgs.fontconfig}/bin/fc-cache -f $HOME/.local/share/fonts/
   '';
 
   xdg.mimeApps = {
