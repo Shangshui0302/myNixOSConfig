@@ -31,7 +31,9 @@
       ${pkgs.noto-fonts-cjk-sans}/share/fonts \
       ${pkgs.noto-fonts-cjk-serif}/share/fonts \
       ${pkgs.wqy_microhei}/share/fonts \
-      ${pkgs.wqy_zenhei}/share/fonts; do
+      ${pkgs.wqy_zenhei}/share/fonts \
+      ${pkgs.arphic-ukai}/share/fonts \
+      ${pkgs.arphic-uming}/share/fonts; do
       find "$font_dir" -type f | \
         while read f; do
           cp -n "$f" $HOME/.local/share/fonts/ 2>/dev/null || true

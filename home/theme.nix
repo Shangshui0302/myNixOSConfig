@@ -12,6 +12,26 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
     gtk.enable = true;
   };
 
+  # Map MS Office font names to available CJK fonts
+  xdg.configFile."fontconfig/conf.d/20-ms-office-cjk.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+      <alias><family>SimSun</family><prefer><family>Noto Serif CJK SC</family></prefer></alias>
+      <alias><family>NSimSun</family><prefer><family>Noto Serif CJK SC</family></prefer></alias>
+      <alias><family>SimHei</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>Microsoft YaHei</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>DengXian</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>KaiTi</family><prefer><family>AR PL UKai CN</family></prefer></alias>
+      <alias><family>FangSong</family><prefer><family>AR PL UMing CN</family></prefer></alias>
+      <alias><family>黑体</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>宋体</family><prefer><family>Noto Serif CJK SC</family></prefer></alias>
+      <alias><family>楷体</family><prefer><family>AR PL UKai CN</family></prefer></alias>
+      <alias><family>仿宋</family><prefer><family>AR PL UMing CN</family></prefer></alias>
+      <alias><family>等线</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
+    </fontconfig>
+  '';
+
   # Extra fonts & Qt5 theme
   home.packages = with pkgs; [
     fonts.pingfang-otf
@@ -21,6 +41,8 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
     wqy_microhei
     wqy_zenhei
     wineWow64Packages.fonts
+    arphic-ukai
+    arphic-uming
     libsForQt5.qt5ct
     papirus-icon-theme gnome-themes-extra adw-gtk3
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.
