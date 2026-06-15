@@ -12,7 +12,7 @@ pkgs/
   fonts.nix            # PingFang, HarmonyOS Sans, etc.
 home/
   default.nix git.nix theme.nix   # Root-level HM modules
-  env/ dev/ productivity/ media/  # Purpose-based subdirectories
+  env/ dev/ productivity/ leisure/  # Purpose-based subdirectories
 host/                  # NixOS system modules
 assets/                # Binary assets (wallpapers, tarballs, etc.)
 ```

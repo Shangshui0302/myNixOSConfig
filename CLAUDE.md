@@ -46,12 +46,14 @@ myNixOSConfig/
 ├── pkgs/                      # 自定义包（不在 nixpkgs 中的全新包）
 │   ├── yesplaymusic.nix
 │   ├── netease-cloud-music-web-player.nix
+│   ├── officecli.nix           # OfficeCLI — AI agent Office 文档工具
+│   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   └── fonts.nix              # PingFang, HarmonyOS Sans 等字体
 │
 ├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
 │   ├── default.nix            # 入口 — 仅 imports
 │   ├── boot.nix               # systemd-boot, EFI, /boot 安全设置, stateVersion
-│   ├── hardware.nix           # AMD GPU, udev rules, nix-ld, steam (基础硬件设施)
+│   ├── hardware.nix           # AMD GPU, udev rules, nix-ld
 │   ├── locale.nix             # 时区, locale, console 字体/键盘
 │   ├── nix.nix                # nix 配置: flakes, substituters, allowUnfree
 │   ├── users.nix              # 用户声明, groups, sudo rules
@@ -59,7 +61,8 @@ myNixOSConfig/
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
 │   ├── sddm.nix               # SDDM 显示管理器 (astronaut 主题定制)
-│   └── litellm.nix            # LiteLLM 代理 (0.0.0.0:4000, DeepSeek API 后端)
+│   ├── litellm.nix            # LiteLLM 代理 (0.0.0.0:4000, DeepSeek API 后端)
+│   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
 │   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
@@ -77,14 +80,16 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   └── ai.nix             # claude-code, codex, gemini-cli
+│   │   └── ai.nix             # claude-code, codex, gemini-cli, officecli, aionui
 │   ├── productivity/          # 办公与通讯
-│   │   ├── office.nix         # WPS(缩放), LibreOffice, Obsidian
+│   │   ├── office.nix         # WPS(缩放), LibreOffice, Obsidian, OnlyOffice
 │   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend
-│   │   └── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
-│   └── media/                 # 影音与浏览器
+│   │   ├── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
+│   │   └── compat.nix         # Wine Wow64, Winetricks, virt-manager
+│   └── leisure/               # 影音、游戏与浏览器
 │       ├── player.nix         # mpv, 网易云(gtk/web/yesplaymusic), OBS, go-musicfox, loupe
-│       └── browser.nix        # Firefox, Chrome
+│       ├── browser.nix        # Firefox, Chrome
+│       └── gaming.nix         # Heroic, protonup-qt, mangohud, bottles (nix-flatpak)
 │
 ├── docs/                      # 使用指南 + 约束
 │   ├── nixos-constraints.md   # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
@@ -132,6 +137,7 @@ myNixOSConfig/
 
 ### flake.nix
 - `flake.nix` 只做入口和依赖声明
+- Flake inputs: nixpkgs, home-manager, noctalia, noctalia-qs, nix-flatpak
 - Overlays 放 `overlays/`，通过 `nixpkgs.overlays = import ./overlays` 导入
 - 不允许 inline derivations、inline `mkDerivation`、inline `appimageTools`
 
@@ -189,6 +195,9 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **剪切板**: cursor-clip (daemon 开机启动, Super+C 历史面板)
 - **Emoji**: wofi-emoji (Super+. 切换开关，normal-window 修复 fcitx5)
 - **udev**: stlink, openocd
+- **Steam**: programs.steam + 32-bit OpenGL/Vulkan (host/gaming.nix)
+- **Flatpak**: services.flatpak + nix-flatpak 声明式管理 (bottles)
+- **虚拟化**: libvirtd + QEMU/KVM + virt-manager
 
 ## LiteLLM 模型映射 (端口 4000)
 所有模型通过 DeepSeek API 后端提供，环境变量 `DEEPSEEK_API_KEY` 在 `/persist/secrets/litellm.env`:

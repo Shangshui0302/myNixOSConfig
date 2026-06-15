@@ -16,6 +16,8 @@ NixOS 个人配置，基于 flakes + Home Manager。
 | 编辑器 | Neovim (kickstart + lazy.nvim, LSP/completion/telescope) |
 | 代理 | mihomo (TUN 模式) |
 | 云同步 | OneDrive (HM programs.onedrive) |
+| 游戏 | Steam + Heroic + protonup-qt + bottles (Flatpak) |
+| Windows 兼容 | Wine Wow64 + Winetricks + virt-manager (KVM) |
 
 ## 目录结构
 
@@ -24,10 +26,10 @@ NixOS 个人配置，基于 flakes + Home Manager。
 ├── flake.lock
 ├── hardware-configuration.nix # 自动生成，不要手动改
 │
-├── host/                      # 系统基础设施 (11 文件)
+├── host/                      # 系统基础设施 (12 文件)
 │   ├── default.nix            # 入口汇总
 │   ├── boot.nix               # 启动与内核
-│   ├── hardware.nix           # GPU、udev、nix-ld、Steam
+│   ├── hardware.nix           # GPU、udev、nix-ld
 │   ├── locale.nix             # 时区、locale、键盘
 │   ├── nix.nix                # Nix 配置
 │   ├── users.nix              # 用户与 sudo
@@ -35,16 +37,17 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
 │   ├── desktop.nix            # Hyprland、fcitx5、字体、foot
 │   ├── sddm.nix               # 登录管理器
-│   └── litellm.nix            # AI 代理
+│   ├── litellm.nix            # AI 代理
+│   └── gaming.nix             # Steam、Flatpak、libvirtd
 │
 ├── home/                      # 用户配置 (4 子目录)
 │   ├── default.nix            # 入口汇总
 │   ├── git.nix                # Git 配置
 │   ├── theme.nix              # 主题、字体、深色模式、图标
 │   ├── env/                   # 桌面环境
-│   ├── dev/                   # 开发工具
-│   ├── productivity/          # 办公与通讯
-│   └── media/                 # 影音与浏览器
+│   ├── dev/                   # 开发工具 (含 AI)
+│   ├── productivity/          # 办公、通讯、Windows 兼容
+│   └── leisure/               # 影音、游戏、浏览器
 │
 ├── docs/                      # 使用指南
 │   ├── hyprland.md
