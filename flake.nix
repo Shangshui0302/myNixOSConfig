@@ -15,6 +15,7 @@
       url = "github:noctalia-dev/noctalia-qs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
   };
   outputs = { self, nixpkgs, ... }@inputs: {
     nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {

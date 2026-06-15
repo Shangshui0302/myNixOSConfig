@@ -4,4 +4,8 @@
     protonup-qt
     mangohud
   ];
+
+  services.flatpak.packages = [
+    "com.usebottles.bottles"
+  ];
 }

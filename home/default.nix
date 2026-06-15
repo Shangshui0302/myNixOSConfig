@@ -8,6 +8,7 @@
     ./dev
     ./productivity
     ./leisure
+    inputs.nix-flatpak.homeManagerModules.nix-flatpak
   ];
 
   home.username = "lishangshui";
