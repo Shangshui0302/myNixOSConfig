@@ -25,24 +25,6 @@
     })
   ];
 
-  home.activation.onlyofficeFonts = ''
-    mkdir -p $HOME/.local/share/fonts
-    for font_dir in \
-      ${pkgs.noto-fonts-cjk-sans}/share/fonts \
-      ${pkgs.noto-fonts-cjk-serif}/share/fonts \
-      ${pkgs.wqy_microhei}/share/fonts \
-      ${pkgs.wqy_zenhei}/share/fonts \
-      ${pkgs.arphic-ukai}/share/fonts \
-      ${pkgs.arphic-uming}/share/fonts; do
-      find "$font_dir" -type f | \
-        while read f; do
-          cp -n "$f" $HOME/.local/share/fonts/ 2>/dev/null || true
-          chmod 644 "$HOME/.local/share/fonts/$(basename "$f")" 2>/dev/null || true
-        done
-    done
-    $DRY_RUN_CMD ${pkgs.fontconfig}/bin/fc-cache -f $HOME/.local/share/fonts/
-  '';
-
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {

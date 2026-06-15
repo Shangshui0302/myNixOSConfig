@@ -51,6 +51,7 @@
     source-han-serif source-han-sans
     noto-fonts-color-emoji
     lxgw-wenkai sarasa-gothic
+    arphic-ukai arphic-uming
     eb-garamond libertine
     nerd-fonts.jetbrains-mono nerd-fonts.fira-code
     nerd-fonts.caskaydia-mono nerd-fonts.iosevka
