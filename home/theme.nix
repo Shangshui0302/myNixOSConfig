@@ -38,6 +38,10 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
   home.packages = with pkgs; [
     fonts.pingfang-otf
     fonts.harmonyos-sans
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    wqy_microhei
+    wqy_zenhei
     libsForQt5.qt5ct
     papirus-icon-theme gnome-themes-extra adw-gtk3
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.
