@@ -13,5 +13,6 @@
     ./desktop.nix
     ./sddm.nix
     ./litellm.nix
+    ./gaming.nix
   ];
 }

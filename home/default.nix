@@ -7,7 +7,7 @@
     ./env
     ./dev
     ./productivity
-    ./media
+    ./leisure
   ];
 
   home.username = "lishangshui";

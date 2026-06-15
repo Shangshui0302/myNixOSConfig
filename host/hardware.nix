@@ -1,15 +1,6 @@
 { pkgs, ... }:
 
 {
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-    extraPackages = with pkgs; [
-      libva-vdpau-driver
-      libvdpau-va-gl
-    ];
-  };
-
   boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 
@@ -23,6 +14,4 @@
     stdenv.cc.cc stdenv.cc.cc.lib zlib glib libGL freetype
     libX11 fontconfig fuse3 icu nss openssl curl expat libgcc
   ];
-
-  programs.steam.enable = true;
 }
