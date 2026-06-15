@@ -306,7 +306,9 @@ in
     for index = 1, 10 do
       local key = index % 10
       local width = math.floor(resize_width * index / 10)
-      hl.bind("SUPER + CTRL + " .. key, hl.dsp.window.resize({ width = width, height = resize_height }))
+      hl.bind("SUPER + CTRL + " .. key, function()
+        hl.hyprctl.dispatch("resizeactive", "exact " .. width .. " " .. resize_height)
+      end)
     end
 
     -- Window move

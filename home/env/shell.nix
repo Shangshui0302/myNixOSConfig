@@ -389,4 +389,15 @@
   };
 
   xdg.configFile."fish/completions/hyprctl.fish".source = "${pkgs.hyprland}/share/fish/vendor_completions.d/hyprctl.fish";
+  xdg.configFile."fish/completions/hyprland.fish".text = ''
+    complete -c hyprland -s h -l help -d "Show help message"
+    complete -c hyprland -s v -l version -d "Print version"
+    complete -c hyprland -l version-json -d "Print version as JSON"
+    complete -c hyprland -s c -l config -r -d "Specify config file to use"
+    complete -c hyprland -l socket -x -d "Set Wayland socket name"
+    complete -c hyprland -l wayland-fd -x -d "Set Wayland socket fd"
+    complete -c hyprland -l safe-mode -d "Start in safe mode"
+    complete -c hyprland -l systeminfo -d "Print system info"
+    complete -c hyprland -l verify-config -d "Verify config and exit"
+  '';
 }
