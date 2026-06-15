@@ -12,23 +12,53 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
     gtk.enable = true;
   };
 
-  # Map MS Office font names to available CJK fonts
+  # MS CJK font aliases with native-first fallback chains.
+  # When native MS fonts are installed (via home.activation → ~/.local/share/fonts/MS/),
+  # fontconfig resolves to the real font. When not installed, falls back to open-source
+  # alternatives that were configured during evaluation.
   xdg.configFile."fontconfig/conf.d/20-ms-office-cjk.conf".text = ''
     <?xml version="1.0"?>
     <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
     <fontconfig>
-      <alias><family>SimSun</family><prefer><family>Noto Serif CJK SC</family></prefer></alias>
-      <alias><family>NSimSun</family><prefer><family>Noto Serif CJK SC</family></prefer></alias>
-      <alias><family>SimHei</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
-      <alias><family>Microsoft YaHei</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
-      <alias><family>DengXian</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
-      <alias><family>KaiTi</family><prefer><family>AR PL UKai CN</family></prefer></alias>
-      <alias><family>FangSong</family><prefer><family>AR PL UMing CN</family></prefer></alias>
-      <alias><family>黑体</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
-      <alias><family>宋体</family><prefer><family>Noto Serif CJK SC</family></prefer></alias>
-      <alias><family>楷体</family><prefer><family>AR PL UKai CN</family></prefer></alias>
-      <alias><family>仿宋</family><prefer><family>AR PL UMing CN</family></prefer></alias>
-      <alias><family>等线</family><prefer><family>Noto Sans CJK SC</family></prefer></alias>
+      <!-- Serif -->
+      <alias><family>SimSun</family>
+        <prefer><family>SimSun</family><family>Noto Serif CJK SC</family></prefer></alias>
+      <alias><family>NSimSun</family>
+        <prefer><family>NSimSun</family><family>Noto Serif CJK SC</family></prefer></alias>
+      <alias><family>宋体</family>
+        <prefer><family>SimSun</family><family>Noto Serif CJK SC</family></prefer></alias>
+
+      <!-- Sans -->
+      <alias><family>SimHei</family>
+        <prefer><family>SimHei</family><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>Microsoft YaHei</family>
+        <prefer><family>Microsoft YaHei</family><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>微软雅黑</family>
+        <prefer><family>Microsoft YaHei</family><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>黑体</family>
+        <prefer><family>SimHei</family><family>Noto Sans CJK SC</family></prefer></alias>
+
+      <!-- Kai -->
+      <alias><family>KaiTi</family>
+        <prefer><family>KaiTi</family><family>AR PL UKai CN</family></prefer></alias>
+      <alias><family>楷体</family>
+        <prefer><family>KaiTi</family><family>AR PL UKai CN</family></prefer></alias>
+
+      <!-- FangSong -->
+      <alias><family>FangSong</family>
+        <prefer><family>FangSong</family><family>AR PL UMing CN</family></prefer></alias>
+      <alias><family>仿宋</family>
+        <prefer><family>FangSong</family><family>AR PL UMing CN</family></prefer></alias>
+
+      <!-- Serif (Latin) -->
+      <alias><family>Times New Roman</family>
+        <prefer><family>Times New Roman</family><family>Noto Serif CJK SC</family></prefer></alias>
+
+      <!-- DengXian -->
+      <alias><family>DengXian</family>
+        <prefer><family>DengXian</family><family>Noto Sans CJK SC</family></prefer></alias>
+      <alias><family>等线</family>
+        <prefer><family>DengXian</family><family>Noto Sans CJK SC</family></prefer></alias>
     </fontconfig>
   '';
 

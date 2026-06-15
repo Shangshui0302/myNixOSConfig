@@ -80,6 +80,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 
 - 显卡/网卡驱动改动要谨慎
 - 2K 屏 Hyprland scaling 已配 (1.5)，改 DPI/scale 时注意
+- **MS CJK 字体**: 从 Windows 授权副本提取的字体文件（SimSun/SimHei/KaiTi/FangSong/YaHei/DengXian 等 267 个）存放在 `/persist/Fonts/`，不进 git。`home.activation.copyMsCjkFonts` 在每次 rebuild 时将其复制到 `~/.local/share/fonts/MS/`，`20-ms-office-cjk.conf` 配置原生字体优先、开源字体 fallback 的替换链。首次部署需手动从 Windows 机器提取字体文件放到 `/persist/Fonts/`
 
 ## 新机器首次部署
 

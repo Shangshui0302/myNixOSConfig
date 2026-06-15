@@ -67,7 +67,7 @@ myNixOSConfig/
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
 │   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
 │   ├── git.nix                # Git 用户配置
-│   ├── theme.nix              # 指针光标, 中英日韩字体, qt5ct, 图标主题, dconf 默认
+│   ├── theme.nix              # 指针光标, CJK字体(MS原生优先+fallback), qt5ct, 图标主题, dconf 默认
 │   ├── env/                   # 桌面环境
 │   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具 (eza/fzf/bat/...)
 │   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
@@ -221,6 +221,7 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 
 ## 注意事项
 
+- **MS CJK 字体**: `/persist/Fonts/` 存放从 Windows 提取的字体文件（不进 git）。`home.activation.copyMsCjkFonts` 在 rebuild 时复制到 `~/.local/share/fonts/MS/`。`20-ms-office-cjk.conf` 配置原生优先的 fallback 链。**不要删除 `/persist/Fonts/` 下的字体文件。**
 - **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
 
 ### 分支隔离
