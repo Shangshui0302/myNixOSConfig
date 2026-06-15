@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, lib, ... }: {
   home.packages = with pkgs; [
     libreoffice-fresh
     onlyoffice-desktopeditors
@@ -24,6 +24,22 @@
       '';
     })
   ];
+
+  home.activation.onlyofficeFonts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p $HOME/.local/share/fonts
+    for font_dir in \
+      ${pkgs.noto-fonts-cjk-sans}/share/fonts \
+      ${pkgs.noto-fonts-cjk-serif}/share/fonts \
+      ${pkgs.wqy_microhei}/share/fonts \
+      ${pkgs.wqy_zenhei}/share/fonts; do
+      find "$font_dir" -name "*.ttf" -o -name "*.otf" | \
+        while read f; do
+          cp -n "$f" $HOME/.local/share/fonts/ 2>/dev/null || true
+          chmod 644 "$HOME/.local/share/fonts/$(basename "$f")" 2>/dev/null || true
+        done
+    done
+    $DRY_RUN_CMD fc-cache -f $HOME/.local/share/fonts/
+  '';
 
   xdg.mimeApps = {
     enable = true;
