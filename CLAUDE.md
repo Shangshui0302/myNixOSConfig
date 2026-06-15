@@ -67,7 +67,7 @@ myNixOSConfig/
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
 │   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
 │   ├── git.nix                # Git 用户配置
-│   ├── theme.nix              # 指针光标, CJK字体回退, 字体, qt5ct, 图标主题, dconf 默认
+│   ├── theme.nix              # 指针光标, 中英日韩字体, qt5ct, 图标主题, dconf 默认
 │   ├── env/                   # 桌面环境
 │   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具 (eza/fzf/bat/...)
 │   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
