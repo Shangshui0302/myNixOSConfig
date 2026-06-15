@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [
     libreoffice-fresh
-    onlyoffice-bin
+    onlyoffice-desktopeditors
     obsidian
 
     (pkgs.symlinkJoin {
