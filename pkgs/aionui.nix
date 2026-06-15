@@ -11,6 +11,8 @@ pkgs.stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgs.autoPatchelfHook pkgs.makeWrapper ];
   buildInputs = with pkgs; [
     stdenv.cc.cc.lib
+    alsa-lib
+    libsecret
     libxkbcommon
     libxcb
     libX11
@@ -41,6 +43,7 @@ pkgs.stdenv.mkDerivation rec {
     mkdir -p $out/{bin,lib/${pname},share/{applications,icons/hicolor/1024x1024/apps}}
 
     cp -r opt/AionUi/* $out/lib/${pname}/
+    find $out/lib/${pname} -path "*/claude-agent-sdk-linux-x64-musl/claude" -delete
 
     substitute usr/share/applications/AionUi.desktop \
       $out/share/applications/${pname}.desktop \
