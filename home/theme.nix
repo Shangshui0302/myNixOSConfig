@@ -12,28 +12,6 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
     gtk.enable = true;
   };
 
-  # CJK font fallback
-  xdg.configFile."fontconfig/conf.d/10-cjk-fallback.conf".text = ''
-    <?xml version="1.0"?>
-    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-    <fontconfig>
-      <alias>
-        <family>sans-serif</family>
-        <prefer>
-          <family>WenQuanYi Micro Hei</family>
-          <family>Noto Sans CJK SC</family>
-          <family>WenQuanYi Zen Hei</family>
-        </prefer>
-      </alias>
-      <alias>
-        <family>serif</family>
-        <prefer>
-          <family>Noto Serif CJK SC</family>
-        </prefer>
-      </alias>
-    </fontconfig>
-  '';
-
   # Extra fonts & Qt5 theme
   home.packages = with pkgs; [
     fonts.pingfang-otf
@@ -42,6 +20,7 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
     noto-fonts-cjk-serif
     wqy_microhei
     wqy_zenhei
+    wineWow64Packages.fonts
     libsForQt5.qt5ct
     papirus-icon-theme gnome-themes-extra adw-gtk3
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.
