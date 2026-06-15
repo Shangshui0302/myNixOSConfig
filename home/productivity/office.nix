@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }: {
+{ pkgs, ... }: {
   home.packages = with pkgs; [
     libreoffice-fresh
     onlyoffice-desktopeditors
@@ -32,7 +32,7 @@
       ${pkgs.noto-fonts-cjk-serif}/share/fonts \
       ${pkgs.wqy_microhei}/share/fonts \
       ${pkgs.wqy_zenhei}/share/fonts; do
-      find "$font_dir" -name "*.ttf" -o -name "*.otf" | \
+      find "$font_dir" -type f | \
         while read f; do
           cp -n "$f" $HOME/.local/share/fonts/ 2>/dev/null || true
           chmod 644 "$HOME/.local/share/fonts/$(basename "$f")" 2>/dev/null || true
