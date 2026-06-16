@@ -213,6 +213,10 @@ in
 {
   services.udiskie.enable = true;
 
+  services.flatpak.packages = [
+    "io.github.wh201906.serialtest"
+  ];
+
   home.packages = with pkgs; [
     yazi fastfetch btop
     wget curl pciutils usbutils nix-index htop steam-run
@@ -377,6 +381,7 @@ in
         { on = "f"; run = "plugin jump-to-char"; desc = "Jump to char"; }
         { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
         { on = "<Enter>"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
+        { on = "\\"; run = "cd /run/media/lishangshui"; desc = "Go to removable media"; }
       ];
       tasks.prepend_keymap = [
         { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
