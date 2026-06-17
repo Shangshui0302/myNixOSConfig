@@ -369,8 +369,8 @@
         reverseScroll = false;
       };
       ui = {
-        fontDefault = "JetBrainsMono NF";
-        fontFixed = "DejaVu Sans Mono";
+        fontDefault = "Source Han Serif";
+        fontFixed = "JetBrainsMono Nerd Font";
         fontDefaultScale = 0.9;
         fontFixedScale = 1.05;
         tooltipsEnabled = true;

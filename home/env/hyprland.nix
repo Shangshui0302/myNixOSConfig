@@ -105,7 +105,9 @@ in
     output_path = "~/.config/hypr/noctalia-colors.lua"
   '';
 
-  xdg.configFile."hypr/hyprland.lua".text = ''
+  xdg.configFile."hypr/hyprland.lua" = {
+    force = true;  # generated from nix, no manual edits to preserve
+    text = ''
     local home = "${homeDir}"
 
     -- Noctalia theme colors (generated on first theme load, safe-require)
@@ -354,4 +356,5 @@ in
     hl.gesture({ fingers = 3, direction = "left", action = "scroll_move" })
     hl.gesture({ fingers = 3, direction = "right", action = "scroll_move" })
   '';
+  };
 }

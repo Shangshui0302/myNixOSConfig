@@ -62,8 +62,51 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
     </fontconfig>
   '';
 
+  # Default font families — Source Han Serif (源明朝) for UI/reading,
+  # JetBrainsMono Nerd Font for terminal/code.
+  # CJK fallback: when a character is missing, fontconfig walks the list
+  # and picks the first font that has the glyph.
+  # Times New Roman covers Latin glyphs; Source Han Serif covers CJK.
+  xdg.configFile."fontconfig/conf.d/30-default-fonts.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+      <!-- Sans-serif (UI, apps) — strong binding so it wins over system defaults -->
+      <match target="pattern">
+        <test name="family"><string>sans-serif</string></test>
+        <edit name="family" mode="prepend" binding="strong">
+          <string>Source Han Serif</string>
+          <string>PingFang SC</string>
+          <string>Noto Sans CJK SC</string>
+          <string>HarmonyOS Sans SC</string>
+        </edit>
+      </match>
+
+      <!-- Serif (body text, reading) — Times New Roman for Latin, Source Han Serif for CJK -->
+      <match target="pattern">
+        <test name="family"><string>serif</string></test>
+        <edit name="family" mode="prepend" binding="strong">
+          <string>Times New Roman</string>
+          <string>Source Han Serif</string>
+          <string>Noto Serif CJK SC</string>
+        </edit>
+      </match>
+
+      <!-- Monospace (terminal, code editor) -->
+      <match target="pattern">
+        <test name="family"><string>monospace</string></test>
+        <edit name="family" mode="prepend" binding="strong">
+          <string>JetBrainsMono Nerd Font</string>
+          <string>Sarasa Mono SC</string>
+          <string>Noto Sans CJK SC</string>
+        </edit>
+      </match>
+    </fontconfig>
+  '';
+
   # Extra fonts & Qt5 theme
   home.packages = with pkgs; [
+    source-han-serif
     fonts.pingfang-otf
     fonts.harmonyos-sans
     noto-fonts-cjk-sans
