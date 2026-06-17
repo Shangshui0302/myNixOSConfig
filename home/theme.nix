@@ -1,7 +1,5 @@
 { config, pkgs, ... }:
 
-let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
-
 {
   # Pointer cursor
   home.pointerCursor = {
@@ -62,31 +60,29 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
     </fontconfig>
   '';
 
-  # Default font families — Source Han Serif (源明朝) for UI/reading,
-  # JetBrainsMono Nerd Font for terminal/code.
-  # CJK fallback: when a character is missing, fontconfig walks the list
-  # and picks the first font that has the glyph.
+  # Default font families — Anthropic fonts for Latin, Source Han Serif for CJK.
+  # Anthropic Mono Variable for terminal/code.
   # Times New Roman covers Latin glyphs; Source Han Serif covers CJK.
   xdg.configFile."fontconfig/conf.d/30-default-fonts.conf".text = ''
     <?xml version="1.0"?>
     <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
     <fontconfig>
-      <!-- Sans-serif (UI, apps) — strong binding so it wins over system defaults -->
+      <!-- Sans-serif (UI, apps) -->
       <match target="pattern">
         <test name="family"><string>sans-serif</string></test>
         <edit name="family" mode="prepend" binding="strong">
+          <string>Anthropic Sans Web Text</string>
           <string>Source Han Serif</string>
           <string>PingFang SC</string>
           <string>Noto Sans CJK SC</string>
-          <string>HarmonyOS Sans SC</string>
         </edit>
       </match>
 
-      <!-- Serif (body text, reading) — Times New Roman for Latin, Source Han Serif for CJK -->
+      <!-- Serif (body text, reading) -->
       <match target="pattern">
         <test name="family"><string>serif</string></test>
         <edit name="family" mode="prepend" binding="strong">
-          <string>Times New Roman</string>
+          <string>Anthropic Serif Web Text</string>
           <string>Source Han Serif</string>
           <string>Noto Serif CJK SC</string>
         </edit>
@@ -96,6 +92,7 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
       <match target="pattern">
         <test name="family"><string>monospace</string></test>
         <edit name="family" mode="prepend" binding="strong">
+          <string>Anthropic Mono Variable</string>
           <string>JetBrainsMono Nerd Font</string>
           <string>Sarasa Mono SC</string>
           <string>Noto Sans CJK SC</string>
@@ -106,16 +103,7 @@ let fonts = import ../pkgs/fonts.nix { inherit pkgs; }; in
 
   # Extra fonts & Qt5 theme
   home.packages = with pkgs; [
-    source-han-serif
-    fonts.pingfang-otf
-    fonts.harmonyos-sans
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    wqy_microhei
-    wqy_zenhei
     wineWow64Packages.fonts
-    arphic-ukai
-    arphic-uming
     libsForQt5.qt5ct
     papirus-icon-theme gnome-themes-extra adw-gtk3
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.

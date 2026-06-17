@@ -1,5 +1,10 @@
 { config, pkgs, ... }:
 
+let
+  fonts = import ../pkgs/fonts.nix { inherit pkgs; };
+  anthropic-fonts = import ../pkgs/anthropic-fonts.nix { inherit pkgs; };
+in
+
 {
   environment.variables = {
     GTK_IM_MODULE = "fcitx";
@@ -49,6 +54,8 @@
     wqy_zenhei wqy_microhei
     noto-fonts-cjk-sans noto-fonts-cjk-serif
     source-han-serif source-han-sans
+    fonts.pingfang-otf fonts.harmonyos-sans
+    anthropic-fonts
     noto-fonts-color-emoji
     lxgw-wenkai sarasa-gothic
     arphic-ukai arphic-uming

@@ -369,8 +369,8 @@
         reverseScroll = false;
       };
       ui = {
-        fontDefault = "Source Han Serif";
-        fontFixed = "JetBrainsMono Nerd Font";
+        fontDefault = "Anthropic Serif Web Text";
+        fontFixed = "Anthropic Mono Variable";
         fontDefaultScale = 0.9;
         fontFixedScale = 1.05;
         tooltipsEnabled = true;

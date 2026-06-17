@@ -48,7 +48,8 @@ myNixOSConfig/
 │   ├── netease-cloud-music-web-player.nix
 │   ├── officecli.nix           # OfficeCLI — AI agent Office 文档工具
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
-│   └── fonts.nix              # PingFang, HarmonyOS Sans 等字体
+│   ├── fonts.nix              # PingFang, HarmonyOS Sans 等字体
+│   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
 │
 ├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
 │   ├── default.nix            # 入口 — 仅 imports
