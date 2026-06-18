@@ -4,6 +4,7 @@
   users.users.lishangshui = {
     isNormalUser = true;
     description = "Li Shangshui";
+    linger = true;
     extraGroups = [ "wheel" "networkmanager" "video" ];
   };
 

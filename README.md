@@ -4,20 +4,20 @@ NixOS 个人配置，基于 flakes + Home Manager。
 
 ## 系统概览
 
-| 项目 | 内容 |
-|------|------|
-| 系统 | NixOS 26.05 (Yarara) |
-| WM | Hyprland (Wayland) |
-| Shell | fish (plugins) + bash (ble.sh) + starship + zellij |
-| 桌面面板 | Noctalia Shell |
-| 终端 | Ghostty |
-| 文件管理器 | Yazi (HM module + 9 插件 + myargonaut 绿色主题 + 6 备选) |
-| 输入法 | fcitx5 + rime-ice |
-| 编辑器 | Neovim (kickstart + lazy.nvim, LSP/completion/telescope) |
-| 代理 | mihomo (TUN 模式) |
-| 云同步 | OneDrive (HM programs.onedrive) |
-| 游戏 | Steam + Heroic + protonup-qt + bottles (Flatpak) |
-| Windows 兼容 | Wine Wow64 + Winetricks + virt-manager (KVM) |
+| 项目         | 内容                                                     |
+| ------------ | -------------------------------------------------------- |
+| 系统         | NixOS 26.05 (Yarara)                                     |
+| WM           | Hyprland (Wayland)                                       |
+| Shell        | fish (plugins) + bash (ble.sh) + starship + zellij       |
+| 桌面面板     | Noctalia Shell                                           |
+| 终端         | Foot(default), Ghostty                                   |
+| 文件管理器   | Yazi (HM module + 9 插件 + myargonaut 绿色主题 + 6 备选) |
+| 输入法       | fcitx5 + rime-ice                                        |
+| 编辑器       | Neovim (kickstart + lazy.nvim, LSP/completion/telescope) |
+| 代理         | mihomo (TUN 模式)                                        |
+| 云同步       | OneDrive (HM programs.onedrive)                          |
+| 游戏         | Steam + Heroic + protonup-qt + bottles (Flatpak)         |
+| Windows 兼容 | Wine Wow64 + Winetricks + virt-manager (KVM)             |
 
 ## 目录结构
 
@@ -102,12 +102,12 @@ cp /mnt/etc/nixos/hardware-configuration.nix ~/myNixOSConfig/
 
 ### 2. 修改机器特定配置
 
-| 文件 | 需要修改的内容 |
-|------|---------------|
-| `host/core.nix` | `networking.hostName`、`time.timeZone`、`i18n.defaultLocale`、`users.users.<name>` |
-| `home/default.nix` | `home.username`、`home.homeDirectory` |
-| `home/hyprland.nix` | `monitor` 显示器配置 |
-| `flake.nix` | `nixosConfigurations.<hostname>`、`home-manager.users.<name>` |
+| 文件                  | 需要修改的内容                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `host/core.nix`     | `networking.hostName`、`time.timeZone`、`i18n.defaultLocale`、`users.users.<name>` |
+| `home/default.nix`  | `home.username`、`home.homeDirectory`                                                  |
+| `home/hyprland.nix` | `monitor` 显示器配置                                                                     |
+| `flake.nix`         | `nixosConfigurations.<hostname>`、`home-manager.users.<name>`                          |
 
 ### 3. 挂载 /persist 子卷并创建文件
 
@@ -125,6 +125,7 @@ sudo cp <your-litellm.env> /persist/secrets/litellm.env
 ```
 
 `/persist/secrets/litellm.env` 格式（`KEY=VALUE`，fish shell 启动时自动加载到用户环境）：
+
 ```
 ANTHROPIC_AUTH_TOKEN=your-token
 ANTHROPIC_BASE_URL=http://127.0.0.1:4000
@@ -137,6 +138,7 @@ LITELLM_MASTER_KEY=your-litellm-master-key
 > `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 是客户端变量，供 Claude Code 等工具连接 LiteLLM 代理使用。`OPENAI_API_KEY` + `OPENAI_BASE_URL` 供 Codex 等 OpenAI 兼容工具使用。`DEEPSEEK_API_KEY` 和 `LITELLM_MASTER_KEY` 是 LiteLLM 服务端变量。
 
 GitHub CLI 等工具也可能依赖 `/persist/secrets/` 下的其他 env 文件：
+
 ```bash
 sudo cp <your-gh.env> /persist/secrets/gh.env
 ```
@@ -145,12 +147,12 @@ sudo cp <your-gh.env> /persist/secrets/gh.env
 
 以下文件路径使用 `config.home.homeDirectory` 动态解析，但文件本身需要存在：
 
-| 文件 | 用途 | 缺失时影响 |
-|------|------|-----------|
-| `~/Pictures/ProfiePictures/` | Noctalia 头像 | 头像不显示 |
-| `~/Pictures/Wallpapers/` | Noctalia 壁纸 | 壁纸功能不可用 |
-| `~/.cache/noctalia/HVE/` | Noctalia HVE 配置 | Hyprland 装饰配置缺失 |
-| `~/.config/hypr/noctalia/` | Noctalia 颜色配置 | Hyprland 颜色回退到默认 |
+| 文件                           | 用途              | 缺失时影响              |
+| ------------------------------ | ----------------- | ----------------------- |
+| `~/Pictures/ProfiePictures/` | Noctalia 头像     | 头像不显示              |
+| `~/Pictures/Wallpapers/`     | Noctalia 壁纸     | 壁纸功能不可用          |
+| `~/.cache/noctalia/HVE/`     | Noctalia HVE 配置 | Hyprland 装饰配置缺失   |
+| `~/.config/hypr/noctalia/`   | Noctalia 颜色配置 | Hyprland 颜色回退到默认 |
 
 首次启动 Noctalia 后，`~/.cache/noctalia/HVE/` 和 `~/.config/hypr/noctalia/` 会自动生成。
 
