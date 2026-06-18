@@ -18,6 +18,14 @@ require("lazy").setup({
   { "rose-pine/neovim", name = "rose-pine", opts = { variant = "moon" } },
   { "rebelot/kanagawa.nvim", opts = {} },
 
+  -- ===== UI =====
+  { "sphamba/smear-cursor.nvim", opts = {
+    smear_between_buffers = true,
+    smear_between_neighbor_lines = true,
+    scroll_buffer_space = true,
+    smear_insert_mode = true,
+  } },
+
   -- ===== Core utils =====
   "nvim-lua/plenary.nvim",
   "nvim-tree/nvim-web-devicons",
