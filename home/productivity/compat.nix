@@ -4,4 +4,8 @@
     winetricks
     virt-manager
   ];
+
+  services.flatpak.packages = [
+    "com.usebottles.bottles"
+  ];
 }

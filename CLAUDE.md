@@ -43,7 +43,7 @@ myNixOSConfig/
 │   ├── default.nix            # 入口 — imports 所有 overlay 为 list
 │   └── vim-plugins.nix        # vimPlugins 别名
 │
-├── pkgs/                      # 自定义包（不在 nixpkgs 中的全新包）
+├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
 │   ├── yesplaymusic.nix
 │   ├── netease-cloud-music-web-player.nix
 │   ├── officecli.nix           # OfficeCLI — AI agent Office 文档工具
@@ -123,15 +123,15 @@ myNixOSConfig/
 - 修补一个只在一处使用的包
 - 该包没有反向依赖需要变更
 
-**用 `pkgs/*.nix` + 直接 import 当：**
+**用 `local-deriv/*.nix` + 直接 import 当：**
 - 定义一个不在 nixpkgs 中的全新包
-- 模式：`(import ../pkgs/foo.nix { inherit pkgs; })`
+- 模式：`(import ../local-deriv/foo.nix { inherit pkgs; })`
 - 如果 derivation 需要本地 `assets/` 路径，把 `src` 作为参数传入：
   ```nix
-  # pkgs/foo.nix
+  # local-deriv/foo.nix
   { pkgs, src }: pkgs.stdenv.mkDerivation { inherit src; ... }
   # 调用方
-  (import ../pkgs/foo.nix { inherit pkgs; src = ../assets/foo.tar.gz; })
+  (import ../local-deriv/foo.nix { inherit pkgs; src = ../assets/foo.tar.gz; })
   ```
 
 **禁止把新包定义放进 `nixpkgs.overlays`。**
@@ -145,7 +145,7 @@ myNixOSConfig/
 ### 去重规则
 - 网络诊断工具 (`dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables`) **只在** `host/network.nix` 的 `environment.systemPackages` 中声明
   → 不要加到任何 `home/` 模块
-- 字体包放 `pkgs/fonts.nix`，由 `home/theme.nix` 导入
+- 字体包放 `local-deriv/fonts.nix`，由 `home/theme.nix` 导入
 - 不要把一个包的 override 拆到两个模块（如 src 在 overlay、flags 在 home 模块 → 合并到一处）
 
 ### 链式 override

@@ -5,7 +5,4 @@
     mangohud
   ];
 
-  services.flatpak.packages = [
-    "com.usebottles.bottles"
-  ];
 }

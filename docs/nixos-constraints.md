@@ -7,7 +7,7 @@ flake.nix              # Entry point only — no inline package definitions
 overlays/
   default.nix          # Imports all overlays as a list
   *.nix                # One overlay per file
-pkgs/
+local-deriv/
   *.nix                # Custom packages and font derivations
   fonts.nix            # PingFang, HarmonyOS Sans, etc.
 home/
@@ -30,15 +30,15 @@ assets/                # Binary assets (wallpapers, tarballs, etc.)
 - Patching a package used in one place only
 - The package has no reverse dependencies that need the change
 
-**Use `pkgs/*.nix` + direct import when:**
+**Use `local-deriv/*.nix` + direct import when:**
 - Defining a brand-new package not in nixpkgs
-- Pattern: `(import ../pkgs/foo.nix { inherit pkgs; })`
+- Pattern: `(import ../local-deriv/foo.nix { inherit pkgs; })`
 - If the derivation needs a local `assets/` path, pass `src` as a parameter:
   ```nix
-  # pkgs/foo.nix
+  # local-deriv/foo.nix
   { pkgs, src }: pkgs.stdenv.mkDerivation { inherit src; ... }
   # caller
-  (import ../pkgs/foo.nix { inherit pkgs; src = ../assets/foo.tar.gz; })
+  (import ../local-deriv/foo.nix { inherit pkgs; src = ../assets/foo.tar.gz; })
   ```
 
 **Never put new package definitions inside `nixpkgs.overlays` in `flake.nix`.**
@@ -58,7 +58,7 @@ assets/                # Binary assets (wallpapers, tarballs, etc.)
 - Network diagnostic tools (`dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables`)
   belong **only** in `host/network.nix` as `environment.systemPackages`
   → Do not add them to any `home/` module
-- Font packages belong in `pkgs/fonts.nix`, imported from `home/theme.nix`
+- Font packages belong in `local-deriv/fonts.nix`, imported from `home/theme.nix`
 - Do not split a single package's override across two modules
   (e.g., src in an overlay + flags in a home module — merge into one place)
 

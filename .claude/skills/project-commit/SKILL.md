@@ -33,14 +33,14 @@ Review for these project-specific issues:
   (e.g., new `home/env/foo.nix` must appear in `home/default.nix` as an import).
 - **Override vs overlay rule**: New packages added via `overrideAttrs` only if used in
   one place. New packages in nixpkgs only via overlays. New standalone packages go in
-  `pkgs/` and are imported directly — never put new packages in `nixpkgs.overlays`.
+  `local-deriv/` and are imported directly — never put new packages in `nixpkgs.overlays`.
 - **Stale paths**: If a file was renamed/moved, are all import paths updated?
 - **Hardcoded secrets**: No API keys, tokens, or passwords in nix files. Secrets
   belong in `/persist/secrets/`.
 - **Deduplication**: Tools already declared in `host/network.nix`
   (dnsutils, iputils, tcpdump, mtr, nmap, iperf3, ethtool, iptables) should not
   appear in `home/` modules.
-- **Fonts**: New fonts go in `pkgs/fonts.nix`, imported by `home/theme.nix`.
+- **Fonts**: New fonts go in `local-deriv/fonts.nix`, imported by `home/theme.nix`.
 
 If anything looks wrong, flag it to the user before proceeding.
 
@@ -54,7 +54,7 @@ Not every change needs doc updates. Use this matrix to decide:
 | New nix module file (host/ or home/ subdir) | README.md + CLAUDE.md (directory structure) |
 | Removed/renamed module file | README.md + CLAUDE.md |
 | Changed keybindings, gestures, or user-facing behavior | docs/*.md + CLAUDE.md |
-| New custom package in pkgs/ | README.md + CLAUDE.md |
+| New custom package in local-deriv/ | README.md + CLAUDE.md |
 | New overlay | Usually none |
 | Adding/removing a flatpak or user app | Usually none |
 | Tweak to an existing config value | Usually none |

@@ -1,8 +1,8 @@
 { config, pkgs, ... }:
 
 let
-  fonts = import ../pkgs/fonts.nix { inherit pkgs; };
-  anthropic-fonts = import ../pkgs/anthropic-fonts.nix { inherit pkgs; };
+  fonts = import ../local-deriv/fonts.nix { inherit pkgs; };
+  anthropic-fonts = import ../local-deriv/anthropic-fonts.nix { inherit pkgs; };
 in
 
 {
