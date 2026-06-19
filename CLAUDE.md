@@ -46,6 +46,7 @@ myNixOSConfig/
 ├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
 │   ├── yesplaymusic.nix
 │   ├── netease-cloud-music-web-player.nix
+│   ├── animeko.nix
 │   ├── officecli.nix           # OfficeCLI — AI agent Office 文档工具
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   ├── fonts.nix              # PingFang, HarmonyOS Sans 等字体
@@ -88,7 +89,7 @@ myNixOSConfig/
 │   │   ├── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
 │   │   └── compat.nix         # Wine Wow64, Winetricks, virt-manager
 │   └── leisure/               # 影音、游戏与浏览器
-│       ├── player.nix         # mpv, 网易云(gtk/web/yesplaymusic), OBS, go-musicfox, loupe
+│       ├── player.nix         # mpv, 网易云(gtk/web/yesplaymusic), OBS, go-musicfox, loupe, animeko
 │       ├── browser.nix        # Firefox, Chrome
 │       └── gaming.nix         # Heroic, protonup-qt, mangohud, bottles (nix-flatpak)
 │
