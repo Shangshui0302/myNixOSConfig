@@ -16,12 +16,11 @@
   # proxies 由 proxy-providers (type: http, interval: 86400) 自行拉取
   systemd.services.mihomo.preStart = ''
     set -e
-    source /persist/secrets/mihomo.env
     mkdir -p /var/lib/private/mihomo/providers
     ${pkgs.curl}/bin/curl -sL --max-time 30 "$MIHOMO_SUBSCRIPTION_URL" \
       | ${pkgs.gawk}/bin/awk '
         /^rules:/   { in_rules=1; next }
-        in_rules && /^ - / { sub(/^ - /, ""); print }
+        in_rules && /^ - / { sub(/^ - /, ""); print; next }
         in_rules && !/^ - / { exit }
       ' > /var/lib/private/mihomo/providers/rules.yaml
     ${pkgs.envsubst}/bin/envsubst \
@@ -42,12 +41,11 @@
     serviceConfig.Type = "oneshot";
     script = ''
       set -e
-      source /persist/secrets/mihomo.env
       mkdir -p /var/lib/private/mihomo/providers
       ${pkgs.curl}/bin/curl -sL --max-time 30 "$MIHOMO_SUBSCRIPTION_URL" \
         | ${pkgs.gawk}/bin/awk '
           /^rules:/   { in_rules=1; next }
-          in_rules && /^ - / { sub(/^ - /, ""); print }
+          in_rules && /^ - / { sub(/^ - /, ""); print; next }
           in_rules && !/^ - / { exit }
         ' > /var/lib/private/mihomo/providers/rules.yaml
       ${pkgs.curl}/bin/curl -s -X PUT http://127.0.0.1:9090/providers/rules/sub-rules \
