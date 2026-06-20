@@ -119,6 +119,7 @@ rule-providers:
   sub-rules:
     type: file
     path: ./providers/rules.yaml
+    behavior: classical
     format: text
 
 # 代理组
@@ -182,4 +183,4 @@ rules:
   - DST-PORT,587,DIRECT
   - DST-PORT,993,DIRECT
   - DST-PORT,995,DIRECT
-  - RULE-SET,sub-rules
+  - RULE-SET,sub-rules,🐟 漏网之鱼
