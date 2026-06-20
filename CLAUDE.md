@@ -82,7 +82,8 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   └── ai.nix             # claude-code, codex, gemini-cli, officecli, aionui
+│   │   ├── ai.nix             # claude-code, codex, gemini-cli, officecli, aionui
+│   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # WPS(缩放), LibreOffice, Obsidian, OnlyOffice
 │   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend

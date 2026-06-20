@@ -21,9 +21,4 @@
     location = "quay.io"
   '';
 
-  # podman 走 mihomo HTTP 代理
-  environment.etc."containers/containers.conf.d/01-proxy.conf".text = ''
-    [engine]
-    env = ["http_proxy=http://127.0.0.1:7890","https_proxy=http://127.0.0.1:7890"]
-  '';
 }
