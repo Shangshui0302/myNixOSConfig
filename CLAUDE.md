@@ -17,14 +17,14 @@
 - WM: Hyprland (Wayland), **Lua 配置** (`hyprland.lua`), scrolling layout
 - Shell: fish (plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
 - 终端: foot (系统级配置，host/desktop.nix)，默认 shell: fish
-- 代理: mihomo TUN 模式 + nftables 防火墙，webui: metacubexd (127.0.0.1:9090)
+- 代理: mihomo TUN 模式 + nftables 防火墙，webui: zashboard (127.0.0.1:9090)
 
 ## 文件系统 (Btrfs subvolumes)
 ```
 /          → subvol=@       (系统根)
 /home      → subvol=@home   (用户目录)
 /nix       → subvol=@nix    (nix store)
-/persist   → subvol=@persist (持久化数据: mihomo config, secrets)
+/persist   → subvol=@persist (持久化数据: mihomo.env, secrets)
 /var/log   → subvol=@log    (日志)
 /boot      → vfat (EFI 分区)
 ```
@@ -186,7 +186,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **音频**: PipeWire (pulse/alsa/jack)
 - **蓝牙**: bluetooth + blueman
 - **打印**: CUPS
-- **代理**: mihomo TUN 模式 (nftables 防火墙 + ip_forward + metacubexd webui)
+- **代理**: mihomo TUN 模式 (nftables 防火墙 + ip_forward + zashboard webui)，配置模板 Nix 管理，节点/规则从订阅自动更新
 - **电源**: thermald + power-profiles-daemon + upower
 - **SSD**: fstrim
 - **深色模式**: Noctalia 调度 (dconf/qt5ct) + xdg-desktop-portal-gtk 暴露 Settings portal
@@ -226,7 +226,6 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 
 - **MS CJK 字体**: `/persist/Fonts/` 存放从 Windows 提取的字体文件（不进 git）。`home.activation.copyMsCjkFonts` 在 rebuild 时复制到 `~/.local/share/fonts/MS/`。`20-ms-office-cjk.conf` 配置原生优先的 fallback 链。**不要删除 `/persist/Fonts/` 下的字体文件。**
 - **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
-
 ### 分支隔离
 - **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行
 - 涉及 mihomo / TUN / nftables / DNS 等网络基础设施的改动，**一律开 feature 分支**。原因：网络组件出问题时可能阻断 nixos-rebuild（缓存下载走 TUN → 代理坏了 → SSL 失败 → 无法 rebuild 恢复），形成死锁
