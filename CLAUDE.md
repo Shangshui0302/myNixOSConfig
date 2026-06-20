@@ -203,6 +203,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **Steam**: programs.steam + 32-bit OpenGL/Vulkan (host/gaming.nix)
 - **Flatpak**: services.flatpak + nix-flatpak 声明式管理 (bottles)
 - **虚拟化**: libvirtd + QEMU/KVM + virt-manager
+- **Android 容器**: Waydroid (LXC, binder, waydroid-nftables)
 
 ## LiteLLM 模型映射 (端口 4000)
 所有模型通过 DeepSeek API 后端提供，环境变量 `DEEPSEEK_API_KEY` 在 `/persist/secrets/litellm.env`:

@@ -1,4 +1,6 @@
 { config, lib, pkgs, ... }: {
+  virtualisation.waydroid.enable = true;
+
   virtualisation.podman = {
     enable = true;
     defaultNetwork.settings.dns_enabled = true;
