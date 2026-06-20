@@ -119,7 +119,6 @@ rule-providers:
   sub-rules:
     type: file
     path: ./providers/rules.yaml
-    behavior: classical
     format: text
 
 # 代理组
