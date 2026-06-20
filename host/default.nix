@@ -14,5 +14,6 @@
     ./sddm.nix
     ./litellm.nix
     ./gaming.nix
+    ./containers.nix
   ];
 }
