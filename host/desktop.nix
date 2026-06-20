@@ -67,6 +67,12 @@ in
     font-awesome
   ];
 
+  fileSystems."/usr/share/fonts" = {
+    device = "/run/current-system/sw/share/X11/fonts";
+    fsType = "bind";
+    options = [ "bind" "ro" ];
+  };
+
   services.libinput.enable = true;
 
   xdg.portal = {

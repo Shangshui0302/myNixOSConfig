@@ -20,6 +20,25 @@
     "com.tencent.WeChat"
   ];
 
+  services.flatpak.overrides = {
+    "com.tencent.WeChat" = {
+      Context = {
+        filesystems = [
+          "~/Downloads:rw"
+          "~/Documents:rw"
+          "/usr/share/fonts:ro"
+        ];
+        sockets = [ "wayland" "fallback-x11" ];
+      };
+      Environment = {
+        QT_IM_MODULE = "fcitx";
+        GTK_IM_MODULE = "fcitx";
+        XMODIFIERS = "@im=fcitx";
+        ELECTRON_FORCE_SCALE_FACTOR = "1.5";
+      };
+    };
+  };
+
   xdg.desktopEntries.qq = {
     name = "QQ";
     exec = "qq %U";
@@ -37,6 +56,16 @@
     categories = [ "InstantMessaging" "Chat" ];
     settings = {
       StartupWMClass = "wechat";
+    };
+  };
+
+  xdg.desktopEntries."com.tencent.WeChat" = {
+    name = "WeChat-Flathub";
+    exec = "flatpak run com.tencent.WeChat %U";
+    icon = "com.tencent.WeChat";
+    categories = [ "InstantMessaging" "Chat" ];
+    settings = {
+      StartupWMClass = "com.tencent.WeChat";
     };
   };
 }
