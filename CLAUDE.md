@@ -217,7 +217,7 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 
 ## Nix 配置
 - **Channel**: nixos-unstable
-- **Cache mirrors**: cache.nixos.org + TUNA (mirrors.tuna.tsinghua.edu.cn)
+- **Cache mirrors**: cache.nixos.org, TUNA, USTC, SJTU
 - **Features**: nix-command, flakes
 - **allowUnfree**: true
 - **stateVersion**: 25.11
