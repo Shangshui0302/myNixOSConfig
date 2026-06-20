@@ -15,6 +15,8 @@
   # preStart：下载订阅，提取 rules，渲染模板
   # proxies 由 proxy-providers (type: http, interval: 86400) 自行拉取
   systemd.services.mihomo.preStart = ''
+    set -e
+    source /persist/secrets/mihomo.env
     mkdir -p /var/lib/private/mihomo/providers
     ${pkgs.curl}/bin/curl -sL --max-time 30 "$MIHOMO_SUBSCRIPTION_URL" \
       | ${pkgs.gawk}/bin/awk '
