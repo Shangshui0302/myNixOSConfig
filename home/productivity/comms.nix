@@ -16,6 +16,10 @@
     }))
   ];
 
+  services.flatpak.packages = [
+    "com.tencent.WeChat"
+  ];
+
   xdg.desktopEntries.qq = {
     name = "QQ";
     exec = "qq %U";

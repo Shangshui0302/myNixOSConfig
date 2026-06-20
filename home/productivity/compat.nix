@@ -7,5 +7,6 @@
 
   services.flatpak.packages = [
     "com.usebottles.bottles"
+    "com.github.tchx84.Flatseal"
   ];
 }
