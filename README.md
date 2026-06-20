@@ -56,6 +56,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── shell.md
 │   ├── litellm.md
 │   ├── mihomo.md
+│   ├── distrobox.md
 │   └── yazi.md
 │
 ├── CLAUDE.md

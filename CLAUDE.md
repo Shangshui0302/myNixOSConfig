@@ -102,6 +102,7 @@ myNixOSConfig/
 │   ├── shell.md
 │   ├── litellm.md
 │   ├── mihomo.md
+│   ├── distrobox.md
 │   └── yazi.md
 │
 ├── CLAUDE.md
