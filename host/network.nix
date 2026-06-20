@@ -12,24 +12,48 @@
     webui = pkgs.zashboard;
   };
 
-  # preStart 在 mihomo 启动前执行（此时 TUN 未接管，系统 DNS 正常）
-  # 1. 下载订阅，拆分出 proxies 和 rules
-  # 2. envsubst 替换模板中的 ${VAR} 占位符
+  # preStart：下载订阅，提取 rules，渲染模板
+  # proxies 由 proxy-providers (type: http, interval: 86400) 自行拉取
   systemd.services.mihomo.preStart = ''
     mkdir -p /var/lib/private/mihomo/providers
     ${pkgs.curl}/bin/curl -sL --max-time 30 "$MIHOMO_SUBSCRIPTION_URL" \
       | ${pkgs.gawk}/bin/awk '
         /^rules:/   { in_rules=1; next }
-        in_rules && /^  - / { sub(/^  - /, ""); print }
-        in_rules && !/^  - / { exit }
+        in_rules && /^ - / { sub(/^ - /, ""); print }
+        in_rules && !/^ - / { exit }
       ' > /var/lib/private/mihomo/providers/rules.yaml
-    ${pkgs.curl}/bin/curl -sL --max-time 30 \
-      -o /var/lib/private/mihomo/providers/proxies.yaml \
-      "$MIHOMO_SUBSCRIPTION_URL"
     ${pkgs.envsubst}/bin/envsubst \
       -i ${./mihomo-config.yaml.in} \
       -o /run/mihomo/config.yaml
   '';
+
+  # 每日 4:17 刷新规则文件 + 通知 mihomo 重载
+  systemd.timers.mihomo-rule-refresh = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "*-*-* 04:17:00";
+      RandomizedDelaySec = 300;
+      Persistent = true;
+    };
+  };
+  systemd.services.mihomo-rule-refresh = {
+    serviceConfig.Type = "oneshot";
+    script = ''
+      set -e
+      source /persist/secrets/mihomo.env
+      mkdir -p /var/lib/private/mihomo/providers
+      ${pkgs.curl}/bin/curl -sL --max-time 30 "$MIHOMO_SUBSCRIPTION_URL" \
+        | ${pkgs.gawk}/bin/awk '
+          /^rules:/   { in_rules=1; next }
+          in_rules && /^ - / { sub(/^ - /, ""); print }
+          in_rules && !/^ - / { exit }
+        ' > /var/lib/private/mihomo/providers/rules.yaml
+      ${pkgs.curl}/bin/curl -s -X PUT http://127.0.0.1:9090/providers/rules/sub-rules \
+        -H "Authorization: Bearer $MIHOMO_SECRET" || true
+    '';
+    after = [ "mihomo.service" ];
+    requires = [ "mihomo.service" ];
+  };
 
   systemd.services.mihomo.serviceConfig = {
     EnvironmentFile = "/persist/secrets/mihomo.env";

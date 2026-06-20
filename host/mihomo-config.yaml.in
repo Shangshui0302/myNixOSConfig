@@ -1,4 +1,4 @@
-# API 秘钥（从环境变量注入）
+external-controller: '127.0.0.1:9090'
 secret: "${MIHOMO_SECRET}"
 
 # 基础配置
