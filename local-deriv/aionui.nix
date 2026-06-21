@@ -45,13 +45,6 @@ pkgs.stdenv.mkDerivation rec {
     cp -r opt/AionUi/* $out/lib/${pname}/
     find $out/lib/${pname} -path "*/claude-agent-sdk-linux-x64-musl/claude" -delete
 
-    # AionCore's prepare_runtime_files() expects to create cache/ and tools/
-    # inside the bundled Node.js directory. Pre-create them so the Nix store
-    # doesn't block it (store is 0555, non-root user gets EACCES).
-    for node_dir in $out/lib/${pname}/resources/bundled-aioncore/linux-x64/managed-resources/node/node-v*/; do
-      mkdir -p "$node_dir/cache" "$node_dir/tools/global/bin"
-    done
-
     substitute usr/share/applications/AionUi.desktop \
       $out/share/applications/${pname}.desktop \
       --replace-fail "/opt/AionUi/AionUi" "${pname}" \
@@ -60,19 +53,29 @@ pkgs.stdenv.mkDerivation rec {
     cp usr/share/icons/hicolor/1024x1024/apps/AionUi.png \
       $out/share/icons/hicolor/1024x1024/apps/${pname}.png
 
-    makeWrapper $out/lib/${pname}/AionUi $out/bin/${pname} \
-      --add-flags "--no-sandbox --disable-gpu-sandbox --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --password-store=basic"
-  '';
+    # AionCore's prepare_runtime_files() needs to write inside the bundled
+    # Node.js directory. The Nix store is read-only, so materialise a writable
+    # copy under ~/.cache/aionui/ at first launch and point AIONUI_BUNDLED_MANAGED_RESOURCES there.
+    managed_src="$out/lib/${pname}/resources/bundled-aioncore/linux-x64/managed-resources"
+    {
+      echo '#!/bin/sh'
+      echo "RUNTIME_DIR=\"\$HOME/.cache/aionui/managed-resources\""
+      echo "STORE_DIR=\"$managed_src\""
+      echo "VERSION_FILE=\"\$RUNTIME_DIR/.version\""
+      echo "if [ ! -f \"\$VERSION_FILE\" ] || [ \"\$(cat \"\$VERSION_FILE\")\" != \"${version}\" ]; then"
+      echo "  rm -rf \"\$RUNTIME_DIR\""
+      echo "  mkdir -p \"\$RUNTIME_DIR\""
+      echo "  cp -r \"\$STORE_DIR\"/* \"\$RUNTIME_DIR\"/"
+      echo "  chmod -R u+w \"\$RUNTIME_DIR\""
+      echo "  echo \"${version}\" > \"\$VERSION_FILE\""
+      echo "fi"
+      echo "export AIONUI_BUNDLED_MANAGED_RESOURCES=\"\$RUNTIME_DIR\""
+    } > $out/lib/${pname}/setup-runtime
+    chmod +x $out/lib/${pname}/setup-runtime
 
-  # Nix fixup normalises perms to 0555/0444. AionCore needs to write to
-  # blank npmrc files and the cache/tools dirs at runtime, so re-open them.
-  postFixup = let
-    nodeBase = "lib/${pname}/resources/bundled-aioncore/linux-x64/managed-resources/node";
-  in ''
-    for node_dir in "$out/${nodeBase}"/node-v*/; do
-      chmod 0777 "$node_dir/cache" "$node_dir/tools" "$node_dir/tools/global" "$node_dir/tools/global/bin" 2>/dev/null || true
-      chmod 0666 "$node_dir/blank_user_npmrc" "$node_dir/blank_global_npmrc" 2>/dev/null || true
-    done
+    makeWrapper $out/lib/${pname}/AionUi $out/bin/${pname} \
+      --run "source $out/lib/${pname}/setup-runtime" \
+      --add-flags "--no-sandbox --disable-gpu-sandbox --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --password-store=basic"
   '';
 
   meta = with pkgs.lib; {
