@@ -27,6 +27,8 @@
           "~/Downloads:rw"
           "~/Documents:rw"
           "/usr/share/fonts:ro"
+          "xdg-data/fonts:ro"
+          "/run/current-system/sw/share/fonts:ro"
         ];
         sockets = [ "x11" ];  # WeChat 4.1.1.7 Wayland 兼容问题，用 X11
       };
@@ -59,13 +61,4 @@
   #   };
   # };
 
-  xdg.desktopEntries."com.tencent.WeChat" = {
-    name = "WeChat";
-    exec = "flatpak run com.tencent.WeChat %U";
-    icon = "com.tencent.WeChat";
-    categories = [ "InstantMessaging" "Chat" ];
-    settings = {
-      StartupWMClass = "com.tencent.WeChat";
-    };
-  };
 }
