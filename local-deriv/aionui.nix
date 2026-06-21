@@ -1,11 +1,11 @@
 { pkgs }:
 pkgs.stdenv.mkDerivation rec {
   pname = "aionui";
-  version = "2.1.18";
+  version = "2.1.21";
 
   src = pkgs.fetchurl {
     url = "https://github.com/iOfficeAI/AionUi/releases/download/v${version}/AionUi-${version}-linux-amd64.deb";
-    sha256 = "1ny3znl7g10j6kiy65dd36ay3dcw2z08la4b6yc78bjvqx99ifms";
+    sha256 = "07n137ss84bpnnmzgpsqknnq5ymgf6wqsp0xc28bz1b13x7m8lb5";
   };
 
   nativeBuildInputs = [ pkgs.autoPatchelfHook pkgs.makeWrapper ];
@@ -45,6 +45,13 @@ pkgs.stdenv.mkDerivation rec {
     cp -r opt/AionUi/* $out/lib/${pname}/
     find $out/lib/${pname} -path "*/claude-agent-sdk-linux-x64-musl/claude" -delete
 
+    # AionCore's prepare_runtime_files() expects to create cache/ and tools/
+    # inside the bundled Node.js directory. Pre-create them so the Nix store
+    # doesn't block it (store is 0555, non-root user gets EACCES).
+    for node_dir in $out/lib/${pname}/resources/bundled-aioncore/linux-x64/managed-resources/node/node-v*/; do
+      mkdir -p "$node_dir/cache" "$node_dir/tools/global/bin"
+    done
+
     substitute usr/share/applications/AionUi.desktop \
       $out/share/applications/${pname}.desktop \
       --replace-fail "/opt/AionUi/AionUi" "${pname}" \
@@ -55,6 +62,17 @@ pkgs.stdenv.mkDerivation rec {
 
     makeWrapper $out/lib/${pname}/AionUi $out/bin/${pname} \
       --add-flags "--no-sandbox --disable-gpu-sandbox --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --password-store=basic"
+  '';
+
+  # Nix fixup normalises perms to 0555/0444. AionCore needs to write to
+  # blank npmrc files and the cache/tools dirs at runtime, so re-open them.
+  postFixup = let
+    nodeBase = "lib/${pname}/resources/bundled-aioncore/linux-x64/managed-resources/node";
+  in ''
+    for node_dir in "$out/${nodeBase}"/node-v*/; do
+      chmod 0777 "$node_dir/cache" "$node_dir/tools" "$node_dir/tools/global" "$node_dir/tools/global/bin" 2>/dev/null || true
+      chmod 0666 "$node_dir/blank_user_npmrc" "$node_dir/blank_global_npmrc" 2>/dev/null || true
+    done
   '';
 
   meta = with pkgs.lib; {

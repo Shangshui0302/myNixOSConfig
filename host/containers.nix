@@ -1,5 +1,5 @@
 { config, lib, pkgs, ... }: {
-  virtualisation.waydroid.enable = true;
+# virtualisation.waydroid.enable = true;
 
   virtualisation.podman = {
     enable = true;
