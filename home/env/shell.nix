@@ -13,17 +13,27 @@
       add_newline = true;
       command_timeout = 2000;
 
-      format = "$os $username$hostname $directory $git_branch$git_status$git_metrics $nix_shell $python $nodejs $rust $docker_context$line_break$time $battery $cmd_duration$line_break$character";
+      format = "$os $username$hostname $directory $git_branch$git_status$git_metrics$nix_shell $python $nodejs $rust $docker_context$line_break$time $battery $cmd_duration$line_break$character";
       line_break = "\n";
-
       os = {
         disabled = false;
         style = "#5277c3 bold";
         format = "[$symbol]($style)";
         symbols = {
-          NixOS = "󱄅";
+          NixOS = "";
           Linux = "";
+          Arch = "";
+          Ubuntu = "";
+          Fedora = "";
+          Debian = "";
         };
+      };
+
+      custom.distrobox = {
+        when = "[ -n \"$DISTROBOX_ID\" ]";
+        command = "echo $DISTROBOX_ID";
+        style = "#ff88cc bold";
+        format = "[📦 $output ]($style)";
       };
 
       username = {
@@ -136,7 +146,7 @@
         conflicted = "=\${count}";
         untracked = "?\${count}";
         stashed = "󰏗\${count}";
-        modified = "!\${count}";
+        modified = "![\${count}";
         staged = "+\${count}";
         renamed = "»\${count}";
         deleted = "✘\${count}";
@@ -194,7 +204,7 @@
 
       time = {
         disabled = false;
-        style = "#cccccc bold";
+        style = "#ffffff bold";
         format = "[󰥔 $time]($style)";
         time_format = "%H:%M";
       };
