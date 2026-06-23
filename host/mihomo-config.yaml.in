@@ -29,13 +29,13 @@ tun:
 # DNS
 dns:
   enable: true
-  prefer-h3: true
   ipv6: true
   listen: 127.0.0.1:1053
   enhanced-mode: fake-ip
   use-hosts: true
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
+    - "+.*"
     - "+.lan"
     - "+.local"
     - "time.*.com"
@@ -53,16 +53,8 @@ dns:
   nameserver:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
-    - https://dns.google/dns-query
-    - https://cloudflare-dns.com/dns-query
-  fallback:
-    - https://1.1.1.1/dns-query
-    - tls://8.8.8.8:853
   nameserver-policy:
-    'geosite:cn': 'https://doh.pub/dns-query'
-    'geosite:geolocation-!cn': 'https://dns.google/dns-query'
-    '+.google.com': 'https://dns.google/dns-query'
-    '+.facebook.com': 'https://dns.google/dns-query'
+    '+.v51124-6.qpon': 'https://doh.pub/dns-query'
   proxy-server-nameserver:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
@@ -73,14 +65,12 @@ dns:
 sniffer:
   enable: true
   parse-pure-ip: true
-  force-dns-mapping: true
+  force-dns-mapping: false
   override-destination: true
   sniff:
     HTTP:
       ports: [80, 8080, 2052, 2082, 2086, 2095]
     TLS:
-      ports: [443, 8443]
-    QUIC:
       ports: [443, 8443]
   skip-domain:
     - +.push.apple.com
