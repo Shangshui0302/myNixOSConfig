@@ -8,11 +8,9 @@ tcp-concurrent: true
 unified-delay: true
 allow-lan: false
 bind-address: "127.0.0.1"
-find-process-mode: strict
 ipv6: true
 log-level: info
 mode: rule
-tcp-concurrent-users: 64
 keep-alive-interval: 15
 inbound-tfo: true
 outbound-tfo: true
@@ -20,6 +18,7 @@ outbound-tfo: true
 # TUN
 tun:
   enable: true
+  device: Meta
   stack: system
   auto-route: true
   enable-ipv6: true
@@ -58,10 +57,12 @@ dns:
     - https://cloudflare-dns.com/dns-query
   fallback:
     - https://1.1.1.1/dns-query
+    - tls://8.8.8.8:853
   nameserver-policy:
+    'geosite:cn': 'https://doh.pub/dns-query'
+    'geosite:geolocation-!cn': 'https://dns.google/dns-query'
     '+.google.com': 'https://dns.google/dns-query'
     '+.facebook.com': 'https://dns.google/dns-query'
-    '+.cn': 'https://doh.pub/dns-query'
   proxy-server-nameserver:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
@@ -76,10 +77,11 @@ sniffer:
   override-destination: true
   sniff:
     HTTP:
-      ports: [80, 443]
-      override-destination: true
+      ports: [80, 8080, 2052, 2082, 2086, 2095]
     TLS:
-      ports: [443]
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
   skip-domain:
     - +.push.apple.com
   skip-dst-address:
@@ -120,13 +122,119 @@ proxy-providers:
       url: https://www.gstatic.com/generate_204
       interval: 300
 
-# 机场规则（preStart 从订阅提取为 text 格式，随订阅自动更新）
+# 社区规则集（MetaCubeX MRS 格式，每日自动更新）
 rule-providers:
-  sub-rules:
+  geosite-cn:
     type: file
-    path: ./providers/rules.yaml
-    behavior: classical
-    format: text
+    behavior: domain
+    path: ./ruleset/geosite-cn.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-ads:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-ads.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-geolocation-nocn:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-geolocation-nocn.mrs
+    format: mrs
+    interval: 86400
+
+  geoip-cn:
+    type: file
+    behavior: ipcidr
+    path: ./ruleset/geoip-cn.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-bilibili:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-bilibili.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-bahamut:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-bahamut.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-openai:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-openai.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-netflix:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-netflix.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-youtube:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-youtube.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-google:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-google.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-github:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-github.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-microsoft:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-microsoft.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-telegram:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-telegram.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-apple:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-apple.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-steam:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-steam.mrs
+    format: mrs
+    interval: 86400
+
+  geosite-cloudflare:
+    type: file
+    behavior: domain
+    path: ./ruleset/geosite-cloudflare.mrs
+    format: mrs
+    interval: 86400
 
 # 代理组
 proxy-groups:
@@ -137,10 +245,13 @@ proxy-groups:
   - name: "🌏 爱奇艺&哔哩哔哩"
     type: select
     use: [sub]
-    filter: "香港|台湾|澳门"
+    filter: "香港|台湾"
+    proxies: ["DIRECT", "🔰 选择节点"]
 
   - name: "📺 动画疯"
     type: select
+    use: [sub]
+    filter: "台湾"
     proxies: ["🔰 选择节点", "DIRECT"]
 
   - name: "🎮 Steam 登录/下载"
@@ -157,8 +268,7 @@ proxy-groups:
 
   - name: "☁️ OneDrive"
     type: select
-    use: [sub]
-    filter: "日本|香港"
+    proxies: ["DIRECT", "🔰 选择节点"]
 
   - name: "🎓 学术网站"
     type: select
@@ -176,11 +286,18 @@ proxy-groups:
     type: select
     proxies: ["🔰 选择节点", "DIRECT"]
 
-# 规则（自身依赖直连优先，然后走订阅规则集）
+# 规则：显式直连 > 自身依赖 > 去广告 > 国内直连 > 特定服务 > 国外代理
 rules:
+  # 网易云显式直连
+  - DOMAIN-SUFFIX,music.163.com,DIRECT
+  - DOMAIN-SUFFIX,music.126.net,DIRECT
+
+  # 自身依赖与 CDN 直连
   - DOMAIN-SUFFIX,no-mad-sub.one,DIRECT
   - DOMAIN-SUFFIX,jsdelivr.net,DIRECT
   - DOMAIN-SUFFIX,gstatic.com,DIRECT
+
+  # 邮件协议直连
   - DST-PORT,25,DIRECT
   - DST-PORT,109,DIRECT
   - DST-PORT,110,DIRECT
@@ -189,4 +306,87 @@ rules:
   - DST-PORT,587,DIRECT
   - DST-PORT,993,DIRECT
   - DST-PORT,995,DIRECT
-  - RULE-SET,sub-rules,🐟 漏网之鱼
+
+  # 去广告
+  - RULE-SET,geosite-ads,🛑 拦截广告
+
+  # 国内域名/IP 直连
+  - RULE-SET,geosite-cn,🇨🇳 国内网站
+  - RULE-SET,geoip-cn,🇨🇳 国内网站
+
+  # 特定服务分流
+  - RULE-SET,geosite-bilibili,🌏 爱奇艺&哔哩哔哩
+  - RULE-SET,geosite-bahamut,📺 动画疯
+  - RULE-SET,geosite-netflix,🔰 选择节点
+  - RULE-SET,geosite-youtube,🔰 选择节点
+  - RULE-SET,geosite-google,🔰 选择节点
+  - RULE-SET,geosite-openai,🔰 选择节点
+  - RULE-SET,geosite-github,🔰 选择节点
+  - RULE-SET,geosite-telegram,🔰 选择节点
+  - RULE-SET,geosite-microsoft,🔰 选择节点
+  - RULE-SET,geosite-apple,🔰 选择节点
+
+  # Steam 分流（MRS 兜底 + 静态域名双保险）
+  - DOMAIN-SUFFIX,steamcontent.com,🎮 Steam 登录/下载
+  - DOMAIN-SUFFIX,steamcdn-a.akamaihd.net,🎮 Steam 登录/下载
+  - DOMAIN-SUFFIX,steamcommunity.com,🎮 Steam 商店/社区
+  - DOMAIN-SUFFIX,store.steampowered.com,🎮 Steam 商店/社区
+  - RULE-SET,geosite-steam,🎮 Steam 商店/社区
+
+  # Linux 发行版基础设施（官网/文档/社区/包仓库）
+  # NixOS
+  - DOMAIN-SUFFIX,nixos.org,🔰 选择节点
+  - DOMAIN-SUFFIX,cache.nixos.org,🔰 选择节点
+  - DOMAIN-SUFFIX,nix.dev,🔰 选择节点
+  # Arch
+  - DOMAIN-SUFFIX,archlinux.org,🔰 选择节点
+  - DOMAIN-SUFFIX,aur.archlinux.org,🔰 选择节点
+  - DOMAIN-SUFFIX,pkgbuild.com,🔰 选择节点
+  # Fedora
+  - DOMAIN-SUFFIX,fedoraproject.org,🔰 选择节点
+  - DOMAIN-SUFFIX,fedora.org,🔰 选择节点
+  - DOMAIN-SUFFIX,rpmfusion.org,🔰 选择节点
+  - DOMAIN-SUFFIX,fedorainfracloud.org,🔰 选择节点
+  # Ubuntu / Debian
+  - DOMAIN-SUFFIX,ubuntu.com,🔰 选择节点
+  - DOMAIN-SUFFIX,debian.org,🔰 选择节点
+  - DOMAIN-SUFFIX,launchpad.net,🔰 选择节点
+  # openSUSE
+  - DOMAIN-SUFFIX,opensuse.org,🔰 选择节点
+  # 通用
+  - DOMAIN-SUFFIX,kernel.org,🔰 选择节点
+  - DOMAIN-SUFFIX,freedesktop.org,🔰 选择节点
+
+  # OneDrive 直连（geosite:microsoft 太粗，单独提出来）
+  - DOMAIN-SUFFIX,onedrive.com,☁️ OneDrive
+  - DOMAIN-SUFFIX,onedrive.live.com,☁️ OneDrive
+  - DOMAIN-SUFFIX,1drv.com,☁️ OneDrive
+  - DOMAIN-SUFFIX,sharepoint.com,☁️ OneDrive
+
+  # Cloudflare 站点（手动切换组 + 静态域名）
+  - DOMAIN-SUFFIX,cloudflare.com,🌩️ Cloudflare
+  - DOMAIN-SUFFIX,cloudflare-dns.com,🌩️ Cloudflare
+  - DOMAIN-SUFFIX,cloudflareinsights.com,🌩️ Cloudflare
+  - RULE-SET,geosite-cloudflare,🌩️ Cloudflare
+
+  # 学术网站
+  - DOMAIN-SUFFIX,scholar.google.com,🎓 学术网站
+  - DOMAIN-SUFFIX,ieee.org,🎓 学术网站
+  - DOMAIN-SUFFIX,acm.org,🎓 学术网站
+  - DOMAIN-SUFFIX,arxiv.org,🎓 学术网站
+  - DOMAIN-SUFFIX,sci-hub.se,🎓 学术网站
+  - DOMAIN-SUFFIX,sci-hub.ru,🎓 学术网站
+  - DOMAIN-SUFFIX,springer.com,🎓 学术网站
+  - DOMAIN-SUFFIX,elsevier.com,🎓 学术网站
+  - DOMAIN-SUFFIX,sciencedirect.com,🎓 学术网站
+  - DOMAIN-SUFFIX,nature.com,🎓 学术网站
+  - DOMAIN-SUFFIX,science.org,🎓 学术网站
+  - DOMAIN-SUFFIX,researchgate.net,🎓 学术网站
+  - DOMAIN-SUFFIX,semanticscholar.org,🎓 学术网站
+  - DOMAIN-SUFFIX,pubmed.ncbi.nlm.nih.gov,🎓 学术网站
+
+  # 其他国外网站兜底
+  - RULE-SET,geosite-geolocation-nocn,🐟 漏网之鱼
+
+  # 最终兜底
+  - MATCH,🐟 漏网之鱼

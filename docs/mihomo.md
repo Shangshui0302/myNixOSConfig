@@ -1,14 +1,20 @@
 # Mihomo 代理
 
-Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。配置模板由 Nix 管理，节点和规则从机场订阅动态拉取。
+Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。配置模板由 Nix 管理，节点从机场订阅拉取，规则使用 MetaCubeX 社区规则集（MRS 格式）。
 
 ## 架构
 
 ```
-preStart: 下载订阅 → awk 提取 rules → envsubst 渲染模板 → /run/mihomo/config.yaml
-proxy-providers (type: http, interval: 86400): 每 24h 自动更新节点
-mihomo-rule-refresh.timer (每日 4:17): 刷新规则 → PUT /providers/rules/sub-rules
+preStart: envsubst 渲染模板 → /run/mihomo/config.yaml
+proxy-providers (type: http): 每 24h 自动更新节点
+rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 ```
+
+规则来源：[MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)，MRS 二进制格式，每日自动构建。覆盖：
+- 国内域名/IP 直连（geosite:cn + geoip:cn）
+- 去广告（geosite:category-ads-all）
+- 国外网站代理兜底（geosite:geolocation-!cn）
+- 特定服务分流（bilibili、bahamut、netflix、openai、youtube、google、github、telegram、microsoft、apple）
 
 - **TUN 模式**：在系统层面创建虚拟网卡，所有流量自动经过代理，无需逐个应用配置
 - **nftables 防火墙**：配合 TUN 模式，`Meta` 接口标记为受信任
@@ -18,7 +24,7 @@ mihomo-rule-refresh.timer (每日 4:17): 刷新规则 → PUT /providers/rules/s
 
 | 文件 | 用途 |
 |------|------|
-| `host/network.nix` | mihomo 服务声明、preStart、timer |
+| `host/network.nix` | mihomo 服务声明、preStart |
 | `host/mihomo-config.yaml.in` | 配置模板（envsubst 变量注入） |
 | `/persist/secrets/mihomo.env` | `MIHOMO_SECRET`、`MIHOMO_SUBSCRIPTION_URL` |
 
@@ -47,9 +53,6 @@ curl -x http://127.0.0.1:7890 https://www.google.com -I
 
 # 查看路由表
 ip route show table all | grep Meta
-
-# 检查规则刷新 timer
-systemctl status mihomo-rule-refresh.timer
 ```
 
 ## 防火墙规则
@@ -65,11 +68,8 @@ nftables 已启用，核心规则：
 # 查看 Mihomo 日志
 journalctl -u mihomo -f
 
-# 重启服务（触发 preStart 重新拉取规则）
+# 重启服务（触发 preStart 重新渲染模板）
 sudo systemctl restart mihomo
-
-# 手动刷新规则（不中断服务）
-sudo systemctl start mihomo-rule-refresh
 
 # 检查 WebUI 是否可访问
 curl http://127.0.0.1:9090 -I
@@ -86,4 +86,4 @@ sudo nft list ruleset
 | WebUI 打不开 | zashboard 路径不对 | 检查 `systemctl status mihomo` |
 | 部分应用不走代理 | TUN 路由问题 | 检查 `ip route` 和 `Meta` 接口状态 |
 | 配置文件不生效 | 修改后未重载 | `sudo systemctl restart mihomo` |
-| 节点/规则过期 | 自动更新失败 | `sudo systemctl start mihomo-rule-refresh` |
+| 规则未生效 | rule-provider 下载失败 | 检查 WebUI → Providers 面板；确认 jsdelivr CDN 可访问 |
