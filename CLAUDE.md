@@ -204,6 +204,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **Flatpak**: services.flatpak + nix-flatpak 声明式管理 (bottles)
 - **虚拟化**: libvirtd + QEMU/KVM + virt-manager
 - **Android 容器**: Waydroid (LXC, binder, waydroid-nftables)
+- **Nix 管理**: nh (CLI helper + systemd timer 每周 GC, 保留 10 代 + 7 天)
 
 ## LiteLLM 模型映射 (端口 4000)
 所有模型通过 DeepSeek API 后端提供，环境变量 `DEEPSEEK_API_KEY` 在 `/persist/secrets/litellm.env`:
