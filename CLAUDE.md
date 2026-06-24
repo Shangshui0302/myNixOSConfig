@@ -85,14 +85,14 @@ myNixOSConfig/
 │   │   ├── ai.nix             # claude-code, codex, gemini-cli, officecli, aionui
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
-│   │   ├── office.nix         # WPS(缩放), LibreOffice, Obsidian, OnlyOffice
+│   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器
 │   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend
 │   │   ├── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
-│   │   └── compat.nix         # Wine Wow64, Winetricks, virt-manager
+│   │   └── compat.nix         # virt-manager, Flatseal (Flatpak 权限管理)
 │   └── leisure/               # 影音、游戏与浏览器
 │       ├── player.nix         # mpv, 网易云(gtk/web/yesplaymusic), OBS, go-musicfox, loupe, animeko
 │       ├── browser.nix        # Firefox, Chrome
-│       └── gaming.nix         # Heroic, protonup-qt, mangohud, bottles (nix-flatpak)
+│       └── gaming.nix         # mangohud
 │
 ├── docs/                      # 使用指南 + 约束
 │   ├── nixos-constraints.md   # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
@@ -197,11 +197,9 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **二进制兼容**: nix-ld (运行非 NixOS 编译的二进制)
 - **文件管理**: gvfs
 - **USB 自动挂载**: udiskie (systemd user service)
-- **剪切板**: cursor-clip (daemon 开机启动, Super+C 历史面板)
-- **Emoji**: wofi-emoji (Super+. 切换开关，normal-window 修复 fcitx5)
 - **udev**: stlink, openocd
 - **Steam**: programs.steam + 32-bit OpenGL/Vulkan (host/gaming.nix)
-- **Flatpak**: services.flatpak + nix-flatpak 声明式管理 (bottles)
+- **Flatpak**: services.flatpak + nix-flatpak 声明式管理
 - **虚拟化**: libvirtd + QEMU/KVM + virt-manager
 - **Android 容器**: Waydroid (LXC, binder, waydroid-nftables)
 - **Nix 管理**: nh (CLI helper + systemd timer 每周 GC, 保留 10 代 + 7 天)

@@ -5,49 +5,7 @@ let
 in
 {
   home.packages = with pkgs; [
-    awww swaynotificationcenter libnotify
     grim slurp wl-clipboard grimblast swappy
-    waybar wofi
-    wofi-emoji typora zettlr kdePackages.ghostwriter
-    (let
-      cursor-clip-src = pkgs.fetchFromGitHub {
-        owner = "Sirulex";
-        repo = "cursor-clip";
-        rev = "7e12054e55b7b2c34eff8638b88488403686e8dd";
-        hash = "sha256-nppWnTJck1pCXucLUOas9mFQKCg7Ck0DENoPA9wUxkI=";
-      };
-    in cursor-clip.overrideAttrs (old: {
-      src = cursor-clip-src;
-      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-        src = cursor-clip-src;
-        hash = "sha256-QG9PR5aI76rgP+Z1dtWJvn5IX2t+vvuN6Y4/OKyBjfM=";
-      };
-      nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.dbus ];
-      PKG_CONFIG_PATH = "${pkgs.dbus.dev}/lib/pkgconfig";
-    }))
-    # clipse  # 和 cursor-clip 定位冲突，先注释
-  ] ++ [
-    (pkgs.writeShellScriptBin "clipd-toggle" ''
-      if pgrep -f 'cursor-clip$' >/dev/null 2>&1; then
-        pkill -f 'cursor-clip$'
-      else
-        exec cursor-clip
-      fi
-    '')
-    (pkgs.writeShellScriptBin "wofi-emoji-toggle" ''
-      if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class == "wofi")' >/dev/null 2>&1; then
-        hyprctl clients -j | ${pkgs.jq}/bin/jq -r '.[] | select(.class == "wofi") | .address' | while read addr; do
-          hyprctl dispatch closewindow "address:$addr"
-        done
-      else
-        (sleep 0.3 && hyprctl dispatch focuswindow "class:wofi") &
-        FOCUS_PID=$!
-        EMOJI=$(${pkgs.gnused}/bin/sed '1,/^### DATA ###$/d' ${pkgs.wofi-emoji}/bin/wofi-emoji | ${pkgs.wofi}/bin/wofi -p "emoji" --show dmenu -i --normal-window | cut -d ' ' -f 1 | tr -d '\n')
-        kill $FOCUS_PID 2>/dev/null
-        [ -n "$EMOJI" ] && ${pkgs.wtype}/bin/wtype "$EMOJI"
-        [ -n "$EMOJI" ] && ${pkgs.wl-clipboard}/bin/wl-copy "$EMOJI"
-      fi
-    '')
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
       mkdir -p "$dir"
@@ -72,8 +30,6 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-
-    settings = { };
   };
 
   # Noctalia user template: Lua color config
@@ -161,10 +117,6 @@ in
         explicit_column_widths = "0.33, 0.5, 0.67, 0.81, 0.96",
       },
 
-      master = {
-        new_status = "master",
-      },
-
       misc = {
         force_default_wallpaper = -1,
         disable_hyprland_logo = false,
@@ -200,14 +152,11 @@ in
 
     -- ===== Animation curves =====
     hl.curve("easeOutQuint",  { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
-    hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1} } })
     hl.curve("linear",         { type = "bezier", points = { {0, 0}, {1, 1} } })
     hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5}, {0.75, 1} } })
     hl.curve("quick",          { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
     hl.curve("easeInOutCirc",  { type = "bezier", points = { {0.85, 0}, {0.15, 1} } })
     hl.curve("easeInCirc",     { type = "bezier", points = { {0.55, 0}, {1, 0.45} } })
-    hl.curve("easeOutCirc",    { type = "bezier", points = { {0, 0.55}, {0.45, 1} } })
-
     -- ===== Animations =====
     hl.animation({ leaf = "global",    enabled = true, speed = 10, bezier = "linear" })
     hl.animation({ leaf = "border",    enabled = true, speed = 5.39, bezier = "easeOutQuint" })
@@ -235,7 +184,6 @@ in
       hl.exec_cmd("fcitx5 -rd")
       hl.exec_cmd("noctalia-shell")
       hl.exec_cmd(home .. "/.cache/noctalia/HVE/hve_watchdog.sh")
-      hl.exec_cmd("cursor-clip --daemon &")
     end)
 
     -- Noctalia colors/overlay not loaded (hyprlang .conf incompatible with Lua).
@@ -251,8 +199,6 @@ in
     hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia-shell ipc call controlCenter toggle"))
     hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia-shell ipc call settings toggle"))
     hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia-shell ipc call plugin:workspace-overview toggle"))
-    hl.bind("SUPER + period", hl.dsp.exec_cmd("wofi-emoji-toggle"))
-    hl.bind("SUPER + C", hl.dsp.exec_cmd("clipd-toggle"))
 
     -- Window management
     hl.bind("SUPER + Q", hl.dsp.window.close())

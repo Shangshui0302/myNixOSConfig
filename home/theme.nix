@@ -103,7 +103,6 @@
 
   # Extra fonts & Qt5 theme
   home.packages = with pkgs; [
-    wineWow64Packages.fonts
     libsForQt5.qt5ct
     papirus-icon-theme gnome-themes-extra adw-gtk3
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.

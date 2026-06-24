@@ -32,8 +32,6 @@
 | `Super + K` | 控制中心 (Noctalia) |
 | `Super + ,` | 设置面板 (Noctalia) |
 | `Super + Tab` | 工作区总览 (Noctalia) |
-| `Super + .` | Emoji / 符号选择器（toggle 开关）|
-| `Super + C` | 剪切板历史 (cursor-clip) |
 
 ### 截图
 

@@ -16,8 +16,8 @@ NixOS 个人配置，基于 flakes + Home Manager。
 | 编辑器       | Neovim (kickstart + lazy.nvim, LSP/completion/telescope) |
 | 代理         | mihomo (TUN 模式)                                        |
 | 云同步       | OneDrive (HM programs.onedrive)                          |
-| 游戏         | Steam + Heroic + protonup-qt + bottles (Flatpak)         |
-| Windows 兼容 | Wine Wow64 + Winetricks + virt-manager (KVM)             |
+| 游戏         | Steam + mangohud                                         |
+| Windows 兼容 | virt-manager (KVM)                                       |
 
 ## 目录结构
 
