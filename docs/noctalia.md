@@ -111,7 +111,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 **调度模式**：根据地理位置（成都）自动切换暗色/亮色模式。
 **模板同步**：Hyprland 边框、Qt/GTK 主题、Steam、Telegram 皮肤自动跟随配色。
 
-暗色模式切换时，hook 直接写入 dconf 和 qt5ct，xdg-desktop-portal-gtk 暴露给应用。
+暗色模式切换时：`color-scheme` 由 Noctalia GTK 模板通过 gsettings → portal 分发（避免 dconf/gsettings 双重写入导致 Chrome 闪烁）；hook 仅写入 `gtk-theme`、`gtk-application-prefer-dark-theme` 和 `qt5ct.conf`。
 
 ## 锁屏与空闲
 

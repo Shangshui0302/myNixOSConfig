@@ -698,22 +698,23 @@
         enabled = true;
         darkModeChange = let
           toggleScript = pkgs.writeShellScript "noctalia-darkmode-toggle" ''
+            # color-scheme is handled by Noctalia's GTK template post_hook
+            # (gtk-refresh.py via gsettings → xdg-desktop-portal). Writing it
+            # here via dconf races with the portal and causes Chrome to flash.
             DCONF="${pkgs.dconf}/bin/dconf"
             if [ "$1" = "true" ]; then
-              $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
               $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3-dark'"
               $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "true"
               mkdir -p ~/.config/qt5ct
               printf '[Appearance]\nstyle=Fusion\ncolor_scheme=darker\n' > ~/.config/qt5ct/qt5ct.conf
             else
-              $DCONF write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
               $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3'"
               $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "false"
               mkdir -p ~/.config/qt5ct
               printf '[Appearance]\nstyle=Fusion\n' > ~/.config/qt5ct/qt5ct.conf
             fi
           '';
-        in "${toggleScript}";
+        in "${toggleScript} \$1";
       };
       plugins = {
         autoUpdate = true;

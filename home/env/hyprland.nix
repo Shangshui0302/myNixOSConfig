@@ -195,6 +195,10 @@ in
     hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"))
     hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"))
     hl.bind("SUPER + E", hl.dsp.exec_cmd("nemo"))
+    hl.bind("SUPER + B", hl.dsp.exec_cmd("chrome"))
+    hl.bind("SUPER + C", hl.dsp.exec_cmd("code"))
+    hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"))
+    hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
     hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("noctalia-shell ipc call launcher toggle"))
     hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia-shell ipc call controlCenter toggle"))
     hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia-shell ipc call settings toggle"))
@@ -203,7 +207,7 @@ in
     -- Window management
     hl.bind("SUPER + Q", hl.dsp.window.close())
     hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
-      hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
+    hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
     hl.bind("SUPER + P", hl.dsp.window.pseudo())
     hl.bind("SUPER + SHIFT + M", hl.dsp.exit())
 

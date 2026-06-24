@@ -146,7 +146,7 @@
         conflicted = "=\${count}";
         untracked = "?\${count}";
         stashed = "󰏗\${count}";
-        modified = "![\${count}";
+        modified = "![\${count}]($style)";
         staged = "+\${count}";
         renamed = "»\${count}";
         deleted = "✘\${count}";
