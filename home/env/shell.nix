@@ -239,7 +239,7 @@
     };
   };
 
-  # ghostty 已切换到 foot
+  # ghostty 已切换到 foot，暂时禁用 ghostty
   /* xdg.configFile."ghostty/config.ghostty".text = ''
     scrollback-limit = 10000
     theme = MyGhostty Dark
@@ -344,6 +344,18 @@
       alias top='btop'
       alias tree='eza -T --icons=auto'
 
+      # foot notification: 超过 10s 的命令完成后弹通知 (via ble.sh)
+      blehook PREEXEC='_foot_start=$(date +%s); _foot_cmd=$1'
+      blehook POSTEXEC='
+        if [[ -n $_foot_start ]]; then
+          dur=$(($(date +%s) - _foot_start))
+          if (( dur >= 10 )); then
+            printf "\\e]777;notify;%s;%s\\e\\\\" "$_foot_cmd" "Finished in "$dur"s"
+          fi
+          unset _foot_start _foot_cmd
+        fi
+      '
+
       alias snvim='sudo HOME=$HOME XDG_CONFIG_HOME=$XDG_CONFIG_HOME XDG_DATA_HOME=$XDG_DATA_HOME nvim'
     '';
   };
@@ -395,6 +407,24 @@
 
       # fish 问候
       set -g fish_greeting
+
+      # foot notification: 超过 10s 的命令完成后弹通知
+      set -g _foot_notify_threshold 10
+      function _foot_preexec --on-event fish_preexec
+          set -g _foot_start (date +%s)
+          set -g _foot_cmd $argv
+      end
+      function _foot_postexec --on-event fish_postexec
+          if not set -q _foot_start; return; end
+          set -l dur (math (date +%s) - $_foot_start)
+          if test $dur -ge $_foot_notify_threshold
+              printf "\e]777;notify;%s;%s\e\\" \
+                  "$_foot_cmd" \
+                  "Finished in $(math round $dur)s"
+          end
+          set -e _foot_start
+          set -e _foot_cmd
+      end
     '';
   };
 

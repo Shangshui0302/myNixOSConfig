@@ -3,6 +3,23 @@
 let
   fonts = import ../local-deriv/fonts.nix { inherit pkgs; };
   anthropic-fonts = import ../local-deriv/anthropic-fonts.nix { inherit pkgs; };
+
+  foot-notify = pkgs.writeShellScriptBin "foot-notify" ''
+    title="$1"
+    body="$2"
+    body="''${body%$'\n'}"
+
+    OUT=$(${pkgs.libnotify}/bin/notify-send --print-id --wait \
+      --app-name foot \
+      --category terminal \
+      --action default="Focus" \
+      --hint "string:desktop-entry:foot" \
+      -- "$title" "$body")
+
+    echo "$OUT"
+    ${pkgs.hyprland}/bin/hyprctl dispatch focuswindow "class:foot" >/dev/null 2>&1 || true
+    echo "xdgtoken="
+  '';
 in
 
 {
@@ -87,14 +104,29 @@ in
   # Terminal
   programs.foot = {
     enable = true;
+    xdg.serverAutostart = true;
     settings = {
       main = {
-        font = "monospace:size=8";
-        dpi-aware = "yes";
+        font = "Anthropic Mono Variable:size=12, Source Han Sans SC:size=12";
         shell = "${pkgs.fish}/bin/fish";
+        pad = "10x10 center";
+        selection-target = "both";
+        bold-text-in-bright = "yes";
+      };
+      scrollback.lines = 10000;
+      bell = {
+        urgent = "yes";
+        notify = "yes";
+      };
+      mouse.hide-when-typing = "yes";
+      cursor.blink = "yes";
+      "desktop-notifications" = {
+        command = "${foot-notify}/bin/foot-notify \${title} \${body}";
+        inhibit-when-focused = "no";
       };
       "colors-dark" = {
         alpha = "0.8";
+        blur = "yes";
         background = "0e1019";
         foreground = "fffaf4";
         regular0  = "666666";
