@@ -7,7 +7,13 @@
     image=arch_rolling:init
     home=~/distrobox/arch
     init_hooks=sudo chsh -s /usr/bin/fish $USER
-
+    additional_flags="\
+      --network=host \
+      --ipc=host \
+      --pid=host \
+      --uts=host \
+      --hostname=arch-dbx \
+      --privileged"
 
     # ==========================================
     # 2. fedora开发容器
@@ -16,6 +22,13 @@
     image=fedora_43:init
     home=~/distrobox/fedora
     init_hooks=sudo chsh -s /usr/bin/fish $USER
+    additional_flags="\
+      --network=host \
+      --ipc=host \
+      --pid=host \
+      --uts=host \
+      --hostname=fedora-dbx \
+      --privileged"
 
     # ==========================================
     # 3. 备用开发容器
@@ -24,5 +37,12 @@
     image=ubuntu_24.04:init
     home=~/distrobox/ubuntu
     init_hooks=sudo chsh -s /usr/bin/fish $USER
+    additional_flags="\
+      --network=host \
+      --ipc=host \
+      --pid=host \
+      --uts=host \
+      --hostname=ubuntu-dbx \
+      --privileged"
   '';
 }
