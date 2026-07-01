@@ -228,6 +228,10 @@ in
         theme_mode_changed = "${darkModeScript}";
       };
 
+      greeter_sync = {
+        auto_sync = true;
+      };
+
       # v5: [[control_center.shortcuts]] array-of-tables; in Nix HM settings this stays as a list of attrsets
       control_center.shortcuts = [
         { type = "wifi"; }
