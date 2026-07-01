@@ -30,6 +30,8 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "lua";
+    systemd.enable = true;
   };
 
   # Noctalia user template: Lua color config
@@ -52,13 +54,6 @@ in
         },
       },
     })
-  '';
-
-  # Noctalia user template registry
-  xdg.configFile."noctalia/user-templates.toml".text = ''
-    [templates.hyprland-lua]
-    input_path = "~/.config/noctalia/templates/hyprland-colors.lua"
-    output_path = "~/.config/hypr/noctalia-colors.lua"
   '';
 
   xdg.configFile."hypr/hyprland.lua" = {
@@ -182,11 +177,10 @@ in
     -- Startup commands
     hl.on("hyprland.start", function()
       hl.exec_cmd("fcitx5 -rd")
-      hl.exec_cmd("noctalia-shell")
-      hl.exec_cmd(home .. "/.cache/noctalia/HVE/hve_watchdog.sh")
+      hl.exec_cmd("noctalia")
     end)
 
-    -- Noctalia colors/overlay not loaded (hyprlang .conf incompatible with Lua).
+    -- Noctalia theme colors loaded via v5 template system (hyprland-lua user template).
 
     -- ===== Keybinds =====
 
@@ -199,10 +193,11 @@ in
     hl.bind("SUPER + C", hl.dsp.exec_cmd("code"))
     hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"))
     hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
-    hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("noctalia-shell ipc call launcher toggle"))
-    hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia-shell ipc call controlCenter toggle"))
-    hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia-shell ipc call settings toggle"))
-    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia-shell ipc call plugin:workspace-overview toggle"))
+    hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
+    hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"))
+    hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia msg settings-toggle"))
+    -- v5: plugin:workspace-overview not yet available, use window-switcher as alternative
+    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia msg window-switcher"))
 
     -- Window management
     hl.bind("SUPER + Q", hl.dsp.window.close())
@@ -294,8 +289,8 @@ in
     hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"), { repeating = true })
     hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
     hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
-    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("noctalia-shell ipc call brightness increase"), { repeating = true })
-    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("noctalia-shell ipc call brightness decrease"), { repeating = true })
+    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("noctalia msg brightness-up"), { repeating = true })
+    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("noctalia msg brightness-down"), { repeating = true })
 
     -- ===== Gestures =====
 

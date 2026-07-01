@@ -73,7 +73,7 @@
         <edit name="family" mode="prepend" binding="strong">
           <string>Anthropic Sans Web Text</string>
           <string>Source Han Serif</string>
-          <string>PingFang SC</string>
+          <string>Noto Sans CJK SC</string>
           <string>Noto Sans CJK SC</string>
         </edit>
       </match>

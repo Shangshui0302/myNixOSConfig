@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 
 let
-  fonts = import ../local-deriv/fonts.nix { inherit pkgs; };
   anthropic-fonts = import ../local-deriv/anthropic-fonts.nix { inherit pkgs; };
 
   foot-notify = pkgs.writeShellScriptBin "foot-notify" ''
@@ -71,7 +70,7 @@ in
     wqy_zenhei wqy_microhei
     noto-fonts-cjk-sans noto-fonts-cjk-serif
     source-han-serif source-han-sans
-    fonts.pingfang-otf fonts.harmonyos-sans
+
     anthropic-fonts
     noto-fonts-color-emoji
     lxgw-wenkai sarasa-gothic

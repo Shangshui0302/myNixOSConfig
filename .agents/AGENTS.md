@@ -1,4 +1,4 @@
-# NixOS Config — Claude Code Context
+# NixOS Config — Agent Context
 
 ## 硬件信息
 - 机型: MechRevo (机械革命) 笔记本
@@ -44,12 +44,10 @@ myNixOSConfig/
 │   └── vim-plugins.nix        # vimPlugins 别名
 │
 ├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
-
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
 │   ├── officecli.nix           # OfficeCLI — AI agent Office 文档工具
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
-│   ├── anthropic-fonts.nix   # Anthropic 字体
 │   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
 │
 ├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
@@ -82,7 +80,7 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code, codex, gemini-cli, officecli, aionui
+│   │   ├── ai.nix             # claude-code (版本固定), codex, gemini-cli, officecli, aionui
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器
@@ -95,7 +93,7 @@ myNixOSConfig/
 │       └── gaming.nix         # mangohud
 │
 ├── docs/                      # 使用指南 + 约束
-│   ├── nixos-constraints.md   # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
+│   ├── nixos-constraints.md   # 详细约束与惯例（AGENTS.md 精简版，冲突时以它为准）
 │   ├── hyprland.md
 │   ├── noctalia.md
 │   ├── nvim.md
@@ -105,7 +103,13 @@ myNixOSConfig/
 │   ├── distrobox.md
 │   └── yazi.md
 │
-├── CLAUDE.md
+├── .agents/                   # Antigravity 配置
+│   ├── AGENTS.md              # Agent 上下文：硬件/系统信息、目录结构、服务列表、注意事项
+│   └── skills/                # Agent 技能
+│       ├── doc-maintainer/    # 文档维护技能
+│       └── project-commit/    # 提交工作流技能
+│
+├── CLAUDE.md                  # (Legacy) Claude Code 上下文，已迁移至 .agents/AGENTS.md
 └── README.md
 ```
 
@@ -205,7 +209,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **Nix 管理**: nh (CLI helper + systemd timer 每周 GC, 保留 10 代 + 7 天)
 
 ## LiteLLM 模型映射 (端口 4000)
-所有模型通过 DeepSeek API 后端提供，环境变量 `DEEPSEEK_API_KEY` 在 `/persist/secrets/litellm.env`:
+所有模型通过 DeepSeek API 后端提供，环境变量 `DEEPSEEK_API_KEY` 在 `/persist/secrets/litellm.env`：
 
 | 模型名 | 后端模型 | 用途 |
 |--------|---------|------|
@@ -232,7 +236,7 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 - **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行
 - 涉及 mihomo / TUN / nftables / DNS 等网络基础设施的改动，**一律开 feature 分支**。原因：网络组件出问题时可能阻断 nixos-rebuild（缓存下载走 TUN → 代理坏了 → SSL 失败 → 无法 rebuild 恢复），形成死锁
 - feature 分支验证通过（rebuild 成功 + 服务正常运行）后再合并回 main
-- **每次改动后**：更新 README.md 和 CLAUDE.md → commit → rebuild → push main（private repo，不需要 PR）
+- **每次改动后**：更新 README.md 和 AGENTS.md → commit → rebuild → push main（private repo，不需要 PR）
 - 修改后**不要自动 rebuild**，给出命令让我手动执行
 - 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
 - 优先用 Home Manager 管用户级配置，系统级才动 host/

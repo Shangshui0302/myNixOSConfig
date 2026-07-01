@@ -9,7 +9,7 @@ overlays/
   *.nix                # One overlay per file
 local-deriv/
   *.nix                # Custom packages and font derivations
-  fonts.nix            # PingFang, HarmonyOS Sans, etc.
+  anthropic-fonts.nix  # Anthropic fonts
 home/
   default.nix git.nix theme.nix   # Root-level HM modules
   env/ dev/ productivity/ leisure/  # Purpose-based subdirectories
