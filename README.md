@@ -35,9 +35,9 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── users.nix              # 用户与 sudo
 │   ├── network.nix            # 网络、mihomo、防火墙
 │   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
-│   ├── desktop.nix            # Hyprland、fcitx5、字体、foot
-│   ├── sddm.nix               # 登录管理器
-│   ├── litellm.nix            # AI 代理
+│   ├── desktop.nix            # 桌面环境基础设施
+│   ├── greeter.nix            # Noctalia Greeter 登录管理器
+│   ├── litellm.nix            # 本地大模型代理服务
 │   └── gaming.nix             # Steam、Flatpak、libvirtd
 │
 ├── home/                      # 用户配置 (4 子目录)

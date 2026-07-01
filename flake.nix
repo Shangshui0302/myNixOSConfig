@@ -10,7 +10,10 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
   };
@@ -20,6 +23,7 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./host/default.nix
+        inputs.noctalia-greeter.nixosModules.default
         inputs.home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;

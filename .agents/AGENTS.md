@@ -13,7 +13,7 @@
 - Username: `lishangshui`
 - 系统: NixOS 26.05 (Yarara) with flakes + Home Manager
 - 启动: systemd-boot + EFI (可触控 EFI 变量)
-- 显示管理器: SDDM (sddm-astronaut 主题，自定义 yamadaryou 壁纸，猫ppuccin 配色)
+- 显示管理器: Noctalia Greeter (与桌面环境自动同步主题和壁纸)
 - WM: Hyprland (Wayland), **Lua 配置** (`hyprland.lua`), scrolling layout
 - Shell: fish (plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
 - 终端: foot (系统级配置，host/desktop.nix)，默认 shell: fish
@@ -37,7 +37,7 @@ myNixOSConfig/
 ├── flake.lock                 # root 拥有，更新需 sudo
 ├── hardware-configuration.nix # 自动生成，不要手动大改
 ├── assets/
-│   └── yamadaryou.png         # SDDM 壁纸 + Hyprland 锁屏
+│   └── yamadaryou.png         # Noctalia Greeter/桌面 壁纸 + Hyprland 锁屏
 │
 ├── overlays/                  # nixpkgs overlays，按文件分离
 │   ├── default.nix            # 入口 — imports 所有 overlay 为 list
@@ -60,7 +60,7 @@ myNixOSConfig/
 │   ├── network.nix            # NetworkManager, mihomo TUN, nftables, firewall, 网络诊断工具
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
-│   ├── sddm.nix               # SDDM 显示管理器 (astronaut 主题定制)
+│   ├── greeter.nix            # Noctalia Greeter 显示管理器
 │   ├── litellm.nix            # LiteLLM 代理 (0.0.0.0:4000, DeepSeek API 后端)
 │   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
@@ -186,7 +186,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 
 ## 已启用服务
 - **启动**: systemd-boot (EFI)
-- **显示管理器**: SDDM (sddm-astronaut 自定义主题)
+- **显示管理器**: Noctalia Greeter (通过 greetd)
 - **显示**: Hyprland (Wayland, Lua 配置, scrolling layout), Noctalia shell (Quickshell 面板)
 - **输入法**: fcitx5 (rime-ice + moegirl + zhwiki 词库)
 - **音频**: PipeWire (pulse/alsa/jack)

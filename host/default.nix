@@ -11,7 +11,7 @@
     ./network.nix
     ./services.nix
     ./desktop.nix
-    ./sddm.nix
+    ./greeter.nix
     ./litellm.nix
     ./gaming.nix
     ./containers.nix
