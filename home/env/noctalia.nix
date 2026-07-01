@@ -62,35 +62,38 @@ in
 
       theme = {
         mode = "auto";
-        source = "builtin";
-        builtin = "Noctalia";
+        source = "custom";
+        custom_palette = "yamadaryou";
       };
 
       theme.templates = {
         enable_builtin_templates = true;
         enable_community_templates = false;
+        builtin_ids = ["hyprland" "qt" "steam" "telegram" "gtk"];
       };
 
-      theme.templates.user."hyprland-lua" = {
+      # v5: user template key names must be valid TOML bare keys (no hyphens); use underscore
+      theme.templates.user.hyprland_lua = {
         input_path = "${config.xdg.configHome}/noctalia/templates/hyprland-colors.lua";
         output_path = "${config.xdg.configHome}/hypr/noctalia-colors.lua";
       };
 
       bar.main = {
         position = "top";
-        thickness = 34;
+        thickness = 8;
         background_opacity = 0.93;
         radius = 12;
-        margin_h = 4;
-        margin_v = 4;
-        padding = 14;
+        # v5: margin_h/margin_v replaced by margin_ends (inset from ends) / margin_edge (distance from screen edge)
+        margin_ends = 4;
+        margin_edge = 4;
+        padding = 2;
         widget_spacing = 6;
         shadow = true;
         capsule = true;
         reserve_space = true;
-        start = ["launcher" "clock" "workspaces"];
-        center = ["active_window"];
-        end = ["media" "sysmon" "network" "bluetooth" "volume" "brightness" "battery" "privacy" "notifications" "tray" "control-center" "session"];
+        start = ["launcher" "clock" "sysmon" "media"];
+        center = ["active_window" "workspaces"];
+        end = ["tray" "battery" "volume" "brightness" "notifications" "control-center" "session"];
       };
 
       widget.clock = {
@@ -99,10 +102,10 @@ in
       };
 
       widget.launcher = {
-        glyph = "search";
+        glyph = "rocket";
       };
 
-      widget.control-center = {
+      widget."control-center" = {
         glyph = "noctalia";
       };
 
@@ -136,7 +139,8 @@ in
       };
 
       widget.battery = {
-        display_mode = "glyph";
+        # v5: display_mode "glyph" removed; use "icon" (glyph icon) or "graphic" (battery shape)
+        display_mode = "icon";
         hide_when_plugged = false;
       };
 
@@ -165,7 +169,7 @@ in
       };
 
       osd = {
-        position = "top_right";
+        position = "top";
         background_opacity = 0.97;
       };
 
@@ -197,30 +201,34 @@ in
       weather = {
         enabled = true;
         effects = true;
-        unit = "celsius";
+        # v5: "celsius" removed; use "metric" (Celsius) or "imperial" (Fahrenheit)
+        unit = "metric";
       };
 
       nightlight = {
         enabled = false;
       };
 
+      # v5: native actions preferred over noctalia: IPC commands for built-in behaviors
       idle.behavior.lock = {
         enabled = true;
         timeout = 600;
-        command = "noctalia:session lock";
+        action = "lock";
       };
 
       idle.behavior.screen-off = {
         enabled = true;
         timeout = 660;
-        command = "noctalia:dpms-off";
-        resume_command = "noctalia:dpms-on";
+        # v5: native screen_off action; automatically restores monitors on activity (no resume_command needed)
+        action = "screen_off";
       };
 
+      # v5: hooks table replaces top-level hooks key
       hooks = {
         theme_mode_changed = "${darkModeScript}";
       };
 
+      # v5: [[control_center.shortcuts]] array-of-tables; in Nix HM settings this stays as a list of attrsets
       control_center.shortcuts = [
         { type = "wifi"; }
         { type = "bluetooth"; }
@@ -233,4 +241,100 @@ in
 
   # yamadaryou wallpaper
   home.file."Pictures/Wallpapers/yamadaryou.png".source = ../../assets/yamadaryou.png;
+
+  # yamadaryou color scheme
+  xdg.configFile."noctalia/palettes/yamadaryou.json".text = builtins.toJSON {
+    dark = {
+      mPrimary = "#ffec15";
+      mOnPrimary = "#000000";
+      mSecondary = "#006ff1";
+      mOnSecondary = "#ffffff";
+      mTertiary = "#c57358";
+      mOnTertiary = "#e0def4";
+      mError = "#ff3092";
+      mOnError = "#232136";
+      mSurface = "#000000";
+      mOnSurface = "#e0e2ef";
+      mSurfaceVariant = "#1a1817";
+      mOnSurfaceVariant = "#b3b7c2";
+      mOutline = "#44415a";
+      mShadow = "#232136";
+      mHover = "#56526e";
+      mOnHover = "#e0def4";
+      terminal = {
+        normal = {
+          black = "#000000";
+          red = "#FF3092";
+          green = "#11CC40";
+          yellow = "#CCBC11";
+          blue = "#FFEC15";
+          magenta = "#006FF1";
+          cyan = "#C57358";
+          white = "#E0E2EF";
+        };
+        bright = {
+          black = "#1A1817";
+          red = "#FF499F";
+          green = "#2CF25E";
+          yellow = "#F2E12C";
+          blue = "#FFEE2E";
+          magenta = "#1983FF";
+          cyan = "#EB9B81";
+          white = "#FFFFFF";
+        };
+        foreground = "#E0E2EF";
+        background = "#000000";
+        selectionFg = "#000000";
+        selectionBg = "#FFEC15";
+        cursor = "#FFEC15";
+        cursorText = "#000000";
+      };
+    };
+    light = {
+      mPrimary = "#0055ff";
+      mOnPrimary = "#faf4ed";
+      mSecondary = "#e6c814";
+      mOnSecondary = "#faf4ed";
+      mTertiary = "#a36e55";
+      mOnTertiary = "#faf4ed";
+      mError = "#f52956";
+      mOnError = "#faf4ed";
+      mSurface = "#fffaf3";
+      mOnSurface = "#000000";
+      mSurfaceVariant = "#f2e9e1";
+      mOnSurfaceVariant = "#353849";
+      mOutline = "#dfdad9";
+      mShadow = "#faf4ed";
+      mHover = "#cecacd";
+      mOnHover = "#575279";
+      terminal = {
+        normal = {
+          black = "#FFFAF3";
+          red = "#F52956";
+          green = "#008C23";
+          yellow = "#8C8100";
+          blue = "#0055FF";
+          magenta = "#E6C814";
+          cyan = "#A36E55";
+          white = "#000000";
+        };
+        bright = {
+          black = "#F2E9E1";
+          red = "#FF446D";
+          green = "#13BF3E";
+          yellow = "#BFB213";
+          blue = "#1966FF";
+          magenta = "#FFE130";
+          cyan = "#D69F85";
+          white = "#333333";
+        };
+        foreground = "#000000";
+        background = "#FFFAF3";
+        selectionFg = "#FAF4ED";
+        selectionBg = "#0055FF";
+        cursor = "#0055FF";
+        cursorText = "#FAF4ED";
+      };
+    };
+  };
 }
