@@ -19,7 +19,7 @@
             model = "anthropic/deepseek-v4-pro";
             api_base = "https://api.deepseek.com/anthropic";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.7;
             timeout = 600;
           };
@@ -30,7 +30,7 @@
             model = "anthropic/deepseek-v4-pro";
             api_base = "https://api.deepseek.com/anthropic";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.7;
             timeout = 600;
           };
@@ -41,7 +41,7 @@
             model = "anthropic/deepseek-v4-flash";
             api_base = "https://api.deepseek.com/anthropic";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.7;
             timeout = 600;
           };
@@ -63,7 +63,7 @@
             model = "anthropic/deepseek-v4-flash";
             api_base = "https://api.deepseek.com/anthropic";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.5;
             timeout = 300;
           };
@@ -74,7 +74,7 @@
             model = "anthropic/deepseek-v4-flash";
             api_base = "https://api.deepseek.com/anthropic";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.5;
             timeout = 300;
           };
@@ -85,7 +85,7 @@
             model = "anthropic/deepseek-v4-pro";
             api_base = "https://api.deepseek.com/anthropic";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.7;
             timeout = 600;
           };
@@ -98,7 +98,7 @@
             model = "openai/deepseek-v4-pro";
             api_base = "https://api.deepseek.com";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.7;
             timeout = 600;
           };
@@ -109,7 +109,7 @@
             model = "openai/deepseek-v4-pro";
             api_base = "https://api.deepseek.com";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.7;
             timeout = 600;
           };
@@ -120,7 +120,7 @@
             model = "openai/deepseek-v4-flash";
             api_base = "https://api.deepseek.com";
             api_key = "os.environ/DEEPSEEK_API_KEY";
-            max_tokens = 128000;
+            max_tokens = 1000000;
             temperature = 0.7;
             timeout = 600;
           };
