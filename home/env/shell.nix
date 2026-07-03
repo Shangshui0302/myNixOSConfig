@@ -777,5 +777,44 @@
     }
     complete -F _noctalia_greeter_completion noctalia-greeter
   '';
-}
+  xdg.configFile."fish/completions/howdy.fish".text = ''
+    complete -c howdy -f
 
+    # Options
+    complete -c howdy -s h -l help -d "Show help message and exit"
+    complete -c howdy -s y -d "Skip all questions"
+    complete -c howdy -l plain -d "Print machine-friendly output"
+    complete -c howdy -s U -l user -x -d "Set the user account to use"
+
+    # Commands
+    set -l cmds add clear config disable list remove snapshot set test version
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a add -d "Add a new face model"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a clear -d "Clear all face models"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a config -d "Open config file"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a disable -d "Disable or enable howdy"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a list -d "List all face models"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a remove -d "Remove a specific face model"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a snapshot -d "Generate a snapshot from the camera"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a set -d "Set a config option"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a test -d "Test face recognition"
+    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a version -d "Print version"
+  '';
+
+  xdg.dataFile."bash-completion/completions/howdy".text = ''
+    _howdy_completion() {
+        local cur prev words cword
+        _init_completion -s || {
+            COMPREPLY=()
+            local cur="''${COMP_WORDS[COMP_CWORD]}"
+        }
+
+        local cmds="add clear config disable list remove snapshot set test version"
+        local opts="-h --help -y --plain -U --user"
+
+        if [[ ''${COMP_CWORD} -eq 1 ]]; then
+            COMPREPLY=( $(compgen -W "$cmds $opts" -- "$cur") )
+        fi
+    }
+    complete -F _howdy_completion howdy
+  '';
+}
