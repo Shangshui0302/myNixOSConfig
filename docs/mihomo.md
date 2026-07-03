@@ -14,7 +14,11 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 - 国内域名/IP 直连（geosite:cn + geoip:cn）
 - 去广告（geosite:category-ads-all）
 - 国外网站代理兜底（geosite:geolocation-!cn）
-- 特定服务分流（bilibili、bahamut、netflix、openai、youtube、google、github、telegram、microsoft、apple）
+- 特定服务分流：
+  - **AI 与受限服务**（OpenAI, Claude, Meta, Google/Gemini, Apple, Microsoft, Antigravity 等）：强制路由至 `🇺🇸 美国极速`（url-test 测速组），规避对香港 IP 的封锁。
+  - **流媒体与常规服务**（Netflix, YouTube, Bilibili, Bahamut, GitHub, Telegram 等）：按区域或默认走选择节点。
+
+**注**：`rule-providers` 采用了原生 `type: http` 并配置 `proxy: DIRECT`，下载规则集时直接使用物理网络，避免了 TUN 拦截导致的“鸡生蛋”死锁问题。
 
 - **TUN 模式**：在系统层面创建虚拟网卡，所有流量自动经过代理，无需逐个应用配置
 - **nftables 防火墙**：配合 TUN 模式，`Meta` 接口标记为受信任

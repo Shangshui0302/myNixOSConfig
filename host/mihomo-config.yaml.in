@@ -115,122 +115,162 @@ proxy-providers:
 # 社区规则集（MetaCubeX MRS 格式，每日自动更新）
 rule-providers:
   geosite-cn:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-cn.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-ads:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-ads.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ads-all.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-geolocation-nocn:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-geolocation-nocn.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geoip-cn:
-    type: file
+    type: http
     behavior: ipcidr
     path: ./ruleset/geoip-cn.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-bilibili:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-bilibili.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-bahamut:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-bahamut.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bahamut.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-openai:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-openai.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/openai.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-netflix:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-netflix.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-youtube:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-youtube.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-google:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-google.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-github:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-github.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-microsoft:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-microsoft.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-telegram:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-telegram.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-apple:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-apple.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-steam:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-steam.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/steam.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
   geosite-cloudflare:
-    type: file
+    type: http
     behavior: domain
     path: ./ruleset/geosite-cloudflare.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cloudflare.mrs"
     format: mrs
     interval: 86400
+    proxy: DIRECT
 
 # 代理组
 proxy-groups:
   - name: "🔰 选择节点"
     type: select
     use: [sub]
+
+  - name: "🇺🇸 美国极速"
+    type: url-test
+    use: [sub]
+    filter: "美国|US|United States|🇺🇸"
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
 
   - name: "🌏 爱奇艺&哔哩哔哩"
     type: select
@@ -304,17 +344,27 @@ rules:
   - RULE-SET,geosite-cn,🇨🇳 国内网站
   - RULE-SET,geoip-cn,🇨🇳 国内网站
 
+  # 必须在 microsoft 前面，否则 github 会被 microsoft 规则集捕获
+  - RULE-SET,geosite-github,🔰 选择节点
+
   # 特定服务分流
+  # AI 及其它严格限制中国/香港 IP 的服务
+  - DOMAIN-KEYWORD,antigravity,🇺🇸 美国极速
+  - DOMAIN-SUFFIX,claude.ai,🇺🇸 美国极速
+  - DOMAIN-SUFFIX,anthropic.com,🇺🇸 美国极速
+  - DOMAIN-SUFFIX,meta.ai,🇺🇸 美国极速
+  - DOMAIN-SUFFIX,perplexity.ai,🇺🇸 美国极速
+  - RULE-SET,geosite-openai,🇺🇸 美国极速
+  - RULE-SET,geosite-microsoft,🇺🇸 美国极速
+  - RULE-SET,geosite-apple,🇺🇸 美国极速
+  
+  # 常规特定服务
+  - RULE-SET,geosite-google,🇺🇸 美国极速
   - RULE-SET,geosite-bilibili,🌏 爱奇艺&哔哩哔哩
   - RULE-SET,geosite-bahamut,📺 动画疯
   - RULE-SET,geosite-netflix,🔰 选择节点
   - RULE-SET,geosite-youtube,🔰 选择节点
-  - RULE-SET,geosite-google,🔰 选择节点
-  - RULE-SET,geosite-openai,🔰 选择节点
-  - RULE-SET,geosite-github,🔰 选择节点
   - RULE-SET,geosite-telegram,🔰 选择节点
-  - RULE-SET,geosite-microsoft,🔰 选择节点
-  - RULE-SET,geosite-apple,🔰 选择节点
 
   # Steam 分流（MRS 兜底 + 静态域名双保险）
   - DOMAIN-SUFFIX,steamcontent.com,🎮 Steam 登录/下载
