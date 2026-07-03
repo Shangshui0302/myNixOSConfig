@@ -38,10 +38,8 @@
     settings = {
       core = {
         device_path = "/dev/video2";
-        dark_threshold = 90;
       };
       video = {
-        dark_threshold = 90;
         device_format = "v4l2";
       };
     };
