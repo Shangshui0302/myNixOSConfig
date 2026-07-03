@@ -48,11 +48,11 @@
   };
 
   security.pam.services = {
-    sudo.howdy.enable = true;
-    su.howdy.enable = true;
-    login.howdy.enable = true;
-    greetd.howdy.enable = true;
-    noctalia.howdy.enable = true;
+    sudo.howdy = { enable = true; control = "sufficient"; };
+    su.howdy = { enable = true; control = "sufficient"; };
+    login.howdy = { enable = true; control = "sufficient"; };
+    greetd.howdy = { enable = true; control = "sufficient"; };
+    noctalia.howdy = { enable = true; control = "sufficient"; };
   };
 
   services.gvfs.enable = true;
