@@ -33,6 +33,28 @@
 
   services.fstrim.enable = true;
 
+  services.howdy = {
+    enable = true;
+    settings = {
+      core = {
+        device_path = "/dev/video2";
+        dark_threshold = 90;
+      };
+      video = {
+        dark_threshold = 90;
+        device_format = "v4l2";
+      };
+    };
+  };
+
+  security.pam.services = {
+    sudo.howdy.enable = true;
+    su.howdy.enable = true;
+    login.howdy.enable = true;
+    greetd.howdy.enable = true;
+    noctalia.howdy.enable = true;
+  };
+
   services.gvfs.enable = true;
 
   boot.kernel.sysctl."fs.inotify.max_user_watches" = 524288;

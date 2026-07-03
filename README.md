@@ -18,6 +18,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 | 云同步       | OneDrive (HM programs.onedrive)                          |
 | 游戏         | Steam + mangohud                                         |
 | Windows 兼容 | virt-manager (KVM)                                       |
+| 生物识别     | Howdy (IR 红外人脸解锁: sudo, greetd, noctalia)          |
 
 ## 目录结构
 
