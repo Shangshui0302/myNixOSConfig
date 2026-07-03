@@ -40,6 +40,7 @@
         device_path = "/dev/video2";
       };
       video = {
+        dark_threshold = 100;
         device_format = "v4l2";
       };
     };
