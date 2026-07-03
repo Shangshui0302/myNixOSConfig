@@ -389,6 +389,11 @@
         end < /persist/secrets/litellm.env
       end
 
+      # 针对 Distrobox 容器的特殊处理：优先使用容器内部安装的软件
+      if set -q DISTROBOX_ENTERED
+        set -x PATH /usr/local/bin /usr/bin /bin $PATH
+      end
+
       # zoxide
       zoxide init fish | source
 
