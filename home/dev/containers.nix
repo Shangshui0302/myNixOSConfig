@@ -1,4 +1,6 @@
-{ ... }: {
+{ pkgs, ... }: {
+  home.packages = with pkgs; [ distrobox ];
+
   xdg.configFile."distrobox/distrobox.ini".text = ''
     # ==========================================
     # 1. arch all-in-one

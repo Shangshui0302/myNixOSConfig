@@ -601,4 +601,181 @@
     complete -c podman -n 'not __podman_requires_order_preservation && __podman_prepare_completions' -f -a '$__podman_comp_results'
     complete -k -c podman -n '__podman_requires_order_preservation && __podman_prepare_completions' -f -a '$__podman_comp_results'
   '';
+  xdg.configFile."fish/completions/noctalia.fish".text = ''
+    complete -c noctalia -f
+
+    # Options
+    complete -c noctalia -s h -l help -d "Show help message"
+    complete -c noctalia -s v -l version -d "Show version information"
+    complete -c noctalia -s d -l daemon -d "Run in background"
+
+    # Main subcommands
+    complete -c noctalia -n "not __fish_seen_subcommand_from msg theme config plugins" -a msg -d "Send a command to the running instance"
+    complete -c noctalia -n "not __fish_seen_subcommand_from msg theme config plugins" -a theme -d "Generate a color palette from an image"
+    complete -c noctalia -n "not __fish_seen_subcommand_from msg theme config plugins" -a config -d "Validate config and support/replay helpers"
+    complete -c noctalia -n "not __fish_seen_subcommand_from msg theme config plugins" -a plugins -d "Offline plugin author tools (lint)"
+
+    # config subcommands
+    complete -c noctalia -n "__fish_seen_subcommand_from config" -a "validate" -d "Check config validity"
+    complete -c noctalia -n "__fish_seen_subcommand_from config" -a "export" -d "Print the active config as TOML"
+    complete -c noctalia -n "__fish_seen_subcommand_from config" -a "settings-count" -d "Count Settings UI controls"
+    complete -c noctalia -n "__fish_seen_subcommand_from config" -a "replay-report" -d "Reconstruct config from a support report"
+
+    # plugins subcommands
+    complete -c noctalia -n "__fish_seen_subcommand_from plugins" -a "lint" -d "Cross-check plugin settings"
+
+    # msg subcommands
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bar-auto-hide-set" -d "Set auto-hide state for a bar"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bar-hide" -d "Hide one or all bars and release their layout gaps"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bar-layer-set" -d "Set one or all bar layers"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bar-show" -d "Show one or all bars"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bar-toggle" -d "Toggle visibility for one or all bars"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bluetooth-disable" -d "Disable Bluetooth"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bluetooth-enable" -d "Enable Bluetooth"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bluetooth-status" -d "Print Bluetooth state"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "bluetooth-toggle" -d "Toggle Bluetooth"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "brightness-down" -d "Decrease brightness (defaults to current monitor)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "brightness-osd" -d "Show brightness OSD without changing brightness"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "brightness-set" -d "Set brightness (defaults to current monitor)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "brightness-up" -d "Increase brightness (defaults to current monitor)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "caffeine-disable" -d "Disable caffeine (idle inhibitor)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "caffeine-enable" -d "Enable caffeine (idle inhibitor)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "caffeine-toggle" -d "Toggle caffeine (idle inhibitor)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "clipboard-clear" -d "Clear clipboard history"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "color-scheme-get" -d "Print active color scheme: <source> <name> (source is builtin, wallpaper, community, or custom)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "color-scheme-set" -d "Set palette source and selection in settings.toml (builtin name, wallpaper generator scheme, community id, or custom scheme folder name)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "config-reload" -d "Reload the config file"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "desktop-widgets-edit" -d "Open the desktop widgets editor"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "desktop-widgets-exit" -d "Close the desktop widgets editor"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "desktop-widgets-hide" -d "Hide desktop widgets now (runtime only; does not change the saved setting)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "desktop-widgets-show" -d "Show desktop widgets now (runtime only; does not change the saved setting)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "desktop-widgets-toggle" -d "Toggle desktop widgets visibility (runtime only; does not change the saved setting)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "desktop-widgets-toggle-edit" -d "Toggle desktop widgets edit mode"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "dock-hide" -d "Hide the dock (persists override)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "dock-reload" -d "Reload dock configuration"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "dock-show" -d "Show the dock (persists override)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "dock-toggle" -d "Toggle dock visibility (persists override)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "dpms-off" -d "Turn monitors off"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "dpms-on" -d "Turn monitors on"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "effects-profile-set" -d "Set the EasyEffects output or input profile"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "greeter-sync" -d "Sync wallpaper, colors, and monitor layout to Noctalia Greeter"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "lockscreen-widgets-edit" -d "Open the lockscreen widgets editor"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "lockscreen-widgets-exit" -d "Close the lockscreen widgets editor"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "lockscreen-widgets-toggle-edit" -d "Toggle lockscreen widgets edit mode"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "media" -d "Control active media playback"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "mic-mute" -d "Toggle microphone mute"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "mic-volume-down" -d "Decrease microphone volume"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "mic-volume-set" -d "Set microphone volume"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "mic-volume-up" -d "Increase microphone volume"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "nightlight-disable" -d "Disable night light schedule"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "nightlight-enable" -d "Enable night light schedule"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "nightlight-force-toggle" -d "Toggle forced night light mode"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "nightlight-toggle" -d "Toggle night light schedule"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "notification-clear-active" -d "Dismiss all currently active notifications"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "notification-clear-history" -d "Clear notification history"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "notification-dnd-set" -d "Set notification Do Not Disturb state"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "notification-dnd-status" -d "Print notification Do Not Disturb state"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "notification-dnd-toggle" -d "Toggle notification Do Not Disturb state"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "notification-invoke-latest" -d "Invoke the default action of the most recent active notification"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "panel-close" -d "Close the active panel, or close the named panel if it is active"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "panel-open" -d "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "panel-toggle" -d "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "plugin" -d "Dispatch an event to a plugin entry"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "plugins" -d "Manage plugins and sources (list/enable/disable/update, source list/add/remove)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "power-cycle" -d "Switch to the next power profile in UPower's ordered list (wraps)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "power-set" -d "Set the UPower power profile (e.g. performance, balanced, power-saver)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "screenshot-fullscreen" -d "Capture the focused monitor by default, pick interactively with pick, or all outputs with all"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "screenshot-region" -d "Start an interactive region screenshot"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "session" -d "Run a built-in session action"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "settings-close" -d "Close the settings window"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "settings-open" -d "Open the settings window, or focus it if already open, optionally at a specific section"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "settings-toggle" -d "Toggle the settings window, optionally at a specific section"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "status" -d "Print current state as JSON"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "templates-apply" -d "Apply configured theme templates for the current palette"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "theme-mode-get" -d "Print the current resolved theme mode"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "theme-mode-set" -d "Set theme mode and persist to settings.toml"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "theme-mode-toggle" -d "Toggle theme mode between dark and light"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "volume-down" -d "Decrease speaker volume"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "volume-mute" -d "Toggle speaker mute"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "volume-set" -d "Set speaker volume"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "volume-up" -d "Increase speaker volume"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "wallpaper-get" -d "Print default wallpaper path, or effective path for an output"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "wallpaper-random" -d "Switch to a random wallpaper immediately"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "wallpaper-set" -d "Set wallpaper for all or a specific output (persisted)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "wifi-disable" -d "Disable Wi-Fi"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "wifi-enable" -d "Enable Wi-Fi"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "wifi-status" -d "Print Wi-Fi state"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "wifi-toggle" -d "Toggle Wi-Fi"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "window-switcher" -d "Open or close the window switcher overlay"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "workspace-alert-add" -d "Add a workspace alert (by number, name, or id)"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "workspace-alert-add-window" -d "Add a workspace alert for a window"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "workspace-alert-clear" -d "Clear a workspace alert"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "workspace-alert-clear-all" -d "Clear all workspace alerts"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "workspace-alert-status" -d "Print workspace alerts"
+  '';
+  xdg.dataFile."bash-completion/completions/noctalia".text = ''
+    _noctalia_completion() {
+        local cur prev words cword
+        _init_completion -s || {
+            COMPREPLY=()
+            local cur="''${COMP_WORDS[COMP_CWORD]}"
+        }
+
+        local main_cmds="msg theme config plugins"
+        local config_cmds="validate export settings-count replay-report"
+        local plugins_cmds="lint"
+        local msg_cmds="bar-auto-hide-set bar-hide bar-layer-set bar-show bar-toggle bluetooth-disable bluetooth-enable bluetooth-status bluetooth-toggle brightness-down brightness-osd brightness-set brightness-up caffeine-disable caffeine-enable caffeine-toggle clipboard-clear color-scheme-get color-scheme-set config-reload desktop-widgets-edit desktop-widgets-exit desktop-widgets-hide desktop-widgets-show desktop-widgets-toggle desktop-widgets-toggle-edit dock-hide dock-reload dock-show dock-toggle dpms-off dpms-on effects-profile-set greeter-sync lockscreen-widgets-edit lockscreen-widgets-exit lockscreen-widgets-toggle-edit media mic-mute mic-volume-down mic-volume-set mic-volume-up nightlight-disable nightlight-enable nightlight-force-toggle nightlight-toggle notification-clear-active notification-clear-history notification-dnd-set notification-dnd-status notification-dnd-toggle notification-invoke-latest panel-close panel-open panel-toggle plugin plugins power-cycle power-set screenshot-fullscreen screenshot-region session settings-close settings-open settings-toggle status templates-apply theme-mode-get theme-mode-set theme-mode-toggle volume-down volume-mute volume-set volume-up wallpaper-get wallpaper-random wallpaper-set wifi-disable wifi-enable wifi-status wifi-toggle window-switcher workspace-alert-add workspace-alert-add-window workspace-alert-clear workspace-alert-clear-all workspace-alert-status"
+
+        if [[ ''${COMP_CWORD} -eq 1 ]]; then
+            COMPREPLY=( $(compgen -W "$main_cmds --help --version --daemon" -- "$cur") )
+        elif [[ ''${COMP_CWORD} -eq 2 ]]; then
+            case "''${COMP_WORDS[1]}" in
+                msg)
+                    COMPREPLY=( $(compgen -W "$msg_cmds" -- "$cur") )
+                    ;;
+                config)
+                    COMPREPLY=( $(compgen -W "$config_cmds" -- "$cur") )
+                    ;;
+                plugins)
+                    COMPREPLY=( $(compgen -W "$plugins_cmds" -- "$cur") )
+                    ;;
+            esac
+        fi
+    }
+    complete -F _noctalia_completion noctalia
+  '';
+
+  xdg.configFile."fish/completions/noctalia-greeter.fish".text = ''
+    complete -c noctalia-greeter -f
+
+    # Options
+    complete -c noctalia-greeter -s h -l help -d "Show help message"
+    complete -c noctalia-greeter -s v -l version -d "Show version information"
+    complete -c noctalia-greeter -l log-test -d "Write test lines to all log paths and exit"
+    complete -c noctalia-greeter -l session -l cmd -r -d "Default session"
+    complete -c noctalia-greeter -l user -r -d "Default user"
+
+    # Commands
+    complete -c noctalia-greeter -n "not __fish_seen_subcommand_from sessions outputs" -a sessions -d "List available session names and exit"
+    complete -c noctalia-greeter -n "not __fish_seen_subcommand_from sessions outputs" -a outputs -d "List Wayland connector names and exit"
+  '';
+
+  xdg.dataFile."bash-completion/completions/noctalia-greeter".text = ''
+    _noctalia_greeter_completion() {
+        local cur prev words cword
+        _init_completion -s || {
+            COMPREPLY=()
+            local cur="''${COMP_WORDS[COMP_CWORD]}"
+        }
+
+        local cmds="sessions outputs"
+        local opts="-h --help -v --version --log-test --session --cmd --user"
+
+        if [[ ''${COMP_CWORD} -eq 1 ]]; then
+            COMPREPLY=( $(compgen -W "$cmds $opts" -- "$cur") )
+        fi
+    }
+    complete -F _noctalia_greeter_completion noctalia-greeter
+  '';
 }
+

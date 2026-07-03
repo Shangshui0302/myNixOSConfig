@@ -232,6 +232,7 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 
 - **MS CJK 字体**: `/persist/Fonts/` 存放从 Windows 提取的字体文件（不进 git）。`home.activation.copyMsCjkFonts` 在 rebuild 时复制到 `~/.local/share/fonts/MS/`。`20-ms-office-cjk.conf` 配置原生优先的 fallback 链。**不要删除 `/persist/Fonts/` 下的字体文件。**
 - **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
+- **查阅文档**：在修改配置或排查问题前，必须先查阅本地官方文档，如 `~/Documents/noctalia-docs-v5` 或 `docs/`，确认官方支持的配置方式。
 ### 分支隔离
 - **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行
 - 涉及 mihomo / TUN / nftables / DNS 等网络基础设施的改动，**一律开 feature 分支**。原因：网络组件出问题时可能阻断 nixos-rebuild（缓存下载走 TUN → 代理坏了 → SSL 失败 → 无法 rebuild 恢复），形成死锁

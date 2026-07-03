@@ -7,11 +7,14 @@
   # Enable Noctalia Greeter (requires inputs.noctalia-greeter.nixosModules.default in flake.nix)
   programs.noctalia-greeter = {
     enable = true;
-    # settings = {
-    #   cursor = {
-    #     theme = "Adwaita";
-    #     size = 24;
-    #   };
-    # };
+    settings = {
+      output = {
+        scale = 1.5;
+      };
+      appearance = {
+        password_style = "random";
+        hide_logo = true;
+      };
+    };
   };
 }

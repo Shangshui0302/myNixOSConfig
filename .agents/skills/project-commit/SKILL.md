@@ -1,10 +1,10 @@
 ---
-name: project:commit
+name: project-commit
 description: >
   When the user says they're ready to commit, save work, submit changes, 提交, or wrap up
   a set of changes in this NixOS config repo. This skill orchestrates the full commit
   workflow: review the diff for issues, update relevant documentation (README.md,
-  AGENTS.md, docs/*.md), present a summary for confirmation, then create the commit.
+  CLAUDE.md, docs/*.md), present a summary for confirmation, then create the commit.
   Use this skill for any commit in ~/myNixOSConfig — it ensures the "review → update
   docs → commit" discipline is followed every time. Do NOT trigger for: writing/saving
   a file to disk, "commit to memory", or git operations in other repos.
@@ -50,20 +50,20 @@ Not every change needs doc updates. Use this matrix to decide:
 
 | Change scope | Docs to check |
 |-------------|--------------|
-| New service or system daemon | README.md + AGENTS.md |
-| New nix module file (host/ or home/ subdir) | README.md + AGENTS.md (directory structure) |
-| Removed/renamed module file | README.md + AGENTS.md |
-| Changed keybindings, gestures, or user-facing behavior | docs/*.md + AGENTS.md |
-| New custom package in local-deriv/ | README.md + AGENTS.md |
+| New service or system daemon | README.md + CLAUDE.md |
+| New nix module file (host/ or home/ subdir) | README.md + CLAUDE.md (directory structure) |
+| Removed/renamed module file | README.md + CLAUDE.md |
+| Changed keybindings, gestures, or user-facing behavior | docs/*.md + CLAUDE.md |
+| New custom package in local-deriv/ | README.md + CLAUDE.md |
 | New overlay | Usually none |
 | Adding/removing a flatpak or user app | Usually none |
 | Tweak to an existing config value | Usually none |
 | Typo fix, formatting, comment change | None |
-| docs/*.md content change | Just AGENTS.md (if doc list changed) |
+| docs/*.md content change | Just CLAUDE.md (if doc list changed) |
 
 When doc updates are needed, use the `doc-maintainer` skill's patterns:
 - README.md: update directory structure, service list, or deployment steps
-- AGENTS.md: update directory structure, enabled services list, LiteLLM table, notes
+- CLAUDE.md: update directory structure, enabled services list, LiteLLM table, notes
 - docs/*.md: update keybindings, features, troubleshooting
 
 If **nothing** needs doc updates, say so explicitly — don't force one.
@@ -125,7 +125,7 @@ Examples:
 The commit must include the Co-Authored-By trailer:
 
 ```
-Co-Authored-By: Antigravity <noreply@google.com>
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ```
 
 After committing, show the commit hash.

@@ -5,7 +5,7 @@ let
 in
 {
   home.packages = with pkgs; [
-    grim slurp wl-clipboard grimblast swappy
+    grim slurp wl-clipboard grimblast swappy hyprpolkitagent
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
       mkdir -p "$dir"
@@ -176,6 +176,7 @@ in
 
     -- Startup commands
     hl.on("hyprland.start", function()
+      hl.exec_cmd("systemctl --user start hyprpolkitagent || ${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent")
       hl.exec_cmd("fcitx5 -rd")
       hl.exec_cmd("noctalia")
     end)

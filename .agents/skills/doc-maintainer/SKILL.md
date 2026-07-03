@@ -1,7 +1,7 @@
 ---
 name: doc-maintainer
 description: >
-  创建和维护项目文档（docs/、README.md、AGENTS.md）。当用户提到"写文档"、"更新文档"、"文档过时了"、
+  创建和维护项目文档（docs/、README.md、CLAUDE.md）。当用户提到"写文档"、"更新文档"、"文档过时了"、
   "补充文档"、"完善文档"、"文档化"、"documentation"、"docs"、新增组件后需要记录配置、修改 nix 配置后
   需要同步文档、或者任何涉及项目文档的创建/更新/审查时，必须使用此 skill。也适用于审查文档是否与 nix
   配置一致、整理文档结构、添加使用指南。简而言之，任何与项目文档相关的操作都触发此 skill。
@@ -16,7 +16,7 @@ description: >
 ```
 myNixOSConfig/
 ├── README.md                  # 项目总览、目录结构、重建命令、新机部署
-├── .agents/AGENTS.md          # Agent 上下文：硬件/系统信息、目录结构、服务列表、注意事项
+├── CLAUDE.md                  # LLM 上下文：硬件/系统信息、目录结构、服务列表、注意事项
 └── docs/                      # 各组件使用指南
     ├── hyprland.md            # Hyprland 窗口管理器
     ├── noctalia.md            # Noctalia Shell 桌面面板
@@ -53,7 +53,7 @@ myNixOSConfig/
 | `host/services.nix` (mihomo) | `docs/mihomo.md` | 代理架构、WebUI、排查 |
 | `home/yazi.nix` | `docs/yazi.md` | 文件管理器按键、插件、主题 |
 | 全部 host/ + home/ | `README.md` | 系统总览、目录结构、重建命令 |
-| 全部 host/ + home/ + 系统 | `.agents/AGENTS.md` | Agent 上下文、硬件信息、服务列表、注意事项 |
+| 全部 host/ + home/ + 系统 | `CLAUDE.md` | LLM 上下文、硬件信息、服务列表、注意事项 |
 
 当新增 nix 模块时，判断是否需要创建对应的 `docs/*.md`。判断标准：
 - 组件是用户直接交互的（WM、面板、shell、编辑器等）→ 需要文档
@@ -67,7 +67,7 @@ myNixOSConfig/
 ### 1. 信息收集
 
 - **先读 nix 配置**：完整读取对应的 nix 文件，理解所有配置项
-- **再读已有文档**：至少读 `docs/hyprland.md` 作为风格参考，读 `.agents/AGENTS.md` 了解系统上下文
+- **再读已有文档**：至少读 `docs/hyprland.md` 作为风格参考，读 `CLAUDE.md` 了解系统上下文
 - 如果用户未指定要文档化哪个组件，先扫描 `host/` 和 `home/` 中所有 nix 文件，对比 `docs/` 目录，找出"有配置但无文档"的组件
 
 ### 2. 确定内容结构
@@ -91,7 +91,7 @@ myNixOSConfig/
 
 新文档写完后，检查是否需要更新：
 - `README.md` — 目录结构部分是否需要加入新文档的说明
-- `.agents/AGENTS.md` — 目录结构中是否需要补充新组件信息
+- `CLAUDE.md` — 目录结构中是否需要补充新组件信息
 
 ## 更新已有文档
 
@@ -112,7 +112,7 @@ nix 配置变更后，对应的文档可能过时。按以下流程同步：
 2. 读取对应的文档文件
 3. 找出不一致的地方
 4. 只修改文档中受影响的部分，保留其他内容不变
-5. 如果是 AGENTS.md 受影响，同步更新
+5. 如果是 CLAUDE.md 受影响，同步更新
 
 ## 审查文档过时
 
@@ -125,7 +125,7 @@ nix 配置变更后，对应的文档可能过时。按以下流程同步：
    - 新增的功能是否已文档化
    - 已删除的功能是否从文档中移除
 3. 列出所有不一致项，让用户确认后再修改
-4. 同时检查 README.md 的目录结构是否与实际一致，AGENTS.md 的服务列表是否完整
+4. 同时检查 README.md 的目录结构是否与实际一致，CLAUDE.md 的服务列表是否完整
 
 ## README.md 维护
 
@@ -143,9 +143,9 @@ README.md 是项目门面，包含：
 - 系统配置原则变化 → 更新配置原则部分
 - 新机部署流程变化 → 更新部署步骤
 
-## AGENTS.md 维护
+## CLAUDE.md 维护
 
-AGENTS.md 是给 Agent 的上下文，需要保持精确。包含：
+CLAUDE.md 是给 LLM 的上下文，需要保持精确。包含：
 - 硬件信息（通常不变）
 - 系统详情（hostname、用户、服务等）
 - 目录结构（与 README.md 同步）
@@ -154,17 +154,17 @@ AGENTS.md 是给 Agent 的上下文，需要保持精确。包含：
 - Nix 配置参数
 - 注意事项（硬规则）
 
-当以下情况发生时更新 AGENTS.md：
+当以下情况发生时更新 CLAUDE.md：
 - 新增/删除服务 → 更新服务列表
 - 模型映射变更 → 更新 LiteLLM 表格
 - 新增/删除 nix 模块 → 更新目录结构
 - 配置规则/注意事项变化 → 更新对应部分
 - 硬件变更 → 更新硬件信息
 
-修改 AGENTS.md 时：
+修改 CLAUDE.md 时：
 - 保持信息精确，不要添加推测性内容
 - 目录结构与 README.md 保持同步
-- 注意事项使用强制语气（"必须"、"禁止"），因为 Agent 需要明确边界
+- 注意事项使用强制语气（"必须"、"禁止"），因为 LLM 需要明确边界
 
 ## 文档质量标准
 

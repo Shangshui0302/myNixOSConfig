@@ -2,6 +2,15 @@
 
 {
   security.rtkit.enable = true;
+  security.polkit.enable = true;
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.noctalia.greeter.apply-appearance" &&
+          subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
   services.pipewire = {
     enable = true;
     pulse.enable = true;
