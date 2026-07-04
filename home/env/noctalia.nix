@@ -25,222 +25,638 @@ in
     enable = true;
 
     settings = {
-      shell = {
-        font_family = "Anthropic Serif Web Text";
-        time_format = "{:%H:%M}";
-        date_format = "%A, %x";
-        telemetry_enabled = false;
-        show_location = true;
-        clipboard_enabled = true;
-        clipboard_auto_paste = "auto";
-        password_style = "default";
-        avatar_path = "${config.home.homeDirectory}/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
+  audio = {
+    enable_overdrive = false;
+    enable_sounds = true;
+  };
+  bar = {
+    order = [
+      ("main")
+    ];
+    main = {
+      background_opacity = 0.9999999776482582;
+      capsule = true;
+      center = [
+        ("group:g4")
+        ("workspaces")
+        ("cat")
+      ];
+      end = [
+        ("group:g6")
+        ("tray")
+        ("group:g2")
+        ("privacy")
+        ("group:g1")
+      ];
+      font_weight = 400;
+      margin_edge = 4;
+      margin_ends = 20;
+      padding = 5;
+      position = "top";
+      radius = 80;
+      reserve_space = true;
+      scale = 1.1000000089406967;
+      shadow = true;
+      start = [
+        ("launcher")
+        ("clock")
+        ("sysmon")
+        ("media")
+        ("group:g3")
+        ("group:g5")
+      ];
+      thickness = 40;
+      widget_spacing = 6;
+      dead_zone = {
+        middle_command = "noctalia msg settings-toggle";
       };
-
-      shell.animation = {
-        speed = 1.0;
-      };
-
-      shell.shadow = {
-        direction = "down";
-      };
-
-      shell.panel = {
-        borders = true;
-      };
-
-      wallpaper = {
-        enabled = true;
-        fill_mode = "crop";
-        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
-        transition = ["fade" "wipe" "disc" "stripes" "zoom" "honeycomb"];
-        transition_duration = 1500;
-        transition_on_startup = false;
-      };
-
-      wallpaper.default.path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
-
-      theme = {
-        mode = "auto";
-        source = "custom";
-        custom_palette = "yamadaryou";
-      };
-
-      theme.templates = {
-        enable_builtin_templates = true;
-        enable_community_templates = false;
-        builtin_ids = ["hyprland" "qt" "steam" "telegram" "gtk"];
-      };
-
-      # v5: user template key names must be valid TOML bare keys (no hyphens); use underscore
-      theme.templates.user.hyprland_lua = {
-        input_path = "${config.xdg.configHome}/noctalia/templates/hyprland-colors.lua";
-        output_path = "${config.xdg.configHome}/hypr/noctalia-colors.lua";
-      };
-
-      bar.main = {
-        position = "top";
-        thickness = 8;
-        background_opacity = 0.93;
-        radius = 12;
-        # v5: margin_h/margin_v replaced by margin_ends (inset from ends) / margin_edge (distance from screen edge)
-        margin_ends = 4;
-        margin_edge = 4;
-        padding = 2;
-        widget_spacing = 6;
-        shadow = true;
-        capsule = true;
-        reserve_space = true;
-        start = ["launcher" "clock" "sysmon" "media"];
-        center = ["active_window" "workspaces"];
-        end = ["tray" "battery" "volume" "brightness" "notifications" "control-center" "session"];
-      };
-
-      widget.clock = {
-        format = "{:%H:%M %a, %b %d}";
-        tooltip_format = "{:%A, %B %d, %Y}";
-      };
-
-      widget.launcher = {
-        glyph = "rocket";
-      };
-
-      widget."control-center" = {
-        glyph = "noctalia";
-      };
-
-      widget.active_window = {
-        max_length = 280.0;
-        display = "icon_and_text";
-      };
-
-      widget.sysmon = {
-        stat = "cpu_usage";
-        display = "text";
-      };
-
-      widget.media = {
-        max_length = 220.0;
-        hide_album_art = false;
-        hide_when_no_media = false;
-      };
-
-      widget.tray = {
-        pinned = ["chrome_status_icon_1"];
-      };
-
-      widget.notifications = {
-        hide_when_no_unread = false;
-      };
-
-      widget.workspaces = {
-        display = "id";
-        labels_only_when_occupied = true;
-      };
-
-      widget.battery = {
-        # v5: display_mode "glyph" removed; use "icon" (glyph icon) or "graphic" (battery shape)
-        display_mode = "icon";
-        hide_when_plugged = false;
-      };
-
-      widget.volume = {
-        show_label = true;
-        scroll_step = 5;
-      };
-
-      widget.brightness = {
-        show_label = true;
-        scroll_step = 5;
-      };
-
-      widget.privacy = {
-        hide_inactive = false;
-      };
-
-      widget.network = {
-        show_label = true;
-      };
-
-      notification = {
-        enable_daemon = true;
-        layer = "overlay";
-        background_opacity = 0.97;
-      };
-
-      osd = {
-        position = "top";
-        background_opacity = 0.97;
-      };
-
-      audio = {
-        enable_overdrive = false;
-      };
-
-      lockscreen = {
-        enabled = true;
-        blurred_desktop = false;
-        blur_intensity = 0.6;
-        tint_intensity = 0.0;
-      };
-
-      system.monitor.enabled = true;
-
-      dock = {
-        enabled = true;
-        position = "bottom";
-        auto_hide = true;
-        pinned = ["qq"];
-      };
-
-      location = {
-        address = "Chengdu, China";
-        auto_locate = false;
-      };
-
-      weather = {
-        enabled = true;
-        effects = true;
-        # v5: "celsius" removed; use "metric" (Celsius) or "imperial" (Fahrenheit)
-        unit = "metric";
-      };
-
-      nightlight = {
-        enabled = false;
-      };
-
-      # v5: native actions preferred over noctalia: IPC commands for built-in behaviors
-      idle.behavior.lock = {
-        enabled = true;
-        timeout = 600;
-        action = "lock";
-      };
-
-      idle.behavior.screen-off = {
-        enabled = true;
-        timeout = 660;
-        # v5: native screen_off action; automatically restores monitors on activity (no resume_command needed)
-        action = "screen_off";
-      };
-
-      # v5: hooks table replaces top-level hooks key
-      hooks = {
-        theme_mode_changed = "${darkModeScript}";
-      };
-
-      greeter_sync = {
-        auto_sync = true;
-      };
-
-      # v5: [[control_center.shortcuts]] array-of-tables; in Nix HM settings this stays as a list of attrsets
-      control_center.shortcuts = [
-        { type = "wifi"; }
-        { type = "bluetooth"; }
-        { type = "nightlight"; }
-        { type = "notification"; }
-        { type = "wallpaper"; }
+      capsule_group = [
+        ({
+          fill = "surface_variant";
+          id = "g1";
+          members = [
+            ("battery")
+            ("session")
+          ];
+          opacity = 1.0;
+          padding = 6.0;
+        })
+        ({
+          fill = "surface_variant";
+          id = "g2";
+          members = [
+            ("clipboard")
+            ("screenshot")
+            ("notifications")
+            ("control-center")
+          ];
+          opacity = 1.0;
+          padding = 6.0;
+        })
+        ({
+          fill = "surface_variant";
+          id = "g3";
+          members = [
+            ("network_tx")
+            ("network_rx")
+          ];
+          opacity = 1.0;
+          padding = 6.0;
+        })
+        ({
+          fill = "surface_variant";
+          id = "g4";
+          members = [
+            ("taskbar")
+            ("active_window")
+          ];
+          opacity = 1.0;
+          padding = 6.0;
+        })
+        ({
+          fill = "surface_variant";
+          id = "g5";
+          members = [
+            ("audio_visualizer")
+            ("media")
+          ];
+          opacity = 1.0;
+          padding = 6.0;
+        })
+        ({
+          fill = "surface_variant";
+          id = "g6";
+          members = [
+            ("volume")
+            ("brightness")
+          ];
+          opacity = 1.0;
+          padding = 6.0;
+        })
       ];
     };
+  };
+  battery = {
+    warning_threshold = 20;
+  };
+  calendar = {
+    enabled = true;
+    account = {
+      personal_google = {
+        type = "google";
+      };
+    };
+  };
+  control_center = {
+    sidebar = "full";
+    sidebar_section = "full";
+    width = 900;
+    shortcuts = [
+      ({
+        type = "wifi";
+      })
+      ({
+        type = "bluetooth";
+      })
+      ({
+        type = "nightlight";
+      })
+      ({
+        type = "dark_mode";
+      })
+      ({
+        type = "power_profile";
+      })
+      ({
+        type = "clipboard";
+      })
+    ];
+  };
+  desktop_widgets = {
+    schema_version = 2;
+    widget_order = [
+      ("desktop-widget-0000000000000003")
+    ];
+    grid = {
+      cell_size = 8;
+      major_interval = 4;
+      visible = true;
+    };
+    widget = {
+      desktop-widget-0000000000000003 = {
+        box_height = 240.0;
+        box_width = 256.0;
+        cx = 1776.0;
+        cy = 1064.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "fancy_audio_visualizer";
+        settings = {
+          background = false;
+          secondary_color = "on_primary";
+          visualization_mode = "wave_rings";
+        };
+      };
+    };
+  };
+  dock = {
+    auto_hide = true;
+    background_opacity = 0.9999999776482582;
+    enabled = true;
+    inactive_opacity = 0.9999999776482582;
+    inactive_scale = 1.0;
+    launcher_icon = "brand-snowflake";
+    launcher_position = "start";
+    magnification_scale = 1.2000000029802322;
+    pinned = [
+      ("qq")
+    ];
+    position = "bottom";
+    reserve_space = false;
+    show_dots = true;
+  };
+  greeter_sync = {
+    auto_sync = true;
+  };
+  hooks = {
+    theme_mode_changed = "${darkModeScript}";
+  };
+  hot_corners = {
+    enabled = true;
+    bottom_left = {
+      action = "window_switcher";
+    };
+    top_left = {
+      action = "launcher";
+    };
+    top_right = {
+      action = "control_center";
+    };
+  };
+  idle = {
+    behavior = {
+      lock = {
+        action = "lock";
+        enabled = true;
+        timeout = 600;
+      };
+      screen-off = {
+        action = "screen_off";
+        enabled = true;
+        timeout = 660;
+      };
+    };
+  };
+  keybinds = {
+    down = [
+      ("Down")
+      ("Alt+j")
+    ];
+    left = [
+      ("Left")
+      ("Alt+h")
+    ];
+    right = [
+      ("Right")
+      ("Alt+l")
+    ];
+    up = [
+      ("Up")
+      ("Alt+k")
+    ];
+  };
+  location = {
+    address = "Chengdu, China";
+    auto_locate = false;
+  };
+  lockscreen = {
+    blur_intensity = 0.6;
+    blurred_desktop = false;
+    enabled = true;
+    tint_intensity = 0.0;
+  };
+  lockscreen_widgets = {
+    enabled = true;
+    schema_version = 2;
+    widget_order = [
+      ("lockscreen-widget-000000000000000a")
+      ("lockscreen-widget-0000000000000006")
+      ("lockscreen-login-box@eDP-1")
+      ("lockscreen-widget-0000000000000001")
+      ("lockscreen-widget-0000000000000002")
+      ("lockscreen-widget-0000000000000003")
+      ("lockscreen-widget-0000000000000004")
+      ("lockscreen-widget-0000000000000005")
+      ("lockscreen-widget-0000000000000009")
+      ("lockscreen-widget-000000000000000c")
+    ];
+    grid = {
+      cell_size = 8;
+      major_interval = 4;
+      visible = true;
+    };
+    widget = {
+      "lockscreen-login-box@eDP-1" = {
+        box_height = 64.0;
+        box_width = 688.0;
+        cx = 960.0;
+        cy = 1024.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "login_box";
+        settings = {
+          background_color = "surface_variant";
+          background_opacity = 1.0;
+          background_radius = 32.0;
+          input_opacity = 1.0;
+          input_radius = 32.0;
+          show_login_button = true;
+        };
+      };
+      lockscreen-widget-0000000000000001 = {
+        box_height = 456.0;
+        box_width = 688.0;
+        cx = 960.0;
+        cy = 404.0;
+        output = "eDP-1";
+        rotation = -0.0;
+        type = "clock";
+        settings = {
+          background = true;
+          background_opacity = 0.0;
+          background_radius = 32;
+          center_text = false;
+          color = "primary";
+          font_family = ".PingFang SC";
+          format = "{:%H:%M}";
+          shadow = false;
+        };
+      };
+      lockscreen-widget-0000000000000002 = {
+        box_height = 136.0;
+        box_width = 248.0;
+        cx = 1008.0;
+        cy = 664.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "media_player";
+        settings = {
+          background_opacity = 1.0;
+          background_radius = 32;
+        };
+      };
+      lockscreen-widget-0000000000000003 = {
+        box_height = 136.0;
+        box_width = 144.0;
+        cx = 1216.0;
+        cy = 664.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "fancy_audio_visualizer";
+        settings = {
+          background = true;
+          background_opacity = 1.0;
+          background_radius = 32;
+        };
+      };
+      lockscreen-widget-0000000000000004 = {
+        box_height = 296.0;
+        box_width = 232.0;
+        cx = 752.0;
+        cy = 744.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "weather";
+        settings = {
+          background_opacity = 1.0;
+          background_padding = 21;
+          background_radius = 32;
+          forecast_days = 6;
+          shadow = false;
+          show_forecast = true;
+        };
+      };
+      lockscreen-widget-0000000000000005 = {
+        box_height = 144.0;
+        box_width = 192.0;
+        cx = 980.0;
+        cy = 820.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "sysmon";
+        settings = {
+          background_opacity = 1.0;
+          background_radius = 32;
+          shadow = false;
+          stat = "cpu_usage";
+          stat2 = "cpu_temp";
+        };
+      };
+      lockscreen-widget-0000000000000006 = {
+        box_height = 336.0;
+        box_width = 688.0;
+        cx = 960.0;
+        cy = 744.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "label";
+        settings = {
+          background_radius = 32;
+          title = "";
+        };
+      };
+      lockscreen-widget-0000000000000009 = {
+        box_height = 144.0;
+        box_width = 200.0;
+        cx = 1188.0;
+        cy = 820.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "sysmon";
+        settings = {
+          background_opacity = 1.0;
+          background_radius = 32;
+          shadow = false;
+          stat = "ram_pct";
+          stat2 = "swap_pct";
+        };
+      };
+      lockscreen-widget-000000000000000a = {
+        box_height = 1200.0;
+        box_width = 776.0;
+        cx = 960.0;
+        cy = 600.0;
+        output = "eDP-1";
+        rotation = 0.0;
+        type = "label";
+        settings = {
+          background_opacity = 0.66;
+          background_radius = 0;
+          opacity = 0.9500000000000001;
+          title = "";
+        };
+      };
+      lockscreen-widget-000000000000000c = {
+        box_height = 16.0;
+        box_width = 760.0;
+        cx = 960.0;
+        cy = 1184.0;
+        output = "eDP-1";
+        rotation = -0.0;
+        type = "label";
+        settings = {
+          background = false;
+          background_opacity = 0.66;
+          background_radius = 0;
+          color = "on_surface_variant";
+          description = "NixOS          //          Hyprland          //          Noctalia";
+          opacity = 0.56;
+          shadow = false;
+          title = "";
+        };
+      };
+    };
+  };
+  nightlight = {
+    enabled = false;
+  };
+  notification = {
+    background_opacity = 0.9999999776482582;
+    enable_daemon = true;
+    layer = "overlay";
+    position = "bottom_right";
+  };
+  osd = {
+    background_opacity = 0.9999999776482582;
+    position = "top_center";
+    position_vertical = "center_right";
+  };
+  plugin_settings = {
+    "noctalia/translator" = {
+      target_lang = "zh";
+    };
+  };
+  plugins = {
+    enabled = [
+      ("noctalia/bongocat")
+      ("noctalia/kaomoji")
+      ("noctalia/translator")
+    ];
+  };
+  shell = {
+    app_icon_color = "error";
+    avatar_path = "${config.home.homeDirectory}/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
+    clipboard_auto_paste = "auto";
+    clipboard_enabled = true;
+    date_format = "%A, %x";
+    font_family = "Anthropic Serif Web Text";
+    launch_apps_as_systemd_services = true;
+    password_style = "random";
+    polkit_agent = true;
+    screen_time_enabled = true;
+    settings_show_advanced = true;
+    show_location = true;
+    telemetry_enabled = false;
+    time_format = "{:%H:%M}";
+    animation = {
+      speed = 1.0;
+    };
+    launcher = {
+      app_grid = true;
+      session_search = true;
+    };
+    panel = {
+      borders = true;
+      open_near_click_clipboard = true;
+      open_near_click_control_center = true;
+      open_near_click_launcher = true;
+      open_near_click_session = true;
+      open_near_click_wallpaper = true;
+      session_placement = "floating";
+      wallpaper_position = "center";
+    };
+    screen_corners = {
+      enabled = true;
+    };
+    screenshot = {
+      confirm_region = true;
+      directory = "${config.home.homeDirectory}/Pictures/Screenshots/2026-06";
+    };
+    shadow = {
+      direction = "down";
+    };
+  };
+  system = {
+    monitor = {
+      enabled = true;
+    };
+  };
+  theme = {
+    community_palette = "Tokyo Night Moon";
+    custom_palette = "yamadaryou";
+    mode = "auto";
+    source = "custom";
+    wallpaper_scheme = "m3-content";
+    templates = {
+      builtin_ids = [
+        ("hyprland")
+        ("qt")
+        ("steam")
+        ("telegram")
+        ("gtk")
+      ];
+      enable_builtin_templates = true;
+      enable_community_templates = true;
+      user = {
+        hyprland_lua = {
+          input_path = "${config.xdg.configHome}/noctalia/templates/hyprland-colors.lua";
+          output_path = "${config.xdg.configHome}/hypr/noctalia-colors.lua";
+        };
+      };
+    };
+  };
+  wallpaper = {
+    directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+    enabled = true;
+    fill_mode = "crop";
+    transition = [
+      ("fade")
+      ("wipe")
+      ("disc")
+      ("stripes")
+      ("zoom")
+      ("honeycomb")
+    ];
+    transition_duration = 1500;
+    transition_on_startup = true;
+    default = {
+      path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
+    };
+    last = {
+      path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
+    };
+    monitors = {
+      eDP-1 = {
+        path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
+      };
+    };
+  };
+  weather = {
+    effects = true;
+    enabled = true;
+    unit = "metric";
+  };
+  widget = {
+    active_window = {
+      display = "icon_and_text";
+      max_length = 280.0;
+    };
+    battery = {
+      display_mode = "icon";
+      hide_when_plugged = false;
+    };
+    brightness = {
+      scroll_step = 5;
+      show_label = true;
+    };
+    cat = {
+      color = "error";
+      type = "noctalia/bongocat:cat";
+    };
+    clock = {
+      format = "{:%H:%M %A, %Y年%b%d日}";
+      tooltip_format = "{:%A, %B %d, %Y}";
+    };
+    control-center = {
+      glyph = "noctalia";
+    };
+    launcher = {
+      glyph = "brand-snowflake";
+    };
+    media = {
+      hide_album_art = false;
+      hide_when_no_media = true;
+      max_length = 220.0;
+    };
+    network = {
+      show_label = true;
+    };
+    network_rx = {
+      display = "text";
+      glyph = "square-rounded-chevrons-down-filled";
+      network_speed_compact = true;
+    };
+    network_tx = {
+      display = "text";
+      glyph = "square-rounded-chevrons-up-filled";
+      network_speed_compact = true;
+    };
+    notifications = {
+      hide_when_no_unread = false;
+    };
+    privacy = {
+      hide_inactive = false;
+    };
+    sysmon = {
+      display = "text";
+      stat = "cpu_usage";
+    };
+    tray = {
+      pinned = [
+        ("chrome_status_icon_1")
+      ];
+    };
+    volume = {
+      scroll_step = 5;
+      show_label = true;
+    };
+    workspaces = {
+      display = "id";
+      labels_only_when_occupied = true;
+    };
+  };
+}
+;
   };
 
   # yamadaryou wallpaper
