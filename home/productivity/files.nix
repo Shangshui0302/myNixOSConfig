@@ -3,7 +3,7 @@
 {
   home.packages = with pkgs; [
     ouch p7zip unzip file-roller xarchiver
-    nemo nemo-emblems nemo-fileroller nemo-preview
+    (nemo-with-extensions.override { extensions = [ nemo-fileroller nemo-preview nemo-emblems ]; })
     
     # Dolphin & Preview thumbnailers
     kdePackages.dolphin
