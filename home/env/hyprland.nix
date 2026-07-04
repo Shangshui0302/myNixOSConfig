@@ -143,6 +143,15 @@ in
         workspace_back_and_forth = true,
         allow_workspace_cycles = true,
       },
+
+      windowrulev2 = {
+        "float, class:^(org.gnome.NautilusPreviewer)$",
+        "center, class:^(org.gnome.NautilusPreviewer)$",
+        "size 70% 70%, class:^(org.gnome.NautilusPreviewer)$",
+        "float, class:^(sushi)$",
+        "center, class:^(sushi)$",
+        "size 70% 70%, class:^(sushi)$",
+      },
     })
 
     -- ===== Animation curves =====
@@ -189,7 +198,7 @@ in
     hl.bind("SUPER + W", hl.dsp.exec_cmd("foot"))
     hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"))
     hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"))
-    hl.bind("SUPER + E", hl.dsp.exec_cmd("nemo"))
+    hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus"))
     hl.bind("SUPER + B", hl.dsp.exec_cmd("google-chrome"))
     hl.bind("SUPER + C", hl.dsp.exec_cmd("noctalia msg panel-toggle clipboard"))
     hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"))

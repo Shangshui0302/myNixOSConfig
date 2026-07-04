@@ -131,10 +131,6 @@ PORTALEOF
       icon-theme = "Papirus";
       gtk-application-prefer-dark-theme = true;
     };
-    "org/nemo/preferences" = {
-      show-image-thumbnails = "always";
-      thumbnail-limit = 104857600;
-    };
   };
 
 }
