@@ -101,9 +101,11 @@
     </fontconfig>
   '';
 
-  # Extra fonts & Qt5 theme
+  # Extra fonts & Qt theme
   home.packages = with pkgs; [
     libsForQt5.qt5ct
+    kdePackages.breeze
+    kdePackages.breeze-icons
     papirus-icon-theme gnome-themes-extra adw-gtk3
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.
     # Provide our own .portal file with Hyprland added so the Settings
