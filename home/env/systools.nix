@@ -220,6 +220,9 @@ in
   home.packages = with pkgs; [
     yazi fastfetch btop
     wget curl pciutils usbutils nix-index htop steam-run rclone
+    
+    # Yazi & Terminal Preview Dependencies
+    imagemagick poppler-utils ffmpegthumbnailer 
   ];
 
   # ---- btop ----
