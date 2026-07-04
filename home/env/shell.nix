@@ -375,6 +375,7 @@
       { name = "done"; src = pkgs.fishPlugins.done; }
       { name = "grc"; src = pkgs.fishPlugins.grc; }
       { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages; }
+      { name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish; }
     ];
 
     interactiveShellInit = ''
