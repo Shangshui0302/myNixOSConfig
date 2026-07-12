@@ -121,7 +121,7 @@ in
             ("audio_visualizer")
             ("media")
           ];
-          opacity = 0.80000001192092896;
+          opacity = 1.0;
           padding = 6.0;
         })
         ({
@@ -213,6 +213,7 @@ in
       ("qq")
     ];
     position = "bottom";
+    radius = 20;
     reserve_space = false;
     show_dots = true;
   };
@@ -488,6 +489,7 @@ in
     avatar_path = "${config.home.homeDirectory}/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
     clipboard_auto_paste = "auto";
     clipboard_enabled = true;
+    corner_radius_scale = 0.80000001192092896;
     date_format = "%A, %x";
     font_family = "Anthropic Serif Web Text";
     launch_apps_as_systemd_services = true;
@@ -519,7 +521,8 @@ in
       wallpaper_position = "center";
     };
     screen_corners = {
-      enabled = false;
+      enabled = true;
+      size = 10;
     };
     screenshot = {
       confirm_region = true;
