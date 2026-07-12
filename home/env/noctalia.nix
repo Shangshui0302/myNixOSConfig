@@ -34,10 +34,12 @@ in
       ("main")
     ];
     main = {
-      background_opacity = 0.9999999776482582;
+      background_opacity = 0.0;
       capsule = true;
+      capsule_opacity = 0.80000001192092896;
       center = [
         ("group:g4")
+        ("active_window")
         ("workspaces")
         ("cat")
       ];
@@ -49,14 +51,14 @@ in
         ("group:g1")
       ];
       font_weight = 400;
-      margin_edge = 4;
-      margin_ends = 20;
-      padding = 5;
+      margin_edge = 0;
+      margin_ends = 0;
+      padding = 10;
       position = "top";
       radius = 80;
       reserve_space = true;
       scale = 1.1000000089406967;
-      shadow = true;
+      shadow = false;
       start = [
         ("launcher")
         ("clock")
@@ -65,7 +67,7 @@ in
         ("group:g3")
         ("group:g5")
       ];
-      thickness = 40;
+      thickness = 37;
       widget_spacing = 6;
       dead_zone = {
         middle_command = "noctalia msg settings-toggle";
@@ -78,7 +80,7 @@ in
             ("battery")
             ("session")
           ];
-          opacity = 1.0;
+          opacity = 0.80000001192092896;
           padding = 6.0;
         })
         ({
@@ -90,7 +92,7 @@ in
             ("notifications")
             ("control-center")
           ];
-          opacity = 1.0;
+          opacity = 0.80000001192092896;
           padding = 6.0;
         })
         ({
@@ -100,7 +102,7 @@ in
             ("network_tx")
             ("network_rx")
           ];
-          opacity = 1.0;
+          opacity = 0.80000001192092896;
           padding = 6.0;
         })
         ({
@@ -108,9 +110,8 @@ in
           id = "g4";
           members = [
             ("taskbar")
-            ("active_window")
           ];
-          opacity = 1.0;
+          opacity = 0.80000001192092896;
           padding = 6.0;
         })
         ({
@@ -120,7 +121,7 @@ in
             ("audio_visualizer")
             ("media")
           ];
-          opacity = 1.0;
+          opacity = 0.80000001192092896;
           padding = 6.0;
         })
         ({
@@ -130,7 +131,7 @@ in
             ("volume")
             ("brightness")
           ];
-          opacity = 1.0;
+          opacity = 0.80000001192092896;
           padding = 6.0;
         })
       ];
@@ -201,9 +202,9 @@ in
   };
   dock = {
     auto_hide = true;
-    background_opacity = 0.9999999776482582;
+    background_opacity = 0.65999998524785042;
     enabled = true;
-    inactive_opacity = 0.9999999776482582;
+    inactive_opacity = 0.99999997764825821;
     inactive_scale = 1.0;
     launcher_icon = "brand-snowflake";
     launcher_position = "start";
@@ -461,13 +462,13 @@ in
     enabled = false;
   };
   notification = {
-    background_opacity = 0.9999999776482582;
+    background_opacity = 0.80000001192092896;
     enable_daemon = true;
     layer = "overlay";
     position = "bottom_right";
   };
   osd = {
-    background_opacity = 0.9999999776482582;
+    background_opacity = 0.80000001192092896;
     position = "top_center";
     position_vertical = "center_right";
   };
@@ -478,7 +479,6 @@ in
   };
   plugins = {
     enabled = [
-      ("noctalia/bongocat")
       ("noctalia/kaomoji")
       ("noctalia/translator")
     ];
@@ -507,16 +507,19 @@ in
     };
     panel = {
       borders = true;
+      control_center_placement = "floating";
       open_near_click_clipboard = true;
       open_near_click_control_center = true;
       open_near_click_launcher = true;
       open_near_click_session = true;
       open_near_click_wallpaper = true;
+      polkit_placement = "attached";
       session_placement = "floating";
+      transparency_mode = "glass";
       wallpaper_position = "center";
     };
     screen_corners = {
-      enabled = true;
+      enabled = false;
     };
     screenshot = {
       confirm_region = true;
@@ -534,9 +537,9 @@ in
   theme = {
     community_palette = "Tokyo Night Moon";
     custom_palette = "yamadaryou";
-    mode = "auto";
+    mode = "dark";
     source = "custom";
-    wallpaper_scheme = "m3-content";
+    wallpaper_scheme = "muted";
     templates = {
       builtin_ids = [
         ("hyprland")
@@ -638,7 +641,7 @@ in
       hide_inactive = false;
     };
     sysmon = {
-      display = "text";
+      display = "graph";
       stat = "cpu_usage";
     };
     tray = {

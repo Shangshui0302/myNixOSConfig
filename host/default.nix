@@ -15,5 +15,6 @@
     ./litellm.nix
     ./gaming.nix
     ./containers.nix
+    ./hermes.nix
   ];
 }

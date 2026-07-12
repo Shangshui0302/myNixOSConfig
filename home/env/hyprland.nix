@@ -73,7 +73,7 @@ in
 
       general = {
         gaps_in = 5,
-        gaps_out = 20,
+        gaps_out = 5,
         border_size = 2,
         resize_on_border = true,
         allow_tearing = false,
@@ -83,8 +83,8 @@ in
       decoration = {
         rounding = 10,
         rounding_power = 2,
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
+        active_opacity = 0.88,
+        inactive_opacity = 0.82,
         shadow = {
           enabled = true,
           range = 4,
@@ -93,9 +93,12 @@ in
         },
         blur = {
           enabled = true,
-          size = 12,
-          passes = 3,
-          vibrancy = 0.1,
+          size = 15,
+          passes = 4,
+          vibrancy = 0.3,
+          ignore_opacity = true,
+          popups = true,
+          popups_ignorealpha = 0.2,
         },
       },
 
@@ -152,6 +155,19 @@ in
         "center, class:^(sushi)$",
         "size 70% 70%, class:^(sushi)$",
       },
+    })
+
+    -- Noctalia layer blur: frosted glass for bar / panel / dock / notifications / OSD
+    hl.layer_rule({
+      name = "noctalia",
+      match = {
+        namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$",
+      },
+      no_anim = true,
+      ignore_alpha = 0.3,
+      blur = true,
+      blur_popups = true,
+      order = -1,
     })
 
     -- ===== Animation curves =====
@@ -215,6 +231,7 @@ in
     hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
     hl.bind("SUPER + P", hl.dsp.window.pseudo())
     hl.bind("SUPER + SHIFT + M", hl.dsp.exit())
+    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia msg window-switcher"))
 
     -- Focus
     hl.bind("SUPER + left", hl.dsp.focus({ direction = "l" }))
