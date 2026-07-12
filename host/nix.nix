@@ -11,6 +11,10 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "ventoy-1.1.12"
+  ];
+
   programs.nh = {
     enable = true;
     flake = "/home/lishangshui/myNixOSConfig";

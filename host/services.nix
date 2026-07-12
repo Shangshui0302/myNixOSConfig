@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   security.rtkit.enable = true;
@@ -55,6 +55,8 @@
   };
 
   services.gvfs.enable = true;
+
+  environment.systemPackages = with pkgs; [ ntfs3g ];
 
   boot.kernel.sysctl."fs.inotify.max_user_watches" = 524288;
 }
