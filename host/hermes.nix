@@ -25,4 +25,11 @@
       chown lishangshui:users /persist/secrets/hermes.env
     fi
   '';
+
+  # 允许普通用户无密码调用 docker，这样 hermes 命令行就能无缝转发到 root 下运行的容器
+  # 而不需要用户去敲 sudo hermes，从而避免 root 下 Wayland 无法弹窗 (xdg-open) 的问题
+  security.sudo.extraRules = [{
+    users = [ "lishangshui" ];
+    commands = [{ command = "/run/current-system/sw/bin/docker"; options = [ "NOPASSWD" ]; }];
+  }];
 }
