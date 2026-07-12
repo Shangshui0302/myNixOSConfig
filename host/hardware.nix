@@ -9,6 +9,11 @@
     pkgs.openocd
   ];
 
+  services.udev.extraRules = ''
+    SUBSYSTEM=="tty", KERNEL=="ttyUSB[0-9]*", GROUP="dialout", MODE="0660"
+    SUBSYSTEM=="tty", KERNEL=="ttyACM[0-9]*", GROUP="dialout", MODE="0660"
+  '';
+
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
     stdenv.cc.cc stdenv.cc.cc.lib zlib glib libGL freetype

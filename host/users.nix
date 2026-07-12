@@ -5,7 +5,7 @@
     isNormalUser = true;
     description = "Li Shangshui";
     linger = true;
-    extraGroups = [ "wheel" "networkmanager" "video" ];
+    extraGroups = [ "wheel" "networkmanager" "video" "dialout" ];
   };
 
   security.sudo.extraRules = [
