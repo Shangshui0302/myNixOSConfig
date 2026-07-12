@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "memos": {
+      "timeout": 60,
+      "command": "npx",
+      "args": ["-y", "@memtensor/memos-api-mcp@latest"],
+      "env": {
+        "MEMOS_API_KEY": "mpg-dHlmsdtIPPqpnw+h38zrHG8Iqsx7I4BLU+IN/Qhc",
+        "MEMOS_USER_ID": "2633740366@qq.com",
+        "MEMOS_CHANNEL": "MODELSCOPE"
+      }
+    }
+  }
+}
