@@ -93,6 +93,14 @@
         # OpenAI-compatible models routed to DeepSeek (for Codex CLI, etc.)
         # deepseek-chat 将于 2026/07/24 弃用，已迁移到 v4 系列
         {
+          model_name = "text-embedding";
+          litellm_params = {
+            model = "openai/text-embedding-v4";
+            api_base = "https://dashscope.aliyuncs.com/compatible-mode/v1";
+            api_key = "os.environ/ALIYUN_API_KEY";
+          };
+        }
+        {
           model_name = "gpt-4o";
           litellm_params = {
             model = "openai/deepseek-v4-pro";
