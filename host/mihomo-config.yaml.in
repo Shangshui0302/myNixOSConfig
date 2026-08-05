@@ -20,6 +20,7 @@ tun:
   enable: true
   device: Meta
   stack: gvisor
+  mtu: 1500
   auto-route: true
   enable-ipv6: true
   auto-detect-interface: true
