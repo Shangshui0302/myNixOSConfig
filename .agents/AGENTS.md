@@ -46,6 +46,7 @@ myNixOSConfig/
 ├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
+│   ├── qoder-ide.nix           # Qoder CN — AI IDE (Electron)
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
 │
@@ -79,7 +80,7 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code (版本固定), codex, claude-desktop, qoder-cli, officecli, pi, reasonix, opencode, cc-switch
+│   │   ├── ai.nix             # claude-code (版本固定), codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, reasonix, opencode, cc-switch
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器

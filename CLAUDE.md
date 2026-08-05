@@ -47,6 +47,7 @@ myNixOSConfig/
 
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
+│   ├── qoder-ide.nix           # Qoder CN — AI IDE (Electron)
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   ├── anthropic-fonts.nix   # Anthropic 字体
 │   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
@@ -81,7 +82,7 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code, codex, claude-desktop, qoder-cli, officecli, pi, reasonix, opencode, cc-switch
+│   │   ├── ai.nix             # claude-code, codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, reasonix, opencode, cc-switch
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器
@@ -140,7 +141,7 @@ myNixOSConfig/
 
 ### flake.nix
 - `flake.nix` 只做入口和依赖声明
-- Flake inputs: nixpkgs, home-manager, noctalia, noctalia-greeter, nix-flatpak, llm-agents (numtide/llm-agents.nix, AI 工具包来源)
+- Flake inputs: nixpkgs, home-manager, noctalia, noctalia-greeter, nix-flatpak, llm-agents (numtide/llm-agents.nix, AI 工具包来源), codex-desktop-linux (ilysenko, Codex Desktop for Linux)
 - Overlays 放 `overlays/`，通过 `nixpkgs.overlays = import ./overlays` 导入
 - 不允许 inline derivations、inline `mkDerivation`、inline `appimageTools`
 

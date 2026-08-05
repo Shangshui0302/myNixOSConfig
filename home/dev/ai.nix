@@ -5,6 +5,7 @@ let
   claudeVersion = "2.1.156";
 
   llmAgents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+  codexDesktop = inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop;
 
   claudeSrcs = {
     "2.1.156".hash = "sha256-bYPNImRFDF5U/JiL4QMsKIz0GO5gQpSs+4/ErCj196M=";
@@ -28,5 +29,7 @@ in
     llmAgents.reasonix
     llmAgents.opencode
     cc-switch
+    codexDesktop
+    (import ../../local-deriv/qoder-ide.nix { inherit pkgs; })
   ];
 }
