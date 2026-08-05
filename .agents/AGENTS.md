@@ -1,15 +1,5 @@
 # NixOS Config — Agent Context
 
-## MemOS 记忆系统
-
-对话开始前和结束后必须使用 MemOS 记忆工具，**不可跳过**。
-
-- **回答前**：调用 `search_memory` 检索与当前问题相关的历史记忆和偏好
-- **回答后**：调用 `add_message` 将本轮对话中的重要事实、决策、偏好写入记忆
-- **不需要用户提醒**：这是自动行为，不用等用户说"记一下"
-
-**Why:** MemOS Cloud 是整个 AI 系统的统一记忆层。Claude Code、AGY、Hermes 三个 Agent 共享同一份记忆（user_id: 2633740366@qq.com），任何一个不记都会破坏记忆完整性。
-
 ## 硬件信息
 - 机型: MechRevo (机械革命) 笔记本
 - CPU: AMD Ryzen 7 8845HS (8核16线程)

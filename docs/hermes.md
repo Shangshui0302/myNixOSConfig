@@ -1,11 +1,10 @@
 # Hermes Agent — NixOS 配置指南
 
-当前部署架构：**容器模式**，MemOS Local Plugin 做记忆后端，LiteLLM 代理 (`127.0.0.1:4000`) 做模型后端。
+当前部署架构：**容器模式**，LiteLLM 代理 (`127.0.0.1:4000`) 做模型后端。
 
 ## 快速索引
 
 - `host/hermes.nix` — 系统级模块
-- `.agents/mcp.json` — AGY 的 MCP 配置
 - `~/.claude.json` → `mcpServers.hermes` — Claude Code 的 MCP 配置
 - `~/.hermes/` → 实际是 `/var/lib/hermes/.hermes` 的 symlink（容器模式）
 - `~/.hermes/config.yaml` — **运行时配置**（手动编辑生效，不走 rebuild）
@@ -49,9 +48,6 @@ services.hermes-agent = {
 ### 当前配置
 
 ```yaml
-memory:
-  provider: memtensor              # MemOS Local Plugin
-
 model:
   default: openai/claude-sonnet-4-6
 
@@ -71,7 +67,7 @@ providers:
 |------|------|
 | `model.default` | 默认模型 |
 | `model.base_url` | API endpoint（不填默认 OpenRouter） |
-| `memory.provider` | 记忆后端：`memtensor` / `holographic` / `hindsight` / … |
+| `memory.provider` | 记忆后端：`holographic` / `hindsight` / … |
 | `memory.memory_enabled` | 是否启用记忆 |
 | `memory.user_profile_enabled` | 是否提取用户画像 |
 | `toolsets` | 工具集，通常 `["all"]` |
@@ -121,14 +117,6 @@ HERMES_DEFAULT_MODEL=openai/claude-sonnet-4-6
 
 Nix 会在 rebuild 时把 `environment` 和 `environmentFiles` 合并写入 `$HERMES_HOME/.env`。
 
-## MemOS Local Plugin (memtensor)
-
-- **安装位置**：`~/.hermes/memos-plugin/`（npm 包 + node_modules）
-- **Python adapter**：`~/.hermes/plugins/memtensor/` → symlink 到 `memos-plugin/adapters/hermes/memos_provider/`
-- **Bridge daemon**：`node bridge.cjs --agent=hermes --daemon`，随 Hermes 初始化自动启动
-- **Memory Viewer**：`http://127.0.0.1:18800`（配置 Embedding 和 LLM 模型用）
-- **数据目录**：`~/.hermes/memos-plugin/data/`（SQLite）
-
 ## Clair AI 对接
 
 Claude Code 和 AGY 通过 MCP 协议调用 Hermes：
@@ -144,7 +132,7 @@ Claude Code 和 AGY 通过 MCP 协议调用 Hermes：
 ```
 
 ```json
-// .agents/mcp.json (AGY)
+// 任意 Agent 的 MCP 配置（Claude Code 用 ~/.claude.json）
 {
   "mcpServers": {
     "hermes": {
@@ -164,7 +152,6 @@ services.hermes-agent.settings = {
   model.default = "openai/claude-sonnet-4-6";
   model.base_url = "http://127.0.0.1:4000/v1";
   memory = {
-    provider = "memtensor";
     memory_enabled = true;
   };
   toolsets = [ "all" ];
@@ -217,5 +204,3 @@ sudo docker restart hermes-agent      # 重启容器（不需要重建容器）
 ## 参考
 
 - [Hermes Agent Nix Setup](https://hermes-agent.nousresearch.com/docs/getting-started/nix-setup)
-- [MemOS Local Plugin](https://memos-docs.openmem.net/cn/openclaw/local_plugin)
-- MemOS Memory Viewer: `http://127.0.0.1:18800`
