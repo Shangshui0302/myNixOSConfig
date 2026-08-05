@@ -52,8 +52,8 @@ dns:
     - 119.29.29.29
     - 1.1.1.1
   nameserver:
-    - https://doh.pub/dns-query
-    - https://dns.alidns.com/dns-query
+    - 223.5.5.5
+    - 119.29.29.29
   nameserver-policy:
     '+.v51124-6.qpon': 'https://doh.pub/dns-query'
   proxy-server-nameserver:
@@ -71,8 +71,6 @@ sniffer:
   sniff:
     HTTP:
       ports: [80, 8080, 2052, 2082, 2086, 2095]
-    TLS:
-      ports: [443, 8443]
   skip-domain:
     - +.push.apple.com
   skip-dst-address:
