@@ -16,6 +16,7 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
   outputs = { self, nixpkgs, ... }@inputs: {
     nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {

@@ -1,8 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
   # ── 修改这里切换版本 ──
   claudeVersion = "2.1.156";
+
+  llmAgents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 
   claudeSrcs = {
     "2.1.156".hash = "sha256-bYPNImRFDF5U/JiL4QMsKIz0GO5gQpSs+4/ErCj196M=";
@@ -19,6 +21,12 @@ in
       };
     }))
     codex
-    (import ../../local-deriv/officecli.nix { inherit pkgs; })
+    llmAgents.claude-desktop
+    llmAgents.qoder-cli
+    llmAgents.officecli
+    llmAgents.pi
+    llmAgents.reasonix
+    llmAgents.opencode
+    cc-switch
   ];
 }

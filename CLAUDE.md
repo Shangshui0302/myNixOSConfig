@@ -47,7 +47,6 @@ myNixOSConfig/
 
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
-│   ├── officecli.nix           # OfficeCLI — AI agent Office 文档工具
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   ├── anthropic-fonts.nix   # Anthropic 字体
 │   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
@@ -82,7 +81,7 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code, codex, gemini-cli, officecli, aionui
+│   │   ├── ai.nix             # claude-code, codex, claude-desktop, qoder-cli, officecli, pi, reasonix, opencode, cc-switch
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器
@@ -141,7 +140,7 @@ myNixOSConfig/
 
 ### flake.nix
 - `flake.nix` 只做入口和依赖声明
-- Flake inputs: nixpkgs, home-manager, noctalia, noctalia-qs, nix-flatpak
+- Flake inputs: nixpkgs, home-manager, noctalia, noctalia-greeter, nix-flatpak, llm-agents (numtide/llm-agents.nix, AI 工具包来源)
 - Overlays 放 `overlays/`，通过 `nixpkgs.overlays = import ./overlays` 导入
 - 不允许 inline derivations、inline `mkDerivation`、inline `appimageTools`
 
