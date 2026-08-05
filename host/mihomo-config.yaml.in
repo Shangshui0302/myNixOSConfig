@@ -19,7 +19,7 @@ outbound-tfo: true
 tun:
   enable: true
   device: Meta
-  stack: system
+  stack: gvisor
   auto-route: true
   enable-ipv6: true
   auto-detect-interface: true
