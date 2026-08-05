@@ -20,6 +20,5 @@ in
     }))
     codex
     (import ../../local-deriv/officecli.nix { inherit pkgs; })
-    antigravity pkgs.antigravity-cli
   ];
 }

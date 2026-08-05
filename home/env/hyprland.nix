@@ -31,8 +31,6 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "lua";
-    # Session lifecycle is managed by greetd (Noctalia Greeter), not Hyprland's
-    # systemd session. Disabling avoids the module's "no configuration" warning.
     systemd.enable = false;
   };
 
