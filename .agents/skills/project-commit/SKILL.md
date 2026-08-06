@@ -4,10 +4,11 @@ description: >
   When the user says they're ready to commit, save work, submit changes, 提交, or wrap up
   a set of changes in this NixOS config repo. This skill orchestrates the full commit
   workflow: review the diff for issues, update relevant documentation (README.md,
-  CLAUDE.md, docs/*.md), present a summary for confirmation, then create the commit.
-  Use this skill for any commit in ~/myNixOSConfig — it ensures the "review → update
-  docs → commit" discipline is followed every time. Do NOT trigger for: writing/saving
-  a file to disk, "commit to memory", or git operations in other repos.
+  CLAUDE.md, wiki/*.md, memory/*.md), present a summary for confirmation, then create
+  the commit. Use this skill for any commit in ~/myNixOSConfig — it ensures the
+  "review → update wiki/memory → commit" discipline is followed every time. Do NOT
+  trigger for: writing/saving a file to disk, "commit to memory", or git operations in
+  other repos.
 ---
 
 # Project Commit Workflow
@@ -46,27 +47,33 @@ If anything looks wrong, flag it to the user before proceeding.
 
 ## Step 2: Decide What Documentation Needs Updating
 
-Not every change needs doc updates. Use this matrix to decide:
+Not every change needs wiki/memory updates. Use this matrix to decide:
 
 | Change scope | Docs to check |
 |-------------|--------------|
 | New service or system daemon | README.md + CLAUDE.md |
 | New nix module file (host/ or home/ subdir) | README.md + CLAUDE.md (directory structure) |
 | Removed/renamed module file | README.md + CLAUDE.md |
-| Changed keybindings, gestures, or user-facing behavior | docs/*.md + CLAUDE.md |
+| Changed keybindings, gestures, or user-facing behavior | wiki/*.md + CLAUDE.md |
+| Non-obvious decision (why not derivable from code/commit) | memory decision card + INDEX.md |
+| Hardware trait / environment constraint change | memory hardware/constraint card + INDEX.md |
+| New/removed component | wiki/README.md (nav home) |
 | New custom package in local-deriv/ | README.md + CLAUDE.md |
 | New overlay | Usually none |
 | Adding/removing a flatpak or user app | Usually none |
 | Tweak to an existing config value | Usually none |
 | Typo fix, formatting, comment change | None |
-| docs/*.md content change | Just CLAUDE.md (if doc list changed) |
+| wiki/*.md content change | Just CLAUDE.md (if doc list changed) |
 
-When doc updates are needed, use the `doc-maintainer` skill's patterns:
+When wiki/memory updates are needed, use the `wiki-maintainer` skill's patterns:
 - README.md: update directory structure, service list, or deployment steps
 - CLAUDE.md: update directory structure, enabled services list, LiteLLM table, notes
-- docs/*.md: update keybindings, features, troubleshooting
+- wiki/*.md: update keybindings, features, troubleshooting
+- memory/cards/*.md + memory/INDEX.md: record decision/hardware/constraint cards
 
-If **nothing** needs doc updates, say so explicitly — don't force one.
+**Linkage rule**: when a change falls under any of the above rows, the wiki/memory
+updates MUST land in the same commit as the code change — never commit code without
+its docs. If **nothing** needs wiki/memory updates, say so explicitly — don't force one.
 
 ## Step 3: Dry-Build (Structural Changes Only)
 
@@ -96,9 +103,9 @@ Show the user a concise summary before committing:
 **Changes:**
 - <file> — <what changed>
 
-**Docs updated:**
-- <doc file> — <what was added/changed>
-- (or "No doc updates needed")
+**Wiki/Memory updated:**
+- <wiki file / memory card> — <what was added/changed>
+- (or "No wiki/memory updates needed")
 
 **Dry-build:** passed / skipped
 ```

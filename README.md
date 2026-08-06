@@ -50,15 +50,17 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── productivity/          # 办公、通讯、Windows 兼容
 │   └── leisure/               # 影音、游戏、浏览器
 │
-├── docs/                      # 使用指南
-│   ├── hyprland.md
-│   ├── noctalia.md
-│   ├── nvim.md
-│   ├── shell.md
-│   ├── litellm.md
-│   ├── mihomo.md
-│   ├── distrobox.md
-│   └── yazi.md
+├── wiki/                      # 操作手册（怎么用 + 故障排查）
+│   ├── README.md              # wiki 导航首页
+│   ├── hyprland.md / noctalia.md / nvim.md / shell.md
+│   ├── litellm.md / mihomo.md / distrobox.md / yazi.md
+│   ├── darkmode.md / bottles-offline-workaround.md
+│   └── constraints.md         # 约束与惯例
+│
+├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）
+│   ├── INDEX.md               # 卡片索引
+│   ├── _template.md           # 卡片模板
+│   └── cards/                 # 原子化决策卡
 │
 ├── CLAUDE.md
 └── README.md
