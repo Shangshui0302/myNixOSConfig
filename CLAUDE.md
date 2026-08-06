@@ -248,3 +248,5 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 - 鼠标: epic-mouse-v1，sensitivity -0.5
 - **所有改动必须通过 nixos-rebuild 应用，禁止用非 nix 方式修改系统配置**
 - flake.lock 被 root 拥有，更新 flake inputs 需 sudo
+- **会话收尾**：会话结束前运行 session-wrapup skill，沉淀本次决策到 `memory/` 并核查 wiki 同步
+- **commit 门禁**：项目级 PreToolUse hook（`.claude/hooks/check-doc-sync.sh`）会拦截「改了 .nix 但没改 wiki/memory」的 git commit，commit 前先确保文档同步
