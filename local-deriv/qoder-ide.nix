@@ -2,11 +2,11 @@
 
 pkgs.stdenv.mkDerivation rec {
   pname = "qoder-ide";
-  version = "1.10.0";
+  version = "1.22.1";
 
   src = pkgs.fetchurl {
-    url = "https://ide.qoder.com.cn/qoder/release/lastest/qoder-cn_amd64.deb";
-    sha256 = "0l9qynrjdk56n6l01xrhnh0c1k1y9hn1ikzmww73bfz7p7ks688b";
+    url = "https://download.qoder.com/release/latest/qoder_amd64.deb";
+    sha256 = "4c9a4f1a4d0d052c1b83c0a508bce0ad56a58c68286008c2011d755a1636144b";
   };
 
   nativeBuildInputs = [
@@ -61,19 +61,22 @@ pkgs.stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
     mkdir -p $out/{bin,share/applications,share/icons/hicolor/scalable/apps}
-    cp -r deb/extracted/usr/share/qoder-cn $out/share/
-    cp deb/extracted/usr/share/pixmaps/QoderCN.png $out/share/icons/hicolor/scalable/apps/
-    chmod +x $out/share/qoder-cn/qoder-cn $out/share/qoder-cn/chrome-sandbox
-    substitute deb/extracted/usr/share/applications/qoder-cn.desktop \
-      $out/share/applications/qoder-cn.desktop \
-      --replace-fail "/usr/share/qoder-cn/qoder-cn" "qoder-cn"
-    makeWrapper $out/share/qoder-cn/qoder-cn $out/bin/qoder-cn \
+    cp -r deb/extracted/usr/share/qoder $out/share/
+    cp deb/extracted/usr/share/pixmaps/Qoder.png $out/share/icons/hicolor/scalable/apps/
+    chmod +x $out/share/qoder/qoder $out/share/qoder/chrome-sandbox
+    substitute deb/extracted/usr/share/applications/qoder.desktop \
+      $out/share/applications/qoder.desktop \
+      --replace-fail "/usr/share/qoder/qoder" "qoder"
+    substitute deb/extracted/usr/share/applications/qoder-url-handler.desktop \
+      $out/share/applications/qoder-url-handler.desktop \
+      --replace-fail "/usr/share/qoder/qoder" "qoder"
+    makeWrapper $out/share/qoder/qoder $out/bin/qoder \
       --add-flags "--no-sandbox --disable-gpu-sandbox"
     runHook postInstall
   '';
 
   meta = with pkgs.lib; {
-    description = "Qoder CN — Agentic coding platform for real software";
+    description = "Qoder — Agentic coding platform for real software";
     homepage = "https://qoder.com";
     license = licenses.unfree;
     platforms = [ "x86_64-linux" ];

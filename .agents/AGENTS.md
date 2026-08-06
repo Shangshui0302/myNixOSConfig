@@ -46,7 +46,7 @@ myNixOSConfig/
 ├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
-│   ├── qoder-ide.nix           # Qoder CN — AI IDE (Electron)
+│   ├── qoder-ide.nix           # Qoder — AI IDE (Electron)
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
 │

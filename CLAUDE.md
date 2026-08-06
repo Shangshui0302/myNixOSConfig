@@ -47,7 +47,7 @@ myNixOSConfig/
 
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
-│   ├── qoder-ide.nix           # Qoder CN — AI IDE (Electron)
+│   ├── qoder-ide.nix           # Qoder — AI IDE (Electron)
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   ├── anthropic-fonts.nix   # Anthropic 字体
 │   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
