@@ -29,12 +29,15 @@ myNixOSConfig/
 └── memory/                    # 决策记忆 — 回答「为什么」，AI 决策参考
     ├── INDEX.md               # 卡片索引（AI 查询入口）
     ├── _template.md           # 卡片模板
-    └── cards/                 # 原子化卡片
+    └── cards/                 # 原子化卡片（完整清单见 INDEX.md）
         ├── mihomo-tun-stack.md          # decision
         ├── ai-tools-source.md           # decision
         ├── flake-unstable-strategy.md   # decision
         ├── wiki-memory-layering.md      # decision
         ├── docs-sync-automation.md      # decision
+        ├── portal-gtk-dangling-symlink.md  # decision
+        ├── fcitx5-vertical-candidates.md  # decision
+        ├── claude-code-version-strategy.md # decision
         └── nix-search-before-manual.md  # constraint
 ```
 
