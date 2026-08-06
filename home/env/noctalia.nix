@@ -36,7 +36,7 @@ in
     main = {
       background_opacity = 0.0;
       capsule = true;
-      capsule_opacity = 0.80000001192092896;
+      capsule_opacity = 0.8;
       center = [
         ("group:g4")
         ("active_window")
@@ -67,7 +67,7 @@ in
         ("group:g3")
         ("group:g5")
       ];
-      thickness = 37;
+      thickness = 42;
       widget_spacing = 6;
       dead_zone = {
         middle_command = "noctalia msg settings-toggle";
@@ -130,6 +130,7 @@ in
           members = [
             ("volume")
             ("brightness")
+            ("network")
           ];
           opacity = 0.80000001192092896;
           padding = 6.0;
@@ -463,13 +464,13 @@ in
     enabled = false;
   };
   notification = {
-    background_opacity = 0.80000001192092896;
+    background_opacity = 0.8;
     enable_daemon = true;
     layer = "overlay";
     position = "bottom_right";
   };
   osd = {
-    background_opacity = 0.80000001192092896;
+    background_opacity = 0.8;
     position = "top_center";
     position_vertical = "center_right";
   };

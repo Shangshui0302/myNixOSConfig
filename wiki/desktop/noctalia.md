@@ -104,7 +104,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 | DarkMode | 暗色模式切换 |
 | Color Scheme Creator | 配色方案生成器 |
 
-**卡片区域：** Profile、Shortcuts、Audio、Brightness、Weather、Media/Sysmon
+**卡片区域：** Profile、Shortcuts、Audio、Brightness、Network、Weather、Media/Sysmon
 
 ## Dock
 
