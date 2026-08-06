@@ -1,3 +1,10 @@
+---
+title: Shell 环境
+category: desktop
+tags: [shell, fish, bash, starship, zellij]
+updated: 2026-08-06
+---
+
 # Shell 环境指南
 
 本机使用 fish 作为默认 shell，bash 作为备选（带 ble.sh 增强），starship 作为统一提示符。
@@ -126,3 +133,9 @@ fd "*.nix"         # 按文件名查找
 # 解压
 ouch x file.zip    # 通用解压
 ```
+
+## 相关链接
+
+- [Hyprland](hyprland.md) — `Super + Q` 启动 foot 终端
+- [Noctalia](noctalia.md) — 应用启动器默认终端命令 foot
+- [wiki 首页](../README.md)

@@ -1,3 +1,10 @@
+---
+title: Bottles 离线韧性改造
+category: dev
+tags: [bottles, wine, flatpak, offline]
+updated: 2026-08-06
+---
+
 # Bottles 离线韧性改造
 
 ## 触发原因
@@ -78,3 +85,8 @@ rm -rf ~/.var/app/com.usebottles.bottles/data/bottles/{dxvk,vkd3d,nvapi,runners}
   （`nixos-rebuild` 自动处理）
 - GitHub API 限流：如果频繁 rebuild，`api.github.com` 可能临时限流，
   但不影响已缓存的本地仓库
+
+## 相关链接
+
+- [Mihomo 代理](../networking/mihomo.md) — 策略 B 的 mihomo DIRECT 规则
+- [wiki 首页](../README.md)

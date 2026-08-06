@@ -29,4 +29,4 @@ ip link show Meta | grep mtu   # 应显示 mtu 1500
 cd /tmp && time nix-prefetch-url "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.24012.11_amd64.deb"
 ```
 
-完整排查记录见 [[wiki/mihomo.md#nix-下载慢]]
+完整排查记录见 [[wiki/networking/mihomo.md#nix-下载慢]]

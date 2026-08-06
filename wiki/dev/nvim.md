@@ -1,4 +1,22 @@
+---
+title: Neovim
+category: dev
+tags: [nvim, editor, lsp, lazy-nvim]
+updated: 2026-08-06
+---
+
 # Neovim 使用指南
+
+> **目录**
+> 1. [基本概念](#基本概念)
+> 2. [基础操作](#基础操作)
+> 3. [Leader 键菜单](#leader-键菜单)
+> 4. [插件详解](#插件详解)
+> 5. [哪些插件需要我配置？](#哪些插件需要我配置)
+> 6. [常用工作流](#常用工作流)
+> 7. [插件管理](#插件管理)
+> 8. [故障排查](#故障排查)
+> 9. [相关链接](#相关链接)
 
 本机 Neovim 配置基于 kickstart 风格 (`~/.config/nvim/init.lua`)，由 Nix 管理，启动时自动安装插件。
 
@@ -356,3 +374,9 @@ nvim --headless -c 'qa!' 2>&1 | head -20
 ### 配置被覆盖
 
 Nix rebuild 重置 `~/.config/nvim/init.lua`。永久修改改 `~/myNixOSConfig/home/nvim/init.lua` 然后 rebuild。
+
+## 相关链接
+
+- [Yazi 文件管理器](yazi.md) — smart-enter 用 Neovim 打开文本文件
+- [Shell 环境](../desktop/shell.md) — 终端编辑器的 alias 环境
+- [wiki 首页](../README.md)

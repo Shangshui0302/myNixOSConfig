@@ -1,4 +1,21 @@
+---
+title: Hyprland
+category: desktop
+tags: [wm, wayland, hyprland, scrolling-layout]
+updated: 2026-08-06
+---
+
 # Hyprland 使用指南
+
+> **目录**
+> 1. [基本概念](#基本概念)
+> 2. [快捷键](#快捷键)
+> 3. [触控板手势](#触控板手势)
+> 4. [启动时自动运行](#启动时自动运行)
+> 5. [常用工作流](#常用工作流)
+> 6. [主题](#主题)
+> 7. [故障排查](#故障排查)
+> 8. [相关链接](#相关链接)
 
 本机 Hyprland 配置基于 Lua (`~/.config/hypr/hyprland.lua`)，使用 **scrolling layout**（滚动列布局）。
 
@@ -167,3 +184,10 @@ cat /tmp/hypr/$(ls -t /tmp/hypr/ | head -1)/hyprland.log
 # 重新加载配置（不重启）
 hyprctl reload
 ```
+
+## 相关链接
+
+- [Noctalia](noctalia.md) — 顶栏/控制中心/应用启动器，快捷键与 Hyprland 绑定
+- [Shell 环境](shell.md) — `Super + Q` 启动的 foot 终端配置
+- [深色模式架构](darkmode.md) — Hyprland 边框颜色跟随 Noctalia 主题
+- [wiki 首页](../README.md)

@@ -19,4 +19,4 @@ date: YYYY-MM-DD
 ## How to apply
 <后续怎么遵守：改这块配置时要注意什么>
 
-相关: [[wiki/<手册>#<锚点>]] | [[memory/cards/<其他卡>]]
+相关: [[wiki/<分类>/<手册>#<锚点>]] | [[memory/cards/<其他卡>]]

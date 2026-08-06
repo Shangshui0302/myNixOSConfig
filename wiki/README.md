@@ -1,42 +1,44 @@
+---
+title: Wiki 首页
+category: 顶层
+tags: [index, moc]
+updated: 2026-08-06
+---
+
 # Wiki — NixOS 配置操作手册
 
 本目录是操作手册，回答「**怎么用**」。配置背后的「**为什么**」见 [`../memory/INDEX.md`](../memory/INDEX.md) 决策记忆。故障排查也在这里，每个文档末尾附排查节。
 
-## 桌面环境
+## 桌面环境 `desktop/`
 
 | 文档 | 内容 |
 |------|------|
-| [hyprland.md](hyprland.md) | Hyprland 窗口管理器：按键、手势、工作流 |
-| [noctalia.md](noctalia.md) | Noctalia Shell 桌面面板：控制中心、壁纸、配色 |
-| [shell.md](shell.md) | Shell 环境：fish/bash、别名、starship、zellij、ghostty |
-| [darkmode.md](darkmode.md) | 深色模式调度 |
+| [Hyprland](desktop/hyprland.md) | 窗口管理器：按键、手势、工作流、滚动布局 |
+| [Noctalia Shell](desktop/noctalia.md) | 桌面面板：控制中心、壁纸、配色、锁屏 |
+| [Shell 环境](desktop/shell.md) | fish/bash、别名、starship、zellij、ghostty |
+| [深色模式架构](desktop/darkmode.md) | 深色调度、dconf/qt5ct/portal 分发 |
 
-## 网络与代理
-
-| 文档 | 内容 |
-|------|------|
-| [mihomo.md](mihomo.md) | Mihomo TUN 代理：架构、WebUI、故障排查、nix 下载慢 |
-| [litellm.md](litellm.md) | LiteLLM AI 代理：模型映射、健康检查 |
-
-## 开发工具
+## 网络与代理 `networking/`
 
 | 文档 | 内容 |
 |------|------|
-| [nvim.md](nvim.md) | Neovim：配置、快捷键、LSP |
+| [Mihomo 代理](networking/mihomo.md) | TUN 代理：架构、WebUI、故障排查、nix 下载慢 |
+| [LiteLLM AI 代理](networking/litellm.md) | 模型映射、Fallback 链路、健康检查 |
 
-## 文件与办公
-
-| 文档 | 内容 |
-|------|------|
-| [yazi.md](yazi.md) | Yazi 文件管理器：按键、插件、主题 |
-| [distrobox.md](distrobox.md) | Distrobox 容器（arch + ubuntu） |
-| [bottles-offline-workaround.md](bottles-offline-workaround.md) | Bottles 离线模式 workaround |
-
-## 规范与约束
+## 开发与工具 `dev/`
 
 | 文档 | 内容 |
 |------|------|
-| [constraints.md](constraints.md) | NixOS 配置约束与惯例（overlay/override/import 选择、去重规则等） |
+| [Neovim](dev/nvim.md) | 编辑器：按键、插件、LSP、工作流 |
+| [Yazi 文件管理器](dev/yazi.md) | 文件管理器：按键、插件、主题 |
+| [Distrobox](dev/distrobox.md) | 容器（arch + ubuntu）：创建、进入、导出 |
+| [Bottles 离线韧性改造](dev/bottles-offline-workaround.md) | Flatpak Bottles 离线索引接管 |
+
+## 顶层
+
+| 文档 | 内容 |
+|------|------|
+| [约束与惯例](constraints.md) | overlay/override/import 选择、去重规则、sudo 规则等 |
 
 ## 归档
 

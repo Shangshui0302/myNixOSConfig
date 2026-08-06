@@ -1,4 +1,22 @@
+---
+title: LiteLLM AI 代理
+category: networking
+tags: [litellm, ai, deepseek, proxy, llm]
+updated: 2026-08-06
+---
+
 # LiteLLM AI 代理
+
+> **目录**
+> 1. [服务信息](#服务信息)
+> 2. [模型映射表](#模型映射表)
+> 3. [Fallback 链路](#fallback-链路)
+> 4. [密钥管理](#密钥管理)
+> 5. [客户端配置](#客户端配置)
+> 6. [健康检查](#健康检查)
+> 7. [添加新模型](#添加新模型)
+> 8. [故障排查](#故障排查)
+> 9. [相关链接](#相关链接)
 
 LiteLLM 运行在 `0.0.0.0:4000`，将 Claude/GPT API 请求路由到 DeepSeek API 后端，供 Claude Code、Codex CLI 和其他 AI 工具使用。
 
@@ -142,3 +160,9 @@ curl -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
 | `401 Unauthorized` | API key 错误 | 检查 `/persist/secrets/litellm.env` |
 | `Model not found` | 模型名拼写错误 | 检查 `model_name` 是否与配置一致 |
 | 响应很慢 | 路由到错误的模型 | 检查 fallback 链是否触发 |
+
+## 相关链接
+
+- [Mihomo 代理](mihomo.md) — 外网 API 依赖代理可达性
+- [Shell 环境](../desktop/shell.md) — 环境变量注入 `/persist/secrets/litellm.env`
+- [wiki 首页](../README.md)

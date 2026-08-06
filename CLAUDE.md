@@ -95,16 +95,11 @@ myNixOSConfig/
 │       └── gaming.nix         # mangohud
 │
 ├── wiki/                      # 操作手册 + 约束
-│   ├── README.md              # wiki 导航首页
-│   ├── constraints.md         # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
-│   ├── hyprland.md
-│   ├── noctalia.md
-│   ├── nvim.md
-│   ├── shell.md
-│   ├── litellm.md
-│   ├── mihomo.md
-│   ├── distrobox.md
-│   └── yazi.md
+│   ├── README.md              # wiki 导航首页（分类 MOC）
+│   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
+│   ├── networking/            # 网络与代理: mihomo/litellm
+│   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
+│   └── constraints.md         # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
 │
 ├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）
 │   ├── INDEX.md               # 卡片索引

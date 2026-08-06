@@ -1,3 +1,10 @@
+---
+title: Yazi 文件管理器
+category: dev
+tags: [yazi, file-manager, tui]
+updated: 2026-08-06
+---
+
 # Yazi 文件管理器
 
 Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、9 个插件和自定义按键映射。
@@ -111,3 +118,9 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、9 
 | 显示符号链接 | 是 |
 | 选项卡宽度 | 1 |
 | Shell 别名 | `y`（fish 集成） |
+
+## 相关链接
+
+- [Neovim](nvim.md) — smart-enter 用 Neovim 打开文本文件
+- [Shell 环境](../desktop/shell.md) — `y` 别名的 fish 集成
+- [wiki 首页](../README.md)

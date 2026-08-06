@@ -1,4 +1,27 @@
+---
+title: Noctalia Shell
+category: desktop
+tags: [noctalia, shell, panel, wayland]
+updated: 2026-08-06
+---
+
 # Noctalia Shell 使用指南
+
+> **目录**
+> 1. [面板布局](#面板布局)
+> 2. [快捷键（与 Hyprland 绑定）](#快捷键与-hyprland-绑定)
+> 3. [鼠标操作](#鼠标操作)
+> 4. [应用启动器](#应用启动器)
+> 5. [控制中心](#控制中心)
+> 6. [Dock](#dock)
+> 7. [壁纸管理](#壁纸管理)
+> 8. [配色方案 (yamadaryou)](#配色方案-yamadaryou)
+> 9. [锁屏与空闲](#锁屏与空闲)
+> 10. [通知与 OSD](#通知与-osd)
+> 11. [会话菜单](#会话菜单)
+> 12. [常用操作流程](#常用操作流程)
+> 13. [故障排查](#故障排查)
+> 14. [相关链接](#相关链接)
 
 Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用启动器等组件，统一管理壁纸、配色、通知、锁屏等。
 
@@ -189,3 +212,10 @@ journalctl --user -u noctalia-shell -f
 noctalia-shell ipc call darkMode setDark
 noctalia-shell ipc call darkMode setLight
 ```
+
+## 相关链接
+
+- [Hyprland](hyprland.md) — 快捷键与面板绑定、边框颜色跟随主题
+- [深色模式架构](darkmode.md) — Noctalia 是唯一深色调度器，hook 写 dconf/qt5ct
+- [Shell 环境](shell.md) — 环境变量、应用启动器终端命令
+- [wiki 首页](../README.md)

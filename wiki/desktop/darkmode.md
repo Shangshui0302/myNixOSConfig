@@ -1,3 +1,10 @@
+---
+title: 深色模式架构
+category: desktop
+tags: [darkmode, noctalia, dconf, qt5ct, portal]
+updated: 2026-08-06
+---
+
 # 深色模式架构
 
 ## 概览
@@ -107,3 +114,9 @@ systemctl --user status xdg-desktop-portal-gtk
 - 不要手动修改 `~/.config/noctalia/settings.json`
 - Chrome 可能需要重启才能跟随 portal 变化
 - Firefox 动态跟随 portal，无需重启
+
+## 相关链接
+
+- [Noctalia](noctalia.md) — 深色模式调度器，hook 写 dconf/qt5ct
+- [Hyprland](hyprland.md) — 边框颜色跟随 Noctalia 配色方案
+- [wiki 首页](../README.md)

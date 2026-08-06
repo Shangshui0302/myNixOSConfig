@@ -1,3 +1,10 @@
+---
+title: Distrobox
+category: dev
+tags: [distrobox, podman, containers]
+updated: 2026-08-06
+---
+
 # Distrobox
 
 Distrobox 用 Podman 创建和管理 Linux 发行版容器，每个容器与主机共享 HOME 目录、X11/Wayland、音频、USB 等资源，实现"在其他发行版里跑应用"而无需完整虚拟机。
@@ -115,3 +122,8 @@ podman run --rm alpine:latest wget -qO- https://archlinux.org
 | 进入容器报错 | 容器未启动 | `podman start <container_name>` |
 | 容器内无网络 | podman 网络异常 | `podman system reset --force` 后重建 |
 | assemble 未找到命令 | distrobox 未安装 | rebuild 确认 `host/containers.nix` 已生效 |
+
+## 相关链接
+
+- [Mihomo 代理](../networking/mihomo.md) — 容器流量走 TUN 全局代理，Docker Hub 走镜像加速
+- [wiki 首页](../README.md)

@@ -21,9 +21,10 @@ myNixOSConfig/
 ├── README.md                  # 项目总览、目录结构、重建命令、新机部署
 ├── CLAUDE.md                  # LLM 上下文：硬件/系统信息、目录结构、服务列表、注意事项
 ├── wiki/                      # 操作手册 — 回答「怎么用」，含故障排查
-│   ├── README.md              # wiki 导航首页：组件索引 + 分类
-│   ├── hyprland.md / noctalia.md / shell.md / mihomo.md / litellm.md
-│   ├── nvim.md / yazi.md / distrobox.md / darkmode.md / bottles-offline-workaround.md
+│   ├── README.md              # wiki 导航首页（分类 MOC）
+│   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
+│   ├── networking/            # 网络与代理: mihomo/litellm
+│   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
 │   └── constraints.md         # 约束与惯例
 └── memory/                    # 决策记忆 — 回答「为什么」，AI 决策参考
     ├── INDEX.md               # 卡片索引（AI 查询入口）
@@ -39,7 +40,7 @@ myNixOSConfig/
 
 ## Wiki 文档规范
 
-所有 wiki 文档遵循统一风格（参照 `wiki/hyprland.md`）：
+所有 wiki 文档遵循统一风格（参照 `wiki/desktop/hyprland.md`）：
 
 - **语言**：中文
 - **格式**：Markdown，使用 `#` 层级标题
@@ -57,16 +58,16 @@ myNixOSConfig/
 
 | Nix 配置 | Wiki 文档 | 说明 |
 |----------|-----------|------|
-| `home/hyprland.nix` | `wiki/hyprland.md` | Hyprland 按键、手势、工作流 |
-| `home/noctalia.nix` | `wiki/noctalia.md` | Noctalia 面板、控制中心、壁纸、配色 |
-| `home/shell.nix` | `wiki/shell.md` | fish/bash、别名、starship、zellij、ghostty |
-| `host/litellm.nix` | `wiki/litellm.md` | AI 代理模型映射、健康检查 |
-| `host/services.nix` (mihomo) | `wiki/mihomo.md` | 代理架构、WebUI、排查 |
-| `home/yazi.nix` | `wiki/yazi.md` | 文件管理器按键、插件、主题 |
-| 全部 host/ + home/ | `README.md` | 系统总览、目录结构、重建命令 |
-| 全部 host/ + home/ + 系统 | `CLAUDE.md` | LLM 上下文、硬件信息、服务列表、注意事项 |
+| `home/hyprland.nix` | `wiki/desktop/hyprland.md` | Hyprland 按键、手势、工作流 |
+| `home/noctalia.nix` | `wiki/desktop/noctalia.md` | Noctalia 面板、控制中心、壁纸、配色 |
+| `home/shell.nix` | `wiki/desktop/shell.md` | fish/bash、别名、starship、zellij、ghostty |
+| `host/litellm.nix` | `wiki/networking/litellm.md` | AI 代理模型映射、健康检查 |
+| `host/services.nix` (mihomo) | `wiki/networking/mihomo.md` | 代理架构、WebUI、排查 |
+| `home/yazi.nix` | `wiki/dev/yazi.md` | 文件管理器按键、插件、主题 |
 
-当新增 nix 模块时，判断是否需要创建对应的 `wiki/*.md`。判断标准：
+**分类规则**：`wiki/` 下按 `desktop/`、`networking/`、`dev/` 分类子目录。新增文档时先判断归属类别；跨领域约束放顶层 `constraints.md`。每篇文档带 frontmatter（`title`/`category`/`tags`/`updated`），>150 行加 TOC，末尾固定 `## 相关链接` 区块用 markdown 相对链接互链。
+
+当新增 nix 模块时，判断是否需要创建对应的 `wiki/<分类>/*.md`。判断标准：
 - 组件是用户直接交互的（WM、面板、shell、编辑器等）→ 需要 wiki
 - 组件配置复杂，从 nix 代码难以快速理解用法 → 需要 wiki
 - 纯后台服务、用户不直接操作的 → 不需要独立 wiki
@@ -100,7 +101,7 @@ myNixOSConfig/
 ### 1. 信息收集
 
 - **先读 nix 配置**：完整读取对应的 nix 文件，理解所有配置项
-- **再读已有文档**：至少读 `wiki/hyprland.md` 作为风格参考，读 `CLAUDE.md` 了解系统上下文
+- **再读已有文档**：至少读 `wiki/desktop/hyprland.md` 作为风格参考，读 `CLAUDE.md` 了解系统上下文
 - 如果用户未指定要文档化哪个组件，先扫描 `host/` 和 `home/` 中所有 nix 文件，对比 `wiki/` 目录，找出"有配置但无文档"的组件
 
 ### 2. 确定内容结构

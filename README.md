@@ -51,10 +51,10 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   └── leisure/               # 影音、游戏、浏览器
 │
 ├── wiki/                      # 操作手册（怎么用 + 故障排查）
-│   ├── README.md              # wiki 导航首页
-│   ├── hyprland.md / noctalia.md / nvim.md / shell.md
-│   ├── litellm.md / mihomo.md / distrobox.md / yazi.md
-│   ├── darkmode.md / bottles-offline-workaround.md
+│   ├── README.md              # wiki 导航首页（分类 MOC）
+│   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
+│   ├── networking/            # 网络与代理: mihomo/litellm
+│   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
 │   └── constraints.md         # 约束与惯例
 │
 ├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）

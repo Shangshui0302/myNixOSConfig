@@ -1,4 +1,21 @@
+---
+title: Mihomo 代理
+category: networking
+tags: [mihomo, tun, proxy, nftables, vpn]
+updated: 2026-08-06
+---
+
 # Mihomo 代理
+
+> **目录**
+> 1. [架构](#架构)
+> 2. [配置文件](#配置文件)
+> 3. [WebUI](#webui)
+> 4. [验证代理](#验证代理)
+> 5. [防火墙规则](#防火墙规则)
+> 6. [故障排查](#故障排查)
+> 7. [nix 下载慢](#nix-下载慢大文件极慢--挂起--curl-正常-nix-卡死)
+> 8. [相关链接](#相关链接)
 
 Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。配置模板由 Nix 管理，节点从机场订阅拉取，规则使用 MetaCubeX 社区规则集（MRS 格式）。
 
@@ -134,3 +151,12 @@ ip link show Meta | grep mtu   # 应显示 mtu 1500
 cd /tmp && time nix-prefetch-url "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.24012.11_amd64.deb"
 # 修复前: 30KB/s 卡死; 修复后: 1.4~2.5MB/s 正常下完
 ```
+
+> **决策背景**：为什么 TUN 用 `gvisor + mtu 1500`？见 [`memory/cards/mihomo-tun-stack.md`](../../memory/cards/mihomo-tun-stack.md)
+
+## 相关链接
+
+- [LiteLLM AI 代理](litellm.md) — 同端口 `127.0.0.1` 依赖本代理的 API 可达性
+- [Distrobox](../dev/distrobox.md) — 容器网络走 Mihomo TUN 全局代理
+- [Bottles 离线韧性改造](../dev/bottles-offline-workaround.md) — 策略 B 用 mihomo DIRECT 规则
+- [wiki 首页](../README.md)

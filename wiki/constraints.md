@@ -1,4 +1,11 @@
-## NixOS Config — Constraints & Conventions
+---
+title: 约束与惯例
+category: 顶层
+tags: [constraints, conventions, nix]
+updated: 2026-08-06
+---
+
+# NixOS Config — 约束与惯例
 
 ### Repo structure
 
@@ -110,3 +117,8 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 
 Parse passing does not guarantee evaluation success. Always run `dry-build` before
 committing structural changes.
+
+## 相关链接
+
+- [Wiki 首页](README.md) — 各组件操作手册导航
+- [Memory 决策记忆](../memory/INDEX.md) — 配置决策的背景与原因
