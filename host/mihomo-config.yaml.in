@@ -353,12 +353,13 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,🇺🇸 美国极速
   - DOMAIN-SUFFIX,meta.ai,🇺🇸 美国极速
   - DOMAIN-SUFFIX,perplexity.ai,🇺🇸 美国极速
-  - RULE-SET,geosite-openai,🇺🇸 美国极速
-  - RULE-SET,geosite-microsoft,🇺🇸 美国极速
-  - RULE-SET,geosite-apple,🇺🇸 美国极速
-  
+  - RULE-SET,geosite-openai,🔰 选择节点
+  - RULE-SET,geosite-microsoft,🔰 选择节点
+  - RULE-SET,geosite-apple,🔰 选择节点
+
   # 常规特定服务
-  - RULE-SET,geosite-google,🇺🇸 美国极速
+  - DOMAIN-SUFFIX,noctalia.dev,🔰 选择节点
+  - RULE-SET,geosite-google,🔰 选择节点
   - RULE-SET,geosite-bilibili,🌏 爱奇艺&哔哩哔哩
   - RULE-SET,geosite-bahamut,📺 动画疯
   - RULE-SET,geosite-netflix,🔰 选择节点
