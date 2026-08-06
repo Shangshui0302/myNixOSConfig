@@ -80,7 +80,7 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code (版本固定), codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, reasonix, opencode, cc-switch
+│   │   ├── ai.nix             # claude-code (latest 跟随 nixpkgs), codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, reasonix, opencode, cc-switch
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器
