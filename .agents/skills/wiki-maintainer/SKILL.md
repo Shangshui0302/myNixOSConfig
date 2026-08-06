@@ -33,6 +33,8 @@ myNixOSConfig/
         ├── mihomo-tun-stack.md          # decision
         ├── ai-tools-source.md           # decision
         ├── flake-unstable-strategy.md   # decision
+        ├── wiki-memory-layering.md      # decision
+        ├── docs-sync-automation.md      # decision
         └── nix-search-before-manual.md  # constraint
 ```
 
