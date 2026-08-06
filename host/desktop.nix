@@ -60,10 +60,20 @@ in
       fcitx5-gtk
       qt6Packages.fcitx5-chinese-addons
       qt6Packages.fcitx5-configtool
+      fcitx5-mellow-themes
       fcitx5-material-color
       catppuccin-fcitx5
       kdePackages.fcitx5-qt
     ];
+    # classicui 深色联动：UseDarkTheme=True 让 fcitx5 通过 portal 检测深浅色
+    # 浅色用 mellow-wechat，深色用 mellow-wechat-dark（Noctalia 调度）
+    fcitx5.settings.addons.classicui.globalSection = {
+      Theme = "mellow-wechat";
+      DarkTheme = "mellow-wechat-dark";
+      UseDarkTheme = "True";
+      # 垂直候选窗（键名含空格，需引号）
+      "Vertical Candidate List" = "True";
+    };
   };
 
   # Fonts

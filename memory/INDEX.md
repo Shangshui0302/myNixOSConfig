@@ -4,6 +4,7 @@
 
 ## 决策 decision
 
+- [portal-gtk dangling symlink 导致 fcitx5 浅色皮肤](cards/portal-gtk-dangling-symlink.md) — D-Bus 无法激活 portal-gtk 的根因修复
 - [知识库分层: wiki 管怎么用, memory 管为什么](cards/wiki-memory-layering.md) — 纯 Markdown wiki + 决策卡架构
 - [文档同步自动化: hook 门禁 + session-wrapup](cards/docs-sync-automation.md) — commit 硬门禁 + 会话收尾沉淀
 - [mihomo TUN: gvisor + mtu 1500](cards/mihomo-tun-stack.md) — nix 下载慢的根因修复，吞吐 47 倍

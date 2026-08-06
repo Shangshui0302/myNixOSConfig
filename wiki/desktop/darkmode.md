@@ -108,11 +108,15 @@ noctalia-shell ipc call darkMode setLight
 systemctl --user status xdg-desktop-portal-gtk
 ```
 
+**portal 查询报「未找到请求的设置」或「Could not activate ... portal.gtk」时**：portal-gtk 未激活。检查 `systemctl --user status xdg-desktop-portal-gtk` 是否 not-found，若是则大概率是 `~/.config/systemd/user/xdg-desktop-portal-gtk.service` 是 dangling symlink（指向已 GC 的 store 路径），删除后 `systemctl --user daemon-reload && systemctl --user start xdg-desktop-portal-gtk`，systemd 会 fallback 到 `/etc/systemd/user` 的正确 unit。详见 `memory/cards/portal-gtk-dangling-symlink.md`。
+
 ## 注意事项
 
 - `settings.json` 是只读 nix store symlink，Noctalia 运行时修改只存于内存
 - 不要手动修改 `~/.config/noctalia/settings.json`
 - Chrome 可能需要重启才能跟随 portal 变化
+- **fcitx5 深色联动**：`i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection` 配 `Theme=mellow-wechat, DarkTheme=mellow-wechat-dark, UseDarkTheme=True`。fcitx5 通过 portal 检测深浅色，portal-gtk 未激活时 fcitx5 永远浅色
+- **垂直候选窗**：classicui 的 `"Vertical Candidate List" = "True"`（键名含空格需引号，值必须大写 `True`）
 - Firefox 动态跟随 portal，无需重启
 
 ## 相关链接
