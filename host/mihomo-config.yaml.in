@@ -100,7 +100,7 @@ geox-url:
 
 # 机场订阅（proxy: DIRECT 避免鸡生蛋：provider下载不走代理链）
 proxy-providers:
-  sub:
+  ikuuu:
     type: http
     url: "${MIHOMO_SUBSCRIPTION_URL}"
     path: ./providers/proxies.yaml
@@ -261,11 +261,11 @@ rule-providers:
 proxy-groups:
   - name: "🔰 选择节点"
     type: select
-    use: [sub]
+    use: [ikuuu]
 
   - name: "🇺🇸 美国极速"
     type: url-test
-    use: [sub]
+    use: [ikuuu]
     filter: "美国|US|United States|🇺🇸"
     url: "https://www.gstatic.com/generate_204"
     interval: 300
@@ -273,13 +273,13 @@ proxy-groups:
 
   - name: "🌏 爱奇艺&哔哩哔哩"
     type: select
-    use: [sub]
+    use: [ikuuu]
     filter: "香港|台湾"
     proxies: ["DIRECT", "🔰 选择节点"]
 
   - name: "📺 动画疯"
     type: select
-    use: [sub]
+    use: [ikuuu]
     filter: "台湾"
     proxies: ["🔰 选择节点", "DIRECT"]
 

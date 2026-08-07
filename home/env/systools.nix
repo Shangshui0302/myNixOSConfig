@@ -223,7 +223,7 @@ in
     ventoy-full
 
     # Yazi & Terminal Preview Dependencies
-    imagemagick poppler-utils ffmpegthumbnailer 
+    imagemagick poppler-utils
   ];
 
   # ---- btop ----

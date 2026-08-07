@@ -30,7 +30,6 @@ in
     QT_IM_MODULE = "fcitx";
     XMODIFIERS = "@im=fcitx";
     SDL_IM_MODULE = "fcitx";
-    NIXOS_OZONE_WL = "1";
     EDITOR = "nvim";
     SUDO_EDITOR = "nvim";
     STEAM_FORCE_DESKTOPUI_SCALING = "2.0";

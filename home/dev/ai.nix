@@ -42,4 +42,28 @@ in
     codexDesktop
     (import ../../local-deriv/qoder-ide.nix { inherit pkgs; })
   ];
+
+  # CC Switch → systemd service（替换 XDG autostart，支持崩溃重启）
+  systemd.user.services.cc-switch = {
+    Unit = {
+      Description = "CC Switch - AI API Router";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.cc-switch}/bin/cc-switch";
+      Restart = "on-failure";
+      RestartSec = 5;
+      Slice = "app-graphical.slice";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
+
+  # 禁用 cc-switch 的 XDG autostart（已由 systemd service 接管）
+  xdg.configFile."autostart/CC Switch.desktop".text = ''
+    [Desktop Entry]
+    Hidden=true
+  '';
 }

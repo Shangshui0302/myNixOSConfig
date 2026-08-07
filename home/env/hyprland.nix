@@ -5,7 +5,7 @@ let
 in
 {
   home.packages = with pkgs; [
-    grim slurp wl-clipboard grimblast swappy hyprpolkitagent
+    grim slurp wl-clipboard grimblast swappy
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
       mkdir -p "$dir"
@@ -96,6 +96,7 @@ in
           size = 15,
           passes = 4,
           vibrancy = 0.3,
+          new_optimizations = false,
           ignore_opacity = true,
           popups = true,
           popups_ignorealpha = 0.2,
@@ -201,8 +202,6 @@ in
 
     -- Startup commands
     hl.on("hyprland.start", function()
-      hl.exec_cmd("systemctl --user start hyprpolkitagent || ${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent")
-      hl.exec_cmd("fcitx5 -rd")
       hl.exec_cmd("noctalia")
     end)
 
@@ -329,4 +328,11 @@ in
     hl.gesture({ fingers = 3, direction = "right", action = "scroll_move" })
   '';
   };
+
+  # fcitx5 XDG autostart: 崩溃后自动拉起
+  xdg.configFile."systemd/user/app-org.fcitx.Fcitx5@autostart.service.d/restart.conf".text = ''
+    [Service]
+    Restart=on-failure
+    RestartSec=3
+  '';
 }

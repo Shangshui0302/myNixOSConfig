@@ -14,7 +14,8 @@
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
-  boot.kernelModules = [ "ntfs3" ];
+  boot.kernelModules = [ "ntfs3" "acpi_video" ];
+  boot.kernelParams = [ "acpi_backlight=native" ];
 
   system.stateVersion = "25.11";
 }
