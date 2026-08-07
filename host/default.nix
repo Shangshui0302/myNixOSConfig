@@ -12,8 +12,8 @@
     ./services.nix
     ./desktop.nix
     ./greeter.nix
-    ./litellm.nix
     ./gaming.nix
     ./containers.nix
+    ./sops.nix
   ];
 }

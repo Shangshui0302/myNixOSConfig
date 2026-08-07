@@ -112,7 +112,7 @@ fish 和 bash 均已配置：当命令执行超过 10 秒时，完成后自动�
 
 ## 环境变量
 
-fish 启动时自动加载 `/persist/secrets/litellm.env` 中的 `KEY=VALUE` 格式变量，包括 API 密钥等敏感信息。
+系统 secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），rebuild 时解密到 `/run/secrets/`。
 
 ## 常用工作流
 

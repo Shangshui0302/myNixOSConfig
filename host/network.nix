@@ -21,8 +21,13 @@
   '';
 
 
+  systemd.services.mihomo = {
+    after = [ "sops-nix.service" ];
+    wants = [ "sops-nix.service" ];
+  };
+
   systemd.services.mihomo.serviceConfig = {
-    EnvironmentFile = "/persist/secrets/mihomo.env";
+    EnvironmentFile = "/run/secrets/mihomo_env";
     RuntimeDirectory = "mihomo";
     ExecStart = lib.mkForce (lib.concatStringsSep " " ([
       (lib.getExe config.services.mihomo.package)

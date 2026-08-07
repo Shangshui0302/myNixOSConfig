@@ -18,6 +18,10 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     llm-agents.url = "github:numtide/llm-agents.nix";
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = { self, nixpkgs, ... }@inputs: {
     nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {
@@ -25,6 +29,7 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./host/default.nix
+        inputs.sops-nix.nixosModules.sops
         inputs.noctalia-greeter.nixosModules.default
         inputs.home-manager.nixosModules.home-manager
         {

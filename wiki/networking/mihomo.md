@@ -156,7 +156,6 @@ cd /tmp && time nix-prefetch-url "https://downloads.claude.ai/claude-desktop/apt
 
 ## 相关链接
 
-- [LiteLLM AI 代理](litellm.md) — 同端口 `127.0.0.1` 依赖本代理的 API 可达性
 - [Distrobox](../dev/distrobox.md) — 容器网络走 Mihomo TUN 全局代理
 - [Bottles 离线韧性改造](../dev/bottles-offline-workaround.md) — 策略 B 用 mihomo DIRECT 规则
 - [wiki 首页](../README.md)

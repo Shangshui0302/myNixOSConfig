@@ -1,4 +1,4 @@
-# NixOS Config — Agent Context
+# NixOS Config — Claude Code Context
 
 ## 硬件信息
 - 机型: MechRevo (机械革命) 笔记本
@@ -44,10 +44,12 @@ myNixOSConfig/
 │   └── vim-plugins.nix        # vimPlugins 别名
 │
 ├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
+
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
 │   ├── qoder-ide.nix           # Qoder — AI IDE (Electron)
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
+│   ├── anthropic-fonts.nix   # Anthropic 字体
 │   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
 │
 ├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
@@ -61,7 +63,6 @@ myNixOSConfig/
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
 │   ├── greeter.nix            # Noctalia Greeter 显示管理器
-│   ├── litellm.nix            # LiteLLM 代理 (0.0.0.0:4000, DeepSeek API 后端)
 │   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
@@ -80,7 +81,7 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code (latest 跟随 nixpkgs), codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, reasonix, opencode, cc-switch
+│   │   ├── ai.nix             # claude-code, codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, reasonix, opencode, cc-switch
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器
@@ -95,22 +96,16 @@ myNixOSConfig/
 ├── wiki/                      # 操作手册 + 约束
 │   ├── README.md              # wiki 导航首页（分类 MOC）
 │   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
-│   ├── networking/            # 网络与代理: mihomo/litellm
+│   ├── networking/            # 网络与代理: mihomo
 │   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
-│   └── constraints.md         # 详细约束与惯例（AGENTS.md 精简版，冲突时以它为准）
+│   └── constraints.md         # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
 │
 ├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）
 │   ├── INDEX.md               # 卡片索引
 │   ├── _template.md           # 卡片模板
 │   └── cards/                 # 原子化决策卡
 │
-├── .agents/                   # Antigravity 配置
-│   ├── AGENTS.md              # Agent 上下文：硬件/系统信息、目录结构、服务列表、注意事项
-│   └── skills/                # Agent 技能
-│       ├── wiki-maintainer/   # wiki + memory 维护技能
-│       └── project-commit/    # 提交工作流技能
-│
-├── CLAUDE.md                  # (Legacy) Claude Code 上下文，已迁移至 .agents/AGENTS.md
+├── CLAUDE.md
 └── README.md
 ```
 
@@ -146,7 +141,7 @@ myNixOSConfig/
 
 ### flake.nix
 - `flake.nix` 只做入口和依赖声明
-- Flake inputs: nixpkgs, home-manager, noctalia, noctalia-qs, nix-flatpak
+- Flake inputs: nixpkgs, home-manager, noctalia, noctalia-greeter, nix-flatpak, llm-agents (numtide/llm-agents.nix, AI 工具包来源), codex-desktop-linux (ilysenko, Codex Desktop for Linux)
 - Overlays 放 `overlays/`，通过 `nixpkgs.overlays = import ./overlays` 导入
 - 不允许 inline derivations、inline `mkDerivation`、inline `appimageTools`
 
@@ -198,7 +193,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **SSD**: fstrim
 - **深色模式**: Noctalia 调度 (dconf/qt5ct) + xdg-desktop-portal-gtk 暴露 Settings portal
 - **云同步**: OneDrive (systemd user service, 首次需 `onedrive` 认证)
-- **AI 代理**: LiteLLM (0.0.0.0:4000, 将 Claude/GPT API 路由到 DeepSeek 后端)
+- **AI 代理**: cc-switch (API 路由)
 - **二进制兼容**: nix-ld (运行非 NixOS 编译的二进制)
 - **文件管理**: gvfs
 - **USB 自动挂载**: udiskie (systemd user service)
@@ -208,19 +203,6 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **虚拟化**: libvirtd + QEMU/KVM + virt-manager
 - **Android 容器**: Waydroid (LXC, binder, waydroid-nftables)
 - **Nix 管理**: nh (CLI helper + systemd timer 每周 GC, 保留 10 代 + 7 天)
-
-## LiteLLM 模型映射 (端口 4000)
-所有模型通过 DeepSeek API 后端提供，环境变量 `DEEPSEEK_API_KEY` 在 `/persist/secrets/litellm.env`：
-
-| 模型名 | 后端模型 | 用途 |
-|--------|---------|------|
-| claude-opus-4-7 | deepseek-v4-pro (anthropic) | Claude Code |
-| claude-sonnet-4-6 | deepseek-v4-flash (anthropic) | 日常使用 |
-| claude-haiku-4-5 | deepseek-v4-flash (anthropic) | 轻量任务 |
-| gpt-4o / gpt-4.1 | deepseek-v4-pro (openai) | Codex CLI 等 |
-| gpt-4o-mini | deepseek-v4-flash (openai) | 备选 |
-
-Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 
 ## Nix 配置
 - **Channel**: nixos-unstable
@@ -239,13 +221,12 @@ Fallback: opus→sonnet→haiku, gpt-4o/4.1→gpt-4o-mini
 - **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行
 - 涉及 mihomo / TUN / nftables / DNS 等网络基础设施的改动，**一律开 feature 分支**。原因：网络组件出问题时可能阻断 nixos-rebuild（缓存下载走 TUN → 代理坏了 → SSL 失败 → 无法 rebuild 恢复），形成死锁
 - feature 分支验证通过（rebuild 成功 + 服务正常运行）后再合并回 main
-- **每次改动后**：更新 README.md 和 AGENTS.md → commit → rebuild → push main（private repo，不需要 PR）
+- **每次改动后**：更新 README.md 和 CLAUDE.md → commit → rebuild → push main（private repo，不需要 PR）
 - 修改后**不要自动 rebuild**，给出命令让我手动执行
 - 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
 - 优先用 Home Manager 管用户级配置，系统级才动 host/
 - 涉及 overlay 或 unstable channel 的包，说明原因
-- secrets 放 `/persist/secrets/`（如 `litellm.env`），不进 git；fish shell 启动时自动 source
-- API 密钥通过 `/persist/secrets/litellm.env` 注入，不在 nix 配置中硬编码
+- secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），年龄钥在 `/persist/sops-age-key.txt`
 - sudo 已配 NOPASSWD: nix, nixos-rebuild, tee, chmod, chown, install, mv, cp, rm
 - 硬件相关（显卡、网卡驱动）改动要谨慎，先说明影响
 - 2K 显示屏 2560x1600，Hyprland scale 1.5，涉及 DPI/scale 改动时注意

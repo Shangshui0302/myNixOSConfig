@@ -379,17 +379,6 @@
     ];
 
     interactiveShellInit = ''
-      # 从 /persist/secrets/ 加载环境变量（如果存在）
-      if test -f /persist/secrets/litellm.env
-        while read -l line
-          if string match -qr '^\s*[A-Z_]+\s*=' -- "$line"
-            set -l kv (string split -m 1 "=" -- "$line")
-            set -l name (string trim -- $kv[1])
-            set -gx $name (string trim -- $kv[2])
-          end
-        end < /persist/secrets/litellm.env
-      end
-
       # 针对 Distrobox 容器的特殊处理：优先使用容器内部安装的软件
       if set -q DISTROBOX_ENTERED
         set -x PATH /usr/local/bin /usr/bin /bin $PATH

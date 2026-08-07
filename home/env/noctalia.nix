@@ -70,7 +70,9 @@ in
       thickness = 42;
       widget_spacing = 6;
       dead_zone = {
-        middle_command = "noctalia msg settings-toggle";
+        actions = {
+          middle = "exec noctalia msg settings-toggle";
+        };
       };
       capsule_group = [
         ({
@@ -218,9 +220,6 @@ in
     reserve_space = false;
     show_dots = true;
   };
-  greeter_sync = {
-    auto_sync = true;
-  };
   hooks = {
     theme_mode_changed = "${darkModeScript}";
   };
@@ -274,7 +273,7 @@ in
   };
   lockscreen = {
     blur_intensity = 0.6;
-    blurred_desktop = false;
+    blurred_desktop = true;
     enabled = true;
     tint_intensity = 0.0;
   };
@@ -282,16 +281,7 @@ in
     enabled = true;
     schema_version = 2;
     widget_order = [
-      ("lockscreen-widget-000000000000000a")
-      ("lockscreen-widget-0000000000000006")
       ("lockscreen-login-box@eDP-1")
-      ("lockscreen-widget-0000000000000001")
-      ("lockscreen-widget-0000000000000002")
-      ("lockscreen-widget-0000000000000003")
-      ("lockscreen-widget-0000000000000004")
-      ("lockscreen-widget-0000000000000005")
-      ("lockscreen-widget-0000000000000009")
-      ("lockscreen-widget-000000000000000c")
     ];
     grid = {
       cell_size = 8;
@@ -300,10 +290,10 @@ in
     };
     widget = {
       "lockscreen-login-box@eDP-1" = {
-        box_height = 64.0;
-        box_width = 688.0;
+        box_height = 196.0;
+        box_width = 720.0;
         cx = 960.0;
-        cy = 1024.0;
+        cy = 1014.0;
         output = "eDP-1";
         rotation = 0.0;
         type = "login_box";
@@ -311,9 +301,17 @@ in
           background_color = "surface_variant";
           background_opacity = 1.0;
           background_radius = 32.0;
+          center_password_text = false;
           input_opacity = 1.0;
           input_radius = 32.0;
+          layout = "regular";
+          show_caps_lock = true;
+          show_keyboard_layout = true;
           show_login_button = true;
+          show_media = true;
+          show_session_buttons = true;
+          show_unlock_hint = true;
+          show_weather = true;
         };
       };
       lockscreen-widget-0000000000000001 = {
@@ -322,7 +320,7 @@ in
         cx = 960.0;
         cy = 404.0;
         output = "eDP-1";
-        rotation = -0.0;
+        rotation = 0.0;
         type = "clock";
         settings = {
           background = true;
@@ -445,7 +443,7 @@ in
         cx = 960.0;
         cy = 1184.0;
         output = "eDP-1";
-        rotation = -0.0;
+        rotation = 0.0;
         type = "label";
         settings = {
           background = false;
@@ -483,6 +481,7 @@ in
     enabled = [
       ("noctalia/kaomoji")
       ("noctalia/translator")
+      ("noctalia/bongocat")
     ];
   };
   shell = {
@@ -500,6 +499,7 @@ in
     settings_show_advanced = true;
     show_location = true;
     telemetry_enabled = false;
+    external_ip_enabled = true;
     time_format = "{:%H:%M}";
     animation = {
       speed = 1.0;
@@ -507,6 +507,9 @@ in
     launcher = {
       app_grid = true;
       session_search = true;
+    };
+    greeter_sync = {
+      auto_sync = true;
     };
     panel = {
       borders = true;
@@ -599,11 +602,9 @@ in
       max_length = 280.0;
     };
     battery = {
-      display_mode = "icon";
       hide_when_plugged = false;
     };
     brightness = {
-      scroll_step = 5;
       show_label = true;
     };
     cat = {
@@ -626,15 +627,21 @@ in
       max_length = 220.0;
     };
     network = {
-      show_label = true;
+      show_label = false;
     };
     network_rx = {
-      display = "text";
+      type = "sysmon";
+      stat = "net_rx";
+      visualization = "none";
+      show_value = true;
       glyph = "square-rounded-chevrons-down-filled";
       network_speed_compact = true;
     };
     network_tx = {
-      display = "text";
+      type = "sysmon";
+      stat = "net_tx";
+      visualization = "none";
+      show_value = true;
       glyph = "square-rounded-chevrons-up-filled";
       network_speed_compact = true;
     };
@@ -645,7 +652,8 @@ in
       hide_inactive = false;
     };
     sysmon = {
-      display = "graph";
+      visualization = "graph";
+      show_value = true;
       stat = "cpu_usage";
     };
     tray = {
@@ -654,11 +662,10 @@ in
       ];
     };
     volume = {
-      scroll_step = 5;
       show_label = true;
     };
     workspaces = {
-      display = "id";
+      label_source = "id";
       labels_only_when_occupied = true;
     };
   };

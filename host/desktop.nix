@@ -22,6 +22,9 @@ let
 in
 
 {
+  # GNOME Keyring — 为 Electron/VS Code 类应用提供加密凭据存储
+  services.gnome.gnome-keyring.enable = true;
+
   environment.variables = {
     GTK_IM_MODULE = "fcitx";
     QT_IM_MODULE = "fcitx";

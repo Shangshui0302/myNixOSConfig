@@ -71,7 +71,7 @@ pkgs.stdenv.mkDerivation rec {
       $out/share/applications/qoder-url-handler.desktop \
       --replace-fail "/usr/share/qoder/qoder" "qoder"
     makeWrapper $out/share/qoder/qoder $out/bin/qoder \
-      --add-flags "--no-sandbox --disable-gpu-sandbox"
+      --add-flags "--no-sandbox --disable-gpu-sandbox --password-store=gnome-libsecret"
     runHook postInstall
   '';
 

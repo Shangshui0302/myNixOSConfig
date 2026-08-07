@@ -353,6 +353,7 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,🇺🇸 美国极速
   - DOMAIN-SUFFIX,meta.ai,🇺🇸 美国极速
   - DOMAIN-SUFFIX,perplexity.ai,🇺🇸 美国极速
+  - DOMAIN-SUFFIX,qoder.com,🔰 选择节点
   - RULE-SET,geosite-openai,🔰 选择节点
   - RULE-SET,geosite-microsoft,🔰 选择节点
   - RULE-SET,geosite-apple,🔰 选择节点

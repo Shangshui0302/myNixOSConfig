@@ -38,7 +38,6 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
 │   ├── desktop.nix            # 桌面环境基础设施
 │   ├── greeter.nix            # Noctalia Greeter 登录管理器
-│   ├── litellm.nix            # 本地大模型代理服务
 │   └── gaming.nix             # Steam、Flatpak、libvirtd
 │
 ├── home/                      # 用户配置 (4 子目录)
@@ -53,7 +52,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 ├── wiki/                      # 操作手册（怎么用 + 故障排查）
 │   ├── README.md              # wiki 导航首页（分类 MOC）
 │   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
-│   ├── networking/            # 网络与代理: mihomo/litellm
+│   ├── networking/            # 网络与代理: mihomo
 │   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
 │   └── constraints.md         # 约束与惯例
 │
@@ -115,31 +114,21 @@ cp /mnt/etc/nixos/hardware-configuration.nix ~/myNixOSConfig/
 
 ### 3. 挂载 /persist 子卷并创建文件
 
-`/persist` 是 btrfs 子卷（`@persist`），需在分区时创建并挂载。mihomo 和 LiteLLM 依赖其下的配置文件，首次部署需手动准备：
+`/persist` 是 btrfs 子卷（`@persist`），需在分区时创建并挂载。mihomo 依赖其下的配置，首次部署需手动准备：
 
 ```bash
 # 创建目录
-sudo mkdir -p /persist/mihomo /persist/secrets
+sudo mkdir -p /persist/mihomo
 
 # mihomo 代理配置（必需，否则 mihomo 服务启动失败）
 sudo cp <your-mihomo-config.yaml> /persist/mihomo/config.yaml
-
-# LiteLLM 环境变量（可选，仅当使用 LiteLLM 代理时需要）
-sudo cp <your-litellm.env> /persist/secrets/litellm.env
 ```
 
-`/persist/secrets/litellm.env` 格式（`KEY=VALUE`，fish shell 启动时自动加载到用户环境）：
+Secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），age 私钥在 `/persist/sops-age-key.txt`。首次部署需生成 age key：
 
+```bash
+age-keygen -o /persist/sops-age-key.txt
 ```
-ANTHROPIC_AUTH_TOKEN=your-token
-ANTHROPIC_BASE_URL=http://127.0.0.1:4000
-OPENAI_API_KEY=your-litellm-master-key
-OPENAI_BASE_URL=http://127.0.0.1:4000/v1
-DEEPSEEK_API_KEY=your-deepseek-key
-LITELLM_MASTER_KEY=your-litellm-master-key
-```
-
-> `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 是客户端变量，供 Claude Code 等工具连接 LiteLLM 代理使用。`OPENAI_API_KEY` + `OPENAI_BASE_URL` 供 Codex 等 OpenAI 兼容工具使用。`DEEPSEEK_API_KEY` 和 `LITELLM_MASTER_KEY` 是 LiteLLM 服务端变量。
 
 GitHub CLI 等工具也可能依赖 `/persist/secrets/` 下的其他 env 文件：
 

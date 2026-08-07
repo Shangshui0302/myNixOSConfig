@@ -17,13 +17,13 @@ updated: 2026-08-06
 | [Noctalia Shell](desktop/noctalia.md) | 桌面面板：控制中心、壁纸、配色、锁屏 |
 | [Shell 环境](desktop/shell.md) | fish/bash、别名、starship、zellij、ghostty |
 | [深色模式架构](desktop/darkmode.md) | 深色调度、dconf/qt5ct/portal 分发 |
+| [GNOME Keyring](desktop/keyring.md) | 凭据存储：PAM 解锁、Electron 应用、故障排查 |
 
 ## 网络与代理 `networking/`
 
 | 文档 | 内容 |
 |------|------|
 | [Mihomo 代理](networking/mihomo.md) | TUN 代理：架构、WebUI、故障排查、nix 下载慢 |
-| [LiteLLM AI 代理](networking/litellm.md) | 模型映射、Fallback 链路、健康检查 |
 
 ## 开发与工具 `dev/`
 
@@ -34,10 +34,11 @@ updated: 2026-08-06
 | [Distrobox](dev/distrobox.md) | 容器（arch + ubuntu）：创建、进入、导出 |
 | [Bottles 离线韧性改造](dev/bottles-offline-workaround.md) | Flatpak Bottles 离线索引接管 |
 
-## 顶层
+## 系统基础
 
 | 文档 | 内容 |
 |------|------|
+| [PAM — 可插拔认证模块](pam.md) | Linux 认证框架：模块、阶段、与 keyring 的关系 |
 | [约束与惯例](constraints.md) | overlay/override/import 选择、去重规则、sudo 规则等 |
 
 ## 归档
