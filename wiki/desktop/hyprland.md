@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout]
-updated: 2026-08-06
+updated: 2026-08-07
 ---
 
 # Hyprland 使用指南
@@ -185,9 +185,19 @@ cat /tmp/hypr/$(ls -t /tmp/hypr/ | head -1)/hyprland.log
 hyprctl reload
 ```
 
+### 亮度调到最高反而变黑
+
+AMD 核显（Radeon 780M）内核 6.15+ 的 custom brightness curve 在顶端溢出、100% 亮度变全黑。已在 `host/boot.nix` 用内核参数 `amdgpu.dcdebugmask=0x40000` 禁用该曲线修复（需 reboot。为何不升内核见 `memory/cards/mechrevo-amd-backlight-curve.md`）。若重现，验证：
+
+```
+cat /sys/module/amdgpu/parameters/dcdebugmask   # 应为 262144
+```
+
 ## 相关链接
 
 - [Noctalia](noctalia.md) — 顶栏/控制中心/应用启动器，快捷键与 Hyprland 绑定
 - [Shell 环境](shell.md) — `Super + Q` 启动的 foot 终端配置
 - [深色模式架构](darkmode.md) — Hyprland 边框颜色跟随 Noctalia 主题
+- [Memory: AMD 背光曲线溢出](../../memory/cards/mechrevo-amd-backlight-curve.md) — 100% 亮度变黑的内核参数修复
+- [Memory: Hyprland 模糊 / AMD 780M](../../memory/cards/hyprland-056-blur-amd.md) — 模糊在 AMD 核显失效的处理
 - [wiki 首页](../README.md)

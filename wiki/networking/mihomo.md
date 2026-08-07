@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-08-06
+updated: 2026-08-07
 ---
 
 # Mihomo 代理
@@ -158,4 +158,5 @@ cd /tmp && time nix-prefetch-url "https://downloads.claude.ai/claude-desktop/apt
 
 - [Distrobox](../dev/distrobox.md) — 容器网络走 Mihomo TUN 全局代理
 - [Bottles 离线韧性改造](../dev/bottles-offline-workaround.md) — 策略 B 用 mihomo DIRECT 规则
+- [Memory: mihomo TUN 栈决策](../../memory/cards/mihomo-tun-stack.md) — 为何 gvisor + mtu 1500
 - [wiki 首页](../README.md)

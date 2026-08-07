@@ -152,6 +152,6 @@ login keyring 没解锁。**注销重新登录**（不是锁屏再解锁），PA
 
 ## 相关链接
 
-- [PAM — 可插拔认证模块](../pam.md)
+- [PAM — 可插拔认证模块](../security/pam.md)
 - [约束与惯例](../constraints.md)
 - [wiki 首页](../README.md)

@@ -93,12 +93,22 @@ myNixOSConfig/
 │       ├── browser.nix        # Firefox, Chrome
 │       └── gaming.nix         # mangohud
 │
-├── wiki/                      # 操作手册 + 约束
+├── wiki/                      # 操作手册 — 回答「怎么用」，含故障排查
 │   ├── README.md              # wiki 导航首页（分类 MOC）
-│   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
+│   ├── _sources.yaml          # 来源映射清单（单真源，驱动 doc-sync hook）
+│   ├── overview.md            # 项目概述
+│   ├── architecture/          # 系统架构: index/flake/host
+│   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/darkmode/keyring
+│   ├── productivity/          # 生产力: office
+│   ├── dev/                   # 开发与工具: nvim/vscode/yazi/distrobox/bottles
+│   ├── leisure/               # 娱乐: gaming/media
 │   ├── networking/            # 网络与代理: mihomo
-│   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
-│   └── constraints.md         # 详细约束与惯例（CLAUDE.md 精简版，冲突时以它为准）
+│   ├── security/              # 安全与隐私: index/sops/pam
+│   ├── customization/         # 定制与扩展: overlays
+│   ├── services.md            # 系统服务聚合
+│   ├── deployment.md          # 部署与维护
+│   ├── troubleshooting.md     # 故障排除聚合
+│   └── constraints.md         # 约束与惯例
 │
 ├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）
 │   ├── INDEX.md               # 卡片索引
@@ -235,3 +245,14 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - flake.lock 被 root 拥有，更新 flake inputs 需 sudo
 - **会话收尾**：会话结束前运行 session-wrapup skill，沉淀本次决策到 `memory/` 并核查 wiki 同步
 - **commit 门禁**：项目级 PreToolUse hook（`.claude/hooks/check-doc-sync.sh`）会拦截「改了 .nix 但没改 wiki/memory」的 git commit，commit 前先确保文档同步
+- **AMD 背光/内核**：`host/boot.nix` 内核参数 `amdgpu.dcdebugmask=0x40000` 禁用 custom brightness curve，修 100% 亮度变黑，**不要删**。内核用 nixpkgs 默认 `linuxPackages`（当前 6.18.42 LTS），**不要换 `linuxPackages_latest`/7.x**——有 RDNA3/4 硬挂起回归。详见 `memory/cards/mechrevo-amd-backlight-curve.md` + `amd-kernel-stay-lts.md`
+
+## Skills（`.agents/skills/` 单真源）
+
+`.claude/skills` 是到 `.agents/skills` 的软链，三方 agent 共用（Claude Code / Codex / Qoder）：
+
+| Skill | 触发 | 作用 |
+|-------|------|------|
+| `wiki-maintainer` | 写文档/更新文档/审查 wiki | 创建和维护 wiki + memory + README.md + CLAUDE.md；清单驱动工作流 |
+| `project-commit` | "commit"/"提交" | 完整 commit 工作流：review diff → 更新文档 → 提交 |
+| `session-wrapup` | "收尾"/"总结"/"wrap up" | 沉淀决策到 memory 并核查 wiki 同步 |

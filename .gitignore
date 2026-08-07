@@ -5,3 +5,9 @@ result-*
 # 如果有硬件相关的 secrets
 secrets.nix
 issues/
+# Qoder 自动生成的 repowiki（可再生成，不进 git；内容已合并进 wiki/）
+.qoder/
+# Agent 本地配置（仅 .agents/ 作为跨 agent 单真源入 git；其他 agent 特定目录本地用但不追踪）
+.claude/
+.codex/
+.chatgpt/

@@ -1,6 +1,0 @@
-[mcp_servers.hermes]
-command = "/home/lishangshui/.local/bin/hermes"
-args = [
-    "mcp",
-    "serve",
-]

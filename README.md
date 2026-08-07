@@ -51,9 +51,19 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │
 ├── wiki/                      # 操作手册（怎么用 + 故障排查）
 │   ├── README.md              # wiki 导航首页（分类 MOC）
-│   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
+│   ├── _sources.yaml          # 来源映射清单（单真源，驱动 doc-sync hook）
+│   ├── overview.md            # 项目概述
+│   ├── architecture/          # 系统架构: index/flake/host
+│   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/darkmode/keyring
+│   ├── productivity/          # 生产力: office
+│   ├── dev/                   # 开发与工具: nvim/vscode/yazi/distrobox/bottles
+│   ├── leisure/               # 娱乐: gaming/media
 │   ├── networking/            # 网络与代理: mihomo
-│   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
+│   ├── security/              # 安全与隐私: index/sops/pam
+│   ├── customization/         # 定制与扩展: overlays
+│   ├── services.md            # 系统服务聚合
+│   ├── deployment.md          # 部署与维护（含新机首次部署）
+│   ├── troubleshooting.md     # 故障排除聚合
 │   └── constraints.md         # 约束与惯例
 │
 ├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）

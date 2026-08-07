@@ -1,0 +1,105 @@
+# wiki 来源映射清单（单真源）
+#
+# 用途：把每篇 wiki 文档与它派生自的 nix 模块 + 关联的 memory 决策卡显式绑定。
+# 正向表：doc -> {sources: [.nix ...], memory: [卡 slug ...]}。
+# 反向映射（nix -> docs）由 wiki-maintainer skill / doc-sync hook 从本表实时计算，不手维。
+#
+# 不变式（由 hook/skill 校验）：
+#   1. 每个 host/*.nix 与 home/**/*.nix 模块至少被一篇文档的 sources 引用。
+#   2. 每篇文档 sources 里列出的文件均真实存在。
+#   3. 每篇文档 memory 里列出的卡在 memory/cards/<slug>.md 存在。
+#
+# 工作流：改了某个 .nix -> 反查本表得到「应更新文档集」-> 按 wiki 三方合并规则更新正文 + 刷新 frontmatter updated。
+# 新增/删除 wiki 文档或新增 nix 模块时，必须同步本清单。
+
+docs:
+  overview.md:
+    sources: [flake.nix, host/default.nix, home/default.nix, home/env/systools.nix, home/productivity/files.nix, home/productivity/comms.nix, home/git.nix]
+    memory:  [flake-unstable-strategy]
+
+  architecture/index.md:
+    sources: [flake.nix, host/default.nix, home/default.nix, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
+    memory:  [flake-unstable-strategy]
+  architecture/flake.md:
+    sources: [flake.nix, host/nix.nix]
+    memory:  [flake-unstable-strategy]
+  architecture/host.md:
+    sources: [host/default.nix, host/boot.nix, host/hardware.nix, host/greeter.nix, host/users.nix, host/locale.nix]
+    memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve]
+
+  desktop/hyprland.md:
+    sources: [home/env/hyprland.nix, host/desktop.nix, host/boot.nix]
+    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve]
+  desktop/fcitx5.md:
+    sources: [host/desktop.nix]
+    memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink]
+  desktop/noctalia.md:
+    sources: [home/env/noctalia.nix, host/greeter.nix]
+    memory:  []
+  desktop/shell.md:
+    sources: [home/env/shell.nix, home/env/terminal.nix]
+    memory:  []
+  desktop/darkmode.md:
+    sources: [home/theme.nix, host/desktop.nix]
+    memory:  [portal-gtk-dangling-symlink]
+  desktop/keyring.md:
+    sources: [host/services.nix]
+    memory:  []
+
+  productivity/office.md:
+    sources: [home/productivity/office.nix]
+    memory:  []
+
+  dev/nvim.md:
+    sources: [home/dev/nvim.nix]
+    memory:  []
+  dev/vscode.md:
+    sources: [home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix]
+    memory:  [ai-tools-source]
+  dev/yazi.md:
+    sources: [home/env/systools.nix]
+    memory:  []
+  dev/distrobox.md:
+    sources: [home/dev/containers.nix, host/containers.nix]
+    memory:  []
+  dev/bottles-offline-workaround.md:
+    sources: [home/productivity/compat.nix]
+    memory:  []
+
+  leisure/gaming.md:
+    sources: [host/gaming.nix, home/leisure/gaming.nix]
+    memory:  []
+  leisure/media.md:
+    sources: [home/leisure/player.nix, home/leisure/browser.nix, home/leisure/default.nix]
+    memory:  []
+
+  networking/mihomo.md:
+    sources: [host/network.nix]
+    memory:  [mihomo-tun-stack]
+
+  security/index.md:
+    sources: [host/sops.nix, host/users.nix]
+    memory:  [portal-gtk-dangling-symlink]
+  security/sops.md:
+    sources: [host/sops.nix]
+    memory:  [mihomo-tun-stack]
+  security/pam.md:
+    sources: [host/services.nix, host/users.nix]
+    memory:  []
+
+  customization/overlays.md:
+    sources: [overlays/default.nix, overlays/vim-plugins.nix]
+    memory:  [nix-search-before-manual]
+
+  services.md:
+    sources: [host/services.nix, host/network.nix, host/users.nix, home/env/onedrive.nix]
+    memory:  [mihomo-tun-stack]
+  deployment.md:
+    sources: [flake.nix, host/boot.nix, host/sops.nix]
+    memory:  [flake-unstable-strategy, docs-sync-automation]
+  troubleshooting.md:
+    sources: []
+    memory:  [mechrevo-amd-backlight-curve, hyprland-056-blur-amd, portal-gtk-dangling-symlink]
+  constraints.md:
+    sources: [overlays/default.nix, flake.nix]
+    memory:  [nix-search-before-manual]

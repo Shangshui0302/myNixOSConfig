@@ -22,23 +22,24 @@ myNixOSConfig/
 ├── CLAUDE.md                  # LLM 上下文：硬件/系统信息、目录结构、服务列表、注意事项
 ├── wiki/                      # 操作手册 — 回答「怎么用」，含故障排查
 │   ├── README.md              # wiki 导航首页（分类 MOC）
-│   ├── desktop/               # 桌面环境: hyprland/noctalia/shell/darkmode
-│   ├── networking/            # 网络与代理: mihomo/litellm
-│   ├── dev/                   # 开发与工具: nvim/yazi/distrobox/bottles
+│   ├── _sources.yaml          # 来源映射清单（单真源，驱动 doc-sync hook）
+│   ├── overview.md            # 项目概述
+│   ├── architecture/          # 系统架构: index/flake/host
+│   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/darkmode/keyring
+│   ├── productivity/          # 生产力: office
+│   ├── dev/                   # 开发与工具: nvim/vscode/yazi/distrobox/bottles
+│   ├── leisure/               # 娱乐: gaming/media
+│   ├── networking/            # 网络与代理: mihomo
+│   ├── security/              # 安全与隐私: index/sops/pam
+│   ├── customization/         # 定制与扩展: overlays
+│   ├── services.md            # 系统服务聚合
+│   ├── deployment.md          # 部署与维护
+│   ├── troubleshooting.md     # 故障排除聚合（链接各文档排查节 + issues/archived）
 │   └── constraints.md         # 约束与惯例
 └── memory/                    # 决策记忆 — 回答「为什么」，AI 决策参考
     ├── INDEX.md               # 卡片索引（AI 查询入口）
     ├── _template.md           # 卡片模板
     └── cards/                 # 原子化卡片（完整清单见 INDEX.md）
-        ├── mihomo-tun-stack.md          # decision
-        ├── ai-tools-source.md           # decision
-        ├── flake-unstable-strategy.md   # decision
-        ├── wiki-memory-layering.md      # decision
-        ├── docs-sync-automation.md      # decision
-        ├── portal-gtk-dangling-symlink.md  # decision
-        ├── fcitx5-vertical-candidates.md  # decision
-        ├── claude-code-version-strategy.md # decision
-        └── nix-search-before-manual.md  # constraint
 ```
 
 **核心区分**：wiki 存「怎么用」的稳定手册；memory 存「为什么这么配」的决策卡片。故障排查归 wiki，不迁入 memory。
@@ -57,20 +58,31 @@ myNixOSConfig/
 - **长度**：每个文档 80-200 行，保持简洁可扫描
 - **表述**：面向使用者，描述"怎么用"而非"怎么配"。nix 配置细节留在 nix 文件里，文档说清用户需要知道什么
 
-### 文件映射
+### 来源映射清单（单真源）
 
-每个 nix 配置模块对应一个或多个 wiki 目标：
+`wiki/_sources.yaml` 是文档与 nix 模块 / memory 卡之间的**唯一绑定表**。每篇 wiki 文档声明它派生自哪些 `.nix` 文件、关联哪些 memory 卡。所有反向映射（nix → docs）都从此表实时计算，不手维。
 
-| Nix 配置 | Wiki 文档 | 说明 |
-|----------|-----------|------|
-| `home/hyprland.nix` | `wiki/desktop/hyprland.md` | Hyprland 按键、手势、工作流 |
-| `home/noctalia.nix` | `wiki/desktop/noctalia.md` | Noctalia 面板、控制中心、壁纸、配色 |
-| `home/shell.nix` | `wiki/desktop/shell.md` | fish/bash、别名、starship、zellij、ghostty |
-| `host/litellm.nix` | `wiki/networking/litellm.md` | AI 代理模型映射、健康检查 |
-| `host/services.nix` (mihomo) | `wiki/networking/mihomo.md` | 代理架构、WebUI、排查 |
-| `home/yazi.nix` | `wiki/dev/yazi.md` | 文件管理器按键、插件、主题 |
+**不变式**（由 doc-sync hook 校验）：
+1. 每个 `host/*.nix` 与 `home/**/*.nix` 模块至少被一篇文档的 `sources` 引用。
+2. 每篇文档 `sources` 里列出的文件均真实存在。
+3. 每篇文档 `memory` 里列出的卡在 `memory/cards/<slug>.md` 存在。
 
-**分类规则**：`wiki/` 下按 `desktop/`、`networking/`、`dev/` 分类子目录。新增文档时先判断归属类别；跨领域约束放顶层 `constraints.md`。每篇文档带 frontmatter（`title`/`category`/`tags`/`updated`），>150 行加 TOC，末尾固定 `## 相关链接` 区块用 markdown 相对链接互链。
+**工作流**：改了某个 `.nix` → 读 `_sources.yaml` 反查受影响文档集 → 按三方合并规则更新正文 + 刷新 frontmatter `updated`。新增/删除 wiki 文档或新增 nix 模块时，必须同步本清单。
+
+### 三方合并规则（创建/更新文档时）
+
+wiki 文档内容由三方合并：手写 wiki（怎么用）+ Qoder 生成的 content 树（结构/架构图）+ knowledge 知识库（模块级技术栈/编码规范/特殊命令）。
+
+- **骨架/标题层级**：取 content 源；保留其 mermaid 架构图。
+- **怎么用**（快捷键/工作流/排查命令）：取手写 wiki，优先级最高。
+- **模块级事实**（技术栈/编码规范/特殊配置命令/架构设计）：取 knowledge 五件套。
+- **为什么/决策**：**不内联**，改为末尾 `## 相关链接` 反向链接 `memory/cards/*`。
+- **丢弃**：content 的 `<cite>` 块、`**图示来源/章节来源**` 行号引用（易失效）；源码指向改为不带行号的模块名或相对链接。
+- **补项目规范**：frontmatter（`title/category/tags/updated`）；>150 行加 TOC；末尾固定 `## 相关链接`。
+
+### 分类规则
+
+`wiki/` 下按 `architecture/`、`desktop/`、`productivity/`、`dev/`、`leisure/`、`networking/`、`security/`、`customization/` 分类子目录。新增文档时先判断归属类别；跨领域约束放顶层 `constraints.md`。每篇文档带 frontmatter（`title`/`category`/`tags`/`updated`），>150 行加 TOC，末尾固定 `## 相关链接` 区块用 markdown 相对链接互链 + 反链相关 memory 卡。
 
 当新增 nix 模块时，判断是否需要创建对应的 `wiki/<分类>/*.md`。判断标准：
 - 组件是用户直接交互的（WM、面板、shell、编辑器等）→ 需要 wiki
@@ -129,9 +141,22 @@ myNixOSConfig/
 ### 4. 注册
 
 新文档写完后，检查是否需要更新：
+- `wiki/_sources.yaml` — **必须**添加本条目的 sources + memory 绑定
 - `wiki/README.md` — 导航首页中加入新文档的链接
 - `README.md` — 目录结构部分是否需要加入新文档的说明
 - `CLAUDE.md` — 目录结构中是否需要补充新组件信息
+
+## 变更驱动更新（清单工作流）
+
+当用户修改 nix 配置后，按以下流程同步 wiki：
+
+1. 读取变更的 `.nix` 文件列表（git diff 或用户告知）。
+2. 读 `wiki/_sources.yaml`，反查「哪些文档的 `sources` 包含这些 nix」→ 得到「应更新文档集」。
+3. 对集合中每篇文档：读源 nix + 读 wiki 文件 → 找出不一致处 → 按三方合并规则只改受影响部分。
+4. 刷新文档 frontmatter 的 `updated` 字段。
+5. 若本次改动涉及非显而易见的决策，**同步补一张 memory 决策卡**。
+6. 若变更的 nix 文件在 `_sources.yaml` 中**无任何文档引用** → 提示用户先登记清单，或判断是否需要新建文档。
+7. 若新增/删除 wiki 文档 → 同步 `_sources.yaml`。
 
 ## 更新已有 wiki 文档
 
@@ -149,10 +174,11 @@ nix 配置变更后，对应的 wiki 可能过时。按以下流程同步：
 ### 更新流程
 
 1. 读取变更的 nix 文件（git diff 或完整读取）
-2. 读取对应的 wiki 文件
-3. 找出不一致的地方
+2. 读 `wiki/_sources.yaml` 反查受影响文档集
+3. 对集合中每篇文档，找出不一致的地方
 4. 只修改文档中受影响的部分，保留其他内容不变
-5. 如果是 CLAUDE.md 受影响，同步更新
+5. 刷新 frontmatter `updated`
+6. 如果是 CLAUDE.md 受影响，同步更新
 
 ### 决策卡联动
 

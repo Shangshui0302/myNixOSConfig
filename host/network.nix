@@ -4,6 +4,11 @@
   networking.hostName = "MechRevo-NixOS";
   networking.networkmanager.enable = true;
 
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = true;
+  };
+
   # Mihomo proxy (TUN mode)
   services.mihomo = {
     enable = true;

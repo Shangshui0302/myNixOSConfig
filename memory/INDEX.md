@@ -13,11 +13,12 @@
 - [AI 工具优先 llm-agents.nix](cards/ai-tools-source.md) — 第三方打包源，需安全审查
 - [Qoder IDE 用国际版](cards/qoder-ide-source.md) — download.qoder.com，非 qoder.com.cn 国内版
 - [flake 全用 unstable](cards/flake-unstable-strategy.md) — 出问题再修，不 pin stable
+- [AMD 核显留在 nixpkgs 默认内核](cards/amd-kernel-stay-lts.md) — 不上 linuxPackages_latest，避 RDNA 硬挂起回归
 
 ## 硬件 hardware
 
 - [Hyprland 0.56 blur 在 AMD 780M 上失效](cards/hyprland-056-blur-amd.md) — new_optimizations 关闭恢复模糊
-- [机械革命无界14X AMD 背光 PWM 反转](cards/mechrevo-amd-backlight-invert.md) — acpi_backlight=native 尝试修复，待验证
+- [机械革命无界14X AMD 背光曲线溢出](cards/mechrevo-amd-backlight-curve.md) — dcdebugmask=0x40000 禁用 custom brightness curve
 
 ## 约束 constraint
 

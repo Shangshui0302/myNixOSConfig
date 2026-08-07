@@ -138,7 +138,7 @@ in
       };
       "colors-dark" = {
         alpha = "0.8";
-        blur = "no";
+        blur = "yes";
         background = "0e1019";
         foreground = "fffaf4";
         regular0  = "666666";

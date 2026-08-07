@@ -1,10 +1,8 @@
-、
-
 ---
 title: PAM — 可插拔认证模块
-category: 系统
+category: 安全
 tags: [pam, authentication, security, login, sudo, keyring]
-updated: 2026-08-06
+updated: 2026-08-07
 ---
 # PAM — 可插拔认证模块
 
@@ -168,6 +166,7 @@ journalctl -b | grep -i pam
 
 ## 相关链接
 
-- [GNOME Keyring](desktop/keyring.md) — 依赖 PAM 自动解锁
-- [wiki 首页](README.md)
+- [GNOME Keyring](../desktop/keyring.md) — 依赖 PAM 自动解锁
+- [安全总览](index.md) — SOPS、用户权限、网络安全概览
+- [wiki 首页](../README.md)
 

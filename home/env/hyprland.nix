@@ -96,7 +96,6 @@ in
           size = 15,
           passes = 4,
           vibrancy = 0.3,
-          new_optimizations = false,
           ignore_opacity = true,
           popups = true,
           popups_ignorealpha = 0.2,
