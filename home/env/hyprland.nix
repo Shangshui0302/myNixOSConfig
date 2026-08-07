@@ -5,7 +5,7 @@ let
 in
 {
   home.packages = with pkgs; [
-    grim slurp wl-clipboard grimblast swappy
+    grim slurp wl-clipboard grimblast swappy wdisplays
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
       mkdir -p "$dir"
