@@ -16,7 +16,8 @@
 
 ## 硬件 hardware
 
-- （暂无卡片）
+- [Hyprland 0.56 blur 在 AMD 780M 上失效](cards/hyprland-056-blur-amd.md) — new_optimizations 关闭恢复模糊
+- [机械革命无界14X AMD 背光 PWM 反转](cards/mechrevo-amd-backlight-invert.md) — acpi_backlight=native 尝试修复，待验证
 
 ## 约束 constraint
 
