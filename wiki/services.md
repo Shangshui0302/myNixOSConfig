@@ -48,7 +48,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 `host/network.nix` 定义主机名、NetworkManager 与 OpenSSH（开启密码认证便于远程登录）。核心是 Mihomo TUN 代理：
 
 - `services.mihomo` 以 `tunMode` 运行，WebUI 使用 `zashboard`。
-- `systemd.services.mihomo` 通过 `after`/`wants` 依赖 `sops-nix.service`，确保加密的环境变量（订阅链接等）就绪后再启动。
+- `systemd.services.mihomo` 通过 `after`/`wants` 依赖 `sops-install-secrets.service`，确保加密的环境变量（订阅链接等）就绪后再启动。
 - `preStart` 用 `envsubst` 将 `mihomo-config.yaml.in` 渲染到 `/run/mihomo/config.yaml`，敏感信息不入库。
 - 开启 IPv4/IPv6 转发，启用 `nftables` 防火墙，仅放行必要端口（TCP/UDP 53317，信任 `Meta` 接口）。
 - 附带网络诊断工具：`dnsutils`、`iputils`、`tcpdump`、`mtr`、`nmap`、`iperf3`、`ethtool`、`iptables`。

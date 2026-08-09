@@ -95,7 +95,7 @@ Note over Desktop,Hypr : "Noctalia 主题与颜色在首次加载时生成"
 1. 克隆仓库并进入目录。
 2. 生成硬件配置（`nixos-generate-config`）并复制到仓库根目录。
 3. 修改主机名、时区、语言、用户名等机器特定项。
-4. 挂载 `/persist` 子卷并放置必要的密钥（如 `sops-age-key.txt`）与 `mihomo/config.yaml`。
+4. 挂载 `/persist` 子卷并放置必要的配置（如 `mihomo/config.yaml`）；sops 解密密钥用系统 SSH host key（`/etc/ssh/ssh_host_ed25519_key`），无需单独生成。
 5. 执行 `sudo nixos-rebuild switch --flake .` 应用配置。
 6. 首次认证 OneDrive、校验 mihomo 订阅链接。
 

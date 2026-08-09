@@ -1,7 +1,7 @@
 keys:
-  - &lishangshui age18ga6m238djyeu8c0sy6whwcujxf3d9wgnkgvmlx5xe8nn2645p2qjtaqkx
+  - &mechrevo-ssh age14h8vny4m35qd3upw5hn2nrf8s7vcqen3edfu6a4upzelmq9ktvwqvaum00
 creation_rules:
   - path_regex: host/secrets/secrets\.yaml$
     key_groups:
       - age:
-        - *lishangshui
+        - *mechrevo-ssh

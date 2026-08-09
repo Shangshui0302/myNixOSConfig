@@ -58,7 +58,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
    ```bash
    sudo mkdir -p /persist/mihomo
    sudo cp <your-mihomo-config.yaml> /persist/mihomo/config.yaml
-   age-keygen -o /persist/sops-age-key.txt   # sops-nix age 私钥
+   # sops 解密密钥为系统 SSH host key（/etc/ssh/ssh_host_ed25519_key），无需单独生成
    ```
 5. **应用配置**：`sudo nixos-rebuild switch --flake ~/myNixOSConfig#`。
 6. **首次认证**：终端运行 `onedrive` 完成 OAuth；确认 `/persist/mihomo/config.yaml` 订阅链接有效。
@@ -67,8 +67,8 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 
 ## 密钥与持久化
 
-- Secrets 通过 sops-nix + age 加密管理，密文在 `host/secrets/secrets.yaml`，age 私钥在 `/persist/sops-age-key.txt`。
-- `host/sops.nix` 指定私钥路径与默认加密文件，按需注入敏感环境变量（如 `mihomo_env`）。
+- Secrets 通过 sops-nix + age 加密管理，密文在 `host/secrets/secrets.yaml`，解密私钥为系统 SSH host key（`/etc/ssh/ssh_host_ed25519_key`）。
+- `host/sops.nix` 通过 `age.sshKeyPaths` 指定解密密钥、启用 `useSystemdActivation`，按需注入敏感环境变量（如 `mihomo_env`）。
 - 更新 `secrets.yaml` 后需重新 rebuild 生效。
 
 ## 升级与回滚

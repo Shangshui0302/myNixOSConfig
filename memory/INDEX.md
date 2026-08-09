@@ -10,6 +10,7 @@
 - [知识库分层: wiki 管怎么用, memory 管为什么](cards/wiki-memory-layering.md) — 纯 Markdown wiki + 决策卡架构
 - [文档同步自动化: hook 门禁 + session-wrapup](cards/docs-sync-automation.md) — commit 硬门禁 + 会话收尾沉淀
 - [mihomo TUN: gvisor + mtu 1500](cards/mihomo-tun-stack.md) — nix 下载慢的根因修复，吞吐 47 倍
+- [sops 解密密钥: SSH host key + useSystemdActivation](cards/sops-ssh-host-key.md) — initrd 时序修复，免独立 age key
 - [AI 工具优先 llm-agents.nix](cards/ai-tools-source.md) — 第三方打包源，需安全审查
 - [Qoder IDE 用国际版](cards/qoder-ide-source.md) — download.qoder.com，非 qoder.com.cn 国内版
 - [flake 全用 unstable](cards/flake-unstable-strategy.md) — 出问题再修，不 pin stable

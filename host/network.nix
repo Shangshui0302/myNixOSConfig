@@ -27,8 +27,8 @@
 
 
   systemd.services.mihomo = {
-    after = [ "sops-nix.service" ];
-    wants = [ "sops-nix.service" ];
+    after = [ "sops-install-secrets.service" ];
+    wants = [ "sops-install-secrets.service" ];
   };
 
   systemd.services.mihomo.serviceConfig = {

@@ -134,11 +134,7 @@ sudo mkdir -p /persist/mihomo
 sudo cp <your-mihomo-config.yaml> /persist/mihomo/config.yaml
 ```
 
-Secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），age 私钥在 `/persist/sops-age-key.txt`。首次部署需生成 age key：
-
-```bash
-age-keygen -o /persist/sops-age-key.txt
-```
+Secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），解密私钥为系统 SSH host key（`/etc/ssh/ssh_host_ed25519_key`），随系统迁移无需单独管理。首次部署需生成 SSH host key（OpenSSH 默认自动生成），并确保 `.sops.yaml` 接收者与该 key 的 age 公钥匹配。
 
 GitHub CLI 等工具也可能依赖 `/persist/secrets/` 下的其他 env 文件：
 

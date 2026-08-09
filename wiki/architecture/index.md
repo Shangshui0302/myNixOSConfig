@@ -95,7 +95,7 @@ Flake 声明的关键输入及其角色：
 - `nix-flatpak`：Flatpak 集成。
 - `llm-agents` / `codex-desktop-linux`：AI 与桌面工具（已声明，按需引用）。
 
-模块耦合关系：`network.nix` 强依赖 `sops-nix.service`（`after`/`wants`），确保机密可用后再启动 mihomo；`desktop.nix` 依赖输入法、字体、Portal、终端等子系统。
+模块耦合关系：`network.nix` 强依赖 `sops-install-secrets.service`（`after`/`wants`），确保机密可用后再启动 mihomo；`desktop.nix` 依赖输入法、字体、Portal、终端等子系统。
 
 ```mermaid
 graph LR

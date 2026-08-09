@@ -1,7 +1,8 @@
 { ... }:
 {
   sops = {
-    age.keyFile = "/persist/sops-age-key.txt";
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    useSystemdActivation = true;
     defaultSopsFile = ./secrets/secrets.yaml;
     secrets = {
       mihomo_env = {

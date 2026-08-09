@@ -85,7 +85,7 @@ Desktop-->>User : 呈现桌面环境
 - **存储**：`fstrim` 定时维持 SSD 性能；inotify 上限提升以适配 IDE/日志监控。
 - **网络**：NetworkManager、OpenSSH、Mihomo（TUN 模式）、nftables 防火墙与内核转发。
 
-服务依赖通过 systemd 精确声明，例如 Mihomo 服务在 `after`/`wants` 中依赖 `sops-nix.service`，确保机密文件可用后再启动。
+服务依赖通过 systemd 精确声明，例如 Mihomo 服务在 `after`/`wants` 中依赖 `sops-install-secrets.service`，确保机密文件可用后再启动。
 
 ```mermaid
 graph LR

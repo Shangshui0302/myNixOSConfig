@@ -75,7 +75,7 @@ SS-->>S : 提供 /run/secrets/* 或环境变量
 ```
 
 ## 机密管理（SOPS-Nix）
-`host/sops.nix` 指定 age 私钥路径（`/persist/sops-age-key.txt`）与默认密文文件，将 `secrets.yaml` 中的键映射为 `/run/secrets/<name>`，并设置 owner/group/mode。需要机密的服务（如 mihomo）声明 `after`/`wants` 依赖 `sops-nix.service`，确保机密就绪后再启动。详细配置见 [sops.md](./sops.md)。
+`host/sops.nix` 通过 `age.sshKeyPaths` 指定解密密钥（SSH host key `/etc/ssh/ssh_host_ed25519_key`）并启用 `useSystemdActivation`，将 `secrets.yaml` 中的键映射为 `/run/secrets/<name>`，并设置 owner/group/mode。需要机密的服务（如 mihomo）声明 `after`/`wants` 依赖 `sops-install-secrets.service`，确保机密就绪后再启动。详细配置见 [sops.md](./sops.md)。
 
 ## 生物识别登录与 Keyring
 `host/services.nix` 启用 Howdy 并将 `pam_howdy.so` 注入 sudo/su/login/greetd/noctalia 的 PAM 链，控制位 `sufficient` 实现「扫脸即过」。由于 Howdy 短路了密码输入，`pam_gnome_keyring.so` 拿不到登录密码，login keyring 不会自动解锁——首次需要 keyring 的应用会弹出解锁提示，输入一次登录密码即可，并非每次开机都要输入。PAM 链路与 Keyring 的行为细节见 [pam.md](./pam.md)、[../desktop/keyring.md](../desktop/keyring.md)。
@@ -92,7 +92,7 @@ SS-->>S : 提供 /run/secrets/* 或环境变量
 ## 故障排查
 - 登录变慢：检查 PAM 模块是否超时，查看 `journalctl` 中 pam 相关日志。
 - Keyring 未自动解锁：确认已启用 gnome-keyring 且 PAM 包含 `pam_gnome_keyring.so`；注销重新登录生效。
-- 服务无法读取机密：确认 `sops-nix.service` 已启动且 `/run/secrets` 存在；检查服务 `after`/`wants` 依赖。
+- 服务无法读取机密：确认 `sops-install-secrets.service` 已启动且 `/run/secrets` 存在；检查服务 `after`/`wants` 依赖。
 - 防火墙阻断：核对 `allowedTCPPorts`/`allowedUDPPorts` 与期望端口；检查 nftables 规则。
 
 ## 相关链接

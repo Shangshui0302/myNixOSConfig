@@ -226,7 +226,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
 - 优先用 Home Manager 管用户级配置，系统级才动 host/
 - 涉及 overlay 或 unstable channel 的包，说明原因
-- secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），年龄钥在 `/persist/sops-age-key.txt`
+- secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），解密私钥为 SSH host key（`/etc/ssh/ssh_host_ed25519_key`），启用 `useSystemdActivation`
 - sudo 已配 NOPASSWD: nix, nixos-rebuild, tee, chmod, chown, install, mv, cp, rm
 - 硬件相关（显卡、网卡驱动）改动要谨慎，先说明影响
 - 2K 显示屏 2560x1600，Hyprland scale 1.5，涉及 DPI/scale 改动时注意
