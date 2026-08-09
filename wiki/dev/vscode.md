@@ -2,7 +2,7 @@
 title: VS Code 集成
 category: 开发
 tags: [vscode, editor, home-manager, dev]
-updated: 2026-08-07
+updated: 2026-08-09
 ---
 
 # VS Code 集成
@@ -82,7 +82,9 @@ VS-->>Dev : 展示结果
 
 ## AI 辅助扩展
 
-VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI CLI 工具走统一来源与安全审查流程，见反链的 memory 卡；扩展本身在 VS Code 商店安装，与 Nix 管理的 CLI 工具互不冲突。
+VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI CLI 工具集中在 `home/dev/ai.nix`，走统一来源与安全审查流程，见反链的 memory 卡；扩展本身在 VS Code 商店安装，与 Nix 管理的 CLI 工具互不冲突。
+
+当前 ai.nix 管理的工具：`claude-code`、`codex`、`claude-desktop`、`codex-desktop`、`qoder-cli`/`qoder-ide`、`opencode`、`pi`、`officecli`、`cc-switch`（API 路由），以及 `rtk`（token 优化 CLI proxy，`local-deriv/rtk.nix` 自打包）与 `codebase-memory-mcp`（代码库知识图谱 MCP，nixpkgs 现成包）。
 
 ## 故障排查
 

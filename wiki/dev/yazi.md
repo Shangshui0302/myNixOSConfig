@@ -2,7 +2,7 @@
 title: Yazi 文件管理器
 category: dev
 tags: [yazi, file-manager, tui]
-updated: 2026-08-06
+updated: 2026-08-09
 ---
 
 # Yazi 文件管理器

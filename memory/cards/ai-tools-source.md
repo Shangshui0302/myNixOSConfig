@@ -25,3 +25,5 @@ date: 2026-08-05
 - 装 AI 工具前先 `gh api repos/numtide/llm-agents.nix/contents/packages` 查有没有现成包
 - 用之前审查其 derivation
 - 没有现成包才走 `local-deriv/` 自己打包
+
+补充案例（2026-08-09）：`rtk`（rtk-ai/rtk）与 `codebase-memory-mcp` 不在 llm-agents 清单里。codebase-memory-mcp 用 nixpkgs 现成包；rtk 因 nixpkgs 里同名的是 C++ 数学库 exprtk（撞名），走了 `local-deriv/rtk.nix` 用官方 musl 静态二进制自打包。

@@ -2,7 +2,7 @@
 title: 项目概述
 category: 顶层
 tags: [nixos, home-manager, flake, hyprland, overview]
-updated: 2026-08-07
+updated: 2026-08-09
 ---
 
 # 项目概述
@@ -59,6 +59,7 @@ C --> I["overlays/default.nix"]
 - **Mihomo（TUN 模式）**：系统级代理，结合 nftables/firewall 与 systemd 编排，提供稳定网络访问。
 - **SOPS + age**：敏感信息加密与注入，密钥与环境变量安全落地。
 - **游戏与虚拟化**：Steam、Flatpak、libvirtd，满足娱乐与 Windows 兼容需求。
+- **AI 开发工具链**：claude-code/codex 等 agent CLI 走 llm-agents.nix 统一来源；`rtk`（token 优化）与 `codebase-memory-mcp`（代码库记忆）补齐工具链。
 
 配置要点从对应的 nix 模块提取，详见 `host/desktop.nix`、`host/network.nix`、`host/gaming.nix`、`host/sops.nix`。
 

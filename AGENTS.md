@@ -44,13 +44,12 @@ myNixOSConfig/
 │   └── vim-plugins.nix        # vimPlugins 别名
 │
 ├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
-
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
 │   ├── qoder-ide.nix           # Qoder — AI IDE (Electron)
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
-│   ├── anthropic-fonts.nix   # Anthropic 字体
-│   └── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
+│   ├── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
+│   └── rtk.nix                 # rtk-ai/rtk — token 优化 CLI proxy（nixpkgs 撞名 exprtk）
 │
 ├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
 │   ├── default.nix            # 入口 — 仅 imports
@@ -81,7 +80,7 @@ myNixOSConfig/
 │   │   ├── nvim/init.lua      # Neovim 配置文件
 │   │   ├── vscode.nix         # VS Code
 │   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code, codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, reasonix, opencode, cc-switch
+│   │   ├── ai.nix             # claude-code, codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, opencode, cc-switch, codebase-memory-mcp, rtk
 │   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
 │   ├── productivity/          # 办公与通讯
 │   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器

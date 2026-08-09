@@ -36,11 +36,12 @@ in
     llmAgents.qoder-cli
     llmAgents.officecli
     llmAgents.pi
-    llmAgents.reasonix
     llmAgents.opencode
     cc-switch
     codexDesktop
+    codebase-memory-mcp
     (import ../../local-deriv/qoder-ide.nix { inherit pkgs; })
+    (import ../../local-deriv/rtk.nix { inherit pkgs; })
   ];
 
   # CC Switch → systemd service（替换 XDG autostart，支持崩溃重启）
