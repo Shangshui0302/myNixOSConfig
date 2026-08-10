@@ -30,6 +30,9 @@ docs:
   desktop/hyprland.md:
     sources: [home/env/hyprland.nix, host/desktop.nix, host/boot.nix]
     memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve]
+  desktop/niri.md:
+    sources: [home/env/niri.nix]
+    memory:  []
   desktop/fcitx5.md:
     sources: [host/desktop.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink]

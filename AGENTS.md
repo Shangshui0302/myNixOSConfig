@@ -71,6 +71,7 @@ myNixOSConfig/
 │   ├── env/                   # 桌面环境
 │   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具 (eza/fzf/bat/...)
 │   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
+│   │   ├── niri.nix           # niri 滚动平铺合成器
 │   │   ├── terminal.nix       # (foot 在 host/desktop.nix)
 │   │   ├── noctalia.nix       # Noctalia shell 面板
 │   │   ├── systools.nix       # btop, yazi, fastfetch, 系统工具

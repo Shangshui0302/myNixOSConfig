@@ -2,7 +2,7 @@
 title: 系统架构总览
 category: 架构
 tags: [architecture, flake, host, home-manager, modules]
-updated: 2026-08-07
+updated: 2026-08-10
 ---
 
 # 系统架构总览
@@ -57,7 +57,7 @@ U1 --> U2
 
 从 `flake.nix` 到 `host/default.nix` 再到子模块，是一条清晰的线性加载链：
 
-- `flake.nix` 通过 `nixosSystem` 指定 `system`、`specialArgs`（`inherit inputs`），并将 `host/default.nix` 与外部模块（`sops-nix`、`noctalia-greeter`、`home-manager`）加入 `modules` 列表。
+- `flake.nix` 通过 `nixosSystem` 指定 `system`、`specialArgs`（`inherit inputs`），并将 `host/default.nix` 与外部模块（`sops-nix`、`home-manager`）加入 `modules` 列表。
 - `host/default.nix` 用 `imports` 依次导入硬件、引导、服务、网络、桌面、登录器、游戏、容器、SOPS 等子模块。
 - `home/default.nix` 同样通过 `imports` 汇总用户配置，并设置用户名、家目录、`stateVersion` 等元信息。
 
@@ -90,7 +90,7 @@ Flake 声明的关键输入及其角色：
 
 - `nixpkgs`：基础包集合与 NixOS 模块来源。
 - `home-manager`：用户态配置框架。
-- `noctalia` / `noctalia-greeter`：桌面壳与登录管理器。
+- `noctalia`：桌面壳（Quickshell 面板）。
 - `sops-nix`：机密管理与注入。
 - `nix-flatpak`：Flatpak 集成。
 - `llm-agents` / `codex-desktop-linux`：AI 与桌面工具（已声明，按需引用）。
@@ -100,13 +100,13 @@ Flake 声明的关键输入及其角色：
 ```mermaid
 graph LR
 FL["flake.nix"] --> HM["home-manager"]
-FL --> NM["noctalia-greeter"]
+FL --> NC["noctalia"]
 FL --> SN["sops-nix"]
 FL --> NF["nix-flatpak"]
 FL --> NP["nixpkgs"]
 HM --> HOME["home/default.nix"]
 SN --> HOST["host/sops.nix"]
-NM --> GREETER["host/greeter.nix"]
+NC --> HM
 NP --> HOST
 ```
 
