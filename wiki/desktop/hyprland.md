@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout]
-updated: 2026-08-07
+updated: 2026-08-10
 ---
 
 # Hyprland 使用指南
