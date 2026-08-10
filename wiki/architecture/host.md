@@ -1,8 +1,8 @@
 ---
 title: 主机系统架构与启动流程
 category: 架构
-tags: [host, boot, hardware, systemd, greetd, amdgpu]
-updated: 2026-08-07
+tags: [host, boot, hardware, systemd, tty, amdgpu]
+updated: 2026-08-10
 ---
 
 # 主机系统架构与启动流程
@@ -53,7 +53,7 @@ FW --> End(["就绪"])
 
 ## 启动流程：从固件到桌面
 
-登录管理器禁用 SDDM，改用基于 greetd 的 Noctalia Greeter，并与 PAM（含 Howdy 人脸识别）集成。
+登录管理器全部禁用，使用纯 TTY 登录（`login` PAM 含 Howdy 人脸识别）。
 
 ```mermaid
 sequenceDiagram
@@ -62,15 +62,15 @@ participant Bootloader as "systemd-boot"
 participant Kernel as "Linux 内核"
 participant Init as "systemd"
 participant Services as "系统服务"
-participant Greeter as "Noctalia Greeter (greetd)"
+participant TTY as "TTY 登录 (getty)"
 participant Session as "用户会话 (Hyprland)"
 participant Desktop as "桌面应用"
 Firmware->>Bootloader : 启动引导
 Bootloader->>Kernel : 加载内核与 initramfs
 Kernel->>Init : 切换到根文件系统并启动 systemd
 Init->>Services : 启动基础服务（网络、音频、电源等）
-Services-->>Greeter : greetd 准备就绪
-Greeter->>Session : 用户登录后启动会话
+Services-->>TTY : getty 准备就绪
+TTY->>Session : 用户登录后启动会话
 Session->>Desktop : 加载 Hyprland 与桌面组件
 Desktop-->>User : 呈现桌面环境
 ```
@@ -81,7 +81,7 @@ Desktop-->>User : 呈现桌面环境
 
 - **音频**：PipeWire（PulseAudio 兼容 + ALSA + JACK）。
 - **外设与电源**：蓝牙开机自动上电、打印、`power-profiles-daemon` + upower、GVFS 文件虚拟化。
-- **认证**：Howdy 人脸识别集成到 `sudo`/`su`/`login`/`greetd`/`noctalia` 的 PAM 链。
+- **认证**：Howdy 人脸识别集成到 `sudo`/`su`/`login` 的 PAM 链。
 - **存储**：`fstrim` 定时维持 SSD 性能；inotify 上限提升以适配 IDE/日志监控。
 - **网络**：NetworkManager、OpenSSH、Mihomo（TUN 模式）、nftables 防火墙与内核转发。
 
@@ -92,9 +92,8 @@ graph LR
 SB["systemd-boot"] --> K["内核"]
 K --> SD["systemd"]
 SD --> SV["系统服务"]
-SV --> GR["greetd"]
-GR --> NG["Noctalia Greeter"]
-NG --> HS["Hyprland 会话"]
+SV --> TTY["getty (TTY)"]
+TTY --> HS["用户登录 (uwsm)"]
 HS --> APP["桌面应用"]
 SV --> NET["NetworkManager/OpenSSH/Mihomo"]
 SV --> AUD["PipeWire"]

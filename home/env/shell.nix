@@ -740,38 +740,6 @@
     complete -F _noctalia_completion noctalia
   '';
 
-  xdg.configFile."fish/completions/noctalia-greeter.fish".text = ''
-    complete -c noctalia-greeter -f
-
-    # Options
-    complete -c noctalia-greeter -s h -l help -d "Show help message"
-    complete -c noctalia-greeter -s v -l version -d "Show version information"
-    complete -c noctalia-greeter -l log-test -d "Write test lines to all log paths and exit"
-    complete -c noctalia-greeter -l session -l cmd -r -d "Default session"
-    complete -c noctalia-greeter -l user -r -d "Default user"
-
-    # Commands
-    complete -c noctalia-greeter -n "not __fish_seen_subcommand_from sessions outputs" -a sessions -d "List available session names and exit"
-    complete -c noctalia-greeter -n "not __fish_seen_subcommand_from sessions outputs" -a outputs -d "List Wayland connector names and exit"
-  '';
-
-  xdg.dataFile."bash-completion/completions/noctalia-greeter".text = ''
-    _noctalia_greeter_completion() {
-        local cur prev words cword
-        _init_completion -s || {
-            COMPREPLY=()
-            local cur="''${COMP_WORDS[COMP_CWORD]}"
-        }
-
-        local cmds="sessions outputs"
-        local opts="-h --help -v --version --log-test --session --cmd --user"
-
-        if [[ ''${COMP_CWORD} -eq 1 ]]; then
-            COMPREPLY=( $(compgen -W "$cmds $opts" -- "$cur") )
-        fi
-    }
-    complete -F _noctalia_greeter_completion noctalia-greeter
-  '';
   xdg.configFile."fish/completions/howdy.fish".text = ''
     complete -c howdy -f
 

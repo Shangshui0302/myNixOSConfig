@@ -1,20 +1,10 @@
 { pkgs, ... }:
 
 {
-  # Disable SDDM just in case
+  # No display manager — pure TTY login.
+  # TTY1 login → howdy face unlock → shell → uwsm start <compositor>.
+  # GNOME is isolated to a specialisation variant (with GDM).
   services.displayManager.sddm.enable = false;
-
-  # Enable Noctalia Greeter (requires inputs.noctalia-greeter.nixosModules.default in flake.nix)
-  programs.noctalia-greeter = {
-    enable = true;
-    settings = {
-      output = {
-        scale = 1.5;
-      };
-      appearance = {
-        password_style = "random";
-        hide_logo = true;
-      };
-    };
-  };
+  services.xserver.displayManager.lightdm.enable = false;
+  services.greetd.enable = false;
 }
