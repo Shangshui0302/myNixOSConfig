@@ -1,7 +1,7 @@
 ---
 title: 主机系统架构与启动流程
 category: 架构
-tags: [host, boot, hardware, systemd, tty, amdgpu]
+tags: [host, boot, hardware, systemd, tty, kmscon, amdgpu]
 updated: 2026-08-10
 ---
 
@@ -53,7 +53,7 @@ FW --> End(["就绪"])
 
 ## 启动流程：从固件到桌面
 
-登录管理器全部禁用，使用纯 TTY 登录（`login` PAM 含 Howdy 人脸识别）。
+登录管理器全部禁用，使用 kmscon（DRM/KMS 终端，pango 渲染支持 CJK）作为 TTY 登录界面（`login` PAM 含 Howdy 人脸识别）。
 
 ```mermaid
 sequenceDiagram
@@ -62,14 +62,14 @@ participant Bootloader as "systemd-boot"
 participant Kernel as "Linux 内核"
 participant Init as "systemd"
 participant Services as "系统服务"
-participant TTY as "TTY 登录 (getty)"
+participant TTY as "TTY 登录 (kmscon)"
 participant Session as "用户会话 (Hyprland)"
 participant Desktop as "桌面应用"
 Firmware->>Bootloader : 启动引导
 Bootloader->>Kernel : 加载内核与 initramfs
 Kernel->>Init : 切换到根文件系统并启动 systemd
 Init->>Services : 启动基础服务（网络、音频、电源等）
-Services-->>TTY : getty 准备就绪
+Services-->>TTY : kmscon 准备就绪
 TTY->>Session : 用户登录后启动会话
 Session->>Desktop : 加载 Hyprland 与桌面组件
 Desktop-->>User : 呈现桌面环境
@@ -92,7 +92,7 @@ graph LR
 SB["systemd-boot"] --> K["内核"]
 K --> SD["systemd"]
 SD --> SV["系统服务"]
-SV --> TTY["getty (TTY)"]
+SV --> TTY["kmscon (TTY)"]
 TTY --> HS["用户登录 (uwsm)"]
 HS --> APP["桌面应用"]
 SV --> NET["NetworkManager/OpenSSH/Mihomo"]

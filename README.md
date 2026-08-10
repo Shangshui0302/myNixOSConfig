@@ -37,7 +37,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── network.nix            # 网络、mihomo、防火墙
 │   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
 │   ├── desktop.nix            # 桌面环境基础设施
-│   ├── greeter.nix            # 显示管理器配置（纯 TTY 登录，无 DM）
+│   ├── greeter.nix            # TTY 登录配置（kmscon + CJK + howdy，无 DM）
 │   ├── gaming.nix             # Steam、Flatpak、libvirtd
 │   ├── containers.nix         # distrobox 容器
 │   └── sops.nix               # secrets 解密

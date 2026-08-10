@@ -13,7 +13,7 @@
 - Username: `lishangshui`
 - 系统: NixOS 26.05 (Yarara) with flakes + Home Manager
 - 启动: systemd-boot + EFI (可触控 EFI 变量)
-- 显示管理器: 无（纯 TTY 登录，howdy 人脸解锁）
+- 显示管理器: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
 - WM: Hyprland (Wayland), **Lua 配置** (`hyprland.lua`), scrolling layout
 - Shell: fish (plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
 - 终端: foot (系统级配置，host/desktop.nix)，默认 shell: fish
@@ -61,7 +61,7 @@ myNixOSConfig/
 │   ├── network.nix            # NetworkManager, mihomo TUN, nftables, firewall, 网络诊断工具
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
-│   ├── greeter.nix            # 显示管理器（纯 TTY 登录，howdy 人脸解锁）
+│   ├── greeter.nix            # 显示管理器（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
 │   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
@@ -191,7 +191,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 
 ## 已启用服务
 - **启动**: systemd-boot (EFI)
-- **显示管理器**: 无（纯 TTY 登录，howdy 人脸解锁）
+- **显示管理器**: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
 - **显示**: Hyprland (Wayland, Lua 配置, scrolling layout), Noctalia shell (Quickshell 面板)
 - **输入法**: fcitx5 (rime-ice + moegirl + zhwiki 词库)
 - **音频**: PipeWire (pulse/alsa/jack)

@@ -326,6 +326,12 @@
   programs.bash = {
     enable = true;
     initExtra = ''
+      # kmscon raw VT 模式下 pam_systemd 可能没注入 session 变量，兜底
+      if [ -z "$XDG_RUNTIME_DIR" ] && [ -d "/run/user/$(id -u)" ]; then
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+      fi
+
       # ble.sh — 语法高亮、自动补全、Fish 风格建议
       source ${pkgs.blesh}/share/blesh/ble.sh
 
@@ -780,4 +786,5 @@
     }
     complete -F _howdy_completion howdy
   '';
+
 }
