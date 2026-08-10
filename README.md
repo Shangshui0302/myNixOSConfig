@@ -10,7 +10,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 | WM           | Hyprland (Wayland)                                       |
 | Shell        | fish (plugins) + bash (ble.sh) + starship + zellij       |
 | 桌面面板     | Noctalia Shell                                           |
-| 终端         | Foot(default), Ghostty                                   |
+| 终端         | Foot                                                    |
 | 文件管理器   | Yazi (HM module + 9 插件 + myargonaut 绿色主题 + 6 备选) |
 | 输入法       | fcitx5 + rime-ice                                        |
 | 编辑器       | Neovim (kickstart + lazy.nvim, LSP/completion/telescope) |
@@ -27,7 +27,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 ├── flake.lock
 ├── hardware-configuration.nix # 自动生成，不要手动改
 │
-├── host/                      # 系统基础设施 (12 文件)
+├── host/                      # 系统基础设施 (13 文件)
 │   ├── default.nix            # 入口汇总
 │   ├── boot.nix               # 启动与内核
 │   ├── hardware.nix           # GPU、udev、nix-ld
@@ -38,7 +38,9 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
 │   ├── desktop.nix            # 桌面环境基础设施
 │   ├── greeter.nix            # Noctalia Greeter 登录管理器
-│   └── gaming.nix             # Steam、Flatpak、libvirtd
+│   ├── gaming.nix             # Steam、Flatpak、libvirtd
+│   ├── containers.nix         # distrobox 容器
+│   └── sops.nix               # secrets 解密
 │
 ├── overlays/                  # nixpkgs overlays
 │
@@ -93,12 +95,6 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - 所有改动必须通过 nixos-rebuild 应用，禁止非 nix 方式修改
 - secrets 走 `/persist/secrets/`，不进 git
 
-## 注意事项
-
-- 显卡/网卡驱动改动要谨慎
-- 2K 屏 Hyprland scaling 已配 (1.5)，改 DPI/scale 时注意
-- **MS CJK 字体**: 从 Windows 授权副本提取的字体文件（SimSun/SimHei/KaiTi/FangSong/YaHei/DengXian 等 267 个）存放在 `/persist/Fonts/`，不进 git。`home.activation.copyMsCjkFonts` 在每次 rebuild 时将其复制到 `~/.local/share/fonts/MS/`，`20-ms-office-cjk.conf` 配置原生字体优先、开源字体 fallback 的替换链。首次部署需手动从 Windows 机器提取字体文件放到 `/persist/Fonts/`
-
 ## 新机器首次部署
 
 ### 0. 前置条件
@@ -119,12 +115,14 @@ cp /mnt/etc/nixos/hardware-configuration.nix ~/myNixOSConfig/
 
 ### 2. 修改机器特定配置
 
-| 文件                  | 需要修改的内容                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `host/core.nix`     | `networking.hostName`、`time.timeZone`、`i18n.defaultLocale`、`users.users.<name>` |
-| `home/default.nix`  | `home.username`、`home.homeDirectory`                                                  |
-| `home/hyprland.nix` | `monitor` 显示器配置                                                                     |
-| `flake.nix`         | `nixosConfigurations.<hostname>`、`home-manager.users.<name>`                          |
+| 文件                      | 需要修改的内容                                                     |
+| ------------------------- | ------------------------------------------------------------------ |
+| `host/network.nix`        | `networking.hostName`                                                  |
+| `host/locale.nix`         | `time.timeZone`、`i18n.defaultLocale`                                |
+| `host/users.nix`          | `users.users.<name>`、NOPASSWD 规则                                  |
+| `home/default.nix`        | `home.username`、`home.homeDirectory`                                |
+| `home/env/hyprland.nix`   | `hl.monitor` 显示器配置                                              |
+| `flake.nix`               | `nixosConfigurations.<hostname>`、`home-manager.users.<name>`       |
 
 ### 3. 挂载 /persist 子卷并创建文件
 

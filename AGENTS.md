@@ -224,7 +224,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 
 - **MS CJK 字体**: `/persist/Fonts/` 存放从 Windows 提取的字体文件（不进 git）。`home.activation.copyMsCjkFonts` 在 rebuild 时复制到 `~/.local/share/fonts/MS/`。`20-ms-office-cjk.conf` 配置原生优先的 fallback 链。**不要删除 `/persist/Fonts/` 下的字体文件。**
 - **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
-- **查阅文档**：在修改配置或排查问题前，必须先查阅本地官方文档，如 `~/Documents/noctalia-docs-v5` 或 `wiki/`，确认官方支持的配置方式。
+- **查阅文档**：在修改配置或排查问题前，必须先查阅 `wiki/`，确认官方支持的配置方式。
 - **决策记忆**：遇到「为什么这么配」「历史决策」「硬件特性」问题，先查 `memory/INDEX.md`，找到对应卡片再动手；改配置前若涉及已知决策，读相关卡片确认不冲突
 ### 分支隔离
 - **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行

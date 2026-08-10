@@ -25,8 +25,6 @@ updated: 2026-08-06
 
 Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用启动器等组件，统一管理壁纸、配色、通知、锁屏等。
 
-> **参考文档 (v5)**: `~/Documents/noctalia-docs-v5/` （其中包含了 Shell 和 Greeter 等所有组件的完整本地文档，修改配置前必读）
-
 ## 面板布局
 
 顶栏分三个区域：
