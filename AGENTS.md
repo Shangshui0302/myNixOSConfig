@@ -14,7 +14,7 @@
 - 系统: NixOS 26.05 (Yarara) with flakes + Home Manager
 - 启动: systemd-boot + EFI (可触控 EFI 变量)
 - 显示管理器: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
-- WM: Hyprland (Wayland), **Lua 配置** (`hyprland.lua`), scrolling layout
+- WM: Hyprland (Lua 配置, scrolling layout) + niri (KDL 配置), 均经 uwsm 启动
 - Shell: fish (plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
 - 终端: foot (系统级配置，host/desktop.nix)，默认 shell: fish
 - 代理: mihomo TUN 模式 + nftables 防火墙，webui: zashboard (127.0.0.1:9090)
@@ -61,7 +61,7 @@ myNixOSConfig/
 │   ├── network.nix            # NetworkManager, mihomo TUN, nftables, firewall, 网络诊断工具
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
-│   ├── greeter.nix            # 显示管理器（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
+│   ├── greeter.nix            # TTY 登录（kmscon + CJK，howdy 人脸解锁）
 │   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
@@ -250,13 +250,11 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - feature 分支验证通过（rebuild 成功 + 服务正常运行）后再合并回 main
 - **每次改动后**：更新 README.md 和 CLAUDE.md → commit → rebuild → push main（private repo，不需要 PR）
 - 修改后**不要自动 rebuild**，给出命令让我手动执行
-- 修改 Hyprland 配置后必须运行 `hyprland --verify-config` 诊断
 - 优先用 Home Manager 管用户级配置，系统级才动 host/
 - 涉及 overlay 或 unstable channel 的包，说明原因
 - secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），解密私钥为 SSH host key（`/etc/ssh/ssh_host_ed25519_key`），启用 `useSystemdActivation`
-- sudo 已配 NOPASSWD: nix, nixos-rebuild, tee, chmod, chown, install, mv, cp, rm
 - 硬件相关（显卡、网卡驱动）改动要谨慎，先说明影响
-- 2K 显示屏 2560x1600，Hyprland scale 1.5，涉及 DPI/scale 改动时注意
+- 2K 屏 2560x1600，compositor scale 1.5（Hyprland/niri），涉及 DPI/scale 改动时注意
 - 鼠标: epic-mouse-v1，sensitivity -0.5
 - **所有改动必须通过 nixos-rebuild 应用，禁止用非 nix 方式修改系统配置**
 - flake.lock 被 root 拥有，更新 flake inputs 需 sudo
