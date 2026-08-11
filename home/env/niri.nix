@@ -1,4 +1,4 @@
-03{ pkgs, ... }:
+{ pkgs, ... }:
 
 {
   # niri — scrollable-tiling Wayland compositor
