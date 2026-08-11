@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+03{ pkgs, ... }:
 
 {
   # niri — scrollable-tiling Wayland compositor
@@ -78,13 +78,24 @@
           open-floating true
       }
 
-      // Noctalia bar：niri 的 x-ray blur 对整个矩形做静态模糊，
-      // bar 的透明部分（圆角/间隙）被错误模糊。强制关掉，用 bar 自身半透明。
-      // 优先级高于 Noctalia 的 ext-background-effect 请求。
+      // Noctalia bar：xray 静态 blur 会错误糊掉透明圆角/间隙，
+      // 改用 realtime (non-xray) blur 精确跟随 bar 形状（毛玻璃）。
+      // 实验性：窗口开合/拖动动画期间 blur 会暂时消失。
       layer-rule {
           match namespace=r#"^noctalia-(bar-.+|dock|panel|attached-panel|osd)$"#
           background-effect {
-              blur false
+              xray false
+              blur true
+          }
+      }
+
+      // 常用窗口 realtime (non-xray) blur —— 真毛玻璃（跟随圆角形状）
+      // 需要窗口半透明才可见（foot 需 background 带 alpha）
+      window-rule {
+          match app-id=r#"^(foot|org\.gnome\.Nautilus|obsidian)$"#
+          background-effect {
+              xray false
+              blur true
           }
       }
 
