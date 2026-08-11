@@ -105,10 +105,16 @@ in
   services.libinput.enable = true;
 
   xdg.portal = {
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr ];
 
     config.hyprland = {
       default = [ "hyprland" "gtk" ];
+      "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+    };
+
+    config.niri = {
+      default = [ "wlr" "gtk" ];
+      "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
       "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
     };
   };
