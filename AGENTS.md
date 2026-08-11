@@ -62,7 +62,6 @@ myNixOSConfig/
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
 │   ├── greeter.nix            # TTY 登录（kmscon + CJK，howdy 人脸解锁）
-│   ├── cosmic.nix             # COSMIC 桌面环境（System76，start-cosmic 启动）
 │   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
@@ -248,6 +247,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 - **MS CJK 字体**: `/persist/Fonts/` 存放从 Windows 提取的字体文件（不进 git）。`home.activation.copyMsCjkFonts` 在 rebuild 时复制到 `~/.local/share/fonts/MS/`。`20-ms-office-cjk.conf` 配置原生优先的 fallback 链。**不要删除 `/persist/Fonts/` 下的字体文件。**
 - **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
 - **查阅文档**：在修改配置或排查问题前，必须先查阅 `wiki/`，确认官方支持的配置方式。
+- **强制先查文档（禁止逆向）**：排障时（尤其运行时/工具链问题），第一步必须查官方文档（wiki/man/官方 README）和该工具自带的官方辅助工具（查 `PATH`），确认没有官方方案后才允许逆向（`ldd`/`strings`/读源码）。教训：cosmic 无法从 TTY 启动，逆向 cosmic-comp 二进制 + systemd 源码绕了大圈，而 kmscon 官方自带 `kmscon-launch-gui`（发 `setBackground` OSC 释放 DRM master 后跑合成器）就是正解。
 - **决策记忆**：遇到「为什么这么配」「历史决策」「硬件特性」问题，先查 `memory/INDEX.md`，找到对应卡片再动手；改配置前若涉及已知决策，读相关卡片确认不冲突
 ### 分支隔离
 - **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行

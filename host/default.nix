@@ -12,7 +12,6 @@
     ./services.nix
     ./desktop.nix
     ./greeter.nix
-    ./cosmic.nix
     ./gaming.nix
     ./containers.nix
     ./sops.nix
