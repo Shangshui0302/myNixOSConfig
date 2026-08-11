@@ -12,13 +12,12 @@
     # base（greeter.nix）硬定义 enable=true，需 mkForce 覆盖。
     services.kmscon.enable = lib.mkForce false;
 
-    # minimal-but-complete：只留 GNOME Shell + core services，不装 core apps。
-    # 游戏 / 开发者工具默认已关（services.gnome.games / core-developer-tools 默认 false）。
-    services.gnome.core-apps.enable = false;
-    environment.gnome.excludePackages = with pkgs; [
-      gnome-tour        # 在 core-shell optionalPackages（core-apps 之外）
-      gnome-user-docs
-    ];
+    # 全量 GNOME：core apps（nautilus/epiphany/text-editor 等）+ 游戏 + 开发者工具全上。
+    # core-apps 默认即 true（显式声明表明意图）；games / core-developer-tools 默认 false，需打开。
+    # 注意：全量含 Epiphany → 拉入 webkitgtk 大包，首次构建/下载较慢。
+    services.gnome.core-apps.enable = true;
+    services.gnome.games.enable = true;
+    services.gnome.core-developer-tools.enable = true;
 
     # fcitx5：GNOME Wayland 走 text-input-v3，官方建议不设 GTK_IM_MODULE
     # （GTK 应用用原生输入协议；Qt 走 QT_IM_MODULE，XWayland 走 XMODIFIERS）。

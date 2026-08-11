@@ -21,7 +21,7 @@ GNOME 作为 NixOS specialisation 变体（`host/gnome.nix`）：开机 systemd-
 
 ## How to apply
 
-- `host/gnome.nix`：`services.desktopManager.gnome.enable` + `services.displayManager.gdm.enable` + `services.kmscon.enable = lib.mkForce false` + minimal GNOME（`core-apps.enable=false`、exclude gnome-tour/user-docs）+ 移除 `GTK_IM_MODULE`
+- `host/gnome.nix`：`services.desktopManager.gnome.enable` + `services.displayManager.gdm.enable` + `services.kmscon.enable = lib.mkForce false` + 全量 GNOME（core-apps + games + core-developer-tools 全开）+ 移除 `GTK_IM_MODULE`
 - 共享同一 home-manager profile（GNOME 差异全在 NixOS 层，Noctalia/uwsm 在 GNOME 下 inert）
 - 验证构建：`nix build .#nixosConfigurations.MechRevo-NixOS.config.specialisation.gnome.configuration.system.build.toplevel`
 - 运行时切换：`nixos-rebuild switch --specialisation gnome`

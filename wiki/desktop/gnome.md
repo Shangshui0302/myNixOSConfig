@@ -26,8 +26,8 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 
 ## 配置要点（host/gnome.nix）
 
-- `services.gnome.core-apps.enable = false`：不装 GNOME 应用套件，保留 Shell + core services；游戏/开发者工具默认已关
-- `environment.gnome.excludePackages = [ gnome-tour gnome-user-docs ]`（这两个在 core-shell optionalPackages，不在 core-apps）
+- **全量 GNOME**：`services.gnome.core-apps.enable = true`（core apps）+ `services.gnome.games.enable = true`（游戏）+ `services.gnome.core-developer-tools.enable = true`（开发者工具）
+- 注意全量含 Epiphany → 拉入 webkitgtk 大包，首次构建/下载较慢
 - GDM 接管 tty1，GNOME 变体里 kmscon 禁用（本机 libseat=false raw-VT 特殊配置，避免边角问题）
 - fcitx5：GNOME Wayland 走 text-input-v3，**不设 `GTK_IM_MODULE`**（GTK 用原生输入协议）；Qt 走 `QT_IM_MODULE`，XWayland 走 `XMODIFIERS`，均保留
 - 共享同一 Home Manager profile——用户级配置（编辑器、主题、面板配置等）与主系统完全一致，无重复维护
