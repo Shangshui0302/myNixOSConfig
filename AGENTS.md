@@ -214,7 +214,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 ## 已启用服务
 - **启动**: systemd-boot (EFI)
 - **显示管理器**: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
-- **显示**: Hyprland (Lua, scrolling layout) + niri (KDL) + COSMIC (System76 DE), Noctalia shell (Quickshell 面板)
+- **显示**: Hyprland (Lua, scrolling layout) + niri (KDL), Noctalia shell (Quickshell 面板)
 - **输入法**: fcitx5 (rime-ice + moegirl + zhwiki 词库)
 - **音频**: PipeWire (pulse/alsa/jack)
 - **蓝牙**: bluetooth + blueman
