@@ -27,7 +27,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 ├── flake.lock
 ├── hardware-configuration.nix # 自动生成，不要手动改
 │
-├── host/                      # 系统基础设施 (13 文件)
+├── host/                      # 系统基础设施 (14 文件)
 │   ├── default.nix            # 入口汇总
 │   ├── boot.nix               # 启动与内核
 │   ├── hardware.nix           # GPU、udev、nix-ld
@@ -38,6 +38,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
 │   ├── desktop.nix            # 桌面环境基础设施
 │   ├── greeter.nix            # TTY 登录配置（kmscon + CJK + howdy，无 DM）
+│   ├── gnome.nix              # GNOME specialisation（GDM 变体，开机选 NixOS (gnome)）
 │   ├── gaming.nix             # Steam、Flatpak、libvirtd
 │   ├── containers.nix         # distrobox 容器
 │   └── sops.nix               # secrets 解密

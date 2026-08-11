@@ -31,6 +31,7 @@ updated: 2026-08-07
 |------|------|
 | [Hyprland](desktop/hyprland.md) | 窗口管理器：按键、手势、工作流、滚动布局 |
 | [Niri](desktop/niri.md) | 滚动平铺合成器：uwsm 启动、窗口流 |
+| [GNOME](desktop/gnome.md) | 完整桌面：specialisation 变体，GDM 登录 |
 | [Fcitx5 输入法](desktop/fcitx5.md) | Rime 引擎、垂直候选窗、深浅色联动 |
 | [Noctalia Shell](desktop/noctalia.md) | 桌面面板：控制中心、壁纸、配色、锁屏 |
 | [Shell 环境](desktop/shell.md) | fish/bash、别名、starship、zellij、ghostty |

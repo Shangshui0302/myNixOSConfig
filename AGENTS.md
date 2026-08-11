@@ -62,6 +62,7 @@ myNixOSConfig/
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
 │   ├── greeter.nix            # TTY 登录（kmscon + CJK，howdy 人脸解锁）
+│   ├── gnome.nix              # GNOME specialisation（GDM 变体，开机选 NixOS (gnome)）
 │   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）

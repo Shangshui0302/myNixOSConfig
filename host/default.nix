@@ -12,6 +12,7 @@
     ./services.nix
     ./desktop.nix
     ./greeter.nix
+    ./gnome.nix
     ./gaming.nix
     ./containers.nix
     ./sops.nix

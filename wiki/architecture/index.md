@@ -39,7 +39,7 @@ subgraph "主机层 (host)"
 H1["host/default.nix"]
 H2["hardware-configuration.nix"]
 H3["boot.nix / services.nix / network.nix"]
-H4["desktop.nix / greeter.nix / sops.nix"]
+H4["desktop.nix / greeter.nix / gnome.nix / sops.nix"]
 end
 subgraph "用户层 (home)"
 U1["home/default.nix"]

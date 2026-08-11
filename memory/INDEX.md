@@ -15,6 +15,7 @@
 - [Qoder IDE 用国际版](cards/qoder-ide-source.md) — download.qoder.com，非 qoder.com.cn 国内版
 - [flake 全用 unstable](cards/flake-unstable-strategy.md) — 出问题再修，不 pin stable
 - [AMD 核显留在 nixpkgs 默认内核](cards/amd-kernel-stay-lts.md) — 不上 linuxPackages_latest，避 RDNA 硬挂起回归
+- [GNOME 用 specialisation 变体](cards/gnome-specialisation.md) — 保留 kmscon 主流程，GDM 隔离
 
 ## 硬件 hardware
 
