@@ -190,6 +190,23 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 ```
 语法通过不代表 evaluation 通过。结构性的修改（新增文件、移动包、改 import 路径）必须跑 `dry-build`。
 
+### 配置先验证后落盘（必守）
+
+改**任何带自身配置校验的包**（Hyprland `hyprland --verify-config`、niri `niri validate` 等）的配置文件时，必须按这个顺序：
+
+1. **先**直接编辑该包的真实配置文件（`~/.config/<pkg>/`）
+2. **用包自带的 validate/check 命令**验收通过（确认语法 + 语义，部分包支持热载直接验证）
+3. **验收后才写入 Nix**（`home/env/*.nix` 或 `host/*.nix`）
+
+**Why:** 直接写 Nix 后要 rebuild 才生效，若语法错会浪费一次完整 rebuild 周期才暴露。用 validate 命令（通常毫秒级）先本地验收，能立刻发现错误。
+
+**所有包改配置前**：先查该包是否有 validate/check 机制——`<pkg> --help`、`--validate`、`--check-config`、`--verify-config`、`validate-config` 等，或查 wiki/官方文档确认。有则必须先用它验收；没有的包才允许直接写 Nix + dry-build。
+
+**How to apply:**
+- niri: 改 `config.kdl` 前 `niri validate -c <路径>` 快速验证语法
+- Hyprland: 改 `hyprland.lua` 后 `hyprland --verify-config` 诊断
+- 其他包: 先 `--help` 查 validate 类参数，没有再用 `nix-instantiate --parse` + `dry-build`
+
 ## 已启用服务
 - **启动**: systemd-boot (EFI)
 - **显示管理器**: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）

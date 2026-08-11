@@ -562,6 +562,10 @@ in
           input_path = "${config.xdg.configHome}/noctalia/templates/hyprland-colors.lua";
           output_path = "${config.xdg.configHome}/hypr/noctalia-colors.lua";
         };
+        niri_colors = {
+          input_path = "${config.xdg.configHome}/noctalia/templates/niri-colors.kdl";
+          output_path = "${config.xdg.configHome}/niri/noctalia-colors.kdl";
+        };
       };
     };
   };
