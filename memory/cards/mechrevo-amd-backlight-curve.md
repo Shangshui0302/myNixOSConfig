@@ -17,7 +17,7 @@ Noctalia 亮度调到 100% 时屏幕反而全黑。写 `amdgpu_bl1/brightness` �
 
 ## 决策
 
-`host/boot.nix` 加内核参数 `amdgpu.dcdebugmask=0x40000`（`DC_DISABLE_CUSTOM_BRIGHTNESS_CURVE`），禁用固件曲线，恢复线性映射（set=X → actual≈X）。已撤销 deepseek 早前基于错误"PWM 反转"判断的 `acpi_backlight=native`/`acpi_video`/`abmlevel=0`。
+`host/boot.nix` 加内核参数 `amdgpu.dcdebugmask=0x40000`（`DC_DISABLE_CUSTOM_BRIGHTNESS_CURVE`），禁用固件曲线，恢复线性映射（set=X → actual≈X）。已撤销 deepseek 早前基于错误"PWM 反转"判断的 `acpi_backlight=native`/`acpi_video`/`abmlevel=0`。2026-08-11 曾尝试叠加 0x10+0x400（禁 PSR/Replay）修 niri 雪花点，实测无效已回退，见 [[memory/cards/mechrevo-psr-snow-artifacts]]。
 
 ## Why
 

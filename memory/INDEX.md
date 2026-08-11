@@ -20,6 +20,7 @@
 
 - [Hyprland 0.56 blur 在 AMD 780M 上失效](cards/hyprland-056-blur-amd.md) — new_optimizations 关闭恢复模糊
 - [机械革命无界14X AMD 背光曲线溢出](cards/mechrevo-amd-backlight-curve.md) — dcdebugmask=0x40000 禁用 custom brightness curve
+- [niri/cosmic 局部雪花点闪烁](cards/mechrevo-psr-snow-artifacts.md) — PSR/Panel Replay 固件 bug，dcdebugmask 未解决
 
 ## 约束 constraint
 

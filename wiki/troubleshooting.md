@@ -24,6 +24,7 @@ updated: 2026-08-07
 ## 桌面与显示
 
 - 屏幕亮度异常 / 全黑、Hyprland 缩放与模糊在 AMD 上的兼容问题 → [Hyprland 桌面](desktop/hyprland.md)
+- niri/cosmic 滚动/动画时局部雪花点闪烁（录屏不可见）→ memory：[PSR 排查记录](../memory/cards/mechrevo-psr-snow-artifacts.md)（dcdebugmask 未解决，暂回落 Hyprland）
 - 深色模式不生效 / 主题不一致 → [深色模式](desktop/darkmode.md)
 - Noctalia 面板 / 登录器异常 → [Noctalia](desktop/noctalia.md)
 - 密钥环（keyring）解锁失败 → [Keyring](desktop/keyring.md)
@@ -75,4 +76,4 @@ updated: 2026-08-07
 - [系统服务](services.md) — 服务层排查入口
 - [部署与维护](deployment.md) — 部署/升级/回滚排查
 - [Mihomo 代理](networking/mihomo.md) ｜ [PAM 认证](security/pam.md) ｜ [Hyprland](desktop/hyprland.md) ｜ [fcitx5](desktop/fcitx5.md)
-- memory：[mechrevo-amd-backlight-curve](../memory/cards/mechrevo-amd-backlight-curve.md)、[hyprland-056-blur-amd](../memory/cards/hyprland-056-blur-amd.md)、[portal-gtk-dangling-symlink](../memory/cards/portal-gtk-dangling-symlink.md)
+- memory：[mechrevo-amd-backlight-curve](../memory/cards/mechrevo-amd-backlight-curve.md)、[mechrevo-psr-snow-artifacts](../memory/cards/mechrevo-psr-snow-artifacts.md)、[hyprland-056-blur-amd](../memory/cards/hyprland-056-blur-amd.md)、[portal-gtk-dangling-symlink](../memory/cards/portal-gtk-dangling-symlink.md)
