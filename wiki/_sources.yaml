@@ -33,6 +33,9 @@ docs:
   desktop/niri.md:
     sources: [home/env/niri.nix]
     memory:  []
+  desktop/cosmic.md:
+    sources: [host/cosmic.nix]
+    memory:  []
   desktop/fcitx5.md:
     sources: [host/desktop.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink]

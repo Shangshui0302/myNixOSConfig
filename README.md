@@ -38,6 +38,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
 │   ├── desktop.nix            # 桌面环境基础设施
 │   ├── greeter.nix            # TTY 登录配置（kmscon + CJK + howdy，无 DM）
+│   ├── cosmic.nix             # COSMIC 桌面环境（System76，start-cosmic 启动）
 │   ├── gaming.nix             # Steam、Flatpak、libvirtd
 │   ├── containers.nix         # distrobox 容器
 │   └── sops.nix               # secrets 解密

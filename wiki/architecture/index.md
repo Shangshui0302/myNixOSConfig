@@ -2,7 +2,7 @@
 title: 系统架构总览
 category: 架构
 tags: [architecture, flake, host, home-manager, modules]
-updated: 2026-08-10
+updated: 2026-08-11
 ---
 
 # 系统架构总览
@@ -39,7 +39,7 @@ subgraph "主机层 (host)"
 H1["host/default.nix"]
 H2["hardware-configuration.nix"]
 H3["boot.nix / services.nix / network.nix"]
-H4["desktop.nix / greeter.nix / sops.nix"]
+H4["desktop.nix / greeter.nix / cosmic.nix / sops.nix"]
 end
 subgraph "用户层 (home)"
 U1["home/default.nix"]

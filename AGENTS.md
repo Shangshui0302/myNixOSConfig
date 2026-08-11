@@ -62,6 +62,7 @@ myNixOSConfig/
 │   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
 │   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
 │   ├── greeter.nix            # TTY 登录（kmscon + CJK，howdy 人脸解锁）
+│   ├── cosmic.nix             # COSMIC 桌面环境（System76，start-cosmic 启动）
 │   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
 │
 ├── home/                      # Home Manager 用户级配置（按用途分子目录）
@@ -114,6 +115,10 @@ myNixOSConfig/
 │   ├── INDEX.md               # 卡片索引
 │   ├── _template.md           # 卡片模板
 │   └── cards/                 # 原子化决策卡
+│
+├── issues/                    # 本地排障/待办记录（.gitignore，不进 git）
+│   ├── README.md              # 索引（OPEN 列表 + CLOSED 归档链接）
+│   └── archived/              # 已关闭 issue
 │
 ├── CLAUDE.md
 └── README.md
@@ -210,7 +215,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
 ## 已启用服务
 - **启动**: systemd-boot (EFI)
 - **显示管理器**: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
-- **显示**: Hyprland (Wayland, Lua 配置, scrolling layout), Noctalia shell (Quickshell 面板)
+- **显示**: Hyprland (Lua, scrolling layout) + niri (KDL) + COSMIC (System76 DE), Noctalia shell (Quickshell 面板)
 - **输入法**: fcitx5 (rime-ice + moegirl + zhwiki 词库)
 - **音频**: PipeWire (pulse/alsa/jack)
 - **蓝牙**: bluetooth + blueman

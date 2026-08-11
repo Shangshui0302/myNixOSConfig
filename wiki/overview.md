@@ -2,7 +2,7 @@
 title: 项目概述
 category: 顶层
 tags: [nixos, home-manager, flake, hyprland, overview]
-updated: 2026-08-09
+updated: 2026-08-11
 ---
 
 # 项目概述
@@ -20,7 +20,7 @@ updated: 2026-08-09
 
 myNixOSConfig 是一套为机械革命（MechRevo）笔记本定制的 NixOS + Home Manager 桌面配置。目标是提供**可重现、可回滚、可审计**的桌面环境，涵盖现代开发工具链、生产力工具与娱乐功能。
 
-技术栈以 NixOS Unstable 为基础，采用 Hyprland（Wayland 窗口管理器）、Fcitx5 + Rime 中文输入法、Noctalia 主题系统与登录界面；外部依赖由 Flake 统一锁定，敏感配置通过 SOPS + age 加密管理。
+技术栈以 NixOS Unstable 为基础，采用 Hyprland（Wayland 窗口管理器，主力）+ niri（滚动平铺）+ COSMIC（完整桌面环境）三种桌面，Fcitx5 + Rime 中文输入法、Noctalia 主题系统；外部依赖由 Flake 统一锁定，敏感配置通过 SOPS + age 加密管理。
 
 仓库将「系统级」与「用户级」配置清晰分离：
 
