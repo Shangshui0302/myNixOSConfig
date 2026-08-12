@@ -77,15 +77,19 @@ xdg.portal.config.hyprland = {
 };
 ```
 
-### dconf 默认值 (`home/theme-base.nix`)
+### dconf 默认值 (`home/theme-base.nix` + 变体各自 theme)
 
 ```nix
+# home/theme-base.nix（共享：深浅色 + 图标）
 dconf.settings = {
   "org/gnome/desktop/interface" = {
     color-scheme = "prefer-dark";
-    gtk-theme = "adw-gtk3-dark";
+    icon-theme = "Papirus";
   };
 };
+
+# home/theme-hyprland.nix 与 specialisation/gnome/home.nix（GTK 主题统一 Material-Gnome，路径分开）
+dconf.settings."org/gnome/desktop/interface".gtk-theme = "Material-Gnome";
 ```
 
 ## 调试命令
@@ -115,7 +119,7 @@ systemctl --user status xdg-desktop-portal-gtk
 - `settings.json` 是只读 nix store symlink，Noctalia 运行时修改只存于内存
 - 不要手动修改 `~/.config/noctalia/settings.json`
 - Chrome 可能需要重启才能跟随 portal 变化
-- **fcitx5 深色联动**：`i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection` 配 `Theme=mellow-wechat, DarkTheme=mellow-wechat-dark, UseDarkTheme=True`。fcitx5 通过 portal 检测深浅色，portal-gtk 未激活时 fcitx5 永远浅色
+- **fcitx5 深色联动**：`host/base/desktop.nix` 里 `i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection`（`lib.mkIf (!gnome)`）配 `Theme=mellow-wechat, DarkTheme=mellow-wechat-dark, UseDarkTheme=True`。fcitx5 通过 portal 检测深浅色，portal-gtk 未激活时 fcitx5 永远浅色
 - **垂直候选窗**：classicui 的 `"Vertical Candidate List" = "True"`（键名含空格需引号，值必须大写 `True`）
 - Firefox 动态跟随 portal，无需重启
 

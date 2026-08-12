@@ -1,6 +1,6 @@
 { config, pkgs, materialGnomeTheme, ... }:
 {
-  # GNOME 变体 home：共享 base + Material-Gnome 主题应用（仅此变体；Hyprland 主桌面在 theme-hyprland.nix 用 adw）。
+  # GNOME 变体 home：共享 base + Material-Gnome 主题应用（GTK 主题与 Hyprland 主桌面统一 material，但路径分开见 theme-hyprland.nix）。
   imports = [
     ../../home/base.nix
   ];

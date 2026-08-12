@@ -39,23 +39,6 @@ in
     withUWSM = true;
   };
 
-  # fcitx5 Hyprland 侧：主题 addons + classicui 候选窗（核心在 host/base/desktop.nix）
-  i18n.inputMethod.fcitx5.addons = with pkgs; [
-    fcitx5-gtk
-    fcitx5-mellow-themes
-    fcitx5-material-color
-    catppuccin-fcitx5
-  ];
-  # classicui 深色联动：UseDarkTheme=True 让 fcitx5 通过 portal 检测深浅色
-  # 浅色用 mellow-wechat，深色用 mellow-wechat-dark（Noctalia 调度）
-  i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection = {
-    Theme = "mellow-wechat";
-    DarkTheme = "mellow-wechat-dark";
-    UseDarkTheme = "True";
-    # 垂直候选窗（键名含空格，需引号）
-    "Vertical Candidate List" = "True";
-  };
-
   xdg.portal = {
     extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr ];
 
