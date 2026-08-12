@@ -27,6 +27,7 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 ## 配置要点（specialisation/gnome/）
 
 - **隔离机制**：`inheritParentConfig=false`，变体从零 import 共享 `host/base/` + GNOME 专属（`host.nix`）+ 变体 home（`home.nix`，import 共享 `home/base.nix` + Material 主题）。Hyprland 闭包不含 material-gnome-theme，GNOME 闭包不含 Hyprland/foot/wlr portal/qt5ct/adw-gtk3/noctalia
+- **GSettings override 生效条件**（gnome.md 官方）：override 某包 schema 必须把该包加进 `extraGSettingsOverridePackages`，否则对应段被编译丢弃（Console/nautilus 曾因此失效）。GNOME Shell 扩展 schema 在非标准路径（`share/gnome-shell/extensions/<uuid>/schemas/`），需用 `withStandardSchemas` 链接到标准 gsettings-schemas 路径后加入 override 包，dash-to-dock/blur-my-shell/user-theme 的 override 才生效
 
 - **GNOME 应用**：`core-apps.enable = true`（core apps）+ `core-developer-tools.enable = true`（开发者工具）；`games.enable = false`（小游戏关闭）
 - **排除 Epiphany**：`environment.gnome.excludePackages = [ pkgs.epiphany ]`（core-apps 默认含它，且拉入 webkitgtk 大包）

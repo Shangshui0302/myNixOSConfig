@@ -1,4 +1,17 @@
 { config, lib, pkgs, materialGnomeTheme, ... }:
+
+let
+  # 扩展 schema 在 share/gnome-shell/extensions/<uuid>/schemas/（非标准路径），
+  # nixos-gsettings-overrides 编译时不包含 → [org.gnome.shell.extensions.*] 的 override 段被丢弃。
+  # 把 schema 链接到标准 gsettings-schemas 路径，扩展 schema 才进入 override 包，override 才生效。
+  withStandardSchemas = ext: ext.overrideAttrs (old: {
+    postInstall = (old.postInstall or "") + ''
+      mkdir -p $out/share/gsettings-schemas/${ext.name}/glib-2.0/schemas
+      cp -r $out/share/gnome-shell/extensions/*/schemas/*.gschema.xml \
+        $out/share/gsettings-schemas/${ext.name}/glib-2.0/schemas/ 2>/dev/null || true
+    '';
+  });
+in
 {
   # GNOME 变体系统层（inheritParentConfig=false，不继承 main 的 Hyprland/foot/fcitx5 主题配置）。
   # fcitx5 核心 + QT_IM_MODULE/XMODIFIERS 来自 host/base/desktop.nix；GTK_IM_MODULE 未设置（GNOME 原生 text-input-v3）。
@@ -40,6 +53,18 @@
   # ===== 用户设置持久化（从 dconf dump 提取）=====
   # 主题外观（gtk-theme/icon-theme/cursor/color-scheme）：gtk-theme 在 home.nix（Material-Gnome），
   # 图标/深浅色由 home/base.nix 共享；壁纸指向 git 源文件 assets/yamadaryou.png。
+  # 官方文档（gnome.md）：override 某包 schema 必须把该包加进 extraGSettingsOverridePackages，
+  # 否则对应段 override 不生效（gschema 编译时丢弃未知段）。
+  # 注意：只能加标准 gsettings-schemas 路径的包；GNOME Shell 扩展的 schema 在
+  # share/gnome-shell/extensions/<uuid>/schemas/（非标准路径），加进来会让 overrides 构建 cp 失败。
+  # 扩展的 override（dash-to-dock/blur-my-shell/user-theme）靠 GNOME 会话 XDG_DATA_DIRS 暴露 schema 生效。
+  services.desktopManager.gnome.extraGSettingsOverridePackages = [
+    pkgs.gnome-console
+    pkgs.nautilus
+    (withStandardSchemas pkgs.gnomeExtensions.dash-to-dock)
+    (withStandardSchemas pkgs.gnomeExtensions.user-themes)
+  ];
+
   services.desktopManager.gnome.favoriteAppsOverride = "['org.gnome.Nautilus.desktop', 'google-chrome.desktop', 'org.gnome.Console.desktop', 'code.desktop']";
   services.desktopManager.gnome.extraGSettingsOverrides = ''
     [org.gnome.desktop.interface]
@@ -68,11 +93,6 @@
     picture-uri='file:///home/lishangshui/myNixOSConfig/assets/yamadaryou.png'
     picture-options='zoom'
 
-    [org.gnome.settings-daemon.plugins.color]
-    night-light-enabled=true
-    night-light-schedule-automatic=false
-    night-light-schedule-from=22.0
-
     [org.gnome.nautilus.preferences]
     default-folder-viewer='icon-view'
     date-time-format='detailed'
@@ -97,50 +117,7 @@
 
     # 新用户默认启用扩展；已有用户 dconf 值优先，需手动启用一次。
     [org.gnome.shell]
-    enabled-extensions=[ 'dash-to-dock@micxgx.gmail.com', 'gsconnect@andyholmes.github.io', 'clipboard-history@alexsaveau.dev', 'notification-timeout@chlumskyvaclav.gmail.com', 'lockscreen-studio@pedro.projects', 'extension-list@tu.berry', 'kimpanel@kde.org', 'Vitals@CoreCoding.com', 'blur-my-shell@aunetx', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'caffeine@patapon.info' ]
-
-    # blur-my-shell：毛玻璃（值从 dconf dump 提取，静态高斯模糊 + 自带 corner pipeline，无需 rounded-blur 库）。
-    [org.gnome.shell.extensions.blur-my-shell]
-    pipelines={'pipeline_default': {'name': <'Default'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000000'>, 'params': <{'radius': <30>, 'brightness': <0.5>, 'unscaled_radius': <100>}>}>]>}, 'pipeline_default_rounded': {'name': <'Default rounded'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000001'>, 'params': <{'radius': <30>, 'brightness': <0.6>}>}>, <{'type': <'corner'>, 'id': <'effect_000000000002'>, 'params': <{'radius': <24>}>}>]>}}
-
-    [org.gnome.shell.extensions.blur-my-shell.appfolder]
-    brightness=0.6
-    sigma=30
-
-    [org.gnome.shell.extensions.blur-my-shell.applications]
-    blur=true
-    blur-on-overview=true
-    corner-when-maximized=true
-    dynamic-opacity=false
-    enable-all=true
-    opacity=124
-    pipeline='pipeline_default'
-    sigma=100
-
-    [org.gnome.shell.extensions.blur-my-shell.dash-to-dock]
-    blur=true
-    brightness=0.6
-    pipeline='pipeline_default_rounded'
-    sigma=30
-    static-blur=false
-    style-dash-to-dock=0
-
-    [org.gnome.shell.extensions.blur-my-shell.lockscreen]
-    pipeline='pipeline_default'
-
-    [org.gnome.shell.extensions.blur-my-shell.overview]
-    pipeline='pipeline_default'
-
-    [org.gnome.shell.extensions.blur-my-shell.panel]
-    brightness=0.6
-    corner-radius=0
-    force-light-text=false
-    pipeline='pipeline_default'
-    sigma=41
-    static-blur=false
-
-    [org.gnome.shell.extensions.blur-my-shell.screenshot]
-    pipeline='pipeline_default'
+    enabled-extensions=[ 'dash-to-dock@micxgx.gmail.com', 'gsconnect@andyholmes.github.io', 'clipboard-history@alexsaveau.dev', 'notification-timeout@chlumskyvaclav.gmail.com', 'lockscreen-studio@pedro.projects', 'extension-list@tu.berry', 'kimpanel@kde.org', 'Vitals@CoreCoding.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'caffeine@patapon.info' ]
 
     # Material GNOME Shell 主题（user-themes 加载，kimpanel 候选窗等跟随此主题）。
     [org.gnome.shell.extensions.user-theme]
