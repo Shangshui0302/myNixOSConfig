@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-08-07
+updated: 2026-08-12
 ---
 
 # Mihomo 代理
@@ -45,7 +45,7 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 
 | 文件 | 用途 |
 |------|------|
-| `host/network.nix` | mihomo 服务声明、preStart |
+| `host/base/network.nix` | mihomo 服务声明、preStart |
 | `host/mihomo-config.yaml.in` | 配置模板（envsubst 变量注入） |
 | `/persist/secrets/mihomo.env` | `MIHOMO_SECRET`、`MIHOMO_SUBSCRIPTION_URL` |
 

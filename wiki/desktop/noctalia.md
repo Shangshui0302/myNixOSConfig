@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-08-10
+updated: 2026-08-12
 ---
 
 # Noctalia Shell 使用指南

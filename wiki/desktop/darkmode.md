@@ -2,7 +2,7 @@
 title: 深色模式架构
 category: desktop
 tags: [darkmode, noctalia, dconf, qt5ct, portal]
-updated: 2026-08-06
+updated: 2026-08-12
 ---
 
 # 深色模式架构
@@ -37,7 +37,7 @@ Noctalia (唯一调度器, 30.57/104.07)
 **不要在 `settings.json` 中硬编码 `darkMode` 初始值。**
 
 ```nix
-# home/env/noctalia.nix → programs.noctalia-shell.settings.colorSchemes
+# home/hyprland/noctalia.nix → programs.noctalia-shell.settings.colorSchemes
 colorSchemes = {
   schedulingMode = "location";    # Noctalia 根据日出日落自动决定
   predefinedScheme = "yamadaryou";
@@ -49,7 +49,7 @@ colorSchemes = {
 
 ## 配置文件
 
-### Noctalia 调度 + hook (`home/env/noctalia.nix`)
+### Noctalia 调度 + hook (`home/hyprland/noctalia.nix`)
 
 ```nix
 colorSchemes = {
@@ -65,7 +65,7 @@ hooks = {
 
 hook 直接写入 dconf 和 qt5ct，不再经过 darkman 中转。
 
-### XDG Portal (`host/desktop.nix`)
+### XDG Portal (`host/hyprland/desktop.nix`)
 
 portal-gtk 从 gsettings 读取 color-scheme，暴露给所有 portal-aware 应用：
 
@@ -77,7 +77,7 @@ xdg.portal.config.hyprland = {
 };
 ```
 
-### dconf 默认值 (`home/theme.nix`)
+### dconf 默认值 (`home/theme-base.nix`)
 
 ```nix
 dconf.settings = {

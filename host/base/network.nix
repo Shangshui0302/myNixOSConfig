@@ -12,7 +12,7 @@
   # Mihomo proxy (TUN mode)
   services.mihomo = {
     enable = true;
-    configFile = ./mihomo-config.yaml.in;
+    configFile = ../mihomo-config.yaml.in;
     tunMode = true;
     webui = pkgs.zashboard;
   };
@@ -21,7 +21,7 @@
   systemd.services.mihomo.preStart = ''
     mkdir -p /var/lib/private/mihomo/{providers,ruleset}
     ${pkgs.envsubst}/bin/envsubst \
-      -i ${./mihomo-config.yaml.in} \
+      -i ${../mihomo-config.yaml.in} \
       -o /run/mihomo/config.yaml
   '';
 

@@ -2,7 +2,7 @@
 title: 系统架构总览
 category: 架构
 tags: [architecture, flake, host, home-manager, modules]
-updated: 2026-08-11
+updated: 2026-08-12
 ---
 
 # 系统架构总览
@@ -27,7 +27,7 @@ updated: 2026-08-11
 
 - 顶层 `flake.nix` 通过 `nixpkgs.lib.nixosSystem` 创建系统配置，并注入 `specialArgs`（`inputs`），供各模块访问外部依赖。
 - `host/default.nix` 作为系统配置聚合点，导入硬件抽象与功能子模块，形成「基础设施 + 能力」的清晰分层。
-- `home/default.nix` 通过 Home Manager 将用户配置注入系统，按领域拆分（`env`/`dev`/`productivity`/`leisure`）。
+- `home/base.nix` 通过 Home Manager 将用户配置注入系统，按领域拆分（`env`/`dev`/`productivity`/`leisure`）。
 - 外部输入以 NixOS / Home Manager 模块形式被直接导入，避免硬编码路径，提升可移植性。
 
 ```mermaid
@@ -42,7 +42,7 @@ H3["boot.nix / services.nix / network.nix"]
 H4["desktop.nix / greeter.nix / gnome.nix / sops.nix"]
 end
 subgraph "用户层 (home)"
-U1["home/default.nix"]
+U1["home/base.nix"]
 U2["env/ dev/ productivity/ leisure/"]
 end
 F --> H1
@@ -59,7 +59,7 @@ U1 --> U2
 
 - `flake.nix` 通过 `nixosSystem` 指定 `system`、`specialArgs`（`inherit inputs`），并将 `host/default.nix` 与外部模块（`sops-nix`、`home-manager`）加入 `modules` 列表。
 - `host/default.nix` 用 `imports` 依次导入硬件、引导、服务、网络、桌面、登录器、游戏、容器、SOPS 等子模块。
-- `home/default.nix` 同样通过 `imports` 汇总用户配置，并设置用户名、家目录、`stateVersion` 等元信息。
+- `home/base.nix` 同样通过 `imports` 汇总用户配置，并设置用户名、家目录、`stateVersion` 等元信息。
 
 ```mermaid
 sequenceDiagram
@@ -79,7 +79,7 @@ HD->>NW : 导入网络配置
 HD->>DS : 导入桌面环境
 HD->>GR : 导入登录管理器
 HD->>SP : 导入机密管理
-FL->>HM : 注入 home-manager.users.<user> = import ./home/default.nix
+FL->>HM : 注入 home-manager.users.<user> = import ./home/base.nix
 ```
 
 导入均为单向，未发现显式循环依赖。`host/default.nix` 高内聚地聚合子系统模块，降低了 `flake.nix` 的复杂度。
@@ -104,8 +104,8 @@ FL --> NC["noctalia"]
 FL --> SN["sops-nix"]
 FL --> NF["nix-flatpak"]
 FL --> NP["nixpkgs"]
-HM --> HOME["home/default.nix"]
-SN --> HOST["host/sops.nix"]
+HM --> HOME["home/base.nix"]
+SN --> HOST["host/base/sops.nix"]
 NC --> HM
 NP --> HOST
 ```

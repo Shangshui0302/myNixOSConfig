@@ -9,47 +9,48 @@
 #   2. 每篇文档 sources 里列出的文件均真实存在。
 #   3. 每篇文档 memory 里列出的卡在 memory/cards/<slug>.md 存在。
 #
+# 2026-08-12 重构：host/ 拆分 base+hyprland，GNOME 变体移至 specialisation/gnome/。
 # 工作流：改了某个 .nix -> 反查本表得到「应更新文档集」-> 按 wiki 三方合并规则更新正文 + 刷新 frontmatter updated。
 # 新增/删除 wiki 文档或新增 nix 模块时，必须同步本清单。
 
 docs:
   overview.md:
-    sources: [flake.nix, host/default.nix, home/default.nix, home/env/systools.nix, home/productivity/files.nix, home/productivity/comms.nix, home/git.nix]
+    sources: [flake.nix, host/default.nix, home/base.nix, home/env/systools.nix, home/productivity/files.nix, home/productivity/comms.nix, home/git.nix]
     memory:  [flake-unstable-strategy]
 
   architecture/index.md:
-    sources: [flake.nix, host/default.nix, home/default.nix, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
+    sources: [flake.nix, host/default.nix, home/base.nix, home/hyprland.nix, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
     memory:  [flake-unstable-strategy]
   architecture/flake.md:
-    sources: [flake.nix, host/nix.nix]
+    sources: [flake.nix, host/base/nix.nix]
     memory:  [flake-unstable-strategy]
   architecture/host.md:
-    sources: [host/default.nix, host/boot.nix, host/hardware.nix, host/greeter.nix, host/users.nix, host/locale.nix]
+    sources: [host/default.nix, host/base/default.nix, host/hyprland/default.nix, host/base/boot.nix, host/base/hardware.nix, host/hyprland/greeter.nix, host/base/users.nix, host/base/locale.nix]
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve]
 
   desktop/hyprland.md:
-    sources: [home/env/hyprland.nix, host/desktop.nix, host/boot.nix]
+    sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, host/hyprland/desktop.nix, host/base/boot.nix]
     memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve]
   desktop/niri.md:
-    sources: [home/env/niri.nix]
+    sources: [home/hyprland/niri.nix]
     memory:  []
   desktop/gnome.md:
-    sources: [host/gnome.nix]
+    sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
-    sources: [host/desktop.nix]
+    sources: [host/base/desktop.nix, host/hyprland/desktop.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink]
   desktop/noctalia.md:
-    sources: [home/env/noctalia.nix, host/greeter.nix]
+    sources: [home/hyprland/noctalia.nix, host/hyprland/greeter.nix]
     memory:  []
   desktop/shell.md:
     sources: [home/env/shell.nix, home/env/terminal.nix]
     memory:  []
   desktop/darkmode.md:
-    sources: [home/theme.nix, host/desktop.nix]
+    sources: [home/theme-base.nix, home/theme-hyprland.nix, host/base/desktop.nix]
     memory:  [portal-gtk-dangling-symlink]
   desktop/keyring.md:
-    sources: [host/services.nix]
+    sources: [host/base/services.nix]
     memory:  []
 
   productivity/office.md:
@@ -66,31 +67,31 @@ docs:
     sources: [home/env/systools.nix]
     memory:  []
   dev/distrobox.md:
-    sources: [home/dev/containers.nix, host/containers.nix]
+    sources: [home/dev/containers.nix, host/base/containers.nix]
     memory:  []
   dev/bottles-offline-workaround.md:
     sources: [home/productivity/compat.nix]
     memory:  []
 
   leisure/gaming.md:
-    sources: [host/gaming.nix, home/leisure/gaming.nix]
+    sources: [host/base/gaming.nix, home/leisure/gaming.nix]
     memory:  []
   leisure/media.md:
     sources: [home/leisure/player.nix, home/leisure/browser.nix, home/leisure/default.nix]
     memory:  []
 
   networking/mihomo.md:
-    sources: [host/network.nix]
+    sources: [host/base/network.nix]
     memory:  [mihomo-tun-stack]
 
   security/index.md:
-    sources: [host/sops.nix, host/users.nix]
+    sources: [host/base/sops.nix, host/base/users.nix]
     memory:  [portal-gtk-dangling-symlink]
   security/sops.md:
-    sources: [host/sops.nix]
+    sources: [host/base/sops.nix]
     memory:  [mihomo-tun-stack]
   security/pam.md:
-    sources: [host/services.nix, host/users.nix]
+    sources: [host/base/services.nix, host/base/users.nix]
     memory:  []
 
   customization/overlays.md:
@@ -98,10 +99,10 @@ docs:
     memory:  [nix-search-before-manual]
 
   services.md:
-    sources: [host/services.nix, host/network.nix, host/users.nix, home/env/onedrive.nix]
+    sources: [host/base/services.nix, host/base/network.nix, host/base/users.nix, home/env/onedrive.nix]
     memory:  [mihomo-tun-stack]
   deployment.md:
-    sources: [flake.nix, host/boot.nix, host/sops.nix]
+    sources: [flake.nix, host/base/boot.nix, host/base/sops.nix]
     memory:  [flake-unstable-strategy, docs-sync-automation]
   troubleshooting.md:
     sources: []

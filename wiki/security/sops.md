@@ -2,7 +2,7 @@
 title: SOPS 机密管理
 category: 安全
 tags: [sops, sops-nix, age, secrets, mihomo, ssh]
-updated: 2026-08-09
+updated: 2026-08-12
 ---
 
 # SOPS 机密管理
@@ -25,18 +25,18 @@ updated: 2026-08-09
 ## 涉及文件
 - `.sops.yaml`：SOPS 客户端配置，定义 Age 接收者（SSH host key 公钥）与创建规则。
 - `host/secrets/secrets.yaml`：加密后的秘密清单（密文 + SOPS 元数据）。
-- `host/sops.nix`：NixOS 模块，声明解密密钥来源（`age.sshKeyPaths`）、`useSystemdActivation`、默认密文文件与机密映射。
+- `host/base/sops.nix`：NixOS 模块，声明解密密钥来源（`age.sshKeyPaths`）、`useSystemdActivation`、默认密文文件与机密映射。
 - `flake.nix`：引入 sops-nix 的 NixOS 模块。
-- `host/default.nix`：导入 `host/sops.nix` 使配置生效。
-- `host/network.nix`：mihomo 服务通过 `EnvironmentFile` 消费机密。
+- `host/default.nix`：导入 `host/base/sops.nix` 使配置生效。
+- `host/base/network.nix`：mihomo 服务通过 `EnvironmentFile` 消费机密。
 
 ```mermaid
 graph TB
 A[".sops.yaml<br/>创建规则与接收者"] --> B["host/secrets/secrets.yaml<br/>加密后的秘密"]
-C["flake.nix<br/>引入 sops-nix 模块"] --> D["host/default.nix<br/>导入 host/sops.nix"]
-D --> E["host/sops.nix<br/>age.sshKeyPaths + useSystemdActivation"]
+C["flake.nix<br/>引入 sops-nix 模块"] --> D["host/default.nix<br/>导入 host/base/sops.nix"]
+D --> E["host/base/sops.nix<br/>age.sshKeyPaths + useSystemdActivation"]
 E --> F["sops-install-secrets.service<br/>systemd 阶段解密到 /run/secrets/*"]
-F --> G["host/network.nix<br/>mihomo 通过 EnvironmentFile 读取"]
+F --> G["host/base/network.nix<br/>mihomo 通过 EnvironmentFile 读取"]
 ```
 
 ## 工作流程
@@ -63,7 +63,7 @@ Svc->>Svc : 通过 EnvironmentFile 读取变量
 ```mermaid
 graph LR
 F["flake.nix"] --> H["host/default.nix"]
-H --> S["host/sops.nix"]
+H --> S["host/base/sops.nix"]
 S --> P["/etc/ssh/ssh_host_ed25519_key"]
 S --> R["/run/secrets/*"]
 R --> M["services.mihomo (EnvironmentFile)"]
@@ -74,18 +74,18 @@ R --> M["services.mihomo (EnvironmentFile)"]
 
 **秘密清单（`host/secrets/secrets.yaml`）**：每个需加密的项作为顶层键（如 `mihomo_env`），值为 `ENC[...]` 密文；`sops` 段包含 age 收件人、`lastmodified`、`mac`、`unencrypted_suffix`、`version` 等元数据。
 
-**NixOS 模块（`host/sops.nix`）**：
+**NixOS 模块（`host/base/sops.nix`）**：
 - `sops.age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"]` 使用系统 SSH host key 作为解密私钥（免单独管理 age 私钥）。
 - `sops.useSystemdActivation = true` 让 secrets 通过 `sops-install-secrets.service` 在 systemd 阶段安装（`after = local-fs.target`），而非 initrd activation script——避免 initrd 阶段读不到已挂载文件系统的时序问题。
 - `sops.defaultSopsFile` 指定默认密文文件 `secrets/secrets.yaml`。
 - `sops.secrets.<name>` 将键映射为 `/run/secrets/<name>` 并设置 owner/group/mode。当前 `mihomo_env` 为 `root:root`、`0400`。
 
-**服务消费（`host/network.nix`）**：mihomo 服务声明 `after`/`wants` 依赖 **`sops-install-secrets.service`**（注意：不是 `sops-nix.service`，后者不存在），并通过 `EnvironmentFile = /run/secrets/mihomo_env` 注入环境变量。机密仅存在于进程生命周期内、`/run` 为临时目录重启即清理，避免落盘。
+**服务消费（`host/base/network.nix`）**：mihomo 服务声明 `after`/`wants` 依赖 **`sops-install-secrets.service`**（注意：不是 `sops-nix.service`，后者不存在），并通过 `EnvironmentFile = /run/secrets/mihomo_env` 注入环境变量。机密仅存在于进程生命周期内、`/run` 为临时目录重启即清理，避免落盘。
 
 ## 新增一项机密
 1. 在 `secrets.yaml` 中添加新键（用 `sops` 命令编辑，值为占位符）。
 2. 用 `sops` 按 `.sops.yaml` 规则重新加密该文件。
-3. 在 `host/sops.nix` 的 `sops.secrets` 块声明新键，设置 owner/group/mode。
+3. 在 `host/base/sops.nix` 的 `sops.secrets` 块声明新键，设置 owner/group/mode。
 4. 在服务配置中通过 `/run/secrets/<name>` 引用（如 `EnvironmentFile`）。
 
 ## 密钥轮换

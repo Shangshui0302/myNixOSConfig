@@ -1,9 +1,10 @@
 { config, pkgs, inputs, ... }:
 
 {
+  # 共享 home 入口：两 DE（main Hyprland 与 specialisation/gnome）共同 import。
   imports = [
     ./git.nix
-    ./theme.nix
+    ./theme-base.nix
     ./env
     ./dev
     ./productivity

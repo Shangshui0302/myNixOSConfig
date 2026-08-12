@@ -16,7 +16,7 @@
 - 显示管理器: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
 - WM: Hyprland (Lua 配置, scrolling layout) + niri (KDL 配置), 均经 uwsm 启动
 - Shell: fish (plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
-- 终端: foot (系统级配置，host/desktop.nix)，默认 shell: fish
+- 终端: foot (系统级配置，host/hyprland/desktop.nix)，默认 shell: fish
 - 代理: mihomo TUN 模式 + nftables 防火墙，webui: zashboard (127.0.0.1:9090)
 
 ## 文件系统 (Btrfs subvolumes)
@@ -52,32 +52,43 @@ myNixOSConfig/
 │   ├── rtk.nix                 # rtk-ai/rtk — token 优化 CLI proxy（nixpkgs 撞名 exprtk）
 │   └── material-gnome-theme.nix  # Material GNOME 主题（matugen 壁纸取色 + Shell 布局参数化，模板在 material-gnome/）
 │
-├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
-│   ├── default.nix            # 入口 — 仅 imports
-│   ├── boot.nix               # systemd-boot, EFI, /boot 安全设置, stateVersion
-│   ├── hardware.nix           # AMD GPU, udev rules, nix-ld
-│   ├── locale.nix             # 时区, locale, console 字体/键盘
-│   ├── nix.nix                # nix 配置: flakes, substituters, allowUnfree
-│   ├── users.nix              # 用户声明, groups, sudo rules
-│   ├── network.nix            # NetworkManager, mihomo TUN, nftables, firewall, 网络诊断工具
-│   ├── services.nix           # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
-│   ├── desktop.nix            # 环境变量, Hyprland, fcitx5, 系统字体, touchpad, XDG portal, foot
-│   ├── greeter.nix            # TTY 登录（kmscon + CJK，howdy 人脸解锁）
-│   ├── gnome.nix              # GNOME specialisation（GDM 变体，开机选 NixOS (gnome)）
-│   └── gaming.nix             # Steam, 32-bit graphics, Flatpak, libvirtd
+├── host/                      # NixOS 系统级配置（main = Hyprland 主桌面）
+│   ├── default.nix            # main 入口 — base + Hyprland + specialisation 声明
+│   ├── base/                  # 共享系统层（main 与 specialisation/gnome 共同 import）
+│   │   ├── default.nix        # 入口 — imports 全部
+│   │   ├── boot.nix           # systemd-boot, EFI, /boot 安全设置, stateVersion
+│   │   ├── hardware.nix       # AMD GPU, udev rules, nix-ld
+│   │   ├── locale.nix         # 时区, locale, console 字体/键盘
+│   │   ├── nix.nix            # nix 配置: flakes, substituters, allowUnfree
+│   │   ├── users.nix          # 用户声明, groups, sudo rules
+│   │   ├── network.nix        # NetworkManager, mihomo TUN, nftables, firewall
+│   │   ├── services.nix       # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
+│   │   ├── desktop.nix        # 共享桌面：keyring, 字体, X server, fcitx5 核心
+│   │   ├── gaming.nix         # Steam, 32-bit graphics, Flatpak, libvirtd
+│   │   ├── containers.nix     # Waydroid, Podman, 镜像加速
+│   │   └── sops.nix           # sops-nix secrets
+│   └── hyprland/              # Hyprland 主桌面系统层（仅 main import）
+│       ├── default.nix        # 入口
+│       ├── desktop.nix        # Hyprland, foot, fcitx5 主题, XDG portal(wlr), qt5ct
+│       └── greeter.nix        # TTY 登录（kmscon + CJK，howdy 人脸解锁）
 │
-├── home/                      # Home Manager 用户级配置（按用途分子目录）
-│   ├── default.nix            # 入口 — 仅 imports + username/stateVersion
+├── home/                      # Home Manager 用户级配置
+│   ├── base.nix               # 共享 home 入口（两 DE）— 通用工具
+│   ├── hyprland.nix           # main home 入口 — base + Hyprland 特有
+│   ├── theme-base.nix         # 共享主题基础：指针光标, CJK字体, 图标, 深浅色
+│   ├── theme-hyprland.nix     # Hyprland GTK 主题（adw-gtk3-dark, qt5ct, breeze）
 │   ├── git.nix                # Git 用户配置
-│   ├── theme.nix              # 指针光标, CJK字体(MS原生优先+fallback), qt5ct, 图标主题, dconf 默认
-│   ├── env/                   # 桌面环境
-│   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具 (eza/fzf/bat/...)
-│   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
-│   │   ├── niri.nix           # niri 滚动平铺合成器
-│   │   ├── terminal.nix       # (foot 在 host/desktop.nix)
-│   │   ├── noctalia.nix       # Noctalia shell 面板
+│   ├── env/                   # 通用环境（两 DE）
+│   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具
+│   │   ├── terminal.nix       # (foot 在 host/hyprland/desktop.nix)
 │   │   ├── systools.nix       # btop, yazi, fastfetch, 系统工具
 │   │   └── onedrive.nix       # OneDrive 同步
+│   ├── hyprland/              # Hyprland 用户组（仅 main）
+│   │   ├── default.nix        # 入口
+│   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
+│   │   ├── noctalia.nix       # Noctalia shell 面板
+│   │   ├── niri.nix           # niri 滚动平铺合成器
+│   │   └── musicfox.nix       # go-musicfox（依赖 foot）
 │   ├── dev/                   # 开发工具
 │   │   ├── nvim.nix           # Neovim
 │   │   ├── nvim/init.lua      # Neovim 配置文件
@@ -91,9 +102,15 @@ myNixOSConfig/
 │   │   ├── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
 │   │   └── compat.nix         # virt-manager, Flatseal (Flatpak 权限管理)
 │   └── leisure/               # 影音、游戏与浏览器
-│       ├── player.nix         # mpv, 网易云(gtk/web), OBS, go-musicfox, loupe, animeko
+│       ├── player.nix         # mpv, 网易云(gtk/web), OBS, loupe, animeko
 │       ├── browser.nix        # Firefox, Chrome
 │       └── gaming.nix         # mangohud
+│
+├── specialisation/            # 桌面变体（与 host/、home/ 平级；boot 菜单选）
+│   └── gnome/                 # GNOME 变体全部代码（inheritParentConfig=false 完全隔离）
+│       ├── default.nix        # 变体入口 — import 共享 base + GNOME + home-manager
+│       ├── host.nix           # 系统层：GDM/GNOME/扩展/material 主题/dconf overrides
+│       └── home.nix           # 用户层：Material-Gnome + GTK4 链接 + ~/.themes + flatpak
 │
 ├── wiki/                      # 操作手册 — 回答「怎么用」，含故障排查
 │   ├── README.md              # wiki 导航首页（分类 MOC）
@@ -164,7 +181,7 @@ myNixOSConfig/
 ### 去重规则
 - 网络诊断工具 (`dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables`) **只在** `host/network.nix` 的 `environment.systemPackages` 中声明
   → 不要加到任何 `home/` 模块
-- 字体包放 `local-deriv/fonts.nix`，由 `home/theme.nix` 导入
+- 字体包放 `local-deriv/fonts.nix`，由 `home/theme-base.nix` 导入
 - 不要把一个包的 override 拆到两个模块（如 src 在 overlay、flags 在 home 模块 → 合并到一处）
 
 ### 链式 override

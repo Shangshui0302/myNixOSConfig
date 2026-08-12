@@ -2,12 +2,12 @@
 title: 媒体播放
 category: 娱乐
 tags: [mpv, media, pipewire, animeko, go-musicfox, obs]
-updated: 2026-08-07
+updated: 2026-08-12
 ---
 
 # 媒体播放
 
-用户级媒体环境：视频/图片查看、音乐播放、动漫客户端与在线流媒体。应用在 `home/leisure/player.nix` 安装，音频与图形运行时由 `host/services.nix`（PipeWire）与 `host/hardware.nix`（amdgpu）支撑。
+用户级媒体环境：视频/图片查看、音乐播放、动漫客户端与在线流媒体。应用在 `home/leisure/player.nix` 安装，音频与图形运行时由 `host/base/services.nix`（PipeWire）与 `host/base/hardware.nix`（amdgpu）支撑。
 
 ## 组件总览
 

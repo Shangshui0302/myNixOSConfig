@@ -1,8 +1,6 @@
 { config, pkgs, ... }:
 
 let
-  anthropic-fonts = import ../local-deriv/anthropic-fonts.nix { inherit pkgs; };
-
   foot-notify = pkgs.writeShellScriptBin "foot-notify" ''
     title="$1"
     body="$2"
@@ -22,92 +20,41 @@ let
 in
 
 {
-  # GNOME Keyring — 为 Electron/VS Code 类应用提供加密凭据存储
-  services.gnome.gnome-keyring.enable = true;
+  # Hyprland 主桌面特有（GNOME 变体不 import 本文件）。
 
+  # Hyprland 特有环境变量（GNOME Wayland 走原生 text-input-v3，不设这些）
   environment.variables = {
     GTK_IM_MODULE = "fcitx";
-    QT_IM_MODULE = "fcitx";
-    XMODIFIERS = "@im=fcitx";
     SDL_IM_MODULE = "fcitx";
-    EDITOR = "nvim";
-    SUDO_EDITOR = "nvim";
-    STEAM_FORCE_DESKTOPUI_SCALING = "2.0";
   };
 
   environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1";
     QT_QPA_PLATFORMTHEME = "qt5ct";
-    GDK_SCALE = "2";
   };
 
   # Hyprland
-  services.xserver.enable = true;
-  services.xserver.xkb.layout = "us";
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
     withUWSM = true;
   };
 
-  # Fcitx5
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5.waylandFrontend = true;
-    fcitx5.addons = with pkgs; [
-      (fcitx5-rime.override {
-        rimeDataPkgs = [ rime-ice rime-moegirl rime-zhwiki ];
-      })
-      fcitx5-gtk
-      qt6Packages.fcitx5-chinese-addons
-      qt6Packages.fcitx5-configtool
-      fcitx5-mellow-themes
-      fcitx5-material-color
-      catppuccin-fcitx5
-      kdePackages.fcitx5-qt
-    ];
-    # classicui 深色联动：UseDarkTheme=True 让 fcitx5 通过 portal 检测深浅色
-    # 浅色用 mellow-wechat，深色用 mellow-wechat-dark（Noctalia 调度）
-    # kimpanel addon 强制启用：GNOME Wayland 候选窗定位必需（GNOME 只实现 text-input-v3、
-    # 无全局坐标，必须靠 kimpanel 扩展绘制候选窗）。已在运行时 ~/.config/fcitx5/config 的
-    # [Behavior/DisabledAddons] 中移除 kimpanel，此声明防止再次被禁用。
-    fcitx5.settings.globalOptions.Behavior.EnabledAddons = "kimpanel";
-
-    fcitx5.settings.addons.classicui.globalSection = {
-      Theme = "mellow-wechat";
-      DarkTheme = "mellow-wechat-dark";
-      UseDarkTheme = "True";
-      # 垂直候选窗（键名含空格，需引号）
-      "Vertical Candidate List" = "True";
-    };
-  };
-
-  # Fonts
-  fonts.packages = with pkgs; [
-    wqy_zenhei wqy_microhei
-    noto-fonts-cjk-sans noto-fonts-cjk-serif
-    source-han-serif source-han-sans
-
-    anthropic-fonts
-    noto-fonts-color-emoji
-    lxgw-wenkai sarasa-gothic
-    arphic-ukai arphic-uming
-    eb-garamond libertine
-    nerd-fonts.jetbrains-mono nerd-fonts.fira-code
-    nerd-fonts.caskaydia-mono nerd-fonts.iosevka
-    nerd-fonts.geist-mono nerd-fonts.monaspace
-    nerd-fonts.zed-mono nerd-fonts.symbols-only
-    font-awesome
+  # fcitx5 Hyprland 侧：主题 addons + classicui 候选窗（核心在 host/base/desktop.nix）
+  i18n.inputMethod.fcitx5.addons = with pkgs; [
+    fcitx5-gtk
+    fcitx5-mellow-themes
+    fcitx5-material-color
+    catppuccin-fcitx5
   ];
-
-  fileSystems."/usr/share/fonts" = {
-    device = "/run/current-system/sw/share/X11/fonts";
-    fsType = "bind";
-    options = [ "bind" "ro" ];
+  # classicui 深色联动：UseDarkTheme=True 让 fcitx5 通过 portal 检测深浅色
+  # 浅色用 mellow-wechat，深色用 mellow-wechat-dark（Noctalia 调度）
+  i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection = {
+    Theme = "mellow-wechat";
+    DarkTheme = "mellow-wechat-dark";
+    UseDarkTheme = "True";
+    # 垂直候选窗（键名含空格，需引号）
+    "Vertical Candidate List" = "True";
   };
-
-  services.libinput.enable = true;
 
   xdg.portal = {
     extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr ];
@@ -124,7 +71,7 @@ in
     };
   };
 
-  # Terminal
+  # Terminal（foot，Hyprland 默认终端）
   programs.foot = {
     enable = true;
     xdg.serverAutostart = true;

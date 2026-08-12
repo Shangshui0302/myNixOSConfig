@@ -2,7 +2,7 @@
 title: 主机系统架构与启动流程
 category: 架构
 tags: [host, boot, hardware, systemd, tty, kmscon, amdgpu]
-updated: 2026-08-11
+updated: 2026-08-12
 ---
 
 # 主机系统架构与启动流程
@@ -30,7 +30,7 @@ updated: 2026-08-11
 - **文件系统**：统一使用 UUID 绑定块设备，通过 btrfs 子卷组织 `/`、`/home`、`/nix`、`/persist`、`/var/log`；`/boot` 为 vfat 用于 EFI。
 - **交换分区** 与 **CPU 平台/微码**：`nixpkgs.hostPlatform = x86_64-linux`，`hardware.cpu.amd.updateMicrocode` 跟随可再分发固件开关。
 
-该文件顶部注释明确提示**不要手工修改**，变更应通过模块覆盖。`host/hardware.nix` 在其之上叠加 GPU 与外设策略：启用 `amdgpu` 驱动、声明 X server 视频驱动、通过 udev 规则设置串口设备（`dialout` 组）权限，并用 `nix-ld` 支持运行非 Nix 二进制。
+该文件顶部注释明确提示**不要手工修改**，变更应通过模块覆盖。`host/base/hardware.nix` 在其之上叠加 GPU 与外设策略：启用 `amdgpu` 驱动、声明 X server 视频驱动、通过 udev 规则设置串口设备（`dialout` 组）权限，并用 `nix-ld` 支持运行非 Nix 二进制。
 
 ```mermaid
 flowchart TD
@@ -44,7 +44,7 @@ FW --> End(["就绪"])
 
 ## 引导与内核
 
-`host/boot.nix` 负责引导与内核参数：
+`host/base/boot.nix` 负责引导与内核参数：
 
 - 启用 `systemd-boot`（EFI），允许写入 EFI 变量便于管理引导项。
 - `/boot` 使用 vfat 并**覆盖**自动生成值，将 `fmask`/`dmask` 收紧为 `0077`（更严格的 EFI 权限）；设备名仍从 `hardware-configuration.nix` 合并继承。
@@ -77,7 +77,7 @@ Desktop-->>User : 呈现桌面环境
 
 ## 服务与依赖
 
-`host/services.nix` 与 `host/network.nix` 提供运行时能力：
+`host/base/services.nix` 与 `host/base/network.nix` 提供运行时能力：
 
 - **音频**：PipeWire（PulseAudio 兼容 + ALSA + JACK）。
 - **外设与电源**：蓝牙开机自动上电、打印、`power-profiles-daemon` + upower、GVFS 文件虚拟化。
@@ -110,10 +110,10 @@ SV --> IM["Fcitx5"]
 
 ## 故障排查
 
-- **无法进入桌面/黑屏**：确认 `amdgpu` 已加载，检查 `host/boot.nix` 中的 `dcdebugmask` 内核参数是否生效。
+- **无法进入桌面/黑屏**：确认 `amdgpu` 已加载，检查 `host/base/boot.nix` 中的 `dcdebugmask` 内核参数是否生效。
 - **亮度异常（100% 全黑）**：确认亮度曲线已被内核参数禁用。
 - **存储无法挂载**：核对 UUID 与 btrfs 子卷名是否与 `hardware-configuration.nix` 一致；确认 `/boot` 为 vfat 且权限正确。
-- **登录失败**：检查 `host/users.nix` 中用户组（`wheel`/`networkmanager`/`video`/`dialout`），以及 PAM 链是否含 Howdy。
+- **登录失败**：检查 `host/base/users.nix` 中用户组（`wheel`/`networkmanager`/`video`/`dialout`），以及 PAM 链是否含 Howdy。
 - **启动缓慢**：用 `systemd-analyze` 分析依赖树；检查是否有服务因等待外部资源（如 sops-nix 密钥）阻塞。
 - **快速恢复**：若因内核参数无法启动，可在引导菜单临时移除；或回退到上一个良好代次（btrfs 快照）。
 

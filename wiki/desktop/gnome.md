@@ -9,13 +9,13 @@ updated: 2026-08-12
 
 ## 定位
 
-完整 GNOME 桌面，作为 **specialisation 变体**存在（`host/gnome.nix`）。默认 boot 保持 kmscon + Hyprland/niri 纯 TTY 工作流；想用 GNOME 时开机选 GNOME 变体，进 GDM 登录。
+完整 GNOME 桌面，作为 **`inheritParentConfig=false` 的 specialisation 变体**存在（代码在独立的 `specialisation/gnome/` 目录，不继承 main 的 Hyprland 配置——Hyprland/foot/fcitx5 主题等包体完全不进 GNOME 闭包）。默认 boot 保持 kmscon + Hyprland/niri 纯 TTY 工作流；想用 GNOME 时开机选 GNOME 变体，进 GDM 登录。
 
 ## 启动
 
 1. 开机 boot 菜单选 `NixOS (gnome)`（当前代次的 GNOME 变体）
 2. GDM Wayland 登录
-3. GDM 登录屏可选 GNOME / Hyprland / Hyprland (UWSM) / Niri —— 已装 compositor 自动列出，GNOME 变体里也能跨 DE 切换
+3. GDM 登录屏默认 GNOME session（变体隔离后不含 Hyprland/niri compositor）
 
 运行时切换（不重启系统）：
 ```bash
@@ -24,7 +24,9 @@ sudo nixos-rebuild switch --flake . --specialisation gnome
 sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 ```
 
-## 配置要点（host/gnome.nix）
+## 配置要点（specialisation/gnome/）
+
+- **隔离机制**：`inheritParentConfig=false`，变体从零 import 共享 `host/base/` + GNOME 专属（`host.nix`）+ 变体 home（`home.nix`，import 共享 `home/base.nix` + Material 主题）。Hyprland 闭包不含 material-gnome-theme，GNOME 闭包不含 Hyprland/foot/wlr portal/qt5ct/adw-gtk3/noctalia
 
 - **GNOME 应用**：`core-apps.enable = true`（core apps）+ `core-developer-tools.enable = true`（开发者工具）；`games.enable = false`（小游戏关闭）
 - **排除 Epiphany**：`environment.gnome.excludePackages = [ pkgs.epiphany ]`（core-apps 默认含它，且拉入 webkitgtk 大包）
@@ -37,10 +39,10 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 - **主题**：`material-gnome-theme`（local-deriv 自建包：构建期 matugen 从壁纸取色 + shellLayout 布局参数化），`user-theme name='Material-Gnome'` 加载；GTK4 链接 + `~/.themes` + flatpak override 限定 GNOME 变体（Hyprland 主桌面保持 adw-gtk3-dark）
 - **console**：`[org.gnome.Console]` 设 `shell=['fish']`（系统 passwd 默认是 bash）+ `ignore-scrollback-limit=true`
 - **blur-my-shell**：静态高斯模糊 + 自带 corner pipeline（`pipeline_default_rounded`），panel/applications/dash-to-dock 分段配置，无需 rounded-blur 库
-- **用户设置持久化**：`extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus/console 偏好 + dash-to-dock + blur-my-shell + user-theme + enabled-extensions）+ `favoriteAppsOverride`（Dock：Nautilus/Chrome/Console/Code）；壁纸指向 git 源 `assets/yamadaryou.png`。主题外观由 `home/theme.nix` + Noctalia 深色调度管理，不在此重复
-- GDM 接管 tty1，GNOME 变体里 kmscon 禁用（本机 libseat=false raw-VT 特殊配置，避免边角问题）
-- fcitx5：GNOME Wayland 走 text-input-v3，**不设 `GTK_IM_MODULE`**（GTK 用原生输入协议）；Qt 走 `QT_IM_MODULE`，XWayland 走 `XMODIFIERS`，均保留
-- 共享同一 Home Manager profile——用户级配置（编辑器、主题、面板配置等）与主系统完全一致，无重复维护
+- **用户设置持久化**：`extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus/console 偏好 + dash-to-dock + blur-my-shell + user-theme + enabled-extensions）+ `favoriteAppsOverride`（Dock：Nautilus/Chrome/Console/Code）；壁纸指向 git 源 `assets/yamadaryou.png`。图标/深浅色由 `home/theme-base.nix` 共享，gtk-theme 在变体 `home.nix` 设 Material-Gnome
+- GDM 接管 tty1；变体不 import `host/hyprland/greeter.nix`（kmscon 天然不存在，无需覆盖）
+- fcitx5：核心在共享 `host/base/desktop.nix`；GNOME Wayland 走 text-input-v3，**无 `GTK_IM_MODULE`**（base 只设 QT_IM_MODULE/XMODIFIERS）；kimpanel addon 强制启用
+- 变体 home = 共享 `home/base.nix`（通用工具）+ Material 主题；Hyprland 主桌面 home 另行 `home/hyprland.nix`，两套互不干扰
 
 ## 故障排查
 

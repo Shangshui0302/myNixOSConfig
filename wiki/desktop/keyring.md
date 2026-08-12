@@ -2,7 +2,7 @@
 title: GNOME Keyring
 category: desktop
 tags: [keyring, gnome-keyring, libsecret, pam, electron, secret-service]
-updated: 2026-08-06
+updated: 2026-08-12
 ---
 
 # GNOME Keyring
@@ -42,7 +42,7 @@ Electron 应用（Qoder、VS Code、Claude Desktop、Chrome 等）依赖 Secret 
 
 ## 配置
 
-### NixOS 侧 (`host/desktop.nix`)
+### NixOS 侧 (`host/hyprland/desktop.nix`)
 
 ```nix
 services.gnome.gnome-keyring.enable = true;

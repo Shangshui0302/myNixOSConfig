@@ -2,7 +2,7 @@
 title: Distrobox
 category: dev
 tags: [distrobox, podman, containers]
-updated: 2026-08-06
+updated: 2026-08-12
 ---
 
 # Distrobox
@@ -80,7 +80,7 @@ distrobox enter <name> -- distrobox-export --bin /usr/bin/<binary>
 
 | 文件 | 用途 |
 |------|------|
-| `host/containers.nix` | Podman 服务、distrobox 包、镜像加速 |
+| `host/base/containers.nix` | Podman 服务、distrobox 包、镜像加速 |
 | `home/dev/containers.nix` | assemble manifest (arch + ubuntu 定义) |
 | `~/.config/distrobox/distrobox.ini` | Nix 生成的容器清单 |
 
@@ -121,7 +121,7 @@ podman run --rm alpine:latest wget -qO- https://archlinux.org
 | `distrobox list` 为空 | 未创建容器 | `distrobox-assemble create` |
 | 进入容器报错 | 容器未启动 | `podman start <container_name>` |
 | 容器内无网络 | podman 网络异常 | `podman system reset --force` 后重建 |
-| assemble 未找到命令 | distrobox 未安装 | rebuild 确认 `host/containers.nix` 已生效 |
+| assemble 未找到命令 | distrobox 未安装 | rebuild 确认 `host/base/containers.nix` 已生效 |
 
 ## 相关链接
 

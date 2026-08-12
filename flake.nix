@@ -42,7 +42,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
-          home-manager.users.lishangshui = import ./home/default.nix;
+          home-manager.users.lishangshui = import ./home/hyprland.nix;
           home-manager.extraSpecialArgs = { inherit inputs materialGnomeTheme; };
         }
         {

@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-08-10
+updated: 2026-08-12
 ---
 
 # Niri 使用指南
@@ -23,7 +23,7 @@ Hyprland ↔ niri 切换：注销当前 compositor → 切到其他 TTY 重新�
 
 ## 配置
 
-配置由 Nix 生成（`home/env/niri.nix` → `~/.config/niri/config.kdl`），手动改会被 rebuild 覆盖（与 hyprland.lua 相同约定）。验证语法：`niri validate`。
+配置由 Nix 生成（`home/hyprland/niri.nix` → `~/.config/niri/config.kdl`），手动改会被 rebuild 覆盖（与 hyprland.lua 相同约定）。验证语法：`niri validate`。
 
 要点：
 - **显示器**：`output "eDP-1" { scale 1.5 }`（2K 屏，与 Hyprland 一致）
@@ -54,7 +54,7 @@ Hyprland ↔ niri 切换：注销当前 compositor → 切到其他 TTY 重新�
 
 niri 的 focus-ring 颜色由 Noctalia 模板渲染注入（与 hyprland-colors.lua 同机制）：
 
-1. `home/env/noctalia.nix` 注册模板 `niri_colors`：`niri-colors.kdl` → `~/.config/niri/noctalia-colors.kdl`
+1. `home/hyprland/noctalia.nix` 注册模板 `niri_colors`：`niri-colors.kdl` → `~/.config/niri/noctalia-colors.kdl`
 2. 模板内容：`layout { focus-ring { active-color "{{colors.primary.default.hex}}" ... } }`
 3. config.kdl 文件末尾 `include optional=true "~/.config/niri/noctalia-colors.kdl"`，Noctalia 改配色时 niri 热重载
 

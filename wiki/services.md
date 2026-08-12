@@ -2,12 +2,12 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, networkmanager, mihomo, howdy, polkit]
-updated: 2026-08-07
+updated: 2026-08-12
 ---
 
 # 系统服务
 
-主机侧 systemd 服务总览：网络与代理、音频、蓝牙、打印、电源管理、生物识别与权限。系统级配置集中在 `host/services.nix` 与 `host/network.nix`，由 `host/default.nix` 汇总导入。
+主机侧 systemd 服务总览：网络与代理、音频、蓝牙、打印、电源管理、生物识别与权限。系统级配置集中在 `host/base/services.nix` 与 `host/base/network.nix`，由 `host/default.nix` 汇总导入。
 
 ## 目录
 
@@ -45,7 +45,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 
 ## 网络与代理
 
-`host/network.nix` 定义主机名、NetworkManager 与 OpenSSH（开启密码认证便于远程登录）。核心是 Mihomo TUN 代理：
+`host/base/network.nix` 定义主机名、NetworkManager 与 OpenSSH（开启密码认证便于远程登录）。核心是 Mihomo TUN 代理：
 
 - `services.mihomo` 以 `tunMode` 运行，WebUI 使用 `zashboard`。
 - `systemd.services.mihomo` 通过 `after`/`wants` 依赖 `sops-install-secrets.service`，确保加密的环境变量（订阅链接等）就绪后再启动。
@@ -57,7 +57,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 
 ## 音频 / 蓝牙 / 打印
 
-`host/services.nix`：
+`host/base/services.nix`：
 
 - `services.pipewire` 启用，并开 PulseAudio 兼容、ALSA（含 32 位）与 JACK，作为统一音频后端。
 - `hardware.bluetooth` 启用且 `powerOnBoot`，开机自动上电。
@@ -78,7 +78,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 
 - `security.polkit` 启用并添加规则，允许 `wheel` 组用户应用 Noctalia 外观（`org.noctalia.greeter.apply-appearance`）。
 - `security.rtkit` 启用，提升实时音频任务优先级。
-- 普通用户的 sudo 白名单在 `host/users.nix`，仅放行必要的 rebuild 与文本处理命令，遵循最小权限。
+- 普通用户的 sudo 白名单在 `host/base/users.nix`，仅放行必要的 rebuild 与文本处理命令，遵循最小权限。
 
 ## 常用命令
 

@@ -2,7 +2,7 @@
 title: 项目概述
 category: 顶层
 tags: [nixos, home-manager, flake, hyprland, overview]
-updated: 2026-08-11
+updated: 2026-08-12
 ---
 
 # 项目概述
@@ -42,12 +42,12 @@ myNixOSConfig 是一套为机械革命（MechRevo）笔记本定制的 NixOS + H
 ```mermaid
 graph TB
 A["flake.nix"] --> B["host/default.nix"]
-A --> C["home/default.nix"]
-B --> D["host/desktop.nix"]
-B --> E["host/network.nix"]
-B --> F["host/gaming.nix"]
-B --> G["host/sops.nix"]
-C --> H["home/env/hyprland.nix"]
+A --> C["home/base.nix"]
+B --> D["host/hyprland/desktop.nix"]
+B --> E["host/base/network.nix"]
+B --> F["host/base/gaming.nix"]
+B --> G["host/base/sops.nix"]
+C --> H["home/hyprland/hyprland.nix"]
 C --> I["overlays/default.nix"]
 ```
 
@@ -61,7 +61,7 @@ C --> I["overlays/default.nix"]
 - **游戏与虚拟化**：Steam、Flatpak、libvirtd，满足娱乐与 Windows 兼容需求。
 - **AI 开发工具链**：claude-code/codex 等 agent CLI 走 llm-agents.nix 统一来源；`rtk`（token 优化）与 `codebase-memory-mcp`（代码库记忆）补齐工具链。
 
-配置要点从对应的 nix 模块提取，详见 `host/desktop.nix`、`host/network.nix`、`host/gaming.nix`、`host/sops.nix`。
+配置要点从对应的 nix 模块提取，详见 `host/hyprland/desktop.nix`、`host/base/network.nix`、`host/base/gaming.nix`、`host/base/sops.nix`。
 
 ## 架构总览
 
@@ -72,11 +72,11 @@ sequenceDiagram
 participant User as "用户"
 participant Flake as "flake.nix"
 participant Host as "host/default.nix"
-participant Desktop as "host/desktop.nix"
-participant Net as "host/network.nix"
-participant HM as "home/default.nix"
-participant Hypr as "home/env/hyprland.nix"
-participant SOPS as "host/sops.nix"
+participant Desktop as "host/hyprland/desktop.nix"
+participant Net as "host/base/network.nix"
+participant HM as "home/base.nix"
+participant Hypr as "home/hyprland/hyprland.nix"
+participant SOPS as "host/base/sops.nix"
 User->>Flake : "nixos-rebuild switch --flake ."
 Flake->>Host : "加载系统模块"
 Host->>Desktop : "启用 Wayland、Hyprland、Fcitx5、字体、终端"

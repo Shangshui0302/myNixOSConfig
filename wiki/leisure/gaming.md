@@ -2,31 +2,31 @@
 title: 游戏平台
 category: 娱乐
 tags: [steam, proton, gaming, amdgpu, libvirtd, mangohud]
-updated: 2026-08-07
+updated: 2026-08-12
 ---
 
 # 游戏平台
 
-在 NixOS 上搭建游戏环境：Steam + Proton 兼容层、AMD 图形栈、手柄与音频、性能监控，以及 KVM 虚拟机运行 Windows 游戏。系统级配置在 `host/gaming.nix`，用户级工具在 `home/leisure/gaming.nix`。
+在 NixOS 上搭建游戏环境：Steam + Proton 兼容层、AMD 图形栈、手柄与音频、性能监控，以及 KVM 虚拟机运行 Windows 游戏。系统级配置在 `host/base/gaming.nix`，用户级工具在 `home/leisure/gaming.nix`。
 
 ## 组件总览
 
 ```mermaid
 graph TB
 A["flake.nix<br/>定义系统与 HM 模块"] --> B["host/default.nix<br/>导入各子系统模块"]
-B --> C["host/gaming.nix<br/>Steam/图形/Flatpak/libvirtd"]
-B --> D["host/hardware.nix<br/>amdgpu/nix-ld"]
-B --> E["host/services.nix<br/>PipeWire/蓝牙/电源等"]
+B --> C["host/base/gaming.nix<br/>Steam/图形/Flatpak/libvirtd"]
+B --> D["host/base/hardware.nix<br/>amdgpu/nix-ld"]
+B --> E["host/base/services.nix<br/>PipeWire/蓝牙/电源等"]
 A --> F["home/leisure/gaming.nix<br/>mangohud"]
 ```
 
 | 能力 | 提供者 | 说明 |
 | --- | --- | --- |
-| Steam 平台 | `host/gaming.nix` | 客户端 + 远程游玩防火墙 |
-| 32 位图形 + 视频加速 | `host/gaming.nix` | `enable32Bit` + `libva-vdpau-driver`、`libvdpau-va-gl` |
-| AMD GPU 驱动 | `host/hardware.nix` | amdgpu 内核模块与 nix-ld |
-| 音频/蓝牙手柄 | `host/services.nix` | PipeWire（Pulse/ALSA/JACK）+ 蓝牙开机自启 |
-| Windows 虚拟机 | `host/gaming.nix` | libvirtd + 用户加入 `libvirtd` 组 |
+| Steam 平台 | `host/base/gaming.nix` | 客户端 + 远程游玩防火墙 |
+| 32 位图形 + 视频加速 | `host/base/gaming.nix` | `enable32Bit` + `libva-vdpau-driver`、`libvdpau-va-gl` |
+| AMD GPU 驱动 | `host/base/hardware.nix` | amdgpu 内核模块与 nix-ld |
+| 音频/蓝牙手柄 | `host/base/services.nix` | PipeWire（Pulse/ALSA/JACK）+ 蓝牙开机自启 |
+| Windows 虚拟机 | `host/base/gaming.nix` | libvirtd + 用户加入 `libvirtd` 组 |
 | 性能监控 / 录制 | `home/leisure/gaming.nix`、`home/leisure/player.nix` | mangohud、obs-studio |
 
 ## Steam 与 Proton
@@ -41,8 +41,8 @@ A --> F["home/leisure/gaming.nix<br/>mangohud"]
 
 ## AMD 图形栈
 
-- `host/hardware.nix` 启用 amdgpu 内核模块，保障图形子系统正常工作。
-- `host/gaming.nix` 启用 32 位图形支持，满足 Windows 游戏与工具的依赖需求。
+- `host/base/hardware.nix` 启用 amdgpu 内核模块，保障图形子系统正常工作。
+- `host/base/gaming.nix` 启用 32 位图形支持，满足 Windows 游戏与工具的依赖需求。
 - 额外安装 `libva-vdpau-driver` 与 `libvdpau-va-gl`，提升视频解码/编码与转码效率。
 - 渲染后端优先 Vulkan（性能与延迟更佳），出现兼容性问题再回退 OpenGL。
 

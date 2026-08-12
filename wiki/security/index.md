@@ -2,7 +2,7 @@
 title: 安全与隐私总览
 category: 安全
 tags: [security, sops, pam, howdy, firewall, polkit, keyring]
-updated: 2026-08-07
+updated: 2026-08-12
 ---
 
 # 安全与隐私总览
@@ -31,23 +31,23 @@ updated: 2026-08-07
 ## 模块分布
 | 模块 | 职责 |
 | --- | --- |
-| `host/sops.nix` | SOPS-Nix 集成、age 私钥路径、机密声明与权限 |
-| `host/network.nix` | 网络栈、Mihomo 代理、nftables 防火墙、端口开放、内核转发 |
-| `host/services.nix` | 系统服务、Howdy、PAM 集成、Polkit |
-| `host/users.nix` | 用户与 sudo 白名单命令 |
-| `host/desktop.nix` | GNOME Keyring 启用与桌面集成 |
-| `host/greeter.nix` | 登录界面（Noctalia Greeter） |
-| `host/boot.nix` | 引导与 EFI 分区权限加固 |
+| `host/base/sops.nix` | SOPS-Nix 集成、age 私钥路径、机密声明与权限 |
+| `host/base/network.nix` | 网络栈、Mihomo 代理、nftables 防火墙、端口开放、内核转发 |
+| `host/base/services.nix` | 系统服务、Howdy、PAM 集成、Polkit |
+| `host/base/users.nix` | 用户与 sudo 白名单命令 |
+| `host/hyprland/desktop.nix` | GNOME Keyring 启用与桌面集成 |
+| `host/hyprland/greeter.nix` | 登录界面（Noctalia Greeter） |
+| `host/base/boot.nix` | 引导与 EFI 分区权限加固 |
 
 ```mermaid
 graph TB
-A["host/default.nix"] --> B["host/sops.nix"]
-A --> C["host/network.nix"]
-A --> D["host/services.nix"]
-A --> E["host/users.nix"]
-A --> F["host/desktop.nix"]
-A --> G["host/greeter.nix"]
-A --> H["host/boot.nix"]
+A["host/default.nix"] --> B["host/base/sops.nix"]
+A --> C["host/base/network.nix"]
+A --> D["host/base/services.nix"]
+A --> E["host/base/users.nix"]
+A --> F["host/hyprland/desktop.nix"]
+A --> G["host/hyprland/greeter.nix"]
+A --> H["host/base/boot.nix"]
 ```
 
 ## 登录到凭据访问流程
@@ -75,19 +75,19 @@ SS-->>S : 提供 /run/secrets/* 或环境变量
 ```
 
 ## 机密管理（SOPS-Nix）
-`host/sops.nix` 通过 `age.sshKeyPaths` 指定解密密钥（SSH host key `/etc/ssh/ssh_host_ed25519_key`）并启用 `useSystemdActivation`，将 `secrets.yaml` 中的键映射为 `/run/secrets/<name>`，并设置 owner/group/mode。需要机密的服务（如 mihomo）声明 `after`/`wants` 依赖 `sops-install-secrets.service`，确保机密就绪后再启动。详细配置见 [sops.md](./sops.md)。
+`host/base/sops.nix` 通过 `age.sshKeyPaths` 指定解密密钥（SSH host key `/etc/ssh/ssh_host_ed25519_key`）并启用 `useSystemdActivation`，将 `secrets.yaml` 中的键映射为 `/run/secrets/<name>`，并设置 owner/group/mode。需要机密的服务（如 mihomo）声明 `after`/`wants` 依赖 `sops-install-secrets.service`，确保机密就绪后再启动。详细配置见 [sops.md](./sops.md)。
 
 ## 生物识别登录与 Keyring
-`host/services.nix` 启用 Howdy 并将 `pam_howdy.so` 注入 sudo/su/login/greetd/noctalia 的 PAM 链，控制位 `sufficient` 实现「扫脸即过」。由于 Howdy 短路了密码输入，`pam_gnome_keyring.so` 拿不到登录密码，login keyring 不会自动解锁——首次需要 keyring 的应用会弹出解锁提示，输入一次登录密码即可，并非每次开机都要输入。PAM 链路与 Keyring 的行为细节见 [pam.md](./pam.md)、[../desktop/keyring.md](../desktop/keyring.md)。
+`host/base/services.nix` 启用 Howdy 并将 `pam_howdy.so` 注入 sudo/su/login/greetd/noctalia 的 PAM 链，控制位 `sufficient` 实现「扫脸即过」。由于 Howdy 短路了密码输入，`pam_gnome_keyring.so` 拿不到登录密码，login keyring 不会自动解锁——首次需要 keyring 的应用会弹出解锁提示，输入一次登录密码即可，并非每次开机都要输入。PAM 链路与 Keyring 的行为细节见 [pam.md](./pam.md)、[../desktop/keyring.md](../desktop/keyring.md)。
 
 ## 用户权限与访问控制
-`host/users.nix` 中普通用户 `lishangshui` 加入 `wheel`、`networkmanager`、`video`、`dialout` 组；并通过 `security.sudo.extraRules` 授予部分命令 NOPASSWD 权限（`nixos-rebuild`、`nix`、`tee`、`chmod`、`chown`、`install`、`mv`、`cp`、`rm`），便于自动化运维。Polkit 在 `host/services.nix` 中启用，并允许 wheel 组执行特定动作。建议定期审查 sudo 规则，遵循最小权限原则。
+`host/base/users.nix` 中普通用户 `lishangshui` 加入 `wheel`、`networkmanager`、`video`、`dialout` 组；并通过 `security.sudo.extraRules` 授予部分命令 NOPASSWD 权限（`nixos-rebuild`、`nix`、`tee`、`chmod`、`chown`、`install`、`mv`、`cp`、`rm`），便于自动化运维。Polkit 在 `host/base/services.nix` 中启用，并允许 wheel 组执行特定动作。建议定期审查 sudo 规则，遵循最小权限原则。
 
 ## 防火墙与网络安全
-`host/network.nix` 启用 nftables 与 `networking.firewall`，仅开放必要端口（如 TCP/UDP 53317），配置 `trustedInterfaces` 与 `checkReversePath`；启用 IPv4/IPv6 转发以支撑 Mihomo 的 TUN 模式；启用 OpenSSH（当前允许密码认证，生产建议改密钥）。代理相关见 [../networking/mihomo.md](../networking/mihomo.md)。
+`host/base/network.nix` 启用 nftables 与 `networking.firewall`，仅开放必要端口（如 TCP/UDP 53317），配置 `trustedInterfaces` 与 `checkReversePath`；启用 IPv4/IPv6 转发以支撑 Mihomo 的 TUN 模式；启用 OpenSSH（当前允许密码认证，生产建议改密钥）。代理相关见 [../networking/mihomo.md](../networking/mihomo.md)。
 
 ## 引导与文件系统加固
-`host/boot.nix` 通过 `fmask`/`dmask=0077` 限制 `/boot` 下文件与目录默认权限，降低引导区被非授权修改的风险。建议保持引导器与固件更新，硬件支持时启用 Secure Boot。
+`host/base/boot.nix` 通过 `fmask`/`dmask=0077` 限制 `/boot` 下文件与目录默认权限，降低引导区被非授权修改的风险。建议保持引导器与固件更新，硬件支持时启用 Secure Boot。
 
 ## 故障排查
 - 登录变慢：检查 PAM 模块是否超时，查看 `journalctl` 中 pam 相关日志。

@@ -2,7 +2,7 @@
 title: PAM — 可插拔认证模块
 category: 安全
 tags: [pam, authentication, security, login, sudo, keyring]
-updated: 2026-08-07
+updated: 2026-08-12
 ---
 # PAM — 可插拔认证模块
 
@@ -85,7 +85,7 @@ auth       sufficient   pam_unix.so   likeauth try_first_pass
 auth       sufficient   pam_rootok.so
 ```
 
-NOPASSWD 规则（`host/users.nix`）绕过了密码质询，但 PAM 栈仍然跑。
+NOPASSWD 规则（`host/base/users.nix`）绕过了密码质询，但 PAM 栈仍然跑。
 
 ### 人脸登录与 keyring 的矛盾
 

@@ -2,7 +2,7 @@
 title: 部署与维护
 category: 顶层
 tags: [deployment, nixos-rebuild, flake, sops, backup, maintenance]
-updated: 2026-08-07
+updated: 2026-08-12
 ---
 
 # 部署与维护
@@ -53,7 +53,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 
 1. **获取仓库**：`git clone <repo-url> ~/myNixOSConfig`。
 2. **生成硬件配置**：`nixos-generate-config --root /mnt`，将 `hardware-configuration.nix` 复制到仓库根（自动生成，勿手改）。
-3. **改机器特定项**：主机名/时区/locale/用户（`host/`）、`home.username` 与 `home.homeDirectory`（`home/default.nix`）、显示器（`home/env/hyprland.nix`）、`nixosConfigurations.<hostname>`（`flake.nix`）。
+3. **改机器特定项**：主机名/时区/locale/用户（`host/`）、`home.username` 与 `home.homeDirectory`（`home/base.nix`）、显示器（`home/hyprland/hyprland.nix`）、`nixosConfigurations.<hostname>`（`flake.nix`）。
 4. **准备 `/persist` 子卷**：
    ```bash
    sudo mkdir -p /persist/mihomo
@@ -68,7 +68,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 ## 密钥与持久化
 
 - Secrets 通过 sops-nix + age 加密管理，密文在 `host/secrets/secrets.yaml`，解密私钥为系统 SSH host key（`/etc/ssh/ssh_host_ed25519_key`）。
-- `host/sops.nix` 通过 `age.sshKeyPaths` 指定解密密钥、启用 `useSystemdActivation`，按需注入敏感环境变量（如 `mihomo_env`）。
+- `host/base/sops.nix` 通过 `age.sshKeyPaths` 指定解密密钥、启用 `useSystemdActivation`，按需注入敏感环境变量（如 `mihomo_env`）。
 - 更新 `secrets.yaml` 后需重新 rebuild 生效。
 
 ## 升级与回滚
@@ -76,7 +76,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 - 使用 unstable 通道获取最新包；`flake.lock` 锁定依赖版本便于回滚，必要时在 `flake.nix` 中 pin 特定 commit。
 - 升级流程：拉取仓库 → `nixos-rebuild switch --flake .` → 重启验证关键服务（网络、代理、桌面、生物识别）。
 - 出问题回滚：`sudo nixos-rebuild switch --rollback` 或在引导菜单选择上一代。
-- 关注内核/驱动回归（如 amdgpu 亮度曲线，已在 `host/boot.nix` 规避）与第三方模块（noctalia、sops-nix、home-manager）兼容说明。
+- 关注内核/驱动回归（如 amdgpu 亮度曲线，已在 `host/base/boot.nix` 规避）与第三方模块（noctalia、sops-nix、home-manager）兼容说明。
 
 ## 备份与灾难恢复
 
