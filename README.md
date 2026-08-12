@@ -45,7 +45,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │
 ├── overlays/                  # nixpkgs overlays
 │
-├── local-deriv/               # 自定义包（qoder-ide、netease、animeko、rtk 等）
+├── local-deriv/               # 自定义包（qoder-ide、netease、animeko、rtk、material-gnome-theme 等）
 │
 ├── home/                      # 用户配置 (4 子目录)
 │   ├── default.nix            # 入口汇总

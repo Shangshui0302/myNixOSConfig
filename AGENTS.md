@@ -49,7 +49,8 @@ myNixOSConfig/
 │   ├── qoder-ide.nix           # Qoder — AI IDE (Electron)
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   ├── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
-│   └── rtk.nix                 # rtk-ai/rtk — token 优化 CLI proxy（nixpkgs 撞名 exprtk）
+│   ├── rtk.nix                 # rtk-ai/rtk — token 优化 CLI proxy（nixpkgs 撞名 exprtk）
+│   └── material-gnome-theme.nix  # Material GNOME 主题（Shell+GTK3/4，配合 gnome user-themes）
 │
 ├── host/                      # NixOS 系统级配置（基础设施，不放用户包）
 │   ├── default.nix            # 入口 — 仅 imports
