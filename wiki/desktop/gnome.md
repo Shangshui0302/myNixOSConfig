@@ -34,7 +34,7 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
   - 集成/锁屏：gsconnect（手机互通）、lockscreen-studio（锁屏美化）
   - 注：no-title-bar / pano 已被 nixpkgs 移除（上游停维护）；tray-icons-reloaded / forge / just-perfection / unite / hide-activities-button 未启用故移除（2026-08-12 清理）
 - **dash-to-dock**：intellihide 全窗口避让（遮挡即隐藏、鼠标移边缘呼出）+ 底部 + DASHES 白条指示器，经 `extraGSettingsOverrides` 配置
-- **主题**：`material-gnome-theme`（local-deriv 自建包，Material 3 风格），`user-theme name='Material-Gnome'` 加载；kimpanel 候选窗、顶栏等跟随
+- **主题**：`material-gnome-theme`（local-deriv 自建包：构建期 matugen 从壁纸取色 + shellLayout 布局参数化），`user-theme name='Material-Gnome'` 加载；GTK4 链接 + `~/.themes` + flatpak override 限定 GNOME 变体（Hyprland 主桌面保持 adw-gtk3-dark）
 - **console**：`[org.gnome.Console]` 设 `shell=['fish']`（系统 passwd 默认是 bash）+ `ignore-scrollback-limit=true`
 - **blur-my-shell**：静态高斯模糊 + 自带 corner pipeline（`pipeline_default_rounded`），panel/applications/dash-to-dock 分段配置，无需 rounded-blur 库
 - **用户设置持久化**：`extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus/console 偏好 + dash-to-dock + blur-my-shell + user-theme + enabled-extensions）+ `favoriteAppsOverride`（Dock：Nautilus/Chrome/Console/Code）；壁纸指向 git 源 `assets/yamadaryou.png`。主题外观由 `home/theme.nix` + Noctalia 深色调度管理，不在此重复

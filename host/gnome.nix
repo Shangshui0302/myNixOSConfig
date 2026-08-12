@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, materialGnomeTheme, ... }:
 
 {
   # GNOME specialisation — 完整 GNOME 桌面（GDM Wayland 登录）。
@@ -42,7 +42,7 @@
       pkgs.gnomeExtensions.extension-list
       pkgs.gnomeExtensions.notification-timeout
       pkgs.gnomeExtensions.lockscreen-studio
-      (import ../local-deriv/material-gnome-theme.nix { inherit pkgs; })
+      materialGnomeTheme # flake 共享包（参数在 flake.nix 集中定义：壁纸取色 + 布局）
     ];
 
     # ===== 用户设置持久化（从 dconf dump 提取）=====
@@ -162,6 +162,29 @@
       GTK_IM_MODULE = lib.mkForce null;
       QT_IM_MODULE = lib.mkForce "fcitx";
       XMODIFIERS = lib.mkForce "@im=fcitx";
+    };
+
+    # —— Material-Gnome 应用仅限 GNOME 变体（Hyprland 主桌面保持 home/theme.nix 的 adw）——
+    # GTK3 主题
+    home-manager.users.lishangshui.dconf.settings."org/gnome/desktop/interface".gtk-theme =
+      lib.mkForce "Material-Gnome";
+    # GTK4/Libadwaita 应用：Libadwaita 不读 ~/.themes，需 ~/.config/gtk-4.0/gtk.css 覆盖
+    home-manager.users.lishangshui.home.file.".config/gtk-4.0/gtk.css".source =
+      "${materialGnomeTheme}/share/themes/Material-Gnome/gtk-4.0/gtk.css";
+    home-manager.users.lishangshui.home.file.".config/gtk-4.0/gtk-dark.css".source =
+      "${materialGnomeTheme}/share/themes/Material-Gnome/gtk-4.0/gtk-dark.css";
+    home-manager.users.lishangshui.home.file.".config/gtk-4.0/colors.css".source =
+      "${materialGnomeTheme}/share/themes/Material-Gnome/gtk-4.0/colors.css";
+    # 主题源 ~/.themes（user-themes / GTK3 / flatpak 访问）
+    home-manager.users.lishangshui.home.file.".themes/Material-Gnome".source =
+      "${materialGnomeTheme}/share/themes/Material-Gnome";
+    # Flatpak 沙箱跟随（读 ~/.themes + GTK_THEME）。
+    # 注意：override 文件持久，切回主系统 rebuild 不会自动清除。
+    home-manager.users.lishangshui.services.flatpak.overrides.settings = {
+      global = {
+        Context.filesystems = "$HOME/.themes:ro";
+        Environment.GTK_THEME = "Material-Gnome";
+      };
     };
   };
 }

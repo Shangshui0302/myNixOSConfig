@@ -19,10 +19,21 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, ... }@inputs: {
+  outputs = { self, nixpkgs, ... }@inputs: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+    # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
+    materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
+      inherit pkgs;
+      wallpaper = ./assets/yamadaryou.png;
+      shellLayout = "default-transparecy"; # 原作者拼写（transparecy）
+    };
+  in {
+    packages.${system}.material-gnome-theme = materialGnomeTheme;
+
     nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
+      inherit system;
+      specialArgs = { inherit inputs materialGnomeTheme; };
       modules = [
         ./host/default.nix
         inputs.sops-nix.nixosModules.sops
@@ -32,7 +43,7 @@
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
           home-manager.users.lishangshui = import ./home/default.nix;
-          home-manager.extraSpecialArgs = { inherit inputs; };
+          home-manager.extraSpecialArgs = { inherit inputs materialGnomeTheme; };
         }
         {
           nixpkgs.overlays = import ./overlays;
