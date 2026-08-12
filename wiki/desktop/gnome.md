@@ -29,7 +29,7 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 - **GNOME 应用**：`core-apps.enable = true`（core apps）+ `core-developer-tools.enable = true`（开发者工具）；`games.enable = false`（小游戏关闭）
 - 注意 core-apps 含 Epiphany → 拉入 webkitgtk 大包，首次构建/下载较慢
 - **kimpanel 扩展**：`environment.systemPackages = [ pkgs.gnomeExtensions.kimpanel ]`，让 fcitx5 候选窗显示在 GNOME Shell 之上；装完需在 GNOME 里用 Extensions 应用手动启用
-- **用户设置持久化**：`services.desktopManager.gnome.extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus 偏好）+ `favoriteAppsOverride`（Dock 精简）；壁纸用 `~/Pictures/Wallpapers/yamadaryou.png`（home-manager 已声明）。主题外观由 `home/theme.nix` + Noctalia 深色调度管理，不在此重复
+- **用户设置持久化**：`services.desktopManager.gnome.extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus 偏好）+ `favoriteAppsOverride`（Dock 精简）；壁纸指向 git 源 `assets/yamadaryou.png`。主题外观由 `home/theme.nix` + Noctalia 深色调度管理，不在此重复
 - GDM 接管 tty1，GNOME 变体里 kmscon 禁用（本机 libseat=false raw-VT 特殊配置，避免边角问题）
 - fcitx5：GNOME Wayland 走 text-input-v3，**不设 `GTK_IM_MODULE`**（GTK 用原生输入协议）；Qt 走 `QT_IM_MODULE`，XWayland 走 `XMODIFIERS`，均保留
 - 共享同一 Home Manager profile——用户级配置（编辑器、主题、面板配置等）与主系统完全一致，无重复维护

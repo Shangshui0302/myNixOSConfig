@@ -25,7 +25,7 @@
 
     # ===== 用户设置持久化（从 dconf dump 提取）=====
     # 主题外观（gtk-theme/icon-theme/cursor/color-scheme）由 home/theme.nix + Noctalia 深色调度管理，不重复。
-    # 壁纸用 yamadaryou（home.file 已复制到 ~/Pictures/Wallpapers/），比 dconf 里的时间戳路径稳定。
+    # 壁纸直接指向 git 源文件 assets/yamadaryou.png（版本管理内，随仓库可重现）。
     services.desktopManager.gnome.favoriteAppsOverride = "['org.gnome.Nautilus.desktop']";
     services.desktopManager.gnome.extraGSettingsOverrides = ''
       [org.gnome.desktop.interface]
@@ -47,11 +47,11 @@
       two-finger-scrolling-enabled=true
 
       [org.gnome.desktop.background]
-      picture-uri='file:///home/lishangshui/Pictures/Wallpapers/yamadaryou.png'
+      picture-uri='file:///home/lishangshui/myNixOSConfig/assets/yamadaryou.png'
       picture-options='zoom'
 
       [org.gnome.desktop.screensaver]
-      picture-uri='file:///home/lishangshui/Pictures/Wallpapers/yamadaryou.png'
+      picture-uri='file:///home/lishangshui/myNixOSConfig/assets/yamadaryou.png'
       picture-options='zoom'
 
       [org.gnome.settings-daemon.plugins.color]

@@ -22,7 +22,7 @@ GNOME 作为 NixOS specialisation 变体（`host/gnome.nix`）：开机 systemd-
 ## How to apply
 
 - `host/gnome.nix`：`services.desktopManager.gnome.enable` + `services.displayManager.gdm.enable` + `services.kmscon.enable = lib.mkForce false` + GNOME（core-apps + core-developer-tools 开，games 关）+ kimpanel 扩展 + 移除 `GTK_IM_MODULE` + 用户设置持久化（`extraGSettingsOverrides` + `favoriteAppsOverride`）
-- 用户 GNOME 设置持久化：主题外观由 theme.nix/Noctalia 管，状态栏/外设/夜灯/nautilus 偏好用 `extraGSettingsOverrides`，Dock 用 `favoriteAppsOverride`，壁纸用 `~/Pictures/Wallpapers/yamadaryou.png`
+- 用户 GNOME 设置持久化：主题外观由 theme.nix/Noctalia 管，状态栏/外设/夜灯/nautilus 偏好用 `extraGSettingsOverrides`，Dock 用 `favoriteAppsOverride`，壁纸指向 git 源 `assets/yamadaryou.png`
 - 共享同一 home-manager profile（GNOME 差异全在 NixOS 层，Noctalia/uwsm 在 GNOME 下 inert）
 - 验证构建：`nix build .#nixosConfigurations.MechRevo-NixOS.config.specialisation.gnome.configuration.system.build.toplevel`
 - 运行时切换：`nixos-rebuild switch --specialisation gnome`
