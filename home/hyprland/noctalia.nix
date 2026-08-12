@@ -677,8 +677,9 @@ in
 ;
   };
 
-  # yamadaryou wallpaper
+  # yamadaryou wallpaper + avatar（源在 assets，可重建）
   home.file."Pictures/Wallpapers/yamadaryou.png".source = ../../assets/yamadaryou.png;
+  home.file."Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg".source = ../../assets/yamadaRyou_glassesHeadsphone.jpg;
 
   # yamadaryou color scheme
   xdg.configFile."noctalia/palettes/yamadaryou.json".text = builtins.toJSON {

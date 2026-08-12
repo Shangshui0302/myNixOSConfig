@@ -121,6 +121,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 - **收藏壁纸**：yamadaryou.png，自动应用 yamadaryou 配色方案
 - **多屏**：所有显示器使用同一壁纸
 - **自动切换**：未启用（手动选择）
+- **头像与壁纸源**：均在 `assets/`（git 跟踪），由 `home.file` 复制到 `~/Pictures/`，可重建、不依赖外部文件
 
 ## 配色方案 (yamadaryou)
 
