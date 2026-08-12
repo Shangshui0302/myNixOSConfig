@@ -28,3 +28,4 @@
 ## 约束 constraint
 
 - [查包强制多路径搜索](cards/nix-search-before-manual.md) — 禁止一次查不到就手搓 Nix module
+- [nh 变体检测: /etc/specialisation 标记文件](cards/nh-specialisation-detection.md) — 变体须写自己名字，删了 nh 会静默切回 base

@@ -3,13 +3,13 @@
 let
   darkModeScript = pkgs.writeShellScript "noctalia-darkmode-toggle" ''
     DCONF="${pkgs.dconf}/bin/dconf"
+    # 不写 gtk-theme：主题由声明式配置（Material-Gnome）固定，深浅靠 prefer-dark 切换。
+    # Material-Gnome 提供 gtk.css + gtk-dark.css，GTK3 通过 prefer-dark 选深色变体。
     if [ "$NOCTALIA_THEME_MODE" = "dark" ]; then
-      $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3-dark'"
       $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "true"
       mkdir -p ~/.config/qt5ct
       printf '[Appearance]\nstyle=Fusion\ncolor_scheme=darker\n' > ~/.config/qt5ct/qt5ct.conf
     else
-      $DCONF write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3'"
       $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "false"
       mkdir -p ~/.config/qt5ct
       printf '[Appearance]\nstyle=Fusion\n' > ~/.config/qt5ct/qt5ct.conf

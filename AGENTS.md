@@ -39,10 +39,6 @@ myNixOSConfig/
 ├── assets/
 │   └── yamadaryou.png         # 桌面壁纸 + Hyprland 锁屏
 │
-├── overlays/                  # nixpkgs overlays，按文件分离
-│   ├── default.nix            # 入口 — imports 所有 overlay 为 list
-│   └── vim-plugins.nix        # vimPlugins 别名
-│
 ├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
 │   ├── netease-cloud-music-web-player.nix
 │   ├── animeko.nix
@@ -67,16 +63,16 @@ myNixOSConfig/
 │   │   ├── gaming.nix         # Steam, 32-bit graphics, Flatpak, libvirtd
 │   │   ├── containers.nix     # Waydroid, Podman, 镜像加速
 │   │   └── sops.nix           # sops-nix secrets
-│   └── hyprland/              # Hyprland 主桌面系统层（仅 main import）
-│       ├── default.nix        # 入口
-│       ├── desktop.nix        # Hyprland, foot, fcitx5 主题, XDG portal(wlr), qt5ct
+│   └── hyprland/              # Hyprland 主桌面系统层（仅 main import，host/default.nix 直接 import）
+│       ├── desktop.nix        # Hyprland, foot, XDG portal(wlr), qt5ct
 │       └── greeter.nix        # TTY 登录（kmscon + CJK，howdy 人脸解锁）
 │
 ├── home/                      # Home Manager 用户级配置
 │   ├── base.nix               # 共享 home 入口（两 DE）— 通用工具
 │   ├── hyprland.nix           # main home 入口 — base + Hyprland 特有
 │   ├── theme-base.nix         # 共享主题基础：指针光标, CJK字体, 图标, 深浅色
-│   ├── theme-hyprland.nix     # Hyprland GTK 主题（adw-gtk3-dark, qt5ct, breeze）
+│   ├── theme-material.nix     # Material-Gnome GTK 主题应用（两 DE 共享，被 theme-hyprland + gnome home import）
+│   ├── theme-hyprland.nix     # Hyprland Qt 主题（qt5ct, breeze）+ GTK 主题 import theme-material
 │   ├── git.nix                # Git 用户配置
 │   ├── env/                   # 通用环境（两 DE）
 │   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具
@@ -175,13 +171,13 @@ myNixOSConfig/
 ### flake.nix
 - `flake.nix` 只做入口和依赖声明
 - Flake inputs: nixpkgs, home-manager, noctalia, nix-flatpak, llm-agents (numtide/llm-agents.nix, AI 工具包来源), codex-desktop-linux (ilysenko, Codex Desktop for Linux)
-- Overlays 放 `overlays/`，通过 `nixpkgs.overlays = import ./overlays` 导入
+- 当前无 overlay 需求，`overlays/` 目录已删；需要时重建目录 + `nixpkgs.overlays = import ./overlays` 挂载
 - 不允许 inline derivations、inline `mkDerivation`、inline `appimageTools`
 
 ### 去重规则
 - 网络诊断工具 (`dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables`) **只在** `host/network.nix` 的 `environment.systemPackages` 中声明
   → 不要加到任何 `home/` 模块
-- 字体包放 `local-deriv/fonts.nix`，由 `home/theme-base.nix` 导入
+- 字体包在 `host/base/desktop.nix` 的 `fonts.packages` 声明（两 DE 共享）
 - 不要把一个包的 override 拆到两个模块（如 src 在 overlay、flags 在 home 模块 → 合并到一处）
 
 ### 链式 override

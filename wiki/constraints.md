@@ -11,16 +11,15 @@ updated: 2026-08-06
 
 ```
 flake.nix              # Entry point only — no inline package definitions
-overlays/
-  default.nix          # Imports all overlays as a list
-  *.nix                # One overlay per file
 local-deriv/
   *.nix                # Custom packages and font derivations
   anthropic-fonts.nix  # Anthropic fonts
 home/
-  default.nix git.nix theme.nix   # Root-level HM modules
-  env/ dev/ productivity/ leisure/  # Purpose-based subdirectories
-host/                  # NixOS system modules
+  base.nix hyprland.nix theme-base.nix theme-material.nix theme-hyprland.nix
+  env/ hyprland/ dev/ productivity/ leisure/  # Purpose-based subdirectories
+host/
+  base/ hyprland/      # base = shared, hyprland = main-DE-specific
+specialisation/gnome/  # GNOME variant (inheritParentConfig=false, fully isolated)
 assets/                # Binary assets (wallpapers, tarballs, etc.)
 ```
 
@@ -55,7 +54,7 @@ assets/                # Binary assets (wallpapers, tarballs, etc.)
 ### flake.nix
 
 - `flake.nix` is an entry point and dependency manifest only
-- Overlays belong in `overlays/`, imported as `nixpkgs.overlays = import ./overlays`
+- No overlays currently in use (`overlays/` was removed); recreate the directory + `nixpkgs.overlays = import ./overlays` if needed later
 - No inline derivations, no inline `mkDerivation`, no inline `appimageTools`
 
 ---
@@ -65,7 +64,7 @@ assets/                # Binary assets (wallpapers, tarballs, etc.)
 - Network diagnostic tools (`dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables`)
   belong **only** in `host/network.nix` as `environment.systemPackages`
   → Do not add them to any `home/` module
-- Font packages belong in `local-deriv/fonts.nix`, imported from `home/theme.nix`
+- Font packages belong in `host/base/desktop.nix` as `fonts.packages` (shared by both DEs)
 - Do not split a single package's override across two modules
   (e.g., src in an overlay + flags in a home module — merge into one place)
 

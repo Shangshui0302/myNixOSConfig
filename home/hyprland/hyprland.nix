@@ -28,6 +28,9 @@ in
     '')
   ];
 
+  # HM 模块 enable 只为拿副作用（fish 补全 + .luarc.json Lua LSP）；
+  # 主配置走下方裸 xdg.configFile 写 lua（用 hl.* 自定义函数，HM settings 表达不了），
+  # force=true 覆盖 HM 用空 settings 生成的空 hyprland.lua。
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "lua";

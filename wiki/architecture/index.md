@@ -2,7 +2,7 @@
 title: 系统架构总览
 category: 架构
 tags: [architecture, flake, host, home-manager, modules]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # 系统架构总览

@@ -2,7 +2,7 @@
 title: 主机系统架构与启动流程
 category: 架构
 tags: [host, boot, hardware, systemd, tty, kmscon, amdgpu]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # 主机系统架构与启动流程

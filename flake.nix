@@ -45,9 +45,6 @@
           home-manager.users.lishangshui = import ./home/hyprland.nix;
           home-manager.extraSpecialArgs = { inherit inputs materialGnomeTheme; };
         }
-        {
-          nixpkgs.overlays = import ./overlays;
-        }
       ];
     };
   };

@@ -2,7 +2,7 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, 输入法, wayland, 深色模式]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # Fcitx5 输入法框架

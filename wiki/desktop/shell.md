@@ -2,7 +2,7 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 
 # Shell 环境指南

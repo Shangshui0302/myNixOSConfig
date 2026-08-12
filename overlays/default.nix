@@ -1,3 +1,0 @@
-[
-  (import ./vim-plugins.nix)
-]

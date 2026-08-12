@@ -2,7 +2,7 @@
 title: 办公软件套件
 category: 生产力
 tags: [office, libreoffice, onlyoffice, fonts, cjk]
-updated: 2026-08-07
+updated: 2026-08-13
 ---
 
 # 办公软件套件

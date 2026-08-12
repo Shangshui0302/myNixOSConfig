@@ -47,7 +47,7 @@ docs:
     sources: [home/env/shell.nix, home/env/terminal.nix]
     memory:  []
   desktop/darkmode.md:
-    sources: [home/theme-base.nix, home/theme-hyprland.nix, host/base/desktop.nix]
+    sources: [home/theme-base.nix, home/theme-hyprland.nix, home/theme-material.nix, host/base/desktop.nix]
     memory:  [portal-gtk-dangling-symlink]
   desktop/keyring.md:
     sources: [host/base/services.nix]
@@ -94,10 +94,6 @@ docs:
     sources: [host/base/services.nix, host/base/users.nix]
     memory:  []
 
-  customization/overlays.md:
-    sources: [overlays/default.nix, overlays/vim-plugins.nix]
-    memory:  [nix-search-before-manual]
-
   services.md:
     sources: [host/base/services.nix, host/base/network.nix, host/base/users.nix, home/env/onedrive.nix]
     memory:  [mihomo-tun-stack]
@@ -108,5 +104,5 @@ docs:
     sources: []
     memory:  [mechrevo-amd-backlight-curve, hyprland-056-blur-amd, portal-gtk-dangling-symlink]
   constraints.md:
-    sources: [overlays/default.nix, flake.nix]
+    sources: [flake.nix]
     memory:  [nix-search-before-manual]

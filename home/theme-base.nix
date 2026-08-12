@@ -105,7 +105,7 @@
     </fontconfig>
   '';
 
-  # 共享图标主题（GTK 主题 adw/qt5ct 在 theme-hyprland.nix；Material-Gnome 在 specialisation/gnome）
+  # 共享图标主题（GTK 主题 Material-Gnome 在 theme-material.nix，被两变体共同 import）
   home.packages = with pkgs; [
     papirus-icon-theme gnome-themes-extra
   ];

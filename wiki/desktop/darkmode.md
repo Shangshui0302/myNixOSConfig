@@ -2,7 +2,7 @@
 title: 深色模式架构
 category: desktop
 tags: [darkmode, noctalia, dconf, qt5ct, portal]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # 深色模式架构

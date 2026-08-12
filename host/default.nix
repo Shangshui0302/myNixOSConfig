@@ -1,7 +1,7 @@
 { config, lib, pkgs, inputs, ... }:
 {
   # main（Hyprland 主桌面）：共享 base + Hyprland 特有。
-  # sops-nix / home-manager / overlays 模块在 flake.nix modules 中引入。
+  # sops-nix / home-manager 模块在 flake.nix modules 中引入。
   imports = [
     ./base/default.nix
     ./hyprland/desktop.nix

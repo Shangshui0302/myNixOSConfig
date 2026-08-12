@@ -75,12 +75,6 @@ updated: 2026-08-07
 | [SOPS 机密管理](security/sops.md) | age 加密、secrets.yaml、服务注入 |
 | [PAM — 可插拔认证模块](security/pam.md) | Linux 认证框架：模块、阶段、与 keyring 的关系 |
 
-## 定制与扩展 `customization/`
-
-| 文档 | 内容 |
-|------|------|
-| [Overlay 系统](customization/overlays.md) | nixpkgs overlays、何时用 overlay/override/direct import |
-
 ## 系统基础
 
 | 文档 | 内容 |

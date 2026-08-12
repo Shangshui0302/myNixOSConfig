@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
+  # 变体判据：当前仅两变体（main=Hyprland + gnome），"非 gnome 即 Hyprland" 是二元假设。
+  # 若将来加第三个变体，需把此布尔泛化为显式变体标识（如 specialArgs 注入 variant 字符串）。
   gnome = config.services.desktopManager.gnome.enable;
   anthropic-fonts = import ../../local-deriv/anthropic-fonts.nix { inherit pkgs; };
 in

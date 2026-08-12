@@ -2,7 +2,7 @@
 title: 项目概述
 category: 顶层
 tags: [nixos, home-manager, flake, hyprland, overview]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # 项目概述
