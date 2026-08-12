@@ -69,6 +69,11 @@ in
     ];
     # classicui 深色联动：UseDarkTheme=True 让 fcitx5 通过 portal 检测深浅色
     # 浅色用 mellow-wechat，深色用 mellow-wechat-dark（Noctalia 调度）
+    # kimpanel addon 强制启用：GNOME Wayland 候选窗定位必需（GNOME 只实现 text-input-v3、
+    # 无全局坐标，必须靠 kimpanel 扩展绘制候选窗）。已在运行时 ~/.config/fcitx5/config 的
+    # [Behavior/DisabledAddons] 中移除 kimpanel，此声明防止再次被禁用。
+    fcitx5.settings.globalOptions.Behavior.EnabledAddons = "kimpanel";
+
     fcitx5.settings.addons.classicui.globalSection = {
       Theme = "mellow-wechat";
       DarkTheme = "mellow-wechat-dark";
