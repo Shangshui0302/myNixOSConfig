@@ -26,7 +26,7 @@
     materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
       inherit pkgs;
       wallpaper = ./assets/yamadaryou.png;
-      shellLayout = "default-transparecy"; # 原作者拼写（transparecy）
+      shellLayout = "unified-border"; # 实心通栏 + 底部主题色描边线
     };
   in {
     packages.${system}.material-gnome-theme = materialGnomeTheme;

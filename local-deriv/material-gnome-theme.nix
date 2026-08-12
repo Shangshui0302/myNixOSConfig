@@ -1,4 +1,4 @@
-{ pkgs, wallpaper ? null, shellLayout ? "floating-capsule", schemeType ? "scheme-tonal-spot", prefer ? "saturation", contrast ? 0.0, mode ? "dark", ... }:
+{ pkgs, wallpaper ? null, shellLayout ? "floating-capsule", schemeType ? "scheme-tonal-spot", contrast ? 0.0, mode ? "dark", ... }:
 
 # Material GNOME — Material You/Material 3 风格 GNOME 桌面主题。
 # 纯主题文件无需编译：把仓库内容整体作为 share/themes/Material-Gnome/。
@@ -50,7 +50,15 @@ stdenv.mkDerivation {
       input_path = '${./material-gnome/gtk4.tpl}'
       output_path = '$out/share/themes/Material-Gnome/gtk-4.0/colors.css'
       EOF
-      ${pkgs.matugen}/bin/matugen image ${wallpaper} -m ${mode} --prefer ${prefer} -t ${schemeType} --contrast ${toString contrast} -c matugen.toml
+      # matugen 取色：nixpkgs-unstable 分支新版已移除 --prefer（多源色自动选色），
+      # nixos-unstable 分支旧版需 --prefer 非交互选色。先试无 --prefer（新版首选），
+      # 旧版报错则 fallback 带 --prefer。
+      if ${pkgs.matugen}/bin/matugen image ${wallpaper} -m ${mode} -t ${schemeType} --contrast ${toString contrast} -c matugen.toml; then
+        echo "matugen: 新版自动选色"
+      else
+        ${pkgs.matugen}/bin/matugen image ${wallpaper} -m ${mode} -t ${schemeType} --contrast ${toString contrast} --prefer saturation -c matugen.toml
+        echo "matugen: 旧版 fallback --prefer"
+      fi
       # GNOME Shell 配色硬编码 hex：按 token 映射批量替换
       ${pkgs.python3}/bin/python3 ${./material-gnome/recolor-shell.py} \
         old-colors.css \
