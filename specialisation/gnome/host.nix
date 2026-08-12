@@ -16,6 +16,10 @@ in
   # GNOME 变体系统层（inheritParentConfig=false，不继承 main 的 Hyprland/foot/fcitx5 主题配置）。
   # fcitx5 核心 + QT_IM_MODULE/XMODIFIERS 来自 host/base/desktop.nix；GTK_IM_MODULE 未设置（GNOME 原生 text-input-v3）。
 
+  # nh 变体检测：nh（nh os switch）读 /etc/specialisation 判断当前运行的变体，
+  # 从而切到正确的 activation 脚本（变体 toplevel 而非 base）。变体须写自己的名字。
+  environment.etc."specialisation".text = "gnome";
+
   services.desktopManager.gnome.enable = true;
   services.displayManager.gdm.enable = true;
 
