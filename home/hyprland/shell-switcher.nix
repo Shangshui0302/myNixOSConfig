@@ -9,6 +9,9 @@
   ];
 
   xdg.configFile."shell-switcher/config.toml".text = ''
+    # 默认 shell：boot 无标记 / 切换失败回退时使用
+    default = "noctalia"
+
     [[shell]]
     name = "noctalia"
     service = "noctalia.service"
@@ -25,4 +28,10 @@
     name = "persona"
     service = "persona.service"
   '';
+
+  # fish 补全：NixOS 把 /etc/profiles 固化成 /etc/static 时只保留 bash-completion，
+  # 丢 fish/zsh 的 vendor_completions.d。显式装到 ~/.config/fish/completions
+  # （fish_complete_path 第一项，与 howdy/hyprctl/hyprland 补全同模式）。
+  xdg.configFile."fish/completions/shell-switcher.fish".source =
+    "${inputs.shell-switcher.packages.${pkgs.system}.default}/share/fish/vendor_completions.d/shell-switcher.fish";
 }

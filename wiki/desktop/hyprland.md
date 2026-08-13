@@ -19,7 +19,7 @@ updated: 2026-08-13
 
 本机 Hyprland 配置基于 Lua (`~/.config/hypr/hyprland.lua`)，使用 **scrolling layout**（滚动列布局）。
 
-**桌面 shell 切换**：默认 Noctalia（systemd 拉起），可运行时切到其他 shell：`shell-switcher set dms|caelestia|persona|noctalia`（切换器配置 `~/.config/shell-switcher/config.toml`，见 `home/hyprland/shell-switcher.nix`）。可切换 shell：DMS `host/hyprland/dms-shell.nix`、caelestia `home/hyprland/caelestia-shell.nix`、Persona `home/hyprland/persona-shell.nix`（local-deriv/persona-quickshell.nix 纯 QML 打包 + `qs -c`）。它们的 service wantedBy 均置空（不自动起），由切换器启停避免与 Noctalia 抢 `org.freedesktop.Notifications` DBus。shell-switcher 二进制经 flake input 接入（`~/Projects/shell-switcher` 独立 repo，托管 GitHub 后改 url）。
+**桌面 shell 切换**：默认 Noctalia（systemd 拉起；默认 shell 由 config.toml 的 `default` 指定），可运行时切到其他 shell：`shell-switcher set dms|caelestia|persona|noctalia`（切换器配置 `~/.config/shell-switcher/config.toml`，见 `home/hyprland/shell-switcher.nix`）。可切换 shell：DMS `host/hyprland/dms-shell.nix`、caelestia `home/hyprland/caelestia-shell.nix`、Persona `home/hyprland/persona-shell.nix`（local-deriv/persona-quickshell.nix 纯 QML 打包 + `qs -c`）。它们的 service wantedBy 均置空（不自动起），由切换器启停避免与 Noctalia 抢 `org.freedesktop.Notifications` DBus。shell-switcher 二进制经 flake input 接入（`~/Projects/shell-switcher` 独立 repo，托管 GitHub 后改 url）。
 
 **配色（stylix）**：`host/hyprland/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入 stylix colors（本版本 stylix 无 foot target）；hyprland/niri 配色手工注入（border 色）。GTK 保持 Material-Gnome、Qt 保持 qt5ct/breeze、Noctalia 面板保持 yamadaryou（stylix 对应 target 均显式关）。
 

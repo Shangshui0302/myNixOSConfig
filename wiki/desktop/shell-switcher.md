@@ -48,9 +48,11 @@ shell-switcher boot               # 读 current 标记启动对应 shell（shell
 
 ## 配置
 
-`~/.config/shell-switcher/config.toml`（Nix 生成，`home/hyprland/shell-switcher.nix`），声明 name → systemd service 映射：
+`~/.config/shell-switcher/config.toml`（Nix 生成，`home/hyprland/shell-switcher.nix`），`default` 指定默认 shell（boot 无 current 标记 / 切换失败回退时使用，缺省取第一个），`[[shell]]` 声明 name → systemd service 映射：
 
 ```toml
+default = "noctalia"    # 默认 shell
+
 [[shell]]
 name = "noctalia"
 service = "noctalia.service"    # 唯一自动起的
@@ -59,6 +61,8 @@ service = "noctalia.service"    # 唯一自动起的
 name = "dms"
 service = "dms.service"
 ```
+
+fish 补全由 `home/hyprland/shell-switcher.nix` 显式装到 `~/.config/fish/completions/`：NixOS 的 `/etc/static` 固化 profile 不暴露 fish 的 `vendor_completions.d` 目录，故显式安装（与 hyprctl/hyprland 补全同模式）。bash 补全走 profile 的 `bash-completion`（固化保留）。
 
 新增可切换 shell 时：定义它的 service（`wantedBy` 置空）+ 在 config.toml 加一条 `[[shell]]` 映射。
 
