@@ -76,30 +76,31 @@ in
         command = "${foot-notify}/bin/foot-notify \${title} \${body}";
         inhibit-when-focused = "no";
       };
-      # 配色由 stylix 生成（config.lib.stylix.colors，host/hyprland/stylix.nix），
-      # foot 1.27 颜色不接受 # 前缀，用无前缀 hex（不用 withHashtag）
+      # 配色：背景/前景来自 stylix（config.lib.stylix.colors 壁纸取色，与合成器边框同源）；
+      # 语法高亮 8 色用经典高对比 palette——壁纸（金色系）取出的 base08-0F 区分度差，
+      # 完全分不清语法重点。foot 1.27 颜色不接受 # 前缀，全部用无前缀 hex。
       # blur 是 foot 特效（stylix 不碰）单独保留
       "colors-dark" = {
         blur = "yes";
         alpha = "0.8";
         background = config.lib.stylix.colors.base00;
         foreground = config.lib.stylix.colors.base05;
-        regular0 = config.lib.stylix.colors.base00;
-        regular1 = config.lib.stylix.colors.base08;
-        regular2 = config.lib.stylix.colors.base0B;
-        regular3 = config.lib.stylix.colors.base0A;
-        regular4 = config.lib.stylix.colors.base0D;
-        regular5 = config.lib.stylix.colors.base0E;
-        regular6 = config.lib.stylix.colors.base0C;
-        regular7 = config.lib.stylix.colors.base05;
-        bright0 = config.lib.stylix.colors.base03;
-        bright1 = config.lib.stylix.colors.base09;
-        bright2 = config.lib.stylix.colors.base0F;
-        bright3 = config.lib.stylix.colors.base01;
-        bright4 = config.lib.stylix.colors.base02;
-        bright5 = config.lib.stylix.colors.base04;
-        bright6 = config.lib.stylix.colors.base06;
-        bright7 = config.lib.stylix.colors.base07;
+        regular0 = config.lib.stylix.colors.base00; # 黑（同背景）
+        regular1 = "ff000f"; # 红
+        regular2 = "8ce10b"; # 绿
+        regular3 = "ffb900"; # 黄
+        regular4 = "008df8"; # 蓝
+        regular5 = "6d43a6"; # 紫
+        regular6 = "00d8eb"; # 青
+        regular7 = config.lib.stylix.colors.base05; # 白/前景
+        bright0 = "888888";
+        bright1 = "ff2740";
+        bright2 = "abe15b";
+        bright3 = "ffd242";
+        bright4 = "0092ff";
+        bright5 = "9a5feb";
+        bright6 = "67fff0";
+        bright7 = "ffffff";
       };
     };
   };
