@@ -65,6 +65,7 @@ myNixOSConfig/
 │   │   └── sops.nix           # sops-nix secrets
 │   └── hyprland/              # Hyprland 主桌面系统层（仅 main import，host/default.nix 直接 import）
 │       ├── desktop.nix        # Hyprland, foot, XDG portal(wlr), qt5ct
+│       ├── dms-shell.nix      # DMS-shell（可切换 shell，wantedBy 空由 switcher 启停）
 │       └── greeter.nix        # TTY 登录（kmscon + CJK，howdy 人脸解锁）
 │
 ├── home/                      # Home Manager 用户级配置
@@ -84,7 +85,8 @@ myNixOSConfig/
 │   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
 │   │   ├── noctalia.nix       # Noctalia shell 面板
 │   │   ├── niri.nix           # niri 滚动平铺合成器
-│   │   └── musicfox.nix       # go-musicfox（依赖 foot）
+│   │   ├── musicfox.nix       # go-musicfox（依赖 foot）
+│   │   └── shell-switcher.nix # shell-switcher 运行时配置（声明可切换 shell）
 │   ├── dev/                   # 开发工具
 │   │   ├── nvim.nix           # Neovim
 │   │   ├── nvim/init.lua      # Neovim 配置文件
