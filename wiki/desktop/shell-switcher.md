@@ -79,6 +79,6 @@ service = "dms.service"
 
 ## 相关链接
 
-- [Noctalia](noctalia.md) — 默认 shell，systemd 拉起（非 compositor autostart）
+- [Noctalia](noctalia.md) — 默认 shell，systemd 拉起（非 compositor autostart）；2026-08-13 清理过 validate warnings，见其维护注记
 - [Hyprland](hyprland.md) — 桌面 shell 切换的入口说明
 - [wiki 首页](../README.md)

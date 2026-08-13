@@ -41,7 +41,6 @@ in
         ("group:g4")
         ("active_window")
         ("workspaces")
-        ("cat")
       ];
       end = [
         ("group:g6")
@@ -481,7 +480,6 @@ in
     enabled = [
       ("noctalia/kaomoji")
       ("noctalia/translator")
-      ("noctalia/bongocat")
     ];
   };
   shell = {
@@ -506,7 +504,6 @@ in
     };
     launcher = {
       app_grid = true;
-      session_search = true;
     };
     greeter_sync = {
       auto_sync = true;
@@ -603,10 +600,6 @@ in
     brightness = {
       show_label = true;
     };
-    cat = {
-      color = "error";
-      type = "noctalia/bongocat:cat";
-    };
     clock = {
       format = "{:%H:%M %A, %Y年%b%d日}";
       tooltip_format = "{:%A, %B %d, %Y}";
@@ -630,16 +623,16 @@ in
       stat = "net_rx";
       visualization = "none";
       show_value = true;
+      show_glyph = true;
       glyph = "square-rounded-chevrons-down-filled";
-      network_speed_compact = true;
     };
     network_tx = {
       type = "sysmon";
       stat = "net_tx";
       visualization = "none";
       show_value = true;
+      show_glyph = true;
       glyph = "square-rounded-chevrons-up-filled";
-      network_speed_compact = true;
     };
     notifications = {
       hide_when_no_unread = false;
