@@ -506,8 +506,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1786614563,
-        "narHash": "sha256-PxkOvFFp/2bovXDcZrUAaXs6iHYihot7Xs2zvK4IBKY=",
+        "lastModified": 1786626319,
+        "narHash": "sha256-iS752eiSln7W09bs19N61ZP3NFFswul3aW7+eVEbwVQ=",
         "path": "/home/lishangshui/Projects/shell-switcher",
         "type": "path"
       },
