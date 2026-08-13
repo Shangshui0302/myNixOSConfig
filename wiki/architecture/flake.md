@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # Flake 配置管理

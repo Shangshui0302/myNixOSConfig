@@ -66,6 +66,7 @@ myNixOSConfig/
 │   └── hyprland/              # Hyprland 主桌面系统层（仅 main import，host/default.nix 直接 import）
 │       ├── desktop.nix        # Hyprland, foot, XDG portal(wlr), qt5ct
 │       ├── dms-shell.nix      # DMS-shell（可切换 shell，wantedBy 空由 switcher 启停）
+│       ├── stylix.nix         # stylix 配色中枢（foot 配色注入，hyprland/niri 手工）
 │       └── greeter.nix        # TTY 登录（kmscon + CJK，howdy 人脸解锁）
 │
 ├── home/                      # Home Manager 用户级配置

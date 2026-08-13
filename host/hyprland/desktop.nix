@@ -60,7 +60,6 @@ in
     xdg.serverAutostart = true;
     settings = {
       main = {
-        font = "Anthropic Mono Variable:size=12, Source Han Sans SC:size=12";
         shell = "${pkgs.fish}/bin/fish";
         pad = "10x10 center";
         selection-target = "both";
@@ -77,27 +76,29 @@ in
         command = "${foot-notify}/bin/foot-notify \${title} \${body}";
         inhibit-when-focused = "no";
       };
+      # 配色由 stylix 生成（config.lib.stylix.colors，host/hyprland/stylix.nix），
+      # blur 是 foot 特效（stylix 不碰）单独保留
       "colors-dark" = {
-        alpha = "0.8";
         blur = "yes";
-        background = "0e1019";
-        foreground = "fffaf4";
-        regular0  = "666666";
-        regular1  = "ff000f";
-        regular2  = "8ce10b";
-        regular3  = "ffb900";
-        regular4  = "008df8";
-        regular5  = "6d43a6";
-        regular6  = "00d8eb";
-        regular7  = "ffffff";
-        bright0   = "888888";
-        bright1   = "ff2740";
-        bright2   = "abe15b";
-        bright3   = "ffd242";
-        bright4   = "0092ff";
-        bright5   = "9a5feb";
-        bright6   = "67fff0";
-        bright7   = "ffffff";
+        alpha = "0.8";
+        background = config.lib.stylix.colors.withHashtag.base00;
+        foreground = config.lib.stylix.colors.withHashtag.base05;
+        regular0 = config.lib.stylix.colors.withHashtag.base00;
+        regular1 = config.lib.stylix.colors.withHashtag.base08;
+        regular2 = config.lib.stylix.colors.withHashtag.base0B;
+        regular3 = config.lib.stylix.colors.withHashtag.base0A;
+        regular4 = config.lib.stylix.colors.withHashtag.base0D;
+        regular5 = config.lib.stylix.colors.withHashtag.base0E;
+        regular6 = config.lib.stylix.colors.withHashtag.base0C;
+        regular7 = config.lib.stylix.colors.withHashtag.base05;
+        bright0 = config.lib.stylix.colors.withHashtag.base03;
+        bright1 = config.lib.stylix.colors.withHashtag.base09;
+        bright2 = config.lib.stylix.colors.withHashtag.base0F;
+        bright3 = config.lib.stylix.colors.withHashtag.base01;
+        bright4 = config.lib.stylix.colors.withHashtag.base02;
+        bright5 = config.lib.stylix.colors.withHashtag.base04;
+        bright6 = config.lib.stylix.colors.withHashtag.base06;
+        bright7 = config.lib.stylix.colors.withHashtag.base07;
       };
     };
   };

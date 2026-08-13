@@ -7,6 +7,7 @@
     ./hyprland/desktop.nix
     ./hyprland/greeter.nix
     ./hyprland/dms-shell.nix
+    ./hyprland/stylix.nix
   ];
 
   # GNOME 变体：inheritParentConfig=false，完全不继承本配置（Hyprland 包体不进 GNOME 闭包）。

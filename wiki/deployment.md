@@ -2,7 +2,7 @@
 title: 部署与维护
 category: 顶层
 tags: [deployment, nixos-rebuild, flake, sops, backup, maintenance]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # 部署与维护

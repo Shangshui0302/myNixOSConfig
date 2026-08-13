@@ -2,7 +2,7 @@
 title: 约束与惯例
 category: 顶层
 tags: [constraints, conventions, nix]
-updated: 2026-08-06
+updated: 2026-08-13
 ---
 
 # NixOS Config — 约束与惯例

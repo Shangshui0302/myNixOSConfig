@@ -29,7 +29,7 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve]
 
   desktop/hyprland.md:
-    sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, host/hyprland/desktop.nix, host/hyprland/dms-shell.nix, host/base/boot.nix]
+    sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, host/hyprland/desktop.nix, host/hyprland/dms-shell.nix, host/hyprland/stylix.nix, host/base/boot.nix]
     memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve]
   desktop/niri.md:
     sources: [home/hyprland/niri.nix]
