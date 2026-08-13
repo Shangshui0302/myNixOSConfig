@@ -22,6 +22,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    shell-switcher = {
+      url = "path:/home/lishangshui/Projects/shell-switcher"; # 托管 GitHub 后改 url
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = { self, nixpkgs, ... }@inputs: let
     system = "x86_64-linux";
