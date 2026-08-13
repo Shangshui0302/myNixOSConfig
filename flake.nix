@@ -23,7 +23,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     shell-switcher = {
-      url = "path:/home/lishangshui/Projects/shell-switcher"; # 托管 GitHub 后改 url
+      url = "github:Shangshui0302/shell-switcher";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {

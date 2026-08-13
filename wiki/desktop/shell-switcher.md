@@ -11,7 +11,7 @@ updated: 2026-08-13
 
 本机有 4 个**互斥**的桌面 shell：它们都抢 `org.freedesktop.Notifications` DBus、都画顶栏，**不能同时跑**。shell-switcher 负责运行时切换，保证同一时刻只有一个 shell 在跑。
 
-所有 shell 都是 systemd user service（挂 `graphical-session.target` 上下文），由 `home/hyprland/shell-switcher.nix` 声明切换映射，切换器二进制来自 flake input（`~/Projects/shell-switcher`，托管 GitHub 后改 url）。
+所有 shell 都是 systemd user service（挂 `graphical-session.target` 上下文），由 `home/hyprland/shell-switcher.nix` 声明切换映射，切换器二进制来自 flake input（`github:Shangshui0302/shell-switcher`）。
 
 ## 可用 shell
 

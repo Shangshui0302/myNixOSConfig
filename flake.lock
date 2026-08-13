@@ -506,14 +506,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1786627005,
-        "narHash": "sha256-o5NnSEw3MwUe53+BsE9ZAtAHQxqC3nL/oxUpzJH2sWg=",
-        "path": "/home/lishangshui/Projects/shell-switcher",
-        "type": "path"
+        "lastModified": 1786627785,
+        "narHash": "sha256-MKEDfFYj5B3b9YknZYUNGYGS8xtr8SWFRdbGHdUejfs=",
+        "owner": "Shangshui0302",
+        "repo": "shell-switcher",
+        "rev": "2271fa576c660a28a812a2686f845700fc96ad37",
+        "type": "github"
       },
       "original": {
-        "path": "/home/lishangshui/Projects/shell-switcher",
-        "type": "path"
+        "owner": "Shangshui0302",
+        "repo": "shell-switcher",
+        "type": "github"
       }
     },
     "sops-nix": {
