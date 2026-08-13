@@ -12,5 +12,9 @@
     [[shell]]
     name = "dms"
     service = "dms.service"
+
+    [[shell]]
+    name = "caelestia"
+    service = "caelestia.service"
   '';
 }

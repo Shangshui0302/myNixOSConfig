@@ -19,7 +19,7 @@ updated: 2026-08-13
 
 本机 Hyprland 配置基于 Lua (`~/.config/hypr/hyprland.lua`)，使用 **scrolling layout**（滚动列布局）。
 
-**桌面 shell 切换**：默认 Noctalia（systemd 拉起），可运行时切到 DMS-shell：`shell-switcher set dms` / `set noctalia`（切换器配置 `~/.config/shell-switcher/config.toml`，见 `home/hyprland/shell-switcher.nix`）。DMS 的 `dms.service` wantedBy 置空（不自动起），由切换器启停避免与 Noctalia 抢 DBus。
+**桌面 shell 切换**：默认 Noctalia（systemd 拉起），可运行时切到其他 shell：`shell-switcher set dms|caelestia|noctalia`（切换器配置 `~/.config/shell-switcher/config.toml`，见 `home/hyprland/shell-switcher.nix`）。可切换 shell（DMS `host/hyprland/dms-shell.nix`、caelestia `home/hyprland/caelestia-shell.nix`）的 service wantedBy 均置空（不自动起），由切换器启停避免与 Noctalia 抢 `org.freedesktop.Notifications` DBus。
 
 ## 基本概念
 
