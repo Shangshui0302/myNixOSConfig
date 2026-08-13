@@ -25,6 +25,8 @@ updated: 2026-08-13
 
 Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用启动器等组件，统一管理壁纸、配色、通知、锁屏等。
 
+**启动方式**：由 systemd user service（`noctalia.service`，`WantedBy=graphical-session.target`）拉起，不再是 compositor autostart——为 shell-switcher（多 shell 运行时切换）铺路，shell 生命周期归 systemd 管理，hyprland/niri 零 shell 配置。
+
 ## 面板布局
 
 顶栏分三个区域：

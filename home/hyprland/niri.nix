@@ -60,8 +60,8 @@
       // ===== Screenshot =====
       screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-      // ===== Noctalia shell（原生支持 niri，通过 NIRI_SOCKET 检测）=====
-      spawn-at-startup "noctalia"
+      // ===== Noctalia shell =====
+      // 由 systemd user service 拉起（graphical-session.target），此处不再 spawn。
 
       // ===== Window rules =====
       // 全局窗口圆角（与 Hyprland rounding=10 一致）。

@@ -776,4 +776,24 @@ in
       };
     };
   };
+
+  # Noctalia 由 systemd 拉起（而非 compositor autostart）——统一 shell 生命周期管理，
+  # 为 shell-switcher 切换做准备。hyprland.lua / niri.kdl 的 autostart 行已移除。
+  # KillMode=control-group：切换时整个 cgroup（含 QML 子进程）被干净终止。
+  systemd.user.services.noctalia = {
+    Unit = {
+      Description = "Noctalia shell";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${config.programs.noctalia.package}/bin/noctalia";
+      Restart = "on-failure";
+      RestartSec = 3;
+      KillMode = "control-group";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
 }

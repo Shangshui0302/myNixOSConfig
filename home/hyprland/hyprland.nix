@@ -202,10 +202,7 @@ in
     hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "fade" })
     hl.animation({ leaf = "zoomFactor",  enabled = true, speed = 7, bezier = "quick" })
 
-    -- Startup commands
-    hl.on("hyprland.start", function()
-      hl.exec_cmd("noctalia")
-    end)
+    -- Noctalia 由 systemd user service 拉起（graphical-session.target），此处不再 autostart。
 
     -- Noctalia theme colors loaded via v5 template system (hyprland-lua user template).
 
