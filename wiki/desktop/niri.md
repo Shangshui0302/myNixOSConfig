@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 
 # Niri 使用指南
@@ -50,18 +50,20 @@ Hyprland ↔ niri 切换：注销当前 compositor → 切到其他 TTY 重新�
 | Print / Shift+Print | 截图（复用 hyprland 脚本） |
 | XF86 音量/亮度 | PipeWire / Noctalia |
 
-## 配色同步（Noctalia）
+## 配色（stylix）
 
-niri 的 focus-ring 颜色由 Noctalia 模板渲染注入（与 hyprland-colors.lua 同机制）：
+niri 的 focus-ring 颜色由 stylix 注入（壁纸取色，与 Hyprland/foot 同源）：
 
-1. `home/hyprland/noctalia.nix` 注册模板 `niri_colors`：`niri-colors.kdl` → `~/.config/niri/noctalia-colors.kdl`
-2. 模板内容：`layout { focus-ring { active-color "{{colors.primary.default.hex}}" ... } }`
-3. config.kdl 文件末尾 `include optional=true "~/.config/niri/noctalia-colors.kdl"`，Noctalia 改配色时 niri 热重载
+1. `home/hyprland/niri.nix` 声明 `xdg.configFile."niri/stylix-colors.kdl"`：`layout { focus-ring { active-color "..."; inactive-color "..." } }`
+2. config.kdl 文件末尾 `include optional=true "~/.config/niri/stylix-colors.kdl"`
+3. 改配色只改 `host/hyprland/stylix.nix` 的 `image`（壁纸取色），rebuild 生效
+
+> Noctalia 不再分发 niri 配色（`niri_colors` 模板已停用），切 Noctalia 主题不影响 niri focus-ring。
 
 ## 已知差异（vs Hyprland）
 
 - **blur 不是实时**：niri 默认 x-ray blur 只模糊壁纸一次（静态），窗口背后动态内容不实时模糊。Noctalia bar 的 blur 强制关闭（`layer-rule`），因为 x-ray blur 会错误模糊 bar 的透明部分
-- **focus-ring 颜色** 由 Noctalia 注入（当前 yamadaryou 金色），不是 Hyprland 的 border
+- **focus-ring 颜色** 由 stylix 注入（壁纸取色），不是 Hyprland 的 border
 - **epic-mouse sensitivity**：niri 无逐设备等价项，未迁移
 
 ## 相关链接

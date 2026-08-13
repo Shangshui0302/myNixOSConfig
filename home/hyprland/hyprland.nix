@@ -37,23 +37,24 @@ in
     systemd.enable = false;
   };
 
-  # Noctalia user template: Lua color config
-  xdg.configFile."noctalia/templates/hyprland-colors.lua".text = ''
+  # stylix 配色注入（替代 Noctalia 模板）：hyprland.lua require stylix-colors，
+  # 合成器 border 配色与 foot/终端同源（config.lib.stylix.colors 壁纸取色）。
+  xdg.configFile."hypr/stylix-colors.lua".text = ''
     hl.config({
       general = {
-        ["col.active_border"] = "{{colors.primary.default.hex}}",
-        ["col.inactive_border"] = "{{colors.surface.default.hex}}",
+        ["col.active_border"] = "${config.lib.stylix.colors.withHashtag.base0D}",
+        ["col.inactive_border"] = "${config.lib.stylix.colors.withHashtag.base03}",
       },
       group = {
-        ["col.border_active"] = "{{colors.secondary.default.hex}}",
-        ["col.border_inactive"] = "{{colors.surface.default.hex}}",
-        ["col.border_locked_active"] = "{{colors.error.default.hex}}",
-        ["col.border_locked_inactive"] = "{{colors.surface.default.hex}}",
+        ["col.border_active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
+        ["col.border_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+        ["col.border_locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
+        ["col.border_locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
         groupbar = {
-          ["col.active"] = "{{colors.secondary.default.hex}}",
-          ["col.inactive"] = "{{colors.surface.default.hex}}",
-          ["col.locked_active"] = "{{colors.error.default.hex}}",
-          ["col.locked_inactive"] = "{{colors.surface.default.hex}}",
+          ["col.active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
+          ["col.inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+          ["col.locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
+          ["col.locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
         },
       },
     })
@@ -64,8 +65,8 @@ in
     text = ''
     local home = "${homeDir}"
 
-    -- Noctalia theme colors (generated on first theme load, safe-require)
-    pcall(require, "noctalia-colors")
+    -- stylix 配色（壁纸取色，与 foot/终端同源）
+    pcall(require, "stylix-colors")
 
     hl.env("XCURSOR_SIZE", "24")
     hl.env("HYPRCURSOR_SIZE", "24")

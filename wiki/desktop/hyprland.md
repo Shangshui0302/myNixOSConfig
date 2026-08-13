@@ -170,7 +170,7 @@ Shift + Print   # 区域截图 → Swappy 标注 → 存文件 + 剪贴板
 
 ## 主题
 
-Noctalia 管理所有配色，主题切换后 Hyprland 边框颜色自动跟随。
+边框颜色由 stylix 注入（壁纸取色，与 foot 终端同源），见 `host/hyprland/stylix.nix`。Noctalia 切主题不影响合成器边框。
 
 当前主题：**yamadaryou**
 
@@ -201,7 +201,7 @@ cat /sys/module/amdgpu/parameters/dcdebugmask   # 应为 262144
 
 - [Noctalia](noctalia.md) — 顶栏/控制中心/应用启动器，快捷键与 Hyprland 绑定
 - [Shell 环境](shell.md) — `Super + Q` 启动的 foot 终端配置
-- [深色模式架构](darkmode.md) — Hyprland 边框颜色跟随 Noctalia 主题
+- [深色模式架构](darkmode.md) — Noctalia 深色调度（合成器边框配色归 stylix）
 - [Memory: AMD 背光曲线溢出](../../memory/cards/mechrevo-amd-backlight-curve.md) — 100% 亮度变黑的内核参数修复
 - [Memory: Hyprland 模糊 / AMD 780M](../../memory/cards/hyprland-056-blur-amd.md) — 模糊在 AMD 核显失效的处理
 - [wiki 首页](../README.md)

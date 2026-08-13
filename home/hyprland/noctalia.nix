@@ -549,7 +549,6 @@ in
     wallpaper_scheme = "muted";
     templates = {
       builtin_ids = [
-        ("hyprland")
         ("qt")
         ("steam")
         ("telegram")
@@ -557,16 +556,9 @@ in
       ];
       enable_builtin_templates = true;
       enable_community_templates = true;
-      user = {
-        hyprland_lua = {
-          input_path = "${config.xdg.configHome}/noctalia/templates/hyprland-colors.lua";
-          output_path = "${config.xdg.configHome}/hypr/noctalia-colors.lua";
-        };
-        niri_colors = {
-          input_path = "${config.xdg.configHome}/noctalia/templates/niri-colors.kdl";
-          output_path = "${config.xdg.configHome}/niri/noctalia-colors.kdl";
-        };
-      };
+      # 合成器模板全部停用：user（hyprland_lua/niri_colors）+ builtin hyprland 都不再分发配色。
+      # 合成器 border 配色由 stylix 注入（hyprland.nix 的 stylix-colors.lua + niri.nix 的 stylix-colors.kdl）。
+      # 保留 builtin hyprland 会在切主题时创建 hyprland.conf（conf 格式）覆盖 stylix lua 配色，故一并移除。
     };
   };
   wallpaper = {

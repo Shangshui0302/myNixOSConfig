@@ -154,7 +154,7 @@ sudo cp <your-gh.env> /persist/secrets/gh.env
 | `~/Pictures/ProfiePictures/` | Noctalia 头像     | 头像不显示              |
 | `~/Pictures/Wallpapers/`     | Noctalia 壁纸     | 壁纸功能不可用          |
 | `~/.cache/noctalia/HVE/`     | Noctalia HVE 配置 | Hyprland 装饰配置缺失   |
-| `~/.config/hypr/noctalia/`   | Noctalia 颜色配置 | Hyprland 颜色回退到默认 |
+| `~/.config/hypr/noctalia/`   | Noctalia 内置模板产物 | 无影响（合成器配色已归 stylix，见 `host/hyprland/stylix.nix`） |
 
 首次启动 Noctalia 后，`~/.cache/noctalia/HVE/` 和 `~/.config/hypr/noctalia/` 会自动生成。
 

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   # niri — scrollable-tiling Wayland compositor
@@ -200,18 +200,17 @@
           Mod+Shift+Slash { show-hotkey-overlay; }
       }
 
-      // Noctalia 配色注入：focus-ring 颜色由 Noctalia 模板渲染，改配色热重载。
-      // optional=true：Noctalia 首次未生成时不报错，用主 config 默认色兜底。
-      include optional=true "~/.config/niri/noctalia-colors.kdl"
+      // stylix 配色注入（替代 Noctalia 模板）：focus-ring 颜色壁纸取色，与 foot 同源
+      include optional=true "~/.config/niri/stylix-colors.kdl"
     '';
   };
 
-  # Noctalia 模板：渲染 niri focus-ring 颜色（与 hyprland-colors.lua 同机制）
-  xdg.configFile."noctalia/templates/niri-colors.kdl".text = ''
+  # stylix 配色注入：niri focus-ring 颜色壁纸取色（与 hyprland stylix-colors.lua 同机制）
+  xdg.configFile."niri/stylix-colors.kdl".text = ''
     layout {
         focus-ring {
-            active-color "{{colors.primary.default.hex}}"
-            inactive-color "{{colors.surface.default.hex}}"
+            active-color "${config.lib.stylix.colors.withHashtag.base0D}"
+            inactive-color "${config.lib.stylix.colors.withHashtag.base03}"
         }
     }
   '';

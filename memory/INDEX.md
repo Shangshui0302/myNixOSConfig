@@ -20,6 +20,7 @@
 - [GSettings override 生效条件](cards/gsettings-override-schema-packages.md) — override 非标准 schema 需 extraGSettingsOverridePackages + 扩展 schema 链接
 - [TTY 下 DE 切换: kmscon/uwsm 会话管理](cards/uwsm-kmscon-session-handoff.md) — graphical-session.target 残留 + fcitx5 autostart 机制
 - [Flatpak 声明式管理: nix-flatpak home-manager 模块](cards/nix-flatpak-declarative-flatpak.md) — services.flatpak.packages/overrides
+- [stylix 作为配色中枢](cards/stylix-color-hub.md) — 壁纸取色，foot/hyprland/niri 同源，Noctalia 合成器模板全停
 
 ## 硬件 hardware
 

@@ -30,10 +30,10 @@ docs:
 
   desktop/hyprland.md:
     sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, host/hyprland/desktop.nix, host/hyprland/dms-shell.nix, host/hyprland/stylix.nix, host/base/boot.nix]
-    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve]
+    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub]
   desktop/niri.md:
     sources: [home/hyprland/niri.nix]
-    memory:  []
+    memory:  [stylix-color-hub]
   desktop/gnome.md:
     sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix]
     memory:  [gnome-specialisation]
@@ -42,7 +42,7 @@ docs:
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink]
   desktop/noctalia.md:
     sources: [home/hyprland/noctalia.nix, host/hyprland/greeter.nix]
-    memory:  []
+    memory:  [stylix-color-hub]
   desktop/shell.md:
     sources: [home/env/shell.nix, home/env/terminal.nix]
     memory:  []

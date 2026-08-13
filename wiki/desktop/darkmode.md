@@ -126,5 +126,5 @@ systemctl --user status xdg-desktop-portal-gtk
 ## 相关链接
 
 - [Noctalia](noctalia.md) — 深色模式调度器，hook 写 dconf/qt5ct
-- [Hyprland](hyprland.md) — 边框颜色跟随 Noctalia 配色方案
+- [Hyprland](hyprland.md) — 合成器边框配色由 stylix 注入（壁纸取色）
 - [wiki 首页](../README.md)
