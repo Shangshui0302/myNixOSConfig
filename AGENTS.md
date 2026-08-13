@@ -85,6 +85,7 @@ myNixOSConfig/
 │   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
 │   │   ├── noctalia.nix       # Noctalia shell 面板
 │   │   ├── caelestia-shell.nix # caelestia-dots shell（可切换，wantedBy 空由 switcher 启停）
+│   │   ├── persona-shell.nix   # Persona-Quickshell（纯 QML，local-deriv 打包 + qs -c）
 │   │   ├── niri.nix           # niri 滚动平铺合成器
 │   │   ├── musicfox.nix       # go-musicfox（依赖 foot）
 │   │   └── shell-switcher.nix # shell-switcher 运行时配置（声明可切换 shell）

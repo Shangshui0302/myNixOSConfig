@@ -16,5 +16,9 @@
     [[shell]]
     name = "caelestia"
     service = "caelestia.service"
+
+    [[shell]]
+    name = "persona"
+    service = "persona.service"
   '';
 }
