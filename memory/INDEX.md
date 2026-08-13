@@ -35,3 +35,4 @@
 - [nh 变体检测: /etc/specialisation 标记文件](cards/nh-specialisation-detection.md) — 变体须写自己名字，删了 nh 会静默切回 base
 - [nix flake 复制 ./ 只含 git tracked 文件](cards/nix-flake-tracked-files.md) — 新增文件先 stage 再 build，store source 与本地不一致
 - [NixOS /etc/static 固化丢 fish/zsh vendor 补全](cards/nixos-etc-static-fish-completion.md) — fish 补全显式装 ~/.config/fish/completions
+- [foot 颜色不接受 # 前缀](cards/foot-color-nohash.md) — 用无前缀 hex，stylix 注入用 baseXX 非 withHashtag

@@ -77,28 +77,29 @@ in
         inhibit-when-focused = "no";
       };
       # 配色由 stylix 生成（config.lib.stylix.colors，host/hyprland/stylix.nix），
+      # foot 1.27 颜色不接受 # 前缀，用无前缀 hex（不用 withHashtag）
       # blur 是 foot 特效（stylix 不碰）单独保留
       "colors-dark" = {
         blur = "yes";
         alpha = "0.8";
-        background = config.lib.stylix.colors.withHashtag.base00;
-        foreground = config.lib.stylix.colors.withHashtag.base05;
-        regular0 = config.lib.stylix.colors.withHashtag.base00;
-        regular1 = config.lib.stylix.colors.withHashtag.base08;
-        regular2 = config.lib.stylix.colors.withHashtag.base0B;
-        regular3 = config.lib.stylix.colors.withHashtag.base0A;
-        regular4 = config.lib.stylix.colors.withHashtag.base0D;
-        regular5 = config.lib.stylix.colors.withHashtag.base0E;
-        regular6 = config.lib.stylix.colors.withHashtag.base0C;
-        regular7 = config.lib.stylix.colors.withHashtag.base05;
-        bright0 = config.lib.stylix.colors.withHashtag.base03;
-        bright1 = config.lib.stylix.colors.withHashtag.base09;
-        bright2 = config.lib.stylix.colors.withHashtag.base0F;
-        bright3 = config.lib.stylix.colors.withHashtag.base01;
-        bright4 = config.lib.stylix.colors.withHashtag.base02;
-        bright5 = config.lib.stylix.colors.withHashtag.base04;
-        bright6 = config.lib.stylix.colors.withHashtag.base06;
-        bright7 = config.lib.stylix.colors.withHashtag.base07;
+        background = config.lib.stylix.colors.base00;
+        foreground = config.lib.stylix.colors.base05;
+        regular0 = config.lib.stylix.colors.base00;
+        regular1 = config.lib.stylix.colors.base08;
+        regular2 = config.lib.stylix.colors.base0B;
+        regular3 = config.lib.stylix.colors.base0A;
+        regular4 = config.lib.stylix.colors.base0D;
+        regular5 = config.lib.stylix.colors.base0E;
+        regular6 = config.lib.stylix.colors.base0C;
+        regular7 = config.lib.stylix.colors.base05;
+        bright0 = config.lib.stylix.colors.base03;
+        bright1 = config.lib.stylix.colors.base09;
+        bright2 = config.lib.stylix.colors.base0F;
+        bright3 = config.lib.stylix.colors.base01;
+        bright4 = config.lib.stylix.colors.base02;
+        bright5 = config.lib.stylix.colors.base04;
+        bright6 = config.lib.stylix.colors.base06;
+        bright7 = config.lib.stylix.colors.base07;
       };
     };
   };

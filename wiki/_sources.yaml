@@ -30,7 +30,7 @@ docs:
 
   desktop/hyprland.md:
     sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, host/hyprland/desktop.nix, host/hyprland/dms-shell.nix, host/hyprland/stylix.nix, host/base/boot.nix]
-    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub]
+    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub, foot-color-nohash]
   desktop/niri.md:
     sources: [home/hyprland/niri.nix]
     memory:  [stylix-color-hub]
