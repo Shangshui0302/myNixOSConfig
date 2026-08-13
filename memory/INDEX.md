@@ -21,6 +21,7 @@
 - [TTY 下 DE 切换: kmscon/uwsm 会话管理](cards/uwsm-kmscon-session-handoff.md) — graphical-session.target 残留 + fcitx5 autostart 机制
 - [Flatpak 声明式管理: nix-flatpak home-manager 模块](cards/nix-flatpak-declarative-flatpak.md) — services.flatpak.packages/overrides
 - [stylix 作为配色中枢](cards/stylix-color-hub.md) — 壁纸取色，foot/hyprland/niri 同源，Noctalia 合成器模板全停
+- [shell-switcher 通用化: 默认 shell 由配置指定](cards/shell-switcher-generic.md) — 工具层零本地假设，本地值放配置层
 
 ## 硬件 hardware
 
@@ -32,3 +33,5 @@
 
 - [查包强制多路径搜索](cards/nix-search-before-manual.md) — 禁止一次查不到就手搓 Nix module
 - [nh 变体检测: /etc/specialisation 标记文件](cards/nh-specialisation-detection.md) — 变体须写自己名字，删了 nh 会静默切回 base
+- [nix flake 复制 ./ 只含 git tracked 文件](cards/nix-flake-tracked-files.md) — 新增文件先 stage 再 build，store source 与本地不一致
+- [NixOS /etc/static 固化丢 fish/zsh vendor 补全](cards/nixos-etc-static-fish-completion.md) — fish 补全显式装 ~/.config/fish/completions
