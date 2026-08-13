@@ -43,6 +43,9 @@ docs:
   desktop/noctalia.md:
     sources: [home/hyprland/noctalia.nix, host/hyprland/greeter.nix]
     memory:  [stylix-color-hub]
+  desktop/shell-switcher.md:
+    sources: [home/hyprland/shell-switcher.nix, host/hyprland/dms-shell.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, home/hyprland/noctalia.nix]
+    memory:  []
   desktop/shell.md:
     sources: [home/env/shell.nix, home/env/terminal.nix]
     memory:  []

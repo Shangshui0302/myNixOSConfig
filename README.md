@@ -61,7 +61,7 @@ NixOS 个人配置，基于 flakes + Home Manager。
 │   ├── _sources.yaml          # 来源映射清单（单真源，驱动 doc-sync hook）
 │   ├── overview.md            # 项目概述
 │   ├── architecture/          # 系统架构: index/flake/host
-│   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/darkmode/keyring
+│   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/shell-switcher/darkmode/keyring
 │   ├── productivity/          # 生产力: office
 │   ├── dev/                   # 开发与工具: nvim/vscode/yazi/distrobox/bottles
 │   ├── leisure/               # 娱乐: gaming/media
