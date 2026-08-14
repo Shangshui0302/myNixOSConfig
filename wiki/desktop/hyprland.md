@@ -21,7 +21,9 @@ updated: 2026-08-13
 
 **桌面 shell 切换**：默认 Noctalia（systemd 拉起；默认 shell 由 config.toml 的 `default` 指定），可运行时切到其他 shell：`shell-switcher set dms|caelestia|persona|noctalia`（切换器配置 `~/.config/shell-switcher/config.toml`，见 `home/hyprland/shell-switcher.nix`）。可切换 shell：DMS `host/hyprland/dms-shell.nix`、caelestia `home/hyprland/caelestia-shell.nix`、Persona `home/hyprland/persona-shell.nix`（local-deriv/persona-quickshell.nix 纯 QML 打包 + `qs -c`）。它们的 service wantedBy 均置空（不自动起），由切换器启停避免与 Noctalia 抢 `org.freedesktop.Notifications` DBus。shell-switcher 二进制经 flake input 接入（`github:Shangshui0302/shell-switcher`）。
 
-**配色（stylix）**：`host/hyprland/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Anthropic Mono Variable:size=12`（stylix 接入时曾被误删、字号退回默认，已恢复）。GTK 保持 Material-Gnome、Qt 保持 qt5ct/breeze、Noctalia 面板保持 yamadaryou（stylix 对应 target 均显式关）。
+**配色（stylix）**：`host/hyprland/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Anthropic Mono Variable:size=12`（stylix 接入时曾被误删、字号退回默认，已恢复）。
+
+**壁纸动态取色（Phase 1）**：壁纸由 waypaper + swww 管理（与 shell 解耦），切壁纸时 post_command 触发 matugen 取色，写入 `~/.local/state/caelestia/scheme.json`——caelestia 的 `Colours.qml` 监听该文件自动热载换肤。实现见 `home/hyprland/wallpaper.nix` + `matugen/caelestia-scheme.json.tpl`。Noctalia palette / Hyprland·niri 边框 / DMS 的 matugen 接管为后续 Phase。GTK 保持 Material-Gnome、Qt 保持 qt5ct/breeze、Noctalia 面板保持 yamadaryou（stylix 对应 target 均显式关）。
 
 ## 基本概念
 
