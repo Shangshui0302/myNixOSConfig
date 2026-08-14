@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
-  # matugen 配置：一次取色输出多端产物（caelestia scheme.json + Noctalia palette）
+  # matugen 配置：一次取色输出多端产物
+  # caelestia scheme.json + Noctalia palette + Hyprland/niri 边框色片段
   matugenConfig = pkgs.writeText "matugen-wp.toml" ''
     [config]
 
@@ -12,11 +13,21 @@ let
     [templates.noctalia]
     input_path = '${./matugen/noctalia-palette.json.tpl}'
     output_path = '${config.home.homeDirectory}/.config/noctalia/palettes/matugen.json'
+
+    [templates.hyprland]
+    input_path = '${./matugen/hyprland-colors.lua.tpl}'
+    output_path = '${config.home.homeDirectory}/.cache/wallpaper-colors/hyprland.lua'
+
+    [templates.niri]
+    input_path = '${./matugen/niri-colors.kdl.tpl}'
+    output_path = '${config.home.homeDirectory}/.config/niri/wallpaper-colors.kdl'
   '';
 
   # waypaper post_command 分发脚本：matugen 从壁纸取色 → 多端产物
   # caelestia scheme.json（Colours.qml watchChanges 自动热载）
   # Noctalia matugen.json（palette 文件不被 file_watcher 监听，需 config-reload 触发重读）
+  # Hyprland 边框（hyprctl eval 运行时下发，不落盘不破坏 Nix）
+  # niri 边框（matugen 直接写 wallpaper-colors.kdl，niri include 该文件自动热载）
   wallpaperThemeScript = pkgs.writeShellScript "wallpaper-theme" ''
     set -euo pipefail
     WALL="$1"
@@ -25,6 +36,10 @@ let
       --prefer=saturation -c ${matugenConfig} 2>/dev/null \
       || ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-tonal-spot \
       --prefer saturation -c ${matugenConfig}
+    # Hyprland 运行时改 border 色（eval 下发 hl.config，Lua provider 下必须 eval 而非 keyword）
+    if command -v hyprctl >/dev/null 2>&1 && [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+      hyprctl eval "$(cat '${config.home.homeDirectory}/.cache/wallpaper-colors/hyprland.lua')" 2>/dev/null || true
+    fi
     # Noctalia palette 文件不自动监听，触发 config-reload 让它重读 matugen.json（切壁纸换色）
     # Noctalia 未运行时忽略（当前 shell 可能是 caelestia/DMS）
     ${pkgs.noctalia}/bin/noctalia msg config-reload 2>/dev/null || true

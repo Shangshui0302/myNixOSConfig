@@ -50,13 +50,14 @@ Hyprland ↔ niri 切换：注销当前 compositor → 切到其他 TTY 重新�
 | Print / Shift+Print | 截图（复用 hyprland 脚本） |
 | XF86 音量/亮度 | PipeWire / Noctalia |
 
-## 配色（stylix）
+## 配色（stylix 底色 + matugen 动态）
 
-niri 的 focus-ring 颜色由 stylix 注入（壁纸取色，与 Hyprland/foot 同源）：
+niri 的 focus-ring 颜色分两层：
 
-1. `home/hyprland/niri.nix` 声明 `xdg.configFile."niri/stylix-colors.kdl"`：`layout { focus-ring { active-color "..."; inactive-color "..." } }`
-2. config.kdl 文件末尾 `include optional=true "~/.config/niri/stylix-colors.kdl"`
-3. 改配色只改 `host/hyprland/stylix.nix` 的 `image`（壁纸取色），rebuild 生效
+1. **stylix 构建期底色**：`niri/stylix-colors.kdl`（壁纸取色，与 foot 同源），rebuild 生效
+2. **matugen 动态覆盖**：`~/.config/niri/wallpaper-colors.kdl`——切壁纸时 matugen 直接写该文件，niri 的 include 监视自动热载换色（active = primary，inactive = outline）
+
+config.kdl 末尾依次 `include` stylix-colors.kdl 和 wallpaper-colors.kdl（后者位置序覆盖前者）。改配色切壁纸即可，无需 rebuild。
 
 > Noctalia 不再分发 niri 配色（`niri_colors` 模板已停用），切 Noctalia 主题不影响 niri focus-ring。
 

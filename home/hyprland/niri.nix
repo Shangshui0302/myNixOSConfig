@@ -202,6 +202,8 @@
 
       // stylix 配色注入（替代 Noctalia 模板）：focus-ring 颜色壁纸取色，与 foot 同源
       include optional=true "~/.config/niri/stylix-colors.kdl"
+      // matugen 动态配色（壁纸取色）：stylix 之后 include，位置序覆盖；matugen 写该文件自动热载
+      include optional=true "~/.config/niri/wallpaper-colors.kdl"
     '';
   };
 
