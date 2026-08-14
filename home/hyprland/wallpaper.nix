@@ -55,12 +55,19 @@ in {
   # "Could not save config file due to permission error" 且 post_command 不触发。
   # 用 activation 复制为普通可写文件（rebuild 重新生成声明配置，覆盖 waypaper 运行时保存）。
   # 注意 section 必须是 [Settings]（大写 S）——waypaper config.get("Settings", ...)，小写读不到导致 post_command 为空。
-  home.activation.setupWaypaperConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p "$HOME/.config/waypaper"
-    cat > "$HOME/.config/waypaper/config.ini" <<'INI'
+  #
+  # 关键：post_command 指向固定路径 wrapper（~/.local/bin/wallpaper-theme），而非 store hash 路径。
+  # waypaper 是常驻进程，缓存 post_command 并写回 config.ini；store 路径每次 rebuild 都变，
+  # 会被覆盖成旧值。固定路径 + activation 更新内容，路径稳定、内容每次执行读最新。
+  home.activation.setupWaypaperTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.local/bin" "$HOME/.config/waypaper"
+    cp ${wallpaperThemeScript} "$HOME/.local/bin/wallpaper-theme"
+    chmod 755 "$HOME/.local/bin/wallpaper-theme"
+
+    cat > "$HOME/.config/waypaper/config.ini" <<INI
 [Settings]
 backend = awww
-post_command = ${wallpaperThemeScript} $wallpaper
+post_command = ${config.home.homeDirectory}/.local/bin/wallpaper-theme \$wallpaper
 INI
     chmod 644 "$HOME/.config/waypaper/config.ini"
   '';
