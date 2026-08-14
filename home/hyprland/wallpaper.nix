@@ -22,13 +22,30 @@ let
       --prefer saturation -c ${matugenConfig}
   '';
 in {
-  # 壁纸管理 + 动态取色（与 shell 解耦）：waypaper(swww) 切壁纸 → matugen 取色 → 各 shell 消费统一产物。
+  # 壁纸管理 + 动态取色（与 shell 解耦）：waypaper 切壁纸 → matugen 取色 → 各 shell 消费统一产物。
   # Phase 1 只接 caelestia（scheme.json watchChanges 自动热载）；Noctalia palette / Hyprland·niri 边框 / DMS 后续接。
-  home.packages = [ pkgs.waypaper pkgs.swww pkgs.matugen ];
+  # swww 在 nixpkgs 已改名 awww（同作者 LGFae 继任，提供 awww/awww-daemon），waypaper 2.8 原生支持 awww 后端。
+  home.packages = [ pkgs.waypaper pkgs.awww pkgs.matugen ];
+
+  # awww daemon：waypaper 设置壁纸的后端（awww-daemon 前台运行）
+  systemd.user.services.awww-daemon = {
+    Unit = {
+      Description = "awww daemon";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.awww}/bin/awww-daemon";
+      Restart = "on-failure";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
 
   xdg.configFile."waypaper/config.ini".text = ''
     [settings]
-    backend = swww
+    backend = awww
     post_command = ${wallpaperThemeScript} $wallpaper
   '';
 }
