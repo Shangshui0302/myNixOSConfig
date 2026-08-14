@@ -122,7 +122,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 ## 配色方案 (matugen)
 
-当前主题：**matugen**——由 waypaper 切壁纸时 matugen 动态取色生成（`~/.config/noctalia/palettes/matugen.json`，`theme.custom_palette = "matugen"`）。配色随壁纸动态变化（M3 语义色 primary/secondary/surface 等），不再固定 yamadaryou。终端配色（foot）仍由 stylix 构建期管理，不随壁纸。
+当前主题：**matugen**——由 waypaper 切壁纸时 matugen 动态取色生成（`~/.config/noctalia/palettes/matugen.json`，`theme.custom_palette = "matugen"`）。配色随壁纸动态变化（M3 语义色 primary/secondary/surface 等），不再固定 yamadaryou。终端配色（foot）仍由 stylix 构建期管理，不随壁纸。**模板全部禁用**（`builtin_ids = []`、enable 均 false），配色统一由 matugen 接管。
 
 **调度模式**：根据地理位置（成都）自动切换暗色/亮色模式。
 **模板同步**：Qt/GTK 主题、Steam、Telegram 皮肤自动跟随配色。合成器配色（Hyprland 边框 / niri focus-ring）已改由 stylix 注入（壁纸取色），不再走 Noctalia 模板。

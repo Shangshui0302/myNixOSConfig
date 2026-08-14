@@ -545,17 +545,11 @@ in
     source = "custom";
     wallpaper_scheme = "muted";
     templates = {
-      builtin_ids = [
-        ("qt")
-        ("steam")
-        ("telegram")
-        ("gtk")
-      ];
-      enable_builtin_templates = true;
-      enable_community_templates = true;
-      # 合成器模板全部停用：user（hyprland_lua/niri_colors）+ builtin hyprland 都不再分发配色。
-      # 合成器 border 配色由 stylix 注入（hyprland.nix 的 stylix-colors.lua + niri.nix 的 stylix-colors.kdl）。
-      # 保留 builtin hyprland 会在切主题时创建 hyprland.conf（conf 格式）覆盖 stylix lua 配色，故一并移除。
+      # 模板全部禁用：配色由 matugen 统一接管（Noctalia palette ~/.config/noctalia/palettes/matugen.json），
+      # 不再分发内置/社区模板（对齐 Noctalia 实际配置）
+      builtin_ids = [ ];
+      enable_builtin_templates = false;
+      enable_community_templates = false;
     };
   };
   wallpaper = {
