@@ -1,13 +1,17 @@
 { config, lib, pkgs, ... }:
 
 let
-  # matugen 配置：定义 caelestia scheme.json 模板输出（唯一消费端，Phase 1）
+  # matugen 配置：一次取色输出多端产物（caelestia scheme.json + Noctalia palette）
   matugenConfig = pkgs.writeText "matugen-wp.toml" ''
     [config]
 
     [templates.caelestia]
     input_path = '${./matugen/caelestia-scheme.json.tpl}'
     output_path = '${config.home.homeDirectory}/.local/state/caelestia/scheme.json'
+
+    [templates.noctalia]
+    input_path = '${./matugen/noctalia-palette.json.tpl}'
+    output_path = '${config.home.homeDirectory}/.config/noctalia/palettes/matugen.json'
   '';
 
   # waypaper post_command 分发脚本：matugen 从壁纸取色 → caelestia scheme.json

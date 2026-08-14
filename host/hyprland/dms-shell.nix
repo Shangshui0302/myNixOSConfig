@@ -8,7 +8,8 @@
     enable = true;
     # 裁剪暂时用不上的功能，省闭包（系统监控/动态主题/音频波形/日历事件）
     enableSystemMonitoring = false;
-    enableDynamicTheming = false;
+    # matugen 动态取色接管 DMS 配色（Requires: matugen，装依赖 + 自动基于壁纸生成主题）
+    enableDynamicTheming = true;
     enableAudioWavelength = false;
     enableCalendarEvents = false;
   };

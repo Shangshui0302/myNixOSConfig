@@ -540,7 +540,7 @@ in
   };
   theme = {
     community_palette = "Tokyo Night Moon";
-    custom_palette = "yamadaryou";
+    custom_palette = "matugen";
     mode = "dark";
     source = "custom";
     wallpaper_scheme = "muted";
@@ -560,7 +560,8 @@ in
   };
   wallpaper = {
     directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
-    enabled = true;
+    # 壁纸由 waypaper + awww 统一管理（与 shell 解耦），Noctalia 不再切壁纸
+    enabled = false;
     fill_mode = "crop";
     transition = [
       ("fade")

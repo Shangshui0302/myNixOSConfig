@@ -118,23 +118,11 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 ## 壁纸管理
 
-- **壁纸目录**：`~/Pictures/Wallpapers/`
-- **填充模式**：crop（裁剪填充）
-- **过渡效果**：fade / disc / stripes / wipe / pixelate / honeycomb（随机选取）
-- **过渡时间**：1500ms
-- **收藏壁纸**：yamadaryou.png，自动应用 yamadaryou 配色方案
-- **多屏**：所有显示器使用同一壁纸
-- **自动切换**：未启用（手动选择）
-- **头像与壁纸源**：均在 `assets/`（git 跟踪），由 `home.file` 复制到 `~/Pictures/`，可重建、不依赖外部文件
+壁纸已由 **waypaper + awww** 统一管理（与 shell 解耦，见 [Hyprland](hyprland.md) 的壁纸动态取色），Noctalia 不再切壁纸（`wallpaper.enabled = false`）。原 `~/Pictures/Wallpapers/` 目录仍作为 waypaper 的壁纸来源；`assets/yamadaryou.png` 为默认壁纸（由 `home.file` 复制）。
 
-## 配色方案 (yamadaryou)
+## 配色方案 (matugen)
 
-当前主题：**yamadaryou**（自定义 Material You 风格）
-
-| 模式 | 主色 | 强调色 | 表面色 |
-|------|------|--------|--------|
-| 暗色 | `#ffec15` (金) | `#006ff1` (蓝) | `#000000` (黑) |
-| 亮色 | `#0055ff` (蓝) | `#e6c814` (金) | `#fffaf3` (暖白) |
+当前主题：**matugen**——由 waypaper 切壁纸时 matugen 动态取色生成（`~/.config/noctalia/palettes/matugen.json`，`theme.custom_palette = "matugen"`）。配色随壁纸动态变化（M3 语义色 primary/secondary/surface 等），不再固定 yamadaryou。终端配色（foot）仍由 stylix 构建期管理，不随壁纸。
 
 **调度模式**：根据地理位置（成都）自动切换暗色/亮色模式。
 **模板同步**：Qt/GTK 主题、Steam、Telegram 皮肤自动跟随配色。合成器配色（Hyprland 边框 / niri focus-ring）已改由 stylix 注入（壁纸取色），不再走 Noctalia 模板。
