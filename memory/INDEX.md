@@ -22,6 +22,7 @@
 - [Flatpak 声明式管理: nix-flatpak home-manager 模块](cards/nix-flatpak-declarative-flatpak.md) — services.flatpak.packages/overrides
 - [stylix 作为配色中枢](cards/stylix-color-hub.md) — 壁纸取色，foot/hyprland/niri 同源，Noctalia 合成器模板全停
 - [shell-switcher 通用化: 默认 shell 由配置指定](cards/shell-switcher-generic.md) — 工具层零本地假设，本地值放配置层
+- [壁纸动态取色: matugen 单源多端分发](cards/matugen-wallpaper-theming.md) — waypaper→matugen→caelestia/Noctalia/Hyprland/niri，与 shell 解耦
 
 ## 硬件 hardware
 
@@ -36,3 +37,5 @@
 - [nix flake 复制 ./ 只含 git tracked 文件](cards/nix-flake-tracked-files.md) — 新增文件先 stage 再 build，store source 与本地不一致
 - [NixOS /etc/static 固化丢 fish/zsh vendor 补全](cards/nixos-etc-static-fish-completion.md) — fish 补全显式装 ~/.config/fish/completions
 - [foot 颜色不接受 # 前缀](cards/foot-color-nohash.md) — 用无前缀 hex，stylix 注入用 baseXX 非 withHashtag
+- [waypaper 集成 Nix 四个坑](cards/waypaper-nix-integration.md) — 可写副本/[Settings] 大写/固定路径 wrapper/folder 预设
+- [Noctalia palette 格式与热载](cards/noctalia-palette-format-reload.md) — 颜色带 # + config-reload 触发重读
