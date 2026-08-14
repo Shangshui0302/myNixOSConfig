@@ -82,6 +82,7 @@ in {
     cat > "$HOME/.config/waypaper/config.ini" <<INI
 [Settings]
 backend = awww
+folder = ${config.home.homeDirectory}/Pictures/Wallpapers
 post_command = ${config.home.homeDirectory}/.local/bin/wallpaper-theme \$wallpaper
 INI
     chmod 644 "$HOME/.config/waypaper/config.ini"
