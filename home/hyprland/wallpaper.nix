@@ -14,8 +14,9 @@ let
     output_path = '${config.home.homeDirectory}/.config/noctalia/palettes/matugen.json'
   '';
 
-  # waypaper post_command 分发脚本：matugen 从壁纸取色 → caelestia scheme.json
-  # caelestia 的 Colours.qml watchChanges 监听该文件，保存即热重载（无需重启 shell）
+  # waypaper post_command 分发脚本：matugen 从壁纸取色 → 多端产物
+  # caelestia scheme.json（Colours.qml watchChanges 自动热载）
+  # Noctalia matugen.json（palette 文件不被 file_watcher 监听，需 config-reload 触发重读）
   wallpaperThemeScript = pkgs.writeShellScript "wallpaper-theme" ''
     set -euo pipefail
     WALL="$1"
@@ -24,6 +25,9 @@ let
       --prefer=saturation -c ${matugenConfig} 2>/dev/null \
       || ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-tonal-spot \
       --prefer saturation -c ${matugenConfig}
+    # Noctalia palette 文件不自动监听，触发 config-reload 让它重读 matugen.json（切壁纸换色）
+    # Noctalia 未运行时忽略（当前 shell 可能是 caelestia/DMS）
+    ${pkgs.noctalia}/bin/noctalia msg config-reload 2>/dev/null || true
   '';
 in {
   # 壁纸管理 + 动态取色（与 shell 解耦）：waypaper 切壁纸 → matugen 取色 → 各 shell 消费统一产物。

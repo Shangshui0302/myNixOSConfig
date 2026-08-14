@@ -23,7 +23,7 @@ updated: 2026-08-13
 
 **配色（stylix）**：`host/hyprland/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Anthropic Mono Variable:size=12`（stylix 接入时曾被误删、字号退回默认，已恢复）。
 
-**壁纸动态取色**：壁纸由 waypaper + awww 管理（swww 在 nixpkgs 改名 awww，同作者继任，与 shell 解耦），切壁纸时 post_command 触发 matugen 取色，一次生成多端产物：caelestia `~/.local/state/caelestia/scheme.json`（`Colours.qml` watchChanges 自动热载）、Noctalia `~/.config/noctalia/palettes/matugen.json`（`custom_palette = "matugen"`）。waypaper `config.ini` 用可写副本（Nix symlink 只读报 "permission error"）且 section 必须 `[Settings]`（大写）。DMS 走原生 `enableDynamicTheming`（matugen）。实现见 `home/hyprland/wallpaper.nix` + `matugen/*.tpl`。Hyprland·niri 边框接管为后续 Phase。GTK 保持 Material-Gnome、Qt 保持 qt5ct/breeze、Noctalia 面板保持 yamadaryou（stylix 对应 target 均显式关）。
+**壁纸动态取色**：壁纸由 waypaper + awww 管理（swww 在 nixpkgs 改名 awww，同作者继任，与 shell 解耦），切壁纸时 post_command 触发 matugen 取色，一次生成多端产物：caelestia `~/.local/state/caelestia/scheme.json`（`Colours.qml` watchChanges 自动热载）、Noctalia `~/.config/noctalia/palettes/matugen.json`（`custom_palette = "matugen"`）。Noctalia 的 palette 文件不被 file_watcher 监听，分发脚本在 matugen 写完后触发 `noctalia msg config-reload` 让它重读换色。waypaper `config.ini` 用可写副本（Nix symlink 只读报 "permission error"）且 section 必须 `[Settings]`（大写）。DMS 走原生 `enableDynamicTheming`（matugen）。实现见 `home/hyprland/wallpaper.nix` + `matugen/*.tpl`。Hyprland·niri 边框接管为后续 Phase。GTK 保持 Material-Gnome、Qt 保持 qt5ct/breeze、Noctalia 面板保持 yamadaryou（stylix 对应 target 均显式关）。
 
 ## 基本概念
 
