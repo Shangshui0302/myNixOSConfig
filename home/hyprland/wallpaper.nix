@@ -46,10 +46,11 @@ in {
   # waypaper 运行时需写 config.ini（保存当前壁纸等）；Nix symlink 只读会导致
   # "Could not save config file due to permission error" 且 post_command 不触发。
   # 用 activation 复制为普通可写文件（rebuild 重新生成声明配置，覆盖 waypaper 运行时保存）。
+  # 注意 section 必须是 [Settings]（大写 S）——waypaper config.get("Settings", ...)，小写读不到导致 post_command 为空。
   home.activation.setupWaypaperConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.config/waypaper"
     cat > "$HOME/.config/waypaper/config.ini" <<'INI'
-[settings]
+[Settings]
 backend = awww
 post_command = ${wallpaperThemeScript} $wallpaper
 INI
