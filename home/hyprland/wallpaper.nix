@@ -32,9 +32,10 @@ let
     set -euo pipefail
     WALL="$1"
     # matugen 4.x 新版 --prefer=saturation；旧版用 --prefer saturation（空格），fallback 两个
-    ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-tonal-spot \
+    # scheme-content = M3 content 方案（辅助色更收敛，与 Noctalia m3-content 同源）
+    ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-content \
       --prefer=saturation -c ${matugenConfig} 2>/dev/null \
-      || ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-tonal-spot \
+      || ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-content \
       --prefer saturation -c ${matugenConfig}
     # Hyprland 运行时改 border 色（eval 下发 hl.config，Lua provider 下必须 eval 而非 keyword）
     if command -v hyprctl >/dev/null 2>&1 && [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
