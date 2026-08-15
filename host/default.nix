@@ -6,7 +6,6 @@
     ./base/default.nix
     ./hyprland/desktop.nix
     ./hyprland/greeter.nix
-    ./hyprland/dms-shell.nix
     ./hyprland/stylix.nix
   ];
 

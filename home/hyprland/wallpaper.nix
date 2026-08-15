@@ -42,12 +42,12 @@ let
       hyprctl eval "$(cat '${config.home.homeDirectory}/.cache/wallpaper-colors/hyprland.lua')" 2>/dev/null || true
     fi
     # Noctalia palette 文件不自动监听，触发 config-reload 让它重读 matugen.json（切壁纸换色）
-    # Noctalia 未运行时忽略（当前 shell 可能是 caelestia/DMS）
+    # Noctalia 未运行时忽略（当前 shell 可能是 caelestia/persona）
     ${pkgs.noctalia}/bin/noctalia msg config-reload 2>/dev/null || true
   '';
 in {
   # 壁纸管理 + 动态取色（与 shell 解耦）：waypaper 切壁纸 → matugen 取色 → 各 shell 消费统一产物。
-  # Phase 1 只接 caelestia（scheme.json watchChanges 自动热载）；Noctalia palette / Hyprland·niri 边框 / DMS 后续接。
+  # 消费端：caelestia（scheme.json watchChanges 热载）、Noctalia（palette）、Hyprland/niri（边框）。
   # swww 在 nixpkgs 已改名 awww（同作者 LGFae 继任，提供 awww/awww-daemon），waypaper 2.8 原生支持 awww 后端。
   home.packages = [ pkgs.waypaper pkgs.awww pkgs.matugen ];
 

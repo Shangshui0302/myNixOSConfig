@@ -29,7 +29,7 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve]
 
   desktop/hyprland.md:
-    sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, home/hyprland/wallpaper.nix, host/hyprland/desktop.nix, host/hyprland/dms-shell.nix, host/hyprland/stylix.nix, host/base/boot.nix]
+    sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, home/hyprland/wallpaper.nix, host/hyprland/desktop.nix, host/hyprland/stylix.nix, host/base/boot.nix]
     memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub, foot-color-nohash]
   desktop/niri.md:
     sources: [home/hyprland/niri.nix]
@@ -44,7 +44,7 @@ docs:
     sources: [home/hyprland/noctalia.nix, host/hyprland/greeter.nix]
     memory:  [stylix-color-hub]
   desktop/shell-switcher.md:
-    sources: [home/hyprland/shell-switcher.nix, host/hyprland/dms-shell.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, home/hyprland/noctalia.nix]
+    sources: [home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, home/hyprland/noctalia.nix]
     memory:  []
   desktop/shell.md:
     sources: [home/env/shell.nix, home/env/terminal.nix]
