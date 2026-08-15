@@ -86,6 +86,8 @@ VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI C
 
 当前 ai.nix 管理的工具：`claude-code`、`codex`、`claude-desktop`、`codex-desktop`、`qoder-cli`/`qoder-ide`、`opencode`、`pi`、`officecli`、`cc-switch`（API 路由），以及 `rtk`（token 优化 CLI proxy，`local-deriv/rtk.nix` 自打包）与 `codebase-memory-mcp`（代码库知识图谱 MCP，nixpkgs 现成包）。
 
+另有 `dsh`（DeepSeek Harness，`local-deriv/deepseek-harness.nix` 打包，官方 npm 预编译产物）——刚出的仓库，暂未接入 packages，仅打包备用。
+
 ## 故障排查
 
 | 现象 | 排查 |

@@ -114,6 +114,8 @@ fish 和 bash 均已配置：当命令执行超过 10 秒时，完成后自动�
 
 系统 secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），rebuild 时解密到 `/run/secrets/`。
 
+**Distrobox**：`~/.local/bin` 加入 fish PATH（`fish_add_path`），承载 `distrobox-export` 导出的容器内 CLI 工具，宿主机可直接调用。
+
 ## 常用工作流
 
 ```bash

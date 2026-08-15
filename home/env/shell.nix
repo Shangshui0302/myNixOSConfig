@@ -307,6 +307,9 @@
         set -x PATH /usr/local/bin /usr/bin /bin $PATH
       end
 
+      # distrobox-export 导出的 CLI 工具（宿主机直接调用容器内命令）
+      fish_add_path $HOME/.local/bin
+
       # zoxide
       zoxide init fish | source
 

@@ -46,6 +46,7 @@ myNixOSConfig/
 │   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
 │   ├── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
 │   ├── rtk.nix                 # rtk-ai/rtk — token 优化 CLI proxy（nixpkgs 撞名 exprtk）
+│   ├── deepseek-harness.nix    # DeepSeek Harness (dsh) — DeepSeek 官方 CLI（npm 预编译产物）
 │   └── material-gnome-theme.nix  # Material GNOME 主题（matugen 壁纸取色 + Shell 布局参数化，模板在 material-gnome/）
 │
 ├── host/                      # NixOS 系统级配置（main = Hyprland 主桌面）
