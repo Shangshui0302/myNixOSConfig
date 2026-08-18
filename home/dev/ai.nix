@@ -13,11 +13,4 @@ in
     codebase-memory-mcp
     (import ../../local-deriv/rtk.nix { inherit pkgs; })
   ];
-
-  # 禁用 cc-switch 的 XDG autostart，按需手动运行 cc-switch
-  xdg.configFile."autostart/CC Switch.desktop".text = ''
-    [Desktop Entry]
-    Hidden=true
-  '';
-  
 }
