@@ -14,6 +14,7 @@
 - [flake 全用 unstable](cards/flake-unstable-strategy.md) — 出问题再修，不 pin stable
 - [AMD 核显留在 nixpkgs 默认内核](cards/amd-kernel-stay-lts.md) — 不上 linuxPackages_latest，避 RDNA 硬挂起回归
 - [GNOME 用 specialisation 变体](cards/gnome-specialisation.md) — 保留 kmscon 主流程，GDM 隔离
+- [DE 目录语义与 Host/HM 边界](cards/desktop-environment-host-hm-boundary.md) — compositor 同定位，系统集成与用户配置分层
 - [双变体差异用 option 内聚](cards/variant-option-integrity.md) — 方案 C：共享进 base、专属物理隔离、差异用 lib.optionals(!gnome)
 - [GSettings override 生效条件](cards/gsettings-override-schema-packages.md) — override 非标准 schema 需 extraGSettingsOverridePackages + 扩展 schema 链接
 - [TTY 下 DE 切换: kmscon/uwsm 会话管理](cards/uwsm-kmscon-session-handoff.md) — graphical-session.target 残留 + fcitx5 autostart 机制

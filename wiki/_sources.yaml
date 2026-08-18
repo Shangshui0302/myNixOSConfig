@@ -20,7 +20,7 @@ docs:
 
   architecture/index.md:
     sources: [flake.nix, host/default.nix, home/base.nix, home/de.nix, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
-    memory:  [flake-unstable-strategy]
+    memory:  [flake-unstable-strategy, desktop-environment-host-hm-boundary]
   architecture/flake.md:
     sources: [flake.nix, host/base/nix.nix]
     memory:  [flake-unstable-strategy]
@@ -30,7 +30,7 @@ docs:
 
   desktop/hyprland.md:
     sources: [home/de/hyprland.nix, home/de/default.nix, home/de/musicfox.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/wallpaper.nix, home/de/foot.nix, home/de/stylix.nix, host/base/boot.nix]
-    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub, foot-color-nohash]
+    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
     sources: [home/de/niri.nix]
     memory:  [stylix-color-hub]
@@ -39,7 +39,7 @@ docs:
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
     sources: [host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix]
-    memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink]
+    memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, uwsm-kmscon-session-handoff]
   desktop/noctalia.md:
     sources: [home/de/noctalia.nix, host/de/greeter.nix]
     memory:  [stylix-color-hub]

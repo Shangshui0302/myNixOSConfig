@@ -2,7 +2,7 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, 输入法, wayland, 深色模式]
-updated: 2026-08-13
+updated: 2026-08-18
 ---
 
 # Fcitx5 输入法框架
@@ -24,20 +24,26 @@ updated: 2026-08-13
 Fcitx5 在系统构建后即随会话启动，无需额外操作：
 
 - 应用通过环境变量自动接入 fcitx（GTK/Qt/SDL 统一）。
+- `i18n.inputMethod` 安装 Fcitx5 及 addons，并提供 XDG autostart desktop entry。
+- UWSM 激活图形会话后，`systemd-xdg-autostart-generator` 将其转换为用户单元 `app-org.fcitx.Fcitx5@autostart.service`。
 - 使用桌面环境快捷键（如 `Super+Space`）在中英文/输入法间切换。
 - 首次使用建议运行 `fcitx5-configtool` 检查方案与顺序。
+
+查看进程和日志：
+
+```bash
+systemctl --user status app-org.fcitx.Fcitx5@autostart.service
+journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
+```
 
 ## 系统级配置要点
 系统层在 `host/base/desktop.nix` 中完成以下工作：
 
-- 全局环境变量将各类应用统一接入 fcitx：
-  - `GTK_IM_MODULE=fcitx`
-  - `QT_IM_MODULE=fcitx`
-  - `XMODIFIERS=@im=fcitx`
-  - `SDL_IM_MODULE=fcitx`
+- Host 层提供跨桌面的 `QT_IM_MODULE=fcitx` 与 `XMODIFIERS=@im=fcitx`。
+- 主桌面 HM 配置补充 `GTK_IM_MODULE=fcitx` 与 `SDL_IM_MODULE=fcitx`；GNOME 保持 GTK 原生 Wayland text-input-v3。
 - 启用 `i18n.inputMethod`，`type = "fcitx5"`，并开启 `fcitx5.waylandFrontend = true` 以获得 Wayland 下更好的兼容性与性能。
 - 安装插件与主题包（见下文）。
-- 通过 `xdg.portal` 注册 `org.freedesktop.impl.portal.Settings` 接口（由 gtk portal 实现），供 Fcitx5 检测系统深浅色。
+- `org.freedesktop.impl.portal.Settings` 由 `host/de/sessions.nix` 的 GTK Portal 提供，供 Fcitx5 检测系统深浅色。
 
 ## 引擎与中文输入方案
 中文能力由 Rime 引擎提供，在 `host/base/desktop.nix` 的 `fcitx5.addons` 中声明：
@@ -63,7 +69,7 @@ ClassicUI 主题与候选窗在 `host/base/desktop.nix` 的 `fcitx5.settings.add
 - GTK/Qt/SDL 应用均通过环境变量接入 fcitx，无需逐应用配置。
 - Wayland 下启用 `waylandFrontend` 减少 X11 桥接开销。
 - 在 Hyprland 下，`home/de/hyprland.nix` 为 Fcitx5 提供 systemd user service 的崩溃自恢复策略（on-failure 重启），提升长期稳定性。
-- `home/theme-base.nix` 负责字体/光标与 Portal 注册，确保候选窗渲染与深浅色联动正常。
+- `host/de/sessions.nix` 负责 GTK Portal 注册；`home/theme-base.nix` 只负责共享字体、光标和主题基础。
 
 ## 架构总览
 下图展示从应用到 Fcitx5 再到 Rime 的数据流，以及主题与 Portal 的交互路径。
@@ -97,7 +103,7 @@ THEME --> PORTAL["XDG Settings 接口"]
 IM --> GTK["GTK 应用"]
 IM --> QT["Qt 应用"]
 IM --> SDL["SDL 应用"]
-USER["Hyprland 用户服务"] --> IM
+SESSION["UWSM / graphical-session.target"] --> IM
 ```
 
 ## 故障排查
@@ -119,3 +125,4 @@ USER["Hyprland 用户服务"] --> IM
 - Hyprland 桌面配置：[hyprland.md](./hyprland.md)
 - 决策：垂直候选窗与布尔值大写等踩坑 → [fcitx5-vertical-candidates](../../memory/cards/fcitx5-vertical-candidates.md)
 - 决策：Portal / gtk 悬空软链问题 → [portal-gtk-dangling-symlink](../../memory/cards/portal-gtk-dangling-symlink.md)
+- 决策：TTY、UWSM 与 Fcitx5 autostart → [uwsm-kmscon-session-handoff](../../memory/cards/uwsm-kmscon-session-handoff.md)

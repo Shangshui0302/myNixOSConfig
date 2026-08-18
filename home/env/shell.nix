@@ -255,7 +255,10 @@
     complete -c hyprland -l verify-config -d "Verify config and exit"
   '';
 
-  xdg.configFile."fish/completions/podman.fish".source = pkgs.runCommand "podman-fish-completion" { } "${pkgs.podman}/bin/podman completion fish > $out";
+  xdg.configFile."fish/completions/podman.fish".source = pkgs.runCommand "podman-fish-completion" { } ''
+    export HOME="$TMPDIR"
+    ${pkgs.podman}/bin/podman completion fish > "$out"
+  '';
 
   xdg.configFile."fish/completions/noctalia.fish".text = ''
     function __noctalia_complete
