@@ -4,7 +4,7 @@ description: >
   When the user says they're ready to commit, save work, submit changes, 提交, or wrap up
   a set of changes in this NixOS config repo. This skill orchestrates the full commit
   workflow: review the diff for issues, update relevant documentation (README.md,
-  CLAUDE.md, wiki/*.md, memory/*.md), present a summary for confirmation, then create
+  AGENTS.md, wiki/*.md, memory/*.md), present a summary for confirmation, then create
   the commit. Use this skill for any commit in ~/myNixOSConfig — it ensures the
   "review → update wiki/memory → commit" discipline is followed every time. Do NOT
   trigger for: writing/saving a file to disk, "commit to memory", or git operations in
@@ -31,7 +31,7 @@ Review for these project-specific issues:
 - **Nix syntax**: Missing semicolons, unmatched braces, wrong indentation that could
   cause parse errors.
 - **Import chain broken?** New nix files must be imported by their parent module
-  (e.g., new `home/env/foo.nix` must appear in `home/default.nix` as an import).
+  (e.g., new `home/env/foo.nix` must appear in `home/base.nix` as an import).
 - **Override vs overlay rule**: New packages added via `overrideAttrs` only if used in
   one place. New packages in nixpkgs only via overlays. New standalone packages go in
   `local-deriv/` and are imported directly — never put new packages in `nixpkgs.overlays`.
@@ -51,23 +51,23 @@ Not every change needs wiki/memory updates. Use this matrix to decide:
 
 | Change scope | Docs to check |
 |-------------|--------------|
-| New service or system daemon | README.md + CLAUDE.md |
-| New nix module file (host/ or home/ subdir) | README.md + CLAUDE.md (directory structure) |
-| Removed/renamed module file | README.md + CLAUDE.md |
-| Changed keybindings, gestures, or user-facing behavior | wiki/*.md + CLAUDE.md |
+| New service or system daemon | README.md + AGENTS.md |
+| New nix module file (host/ or home/ subdir) | README.md + AGENTS.md (directory structure) |
+| Removed/renamed module file | README.md + AGENTS.md |
+| Changed keybindings, gestures, or user-facing behavior | wiki/*.md + AGENTS.md |
 | Non-obvious decision (why not derivable from code/commit) | memory decision card + INDEX.md |
 | Hardware trait / environment constraint change | memory hardware/constraint card + INDEX.md |
 | New/removed component | wiki/README.md (nav home) |
-| New custom package in local-deriv/ | README.md + CLAUDE.md |
+| New custom package in local-deriv/ | README.md + AGENTS.md |
 | New overlay | Usually none |
 | Adding/removing a flatpak or user app | Usually none |
 | Tweak to an existing config value | Usually none |
 | Typo fix, formatting, comment change | None |
-| wiki/*.md content change | Just CLAUDE.md (if doc list changed) |
+| wiki/*.md content change | Just AGENTS.md (if doc list changed) |
 
 When wiki/memory updates are needed, use the `wiki-maintainer` skill's patterns:
 - README.md: update directory structure, service list, or deployment steps
-- CLAUDE.md: update directory structure, enabled services list, LiteLLM table, notes
+- AGENTS.md: update directory structure, enabled services list, LiteLLM table, notes
 - wiki/*.md: update keybindings, features, troubleshooting
 - memory/cards/*.md + memory/INDEX.md: record decision/hardware/constraint cards
 
@@ -129,12 +129,6 @@ Examples:
 - `fix(hyprland): swap resize/move keybindings`
 - `refactor(overlays): deduplicate vim plugin aliases`
 
-The commit must include the Co-Authored-By trailer:
-
-```
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
-```
-
 After committing, show the commit hash.
 
 ## Step 6: Remind to Rebuild
@@ -157,4 +151,4 @@ systemctl --failed --no-legend | head -5
 - **Does not run rebuild** — the user runs it manually after reviewing the commit
 - **Does not amend commits** — always creates new commits unless user explicitly asks
   for amend
-- **Does not create branches or PRs** — this repo commits directly to main
+- **Does not push or create PRs** — feature branches are used for risky changes

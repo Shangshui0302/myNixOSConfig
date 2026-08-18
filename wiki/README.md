@@ -34,7 +34,7 @@ updated: 2026-08-07
 | [GNOME](desktop/gnome.md) | 完整桌面：specialisation 变体，GDM 登录 |
 | [Fcitx5 输入法](desktop/fcitx5.md) | Rime 引擎、垂直候选窗、深浅色联动 |
 | [Noctalia Shell](desktop/noctalia.md) | 桌面面板：控制中心、壁纸、配色、锁屏 |
-| [桌面 Shell 切换](desktop/shell-switcher.md) | 运行时切换 shell：caelestia/Persona |
+| [桌面 Shell 切换](desktop/shell-switcher.md) | 运行时切换 shell：Noctalia/Caelestia |
 | [Shell 环境](desktop/shell.md) | fish/bash、别名、starship、zellij、ghostty |
 | [深色模式架构](desktop/darkmode.md) | 深色调度、dconf/qt5ct/portal 分发 |
 | [GNOME Keyring](desktop/keyring.md) | 凭据存储：PAM 解锁、Electron 应用、故障排查 |

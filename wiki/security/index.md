@@ -35,8 +35,8 @@ updated: 2026-08-12
 | `host/base/network.nix` | 网络栈、Mihomo 代理、nftables 防火墙、端口开放、内核转发 |
 | `host/base/services.nix` | 系统服务、Howdy、PAM 集成、Polkit |
 | `host/base/users.nix` | 用户与 sudo 白名单命令 |
-| `host/hyprland/desktop.nix` | GNOME Keyring 启用与桌面集成 |
-| `host/hyprland/greeter.nix` | 登录界面（Noctalia Greeter） |
+| `home/de/foot.nix` | GNOME Keyring 启用与桌面集成 |
+| `host/de/greeter.nix` | 登录界面（Noctalia Greeter） |
 | `host/base/boot.nix` | 引导与 EFI 分区权限加固 |
 
 ```mermaid
@@ -45,8 +45,8 @@ A["host/default.nix"] --> B["host/base/sops.nix"]
 A --> C["host/base/network.nix"]
 A --> D["host/base/services.nix"]
 A --> E["host/base/users.nix"]
-A --> F["host/hyprland/desktop.nix"]
-A --> G["host/hyprland/greeter.nix"]
+A --> F["home/de/foot.nix"]
+A --> G["host/de/greeter.nix"]
 A --> H["host/base/boot.nix"]
 ```
 

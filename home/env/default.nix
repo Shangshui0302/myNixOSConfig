@@ -2,8 +2,8 @@
 {
   imports = [
     ./shell.nix
-    ./terminal.nix
     ./systools.nix
+    ./yazi.nix
     ./onedrive.nix
   ];
 }

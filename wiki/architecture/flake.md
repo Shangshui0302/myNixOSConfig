@@ -39,8 +39,8 @@ updated: 2026-08-13
 
 - `system` 指定为 `x86_64-linux`。
 - `specialArgs = { inherit inputs; }` 将全部输入整体传入，供各模块共享。
-- `modules` 列表组合：本地 `host/default.nix`、`sops-nix` 的 NixOS 模块、`noctalia-greeter` 的 NixOS 模块、`home-manager` 的 NixOS 模块，以及 overlays。
-- Home Manager 侧：`useGlobalPkgs`/`useUserPackages` 开启，`backupFileExtension = "backup"`，`home-manager.users.lishangshui` 指向 `home/base.nix`，并通过 `extraSpecialArgs` 再次传入 `inputs`。
+- `modules` 列表组合：本地 `host/default.nix`、sops-nix 和 Home Manager 的 NixOS 模块。
+- Home Manager 侧：`useGlobalPkgs`/`useUserPackages` 开启，`backupFileExtension = "backup"`，主配置指向 `home/de.nix`，GNOME 变体指向 `specialisation/gnome/home.nix`。
 
 ```mermaid
 flowchart TD
@@ -48,8 +48,8 @@ Start(["flake.nix 入口"]) --> Inputs["声明 inputs<br/>nixpkgs/home-manager/n
 Inputs --> Outputs["outputs 定义"]
 Outputs --> NixOS["nixosSystem(system=x86_64-linux)"]
 NixOS --> SpecialArgs["specialArgs={inherit inputs}"]
-SpecialArgs --> Modules["modules=[host, sops-nix, noctalia-greeter, home-manager, overlays]"]
-Modules --> HM["home-manager.users.<user> = import ./home/base.nix"]
+SpecialArgs --> Modules["modules=[host, sops-nix, home-manager]"]
+Modules --> HM["home-manager.users.<user> = import ./home/de.nix"]
 HM --> ExtraArgs["extraSpecialArgs={inherit inputs}"]
 ExtraArgs --> End(["生成系统配置"])
 ```
@@ -67,7 +67,6 @@ graph LR
 Root["flake.nix"] --> Lock["flake.lock<br/>依赖锁定"]
 Root --> Host["host/default.nix"]
 Root --> Home["home/base.nix"]
-Root --> Overlays["overlays/default.nix"]
 Host --> SOPS["host/base/sops.nix"]
 Home --> HM["home-manager 模块"]
 Root --> Ext["外部依赖<br/>nixpkgs/home-manager/noctalia/sops-nix"]

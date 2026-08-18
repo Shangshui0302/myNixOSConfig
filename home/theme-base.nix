@@ -2,7 +2,7 @@
 
 {
   # 共享主题基础（两 DE）：指针光标、字体、图标主题、深浅色。
-  # gtk-theme 各 DE 自行设置（Hyprland 在 theme-hyprland.nix，GNOME 在 specialisation/gnome）。
+  # gtk-theme 各 DE 自行设置（主 DE 在 theme-de.nix，GNOME 在 specialisation/gnome）。
 
   # Pointer cursor
   home.pointerCursor = {

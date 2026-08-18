@@ -4,7 +4,6 @@
 
 ## 决策 decision
 
-- [claude-code 版本策略: latest 跟随 nixpkgs](cards/claude-code-version-strategy.md) — 默认最新，可 pin 具体版本
 - [fcitx5 垂直候选窗: 键名含空格 + 值大写 True](cards/fcitx5-vertical-candidates.md) — classicui 配置坑
 - [portal-gtk dangling symlink 导致 fcitx5 浅色皮肤](cards/portal-gtk-dangling-symlink.md) — D-Bus 无法激活 portal-gtk 的根因修复
 - [知识库分层: wiki 管怎么用, memory 管为什么](cards/wiki-memory-layering.md) — 纯 Markdown wiki + 决策卡架构
@@ -12,7 +11,6 @@
 - [mihomo TUN: gvisor + mtu 1500](cards/mihomo-tun-stack.md) — nix 下载慢的根因修复，吞吐 47 倍
 - [sops 解密密钥: SSH host key + useSystemdActivation](cards/sops-ssh-host-key.md) — initrd 时序修复，免独立 age key
 - [AI 工具优先 llm-agents.nix](cards/ai-tools-source.md) — 第三方打包源，需安全审查
-- [Qoder IDE 用国际版](cards/qoder-ide-source.md) — download.qoder.com，非 qoder.com.cn 国内版
 - [flake 全用 unstable](cards/flake-unstable-strategy.md) — 出问题再修，不 pin stable
 - [AMD 核显留在 nixpkgs 默认内核](cards/amd-kernel-stay-lts.md) — 不上 linuxPackages_latest，避 RDNA 硬挂起回归
 - [GNOME 用 specialisation 变体](cards/gnome-specialisation.md) — 保留 kmscon 主流程，GDM 隔离

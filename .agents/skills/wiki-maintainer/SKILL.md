@@ -1,7 +1,7 @@
 ---
 name: wiki-maintainer
 description: >
-  创建和维护项目知识库（wiki/、memory/、README.md、CLAUDE.md）。当用户提到"写文档"、"更新文档"、
+  创建和维护项目知识库（wiki/、memory/、README.md、AGENTS.md）。当用户提到"写文档"、"更新文档"、
   "文档过时了"、"补充文档"、"完善文档"、"文档化"、"documentation"、"docs"、"wiki"、"memory"、
   "决策卡"、新增组件后需要记录配置、修改 nix 配置后需要同步 wiki/memory、或者任何涉及项目知识库的
   创建/更新/审查时，必须使用此 skill。也适用于审查 wiki 是否与 nix 配置一致、整理 wiki 结构、添加
@@ -19,10 +19,10 @@ description: >
 ```
 myNixOSConfig/
 ├── README.md                  # 项目总览、目录结构、重建命令、新机部署
-├── CLAUDE.md                  # LLM 上下文：硬件/系统信息、目录结构、服务列表、注意事项
+├── AGENTS.md                  # LLM 上下文：硬件/系统信息、目录结构、服务列表、注意事项
 ├── wiki/                      # 操作手册 — 回答「怎么用」，含故障排查
 │   ├── README.md              # wiki 导航首页（分类 MOC）
-│   ├── _sources.yaml          # 来源映射清单（单真源，驱动 doc-sync hook）
+│   ├── _sources.yaml          # 来源映射清单（单真源，供审查使用）
 │   ├── overview.md            # 项目概述
 │   ├── architecture/          # 系统架构: index/flake/host
 │   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/darkmode/keyring
@@ -62,22 +62,22 @@ myNixOSConfig/
 
 `wiki/_sources.yaml` 是文档与 nix 模块 / memory 卡之间的**唯一绑定表**。每篇 wiki 文档声明它派生自哪些 `.nix` 文件、关联哪些 memory 卡。所有反向映射（nix → docs）都从此表实时计算，不手维。
 
-**不变式**（由 doc-sync hook 校验）：
+**不变式**（由本 skill 和提交前人工检查）：
 1. 每个 `host/*.nix` 与 `home/**/*.nix` 模块至少被一篇文档的 `sources` 引用。
 2. 每篇文档 `sources` 里列出的文件均真实存在。
 3. 每篇文档 `memory` 里列出的卡在 `memory/cards/<slug>.md` 存在。
 
 **工作流**：改了某个 `.nix` → 读 `_sources.yaml` 反查受影响文档集 → 按三方合并规则更新正文 + 刷新 frontmatter `updated`。新增/删除 wiki 文档或新增 nix 模块时，必须同步本清单。
 
-### 三方合并规则（创建/更新文档时）
+### 文档更新规则
 
-wiki 文档内容由三方合并：手写 wiki（怎么用）+ Qoder 生成的 content 树（结构/架构图）+ knowledge 知识库（模块级技术栈/编码规范/特殊命令）。
+wiki 文档以现有手册为基础，结合当前 Nix 配置和 memory 决策卡维护。
 
-- **骨架/标题层级**：取 content 源；保留其 mermaid 架构图。
+- **骨架/标题层级**：保留现有结构；只有在结构确实过时时才调整。
 - **怎么用**（快捷键/工作流/排查命令）：取手写 wiki，优先级最高。
-- **模块级事实**（技术栈/编码规范/特殊配置命令/架构设计）：取 knowledge 五件套。
+- **模块级事实**（技术栈/编码规范/特殊配置命令/架构设计）：以当前源文件为准。
 - **为什么/决策**：**不内联**，改为末尾 `## 相关链接` 反向链接 `memory/cards/*`。
-- **丢弃**：content 的 `<cite>` 块、`**图示来源/章节来源**` 行号引用（易失效）；源码指向改为不带行号的模块名或相对链接。
+- **丢弃**：易失效的行号引用；源码指向使用不带行号的模块名或相对链接。
 - **补项目规范**：frontmatter（`title/category/tags/updated`）；>150 行加 TOC；末尾固定 `## 相关链接`。
 
 ### 分类规则
@@ -118,7 +118,7 @@ wiki 文档内容由三方合并：手写 wiki（怎么用）+ Qoder 生成的 c
 ### 1. 信息收集
 
 - **先读 nix 配置**：完整读取对应的 nix 文件，理解所有配置项
-- **再读已有文档**：至少读 `wiki/desktop/hyprland.md` 作为风格参考，读 `CLAUDE.md` 了解系统上下文
+- **再读已有文档**：至少读 `wiki/desktop/hyprland.md` 作为风格参考，读 `AGENTS.md` 了解系统上下文
 - 如果用户未指定要文档化哪个组件，先扫描 `host/` 和 `home/` 中所有 nix 文件，对比 `wiki/` 目录，找出"有配置但无文档"的组件
 
 ### 2. 确定内容结构
@@ -144,7 +144,7 @@ wiki 文档内容由三方合并：手写 wiki（怎么用）+ Qoder 生成的 c
 - `wiki/_sources.yaml` — **必须**添加本条目的 sources + memory 绑定
 - `wiki/README.md` — 导航首页中加入新文档的链接
 - `README.md` — 目录结构部分是否需要加入新文档的说明
-- `CLAUDE.md` — 目录结构中是否需要补充新组件信息
+- `AGENTS.md` — 目录结构中是否需要补充新组件信息
 
 ## 变更驱动更新（清单工作流）
 
@@ -178,7 +178,7 @@ nix 配置变更后，对应的 wiki 可能过时。按以下流程同步：
 3. 对集合中每篇文档，找出不一致的地方
 4. 只修改文档中受影响的部分，保留其他内容不变
 5. 刷新 frontmatter `updated`
-6. 如果是 CLAUDE.md 受影响，同步更新
+6. 如果是 AGENTS.md 受影响，同步更新
 
 ### 决策卡联动
 
@@ -195,7 +195,7 @@ nix 配置变更后，对应的 wiki 可能过时。按以下流程同步：
    - 新增的功能是否已文档化
    - 已删除的功能是否从文档中移除
 3. 列出所有不一致项，让用户确认后再修改
-4. 同时检查 README.md 的目录结构是否与实际一致，CLAUDE.md 的服务列表是否完整
+4. 同时检查 README.md 的目录结构是否与实际一致，AGENTS.md 的服务列表是否完整
 5. 检查 `memory/INDEX.md` 与 `memory/cards/` 是否一一对应，有无遗漏新卡
 
 ## README.md 维护
@@ -215,9 +215,9 @@ README.md 是项目门面，包含：
 - 系统配置原则变化 → 更新配置原则部分
 - 新机部署流程变化 → 更新部署步骤
 
-## CLAUDE.md 维护
+## AGENTS.md 维护
 
-CLAUDE.md 是给 LLM 的上下文，需要保持精确。包含：
+AGENTS.md 是给 LLM 的上下文，需要保持精确。包含：
 - 硬件信息（通常不变）
 - 系统详情（hostname、用户、服务等）
 - 目录结构（与 README.md 同步）
@@ -226,14 +226,14 @@ CLAUDE.md 是给 LLM 的上下文，需要保持精确。包含：
 - Nix 配置参数
 - 注意事项（硬规则，含「决策记忆」规则）
 
-当以下情况发生时更新 CLAUDE.md：
+当以下情况发生时更新 AGENTS.md：
 - 新增/删除服务 → 更新服务列表
 - 模型映射变更 → 更新 LiteLLM 表格
 - 新增/删除 nix 模块 → 更新目录结构
 - 配置规则/注意事项变化 → 更新对应部分
 - 硬件变更 → 更新硬件信息
 
-修改 CLAUDE.md 时：
+修改 AGENTS.md 时：
 - 保持信息精确，不要添加推测性内容
 - 目录结构与 README.md 保持同步
 - 注意事项使用强制语气（"必须"、"禁止"），因为 LLM 需要明确边界

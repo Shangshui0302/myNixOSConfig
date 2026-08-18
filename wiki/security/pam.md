@@ -109,7 +109,7 @@ auth optional    pam_gnome_keyring.so       ← 没有密码，无法解锁 keyr
 | 扫脸 + 密码双重 | `pam_howdy.so` 用 `required` 代替 `sufficient`                  | 人脸白用了，每次还得输密码               |
 | 接受手动解锁    | 人脸登录后，有应用需要 keyring 时会弹解锁对话框，输一次密码           | 不额外操作；弹出时才输，不是每次开机都输 |
 
-实际上 `pam_gnome_keyring.so` 在 auth 阶段是 `optional` 控制位——有密码就用，没密码就静默跳过。所以默认行为是第三种：人脸登录后 keyring 锁定，Electron 应用（Qoder、VS Code、Chrome）触发 keyring 访问时弹出解锁提示，输一次登录密码即可，不是每次重启都要输。
+实际上 `pam_gnome_keyring.so` 在 auth 阶段是 `optional` 控制位——有密码就用，没密码就静默跳过。所以默认行为是第三种：人脸登录后 keyring 锁定，Electron 应用（VS Code、Chrome 等）触发 keyring 访问时弹出解锁提示，输一次登录密码即可，不是每次重启都要输。
 
 ## 常见 PAM 模块
 
@@ -169,4 +169,3 @@ journalctl -b | grep -i pam
 - [GNOME Keyring](../desktop/keyring.md) — 依赖 PAM 自动解锁
 - [安全总览](index.md) — SOPS、用户权限、网络安全概览
 - [wiki 首页](../README.md)
-

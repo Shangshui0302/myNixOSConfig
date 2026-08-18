@@ -7,7 +7,7 @@ updated: 2026-08-13
 
 # Fcitx5 输入法框架
 
-本文说明本仓库如何在 NixOS + Home Manager 下启用并集成 Fcitx5：引擎与主题管理、中文输入方案、Wayland/Hyprland 集成、候选窗定制与常见排障。核心 + 变体差异集中在系统级 `host/base/desktop.nix`，用 `lib.optionals (!gnome)` 表达 Hyprland 专属 addons、`lib.mkIf (!gnome)` 控制 classicui（GNOME 走 kimpanel）；崩溃自恢复在用户级 `home/hyprland/hyprland.nix`。
+本文说明本仓库如何在 NixOS + Home Manager 下启用并集成 Fcitx5：引擎与主题管理、中文输入方案、Wayland/Hyprland 集成、候选窗定制与常见排障。核心 + 变体差异集中在系统级 `host/base/desktop.nix`，用 `lib.optionals (!gnome)` 表达 Hyprland 专属 addons、`lib.mkIf (!gnome)` 控制 classicui（GNOME 走 kimpanel）；崩溃自恢复在用户级 `home/de/hyprland.nix`。
 
 ## 目录
 1. [快速上手](#快速上手)
@@ -62,7 +62,7 @@ ClassicUI 主题与候选窗在 `host/base/desktop.nix` 的 `fcitx5.settings.add
 ## 桌面集成与崩溃自恢复
 - GTK/Qt/SDL 应用均通过环境变量接入 fcitx，无需逐应用配置。
 - Wayland 下启用 `waylandFrontend` 减少 X11 桥接开销。
-- 在 Hyprland 下，`home/hyprland/hyprland.nix` 为 Fcitx5 提供 systemd user service 的崩溃自恢复策略（on-failure 重启），提升长期稳定性。
+- 在 Hyprland 下，`home/de/hyprland.nix` 为 Fcitx5 提供 systemd user service 的崩溃自恢复策略（on-failure 重启），提升长期稳定性。
 - `home/theme-base.nix` 负责字体/光标与 Portal 注册，确保候选窗渲染与深浅色联动正常。
 
 ## 架构总览

@@ -37,7 +37,7 @@ Noctalia (唯一调度器, 30.57/104.07)
 **不要在 `settings.json` 中硬编码 `darkMode` 初始值。**
 
 ```nix
-# home/hyprland/noctalia.nix → programs.noctalia-shell.settings.colorSchemes
+# home/de/noctalia.nix → programs.noctalia-shell.settings.colorSchemes
 colorSchemes = {
   schedulingMode = "location";    # Noctalia 根据日出日落自动决定
   predefinedScheme = "yamadaryou";
@@ -49,7 +49,7 @@ colorSchemes = {
 
 ## 配置文件
 
-### Noctalia 调度 + hook (`home/hyprland/noctalia.nix`)
+### Noctalia 调度 + hook (`home/de/noctalia.nix`)
 
 ```nix
 colorSchemes = {
@@ -65,7 +65,7 @@ hooks = {
 
 hook 直接写入 dconf 和 qt5ct，不再经过 darkman 中转。
 
-### XDG Portal (`host/hyprland/desktop.nix`)
+### XDG Portal (`host/de/sessions.nix`)
 
 portal-gtk 从 gsettings 读取 color-scheme，暴露给所有 portal-aware 应用：
 
@@ -88,7 +88,7 @@ dconf.settings = {
   };
 };
 
-# home/theme-hyprland.nix 与 specialisation/gnome/home.nix（GTK 主题统一 Material-Gnome，路径分开）
+# home/theme-de.nix 与 specialisation/gnome/home.nix（GTK 主题统一 Material-Gnome，路径分开）
 dconf.settings."org/gnome/desktop/interface".gtk-theme = "Material-Gnome";
 ```
 

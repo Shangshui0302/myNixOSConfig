@@ -14,7 +14,7 @@ date: 2026-08-05
 以后装任何 AI 相关工具，**先查 [numtide/llm-agents.nix](https://github.com/numtide/llm-agents.nix) 有没有现成的包**，有就用它的。**但必须做安全审查**。仓库自带的安全审查要求：
 - 检查 derivation（source 来源、是否 fetch 远程脚本、patch 内容），确认无恶意后才用
 
-已知包含的包：`cc-switch-cli`、`claude-desktop`、`codex`、`qoder-cli`、`claude-code`、`antigravity`、`officecli`、`opencode`、`qwen-code` 等（每日自动更新）。
+当前使用的包：`codex`、`officecli`；`cc-switch` 和其他工具按需从已审查来源加入。
 
 ## Why
 - 用户指定这是 AI 工具优先来源，避免自己打包

@@ -147,8 +147,8 @@ tun:
 # 确认接口 MTU 生效
 ip link show Meta | grep mtu   # 应显示 mtu 1500
 
-# 测 nix 下载大文件
-cd /tmp && time nix-prefetch-url "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.24012.11_amd64.deb"
+# 测试 Nix 下载与构建计划
+nix build --dry-run '.#nixosConfigurations.MechRevo-NixOS.config.system.build.toplevel'
 # 修复前: 30KB/s 卡死; 修复后: 1.4~2.5MB/s 正常下完
 ```
 

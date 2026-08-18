@@ -42,7 +42,7 @@ let
       hyprctl eval "$(cat '${config.home.homeDirectory}/.cache/wallpaper-colors/hyprland.lua')" 2>/dev/null || true
     fi
     # Noctalia palette 文件不自动监听，触发 config-reload 让它重读 matugen.json（切壁纸换色）
-    # Noctalia 未运行时忽略（当前 shell 可能是 caelestia/persona）
+    # Noctalia 未运行时忽略（当前 shell 可能是 caelestia）
     ${pkgs.noctalia}/bin/noctalia msg config-reload 2>/dev/null || true
   '';
 in {

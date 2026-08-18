@@ -11,7 +11,7 @@ date: 2026-08-06
 fcitx5 候选窗想要垂直排列，但配置选项名带空格（`Vertical Candidate List`），在 nix 里写 attr 时踩坑，且布尔值大小写敏感。
 
 ## 决策
-`host/desktop.nix` 里 `i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection` 配置：
+`host/base/desktop.nix` 里 `i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection` 配置：
 
 ```nix
 fcitx5.settings.addons.classicui.globalSection = {

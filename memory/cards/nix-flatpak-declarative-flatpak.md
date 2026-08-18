@@ -11,7 +11,7 @@ date: 2026-08-12
 
 本机 flatpak 应用由 nix-flatpak 的 **home-manager 模块**声明式管理（用户级 flatpak，装到 `~/.local/share/flatpak`）：
 
-- `home/default.nix` import `inputs.nix-flatpak.homeManagerModules.nix-flatpak`
+- `home/base.nix` import `inputs.nix-flatpak.homeManagerModules.nix-flatpak`
 - `home/productivity/comms.nix`：`services.flatpak.packages = [ "com.tencent.WeChat" ]` + `services.flatpak.overrides`（WeChat 文件系统权限，如 `~/Downloads:rw`）
 - `home/env/systools.nix`：`services.flatpak.packages = [ "io.github.wh201906.serialtest" ]`
 - `host/gaming.nix`：`services.flatpak.enable = true`（NixOS 原生 flatpak 引擎，是 nix-flatpak 的前提）
@@ -24,6 +24,6 @@ date: 2026-08-12
 
 - 加 flatpak 应用：在对应 `home/*.nix` 的 `services.flatpak.packages` 追加 app id
 - 改应用权限：`services.flatpak.overrides."<app-id>"`（`Context.filesystems` 等字段）
-- **别误判「没在用 nix-flatpak」**——它早已在 `home/default.nix` 启用。曾在对话中因只查 flake.nix/host/ 漏看 home/ 而误判，教训是查配置要覆盖 home 目录
+- **别误判「没在用 nix-flatpak」**——它早已在 `home/base.nix` 启用。曾在对话中因只查 flake.nix/host/ 漏看 home/ 而误判，教训是查配置要覆盖 home 目录
 
 相关: [[memory/cards/ai-tools-source]]

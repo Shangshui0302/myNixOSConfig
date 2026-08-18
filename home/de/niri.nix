@@ -1,14 +1,13 @@
 { config, pkgs, ... }:
 
 {
-  # niri — scrollable-tiling Wayland compositor
-  # uwsm 通过 wayland-sessions/niri.desktop 自动发现
-  home.packages = [ pkgs.niri ];
-
-  # 配置由 Nix 生成，手动改会被覆盖（与 hyprland.lua 相同约定）
-  xdg.configFile."niri/config.kdl" = {
-    force = true;
-    text = ''
+  wayland.windowManager.niri = {
+    enable = true;
+    package = pkgs.niri;
+    portalPackage = null;
+    xwaylandSatellitePackage = null;
+    checkConfig = true;
+    extraConfig = ''
       // ===== Output =====
       // 2K 屏 2560x1600 @ scale 1.5（与 Hyprland 一致）
       output "eDP-1" {

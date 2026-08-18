@@ -54,12 +54,11 @@
         ./host/default.nix
         inputs.sops-nix.nixosModules.sops
         inputs.home-manager.nixosModules.home-manager
-        inputs.stylix.nixosModules.stylix
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
-          home-manager.users.lishangshui = import ./home/hyprland.nix;
+          home-manager.users.lishangshui = import ./home/de.nix;
           home-manager.extraSpecialArgs = { inherit inputs materialGnomeTheme; };
         }
       ];

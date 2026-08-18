@@ -13,7 +13,7 @@ shell-switcher 最初硬编码 `DEFAULT_SHELL = "noctalia"`（回退、boot、he
 ## 决策
 - 移除硬编码默认 shell；`config.toml` 加可选 `default` 字段（boot 无 current 标记 / 切换失败回退时使用，缺省取第一个 `[[shell]]`）
 - 无配置时明确报错（`no_shells`，提示 config 路径），不静默用内置默认
-- 本地适配（`default = "noctalia"`）放在 NixOS 配置层（`home/hyprland/shell-switcher.nix`），工具本身零本地假设
+- 本地适配（`default = "noctalia"`）放在 NixOS 配置层（`home/de/shell-switcher.nix`），工具本身零本地假设
 - help 文本去本地化（"由你的配置声明"而非"NixOS 仓库"）
 
 ## Why

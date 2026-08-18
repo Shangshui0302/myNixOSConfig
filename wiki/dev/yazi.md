@@ -2,12 +2,12 @@
 title: Yazi 文件管理器
 category: dev
 tags: [yazi, file-manager, tui]
-updated: 2026-08-09
+updated: 2026-08-18
 ---
 
 # Yazi 文件管理器
 
-Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、9 个插件和自定义按键映射。
+Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 个插件和自定义按键映射。
 
 ## 基本操作
 
@@ -54,35 +54,19 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、9 
 
 | 插件 | 功能 |
 |------|------|
-| `git` | Git 状态指示（修改/新增/删除标记） |
-| `full-border` | 完整边框（替代半截边框） |
 | `smart-enter` | 智能进入（目录/文件/媒体自动选择打开方式） |
 | `jump-to-char` | 按 `f` + 字符快速跳转到文件名 |
-| `wl-clipboard` | Wayland 剪贴板集成（复制/粘贴文件路径） |
-| `mime-ext` | 根据文件扩展名识别 MIME 类型 |
-| `yatline` | 自定义底部状态栏 |
-| `yatline-githead` | 状态栏显示 Git HEAD 信息 |
 | `starship` | Starship 提示符集成 |
 
 ## 主题
 
 活动主题：**myargonaut**（暗色），基于 Argonaut 调色板的绿色主题。
 
-可用主题（共 7 个）：
-
-| 主题名 | 风格 |
-|--------|------|
-| `myargonaut` | 自定义 Argonaut 绿色调（默认） |
-| `catppuccin-mocha` | Catppuccin 深色 |
-| `tokyo-night` | Tokyo Night 深色 |
-| `nord` | Nord 冷色调 |
-| `synthwave84` | Synthwave 霓虹色 |
-| `lain` | Lain 风格 |
-| `kanagawa-paper` | Kanagawa 暖色 |
+当前只声明 `myargonaut`，其他主题未随仓库下载，避免维护无效的主题清单。
 
 ### 切换主题
 
-编辑 `/home/lishangshui/myNixOSConfig/home/yazi.nix`，修改 `theme.flavor.dark` 为新主题名，然后 rebuild。
+编辑 `/home/lishangshui/myNixOSConfig/home/env/yazi.nix` 中的 `myargonaut` 配置，或显式添加其他主题后再 rebuild。
 
 ## 预览功能
 

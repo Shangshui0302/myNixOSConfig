@@ -1,170 +1,67 @@
-# MechRevo-NixOS Config
+# myNixOSConfig
 
-NixOS 个人配置，基于 flakes + Home Manager。
+MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 
-## 系统概览
+## 当前系统
 
-| 项目         | 内容                                                     |
-| ------------ | -------------------------------------------------------- |
-| 系统         | NixOS 26.05 (Yarara)                                     |
-| WM           | Hyprland (Wayland)                                       |
-| Shell        | fish (plugins) + bash (ble.sh) + starship + zellij       |
-| 桌面面板     | Noctalia Shell                                           |
-| 终端         | Foot                                                    |
-| 文件管理器   | Yazi (HM module + 9 插件 + myargonaut 绿色主题 + 6 备选) |
-| 输入法       | fcitx5 + rime-ice                                        |
-| 编辑器       | Neovim (kickstart + lazy.nvim, LSP/completion/telescope) |
-| 代理         | mihomo (TUN 模式)                                        |
-| 云同步       | OneDrive (HM programs.onedrive)                          |
-| 游戏         | Steam + mangohud                                         |
-| Windows 兼容 | virt-manager (KVM)                                       |
-| 生物识别     | Howdy (IR 红外人脸解锁: sudo, greetd, noctalia)          |
+| 项目 | 配置 |
+| --- | --- |
+| 系统 | NixOS 26.05，nixos-unstable |
+| 主桌面 | Hyprland + niri，UWSM，kmscon TTY |
+| 变体 | GNOME specialisation，独立 GDM 会话 |
+| Shell | fish、bash/ble.sh、Starship、zellij |
+| 终端 | Foot，由 Home Manager 管理 |
+| 面板 | Noctalia，可切换 Caelestia |
+| 输入法 | fcitx5 + Rime |
+| 网络 | mihomo TUN + nftables |
+| 配置方式 | NixOS + Home Manager，禁止手改生成配置 |
 
-## 目录结构
+## 目录
 
-```
-├── flake.nix                  # 入口，inputs/outputs 定义
-├── flake.lock
-├── hardware-configuration.nix # 自动生成，不要手动改
-│
-├── host/                      # 系统基础设施 (14 文件)
-│   ├── default.nix            # 入口汇总
-│   ├── boot.nix               # 启动与内核
-│   ├── hardware.nix           # GPU、udev、nix-ld
-│   ├── locale.nix             # 时区、locale、键盘
-│   ├── nix.nix                # Nix 配置
-│   ├── users.nix              # 用户与 sudo
-│   ├── network.nix            # 网络、mihomo、防火墙
-│   ├── services.nix           # PipeWire、蓝牙、CUPS、电源
-│   ├── desktop.nix            # 桌面环境基础设施
-│   ├── greeter.nix            # TTY 登录配置（kmscon + CJK + howdy，无 DM）
-│   ├── gnome.nix              # GNOME specialisation（GDM 变体，开机选 NixOS (gnome)）
-│   ├── gaming.nix             # Steam、Flatpak、libvirtd
-│   ├── containers.nix         # distrobox 容器
-│   └── sops.nix               # secrets 解密
-│
-├── overlays/                  # nixpkgs overlays
-│
-├── local-deriv/               # 自定义包（qoder-ide、netease、animeko、rtk、deepseek-harness、material-gnome-theme 等）
-│
-├── home/                      # 用户配置 (4 子目录)
-│   ├── default.nix            # 入口汇总
-│   ├── git.nix                # Git 配置
-│   ├── theme.nix              # 主题、字体、深色模式、图标
-│   ├── env/                   # 桌面环境
-│   ├── dev/                   # 开发工具 (含 AI)
-│   ├── productivity/          # 办公、通讯、Windows 兼容
-│   └── leisure/               # 影音、游戏、浏览器
-│
-├── wiki/                      # 操作手册（怎么用 + 故障排查）
-│   ├── README.md              # wiki 导航首页（分类 MOC）
-│   ├── _sources.yaml          # 来源映射清单（单真源，驱动 doc-sync hook）
-│   ├── overview.md            # 项目概述
-│   ├── architecture/          # 系统架构: index/flake/host
-│   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/shell-switcher/darkmode/keyring
-│   ├── productivity/          # 生产力: office
-│   ├── dev/                   # 开发与工具: nvim/vscode/yazi/distrobox/bottles
-│   ├── leisure/               # 娱乐: gaming/media
-│   ├── networking/            # 网络与代理: mihomo
-│   ├── security/              # 安全与隐私: index/sops/pam
-│   ├── customization/         # 定制与扩展: overlays
-│   ├── services.md            # 系统服务聚合
-│   ├── deployment.md          # 部署与维护（含新机首次部署）
-│   ├── troubleshooting.md     # 故障排除聚合
-│   └── constraints.md         # 约束与惯例
-│
-├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）
-│   ├── INDEX.md               # 卡片索引
-│   ├── _template.md           # 卡片模板
-│   └── cards/                 # 原子化决策卡
-│
-├── CLAUDE.md
-└── README.md
+```text
+flake.nix                 # inputs、outputs、主机入口
+host/
+├── base/                 # 两个桌面变体共享的系统层
+└── de/                   # 主 DE 的 sessions、portal、greeter
+home/
+├── base.nix              # 共享 HM 入口
+├── de.nix                # 主 DE 入口
+├── de/                   # Hyprland、niri、Foot、Stylix、Shell
+├── env/                  # Shell、系统工具、OneDrive
+├── dev/                  # 编辑器、AI、开发工具、容器
+├── productivity/         # 办公、通讯、文件管理
+└── leisure/              # 浏览器、影音、游戏
+specialisation/gnome/     # 独立 GNOME 系统和用户配置
+local-deriv/              # 不在 nixpkgs 的本地包
+wiki/                     # 操作手册与来源映射
+memory/                   # 决策卡与硬件约束
+.agents/skills/           # 项目通用 skills
 ```
 
-## rebuild
+## 应用配置
 
 ```bash
-cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
-```
-
-## 配置原则
-
-- **系统级** → `host/`（驱动、服务、系统工具）
-- **用户级** → `home/`（编辑器、浏览器、日常软件）
-- 改用户级配置不需要 sudo，rebuild 自动处理
-- 所有改动必须通过 nixos-rebuild 应用，禁止非 nix 方式修改
-- secrets 走 `/persist/secrets/`，不进 git
-
-## 新机器首次部署
-
-### 0. 前置条件
-
-确保已从 U 盘或网络获取本仓库：
-
-```bash
-git clone <repo-url> ~/myNixOSConfig
 cd ~/myNixOSConfig
+sudo nixos-rebuild switch --flake .
 ```
 
-### 1. 生成硬件配置
+Codex 修改后只运行检查，不自动应用系统配置。结构性修改使用：
 
 ```bash
-nixos-generate-config --root /mnt
-cp /mnt/etc/nixos/hardware-configuration.nix ~/myNixOSConfig/
+nix-instantiate --parse <file>
+nixos-rebuild dry-build --flake .
 ```
 
-### 2. 修改机器特定配置
+## 常用入口
 
-| 文件                      | 需要修改的内容                                                     |
-| ------------------------- | ------------------------------------------------------------------ |
-| `host/network.nix`        | `networking.hostName`                                                  |
-| `host/locale.nix`         | `time.timeZone`、`i18n.defaultLocale`                                |
-| `host/users.nix`          | `users.users.<name>`、NOPASSWD 规则                                  |
-| `home/default.nix`        | `home.username`、`home.homeDirectory`                                |
-| `home/env/hyprland.nix`   | `hl.monitor` 显示器配置                                              |
-| `flake.nix`               | `nixosConfigurations.<hostname>`、`home-manager.users.<name>`       |
+- [Wiki 首页](wiki/README.md)：按组件查找使用和排障说明。
+- [Wiki 来源清单](wiki/_sources.yaml)：Nix 模块与文档的映射。
+- [Memory 索引](memory/INDEX.md)：查询非显而易见的配置决策。
+- [项目约束](wiki/constraints.md)：包管理、变体、secrets 和验证规则。
 
-### 3. 挂载 /persist 子卷并创建文件
+## 约束
 
-`/persist` 是 btrfs 子卷（`@persist`），需在分区时创建并挂载。mihomo 依赖其下的配置，首次部署需手动准备：
-
-```bash
-# 创建目录
-sudo mkdir -p /persist/mihomo
-
-# mihomo 代理配置（必需，否则 mihomo 服务启动失败）
-sudo cp <your-mihomo-config.yaml> /persist/mihomo/config.yaml
-```
-
-Secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），解密私钥为系统 SSH host key（`/etc/ssh/ssh_host_ed25519_key`），随系统迁移无需单独管理。首次部署需生成 SSH host key（OpenSSH 默认自动生成），并确保 `.sops.yaml` 接收者与该 key 的 age 公钥匹配。
-
-GitHub CLI 等工具也可能依赖 `/persist/secrets/` 下的其他 env 文件：
-
-```bash
-sudo cp <your-gh.env> /persist/secrets/gh.env
-```
-
-### 4. 用户文件和缓存
-
-以下文件路径使用 `config.home.homeDirectory` 动态解析，但文件本身需要存在：
-
-| 文件                           | 用途              | 缺失时影响              |
-| ------------------------------ | ----------------- | ----------------------- |
-| `~/Pictures/ProfiePictures/` | Noctalia 头像     | 头像不显示              |
-| `~/Pictures/Wallpapers/`     | Noctalia 壁纸     | 壁纸功能不可用          |
-| `~/.cache/noctalia/HVE/`     | Noctalia HVE 配置 | Hyprland 装饰配置缺失   |
-| `~/.config/hypr/noctalia/`   | Noctalia 内置模板产物 | 无影响（合成器配色已归 stylix，见 `host/hyprland/stylix.nix`） |
-
-首次启动 Noctalia 后，`~/.cache/noctalia/HVE/` 和 `~/.config/hypr/noctalia/` 会自动生成。
-
-### 5. 应用配置
-
-```bash
-sudo nixos-rebuild switch --flake ~/myNixOSConfig#
-```
-
-### 6. 首次认证
-
-- **OneDrive**: 终端运行 `onedrive` 完成 OAuth 认证
-- **mihomo**: 确保 `/persist/mihomo/config.yaml` 中的订阅链接有效
+- 系统级配置放 `host/`，用户级配置优先放 `home/`。
+- `hardware-configuration.nix` 自动生成，不手动大改。
+- secrets 放 `/persist/secrets/` 或 sops 加密文件，不进 git。
+- 网络、内核、硬件和启动相关改动使用 `codex/` feature 分支。

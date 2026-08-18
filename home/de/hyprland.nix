@@ -35,6 +35,7 @@ in
     enable = true;
     configType = "lua";
     systemd.enable = false;
+    portalPackage = null;
   };
 
   # stylix 配色注入（替代 Noctalia 模板）：hyprland.lua require stylix-colors，

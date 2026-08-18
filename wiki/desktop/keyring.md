@@ -12,7 +12,7 @@ updated: 2026-08-12
 GNOME Keyring 是 Linux 上的**加密凭据存储服务**。它在 D-Bus 上暴露 `org.freedesktop.secrets` 接口（Secret Service API），应用通过 `libsecret` 库与之通信，安全存储密码、token、证书等敏感数据。
 
 ```
-应用 (Qoder / VS Code / Chrome / ...)
+应用 (VS Code / Chrome / ...)
   │
   │ libsecret (secret-tool / libsecret-1.so)
   │
@@ -29,9 +29,9 @@ gnome-keyring-daemon
 
 ## 为什么需要
 
-Electron 应用（Qoder、VS Code、Claude Desktop、Chrome 等）依赖 Secret Service 存储加密数据：
+Electron 应用（VS Code、Chrome 等）依赖 Secret Service 存储加密数据：
 
-- **VS Code / Qoder**：Settings Sync 加密 token、GitHub 认证
+- **VS Code 等 Electron 应用**：Settings Sync 加密 token、GitHub 认证
 - **Chrome / Firefox**：保存的密码
 - **Git credential helper**：`libsecret` 后端
 - **SSH agent**：passphrase 缓存
@@ -42,7 +42,7 @@ Electron 应用（Qoder、VS Code、Claude Desktop、Chrome 等）依赖 Secret 
 
 ## 配置
 
-### NixOS 侧 (`host/hyprland/desktop.nix`)
+### NixOS 侧 (`host/base/services.nix`)
 
 ```nix
 services.gnome.gnome-keyring.enable = true;
@@ -58,15 +58,11 @@ services.gnome.gnome-keyring.enable = true;
 
 ### 应用侧
 
-Qoder 需要显式指定 `--password-store=gnome-libsecret`：
+需要时为 Electron 应用添加 `--password-store=gnome-libsecret`，例如：
 
-```nix
-# local-deriv/qoder-ide.nix
-makeWrapper $out/share/qoder/qoder $out/bin/qoder \
-  --add-flags "--no-sandbox --disable-gpu-sandbox --password-store=gnome-libsecret"
+```bash
+code --password-store=gnome-libsecret
 ```
-
-其他 VS Code 系应用同理：`code --password-store=gnome-libsecret`
 
 ## 工作原理
 
@@ -136,9 +132,9 @@ grep gnome_keyring /etc/pam.d/login
 
 login keyring 没解锁。**注销重新登录**（不是锁屏再解锁），PAM 才会触发。
 
-### Qoder 仍然报 keyring 错误
+### Electron 应用仍然报 keyring 错误
 
-1. 确认 Qoder 的 flag 已更新：`cat $(which qoder) | grep password-store`
+1. 确认应用使用了 `--password-store=gnome-libsecret`
 2. 确认 gnome-keyring-daemon 在运行：`ps aux | grep gnome-keyring`
 3. 确认 D-Bus service 已注册：`busctl --user introspect org.freedesktop.secrets /org/freedesktop/secrets`
 

@@ -41,9 +41,9 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 - **console**：`[org.gnome.Console]` 设 `shell=['fish']`（系统 passwd 默认是 bash）+ `ignore-scrollback-limit=true`
 - **blur-my-shell**：静态高斯模糊 + 自带 corner pipeline（`pipeline_default_rounded`），panel/applications/dash-to-dock 分段配置，无需 rounded-blur 库
 - **用户设置持久化**：`extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus/console 偏好 + dash-to-dock + blur-my-shell + user-theme + enabled-extensions）+ `favoriteAppsOverride`（Dock：Nautilus/Chrome/Console/Code）；壁纸指向 git 源 `assets/yamadaryou.png`。图标/深浅色由 `home/theme-base.nix` 共享，gtk-theme 在变体 `home.nix` 设 Material-Gnome
-- GDM 接管 tty1；变体不 import `host/hyprland/greeter.nix`（kmscon 天然不存在，无需覆盖）
+- GDM 接管 tty1；变体不 import `host/de/greeter.nix`（kmscon 天然不存在，无需覆盖）
 - fcitx5：核心在共享 `host/base/desktop.nix`；GNOME Wayland 走 text-input-v3，**无 `GTK_IM_MODULE`**（base 只设 QT_IM_MODULE/XMODIFIERS）；kimpanel addon 强制启用
-- 变体 home = 共享 `home/base.nix`（通用工具）+ Material 主题；Hyprland 主桌面 home 另行 `home/hyprland.nix`，两套互不干扰
+- 变体 home = 共享 `home/base.nix`（通用工具）+ Material 主题；Hyprland 主桌面 home 另行 `home/de.nix`，两套互不干扰
 
 ## 故障排查
 

@@ -53,7 +53,7 @@ cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
 
 1. **获取仓库**：`git clone <repo-url> ~/myNixOSConfig`。
 2. **生成硬件配置**：`nixos-generate-config --root /mnt`，将 `hardware-configuration.nix` 复制到仓库根（自动生成，勿手改）。
-3. **改机器特定项**：主机名/时区/locale/用户（`host/`）、`home.username` 与 `home.homeDirectory`（`home/base.nix`）、显示器（`home/hyprland/hyprland.nix`）、`nixosConfigurations.<hostname>`（`flake.nix`）。
+3. **改机器特定项**：主机名/时区/locale/用户（`host/`）、`home.username` 与 `home.homeDirectory`（`home/base.nix`）、显示器（`home/de/hyprland.nix`）、`nixosConfigurations.<hostname>`（`flake.nix`）。
 4. **准备 `/persist` 子卷**：
    ```bash
    sudo mkdir -p /persist/mihomo
@@ -97,8 +97,8 @@ D --> |是| C
 D --> |否| E["拒绝提交<br/>提示运行文档维护"]
 ```
 
-- Commit 门禁：`.claude/hooks/check-doc-sync.sh` 在 PreToolUse 拦截 git commit，若仅改 `*.nix` 而未动 wiki/memory 则拒绝。
-- 会话收尾：`session-wrapup` skill 回顾决策沉淀到 memory 卡并核查 wiki 一致性。
+- 提交前：使用 `project-commit` skill，根据 `wiki/_sources.yaml` 检查 Nix 改动是否同步 wiki/memory。
+- 会话收尾：`session-wrapup` skill 回顾决策、沉淀 memory 卡并核查 wiki 一致性。
 
 ## 故障排查
 

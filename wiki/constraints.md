@@ -15,7 +15,7 @@ local-deriv/
   *.nix                # Custom packages and font derivations
   anthropic-fonts.nix  # Anthropic fonts
 home/
-  base.nix hyprland.nix theme-base.nix theme-material.nix theme-hyprland.nix
+  base.nix hyprland.nix theme-base.nix theme-material.nix theme-de.nix
   env/ hyprland/ dev/ productivity/ leisure/  # Purpose-based subdirectories
 host/
   base/ hyprland/      # base = shared, hyprland = main-DE-specific
@@ -54,7 +54,7 @@ assets/                # Binary assets (wallpapers, tarballs, etc.)
 ### flake.nix
 
 - `flake.nix` is an entry point and dependency manifest only
-- No overlays currently in use (`overlays/` was removed); recreate the directory + `nixpkgs.overlays = import ./overlays` if needed later
+- No overlays currently in use; use `local-deriv/` for new packages and a local `overrideAttrs` for one-off fixes
 - No inline derivations, no inline `mkDerivation`, no inline `appimageTools`
 
 ---

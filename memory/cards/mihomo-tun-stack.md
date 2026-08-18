@@ -26,7 +26,7 @@ date: 2026-08-05
 改 TUN 相关配置时保持 `gvisor + mtu 1500`。如调整先验证：
 ```bash
 ip link show Meta | grep mtu   # 应显示 mtu 1500
-cd /tmp && time nix-prefetch-url "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.24012.11_amd64.deb"
+nix build --dry-run '.#nixosConfigurations.MechRevo-NixOS.config.system.build.toplevel'
 ```
 
 完整排查记录见 [[wiki/networking/mihomo.md#nix-下载慢]]

@@ -2,7 +2,7 @@
 title: 办公软件套件
 category: 生产力
 tags: [office, libreoffice, onlyoffice, fonts, cjk]
-updated: 2026-08-13
+updated: 2026-08-18
 ---
 
 # 办公软件套件
@@ -33,7 +33,7 @@ end
 subgraph "用户层(home)"
 U1["productivity/default.nix<br/>导入办公模块"]
 U2["productivity/office.nix<br/>安装LibreOffice/OnlyOffice"]
-U3["theme.nix<br/>fontconfig规则"]
+U3["theme-base.nix<br/>fontconfig规则"]
 end
 U1 --> U2
 U2 --> U3
@@ -46,9 +46,9 @@ S3 --> U2
 
 中文显示是办公场景的关键，字体来自三处：
 
-- **系统开源字体**（`host/desktop.nix`）：WQY、Noto CJK、思源宋体/黑体、方正系列、Emoji、多种等宽字体。
+- **系统开源字体**（`host/base/desktop.nix`）：WQY、Noto CJK、思源宋体/黑体、方正系列、Emoji、多种等宽字体。
 - **MS 授权字体**：`office.nix` 里有一段 activation 脚本，每次 rebuild 把 `/persist/Fonts/` 下的 `.ttf`/`.ttc` 复制到 `~/.local/share/fonts/MS/` 并刷新 `fc-cache`，避免首次部署缺字。
-- **fontconfig 替换链**（`home/theme.nix`）：实现"原生优先、开源回退"，让 Office 中英文混排更自然。
+- **fontconfig 替换链**（`home/theme-base.nix`）：实现"原生优先、开源回退"，让 Office 中英文混排更自然。
 
 ```mermaid
 flowchart TD
@@ -60,7 +60,7 @@ Rule --> End(["应用生效"])
 
 ## 输入法与本地化
 
-- **Fcitx5 + Rime**（`host/desktop.nix`）：GTK/Qt/X11/Wayland 多环境兼容，Office 中文输入体验一致。
+- **Fcitx5 + Rime**（`host/base/desktop.nix`）：GTK/Qt/X11/Wayland 多环境兼容，Office 中文输入体验一致。
 - **区域设置**（`host/locale.nix`）：时区 Asia/Shanghai，语言 zh_CN.UTF-8，数字 / 日期 / 排序符合中文习惯。
 
 ## 打印与 PDF 导出

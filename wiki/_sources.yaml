@@ -9,7 +9,7 @@
 #   2. 每篇文档 sources 里列出的文件均真实存在。
 #   3. 每篇文档 memory 里列出的卡在 memory/cards/<slug>.md 存在。
 #
-# 2026-08-12 重构：host/ 拆分 base+hyprland，GNOME 变体移至 specialisation/gnome/。
+# 2026-08-18 重构：主桌面统一归入 de/，用户级桌面配置优先由 Home Manager 管理。
 # 工作流：改了某个 .nix -> 反查本表得到「应更新文档集」-> 按 wiki 三方合并规则更新正文 + 刷新 frontmatter updated。
 # 新增/删除 wiki 文档或新增 nix 模块时，必须同步本清单。
 
@@ -19,38 +19,38 @@ docs:
     memory:  [flake-unstable-strategy]
 
   architecture/index.md:
-    sources: [flake.nix, host/default.nix, home/base.nix, home/hyprland.nix, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
+    sources: [flake.nix, host/default.nix, home/base.nix, home/de.nix, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
     memory:  [flake-unstable-strategy]
   architecture/flake.md:
     sources: [flake.nix, host/base/nix.nix]
     memory:  [flake-unstable-strategy]
   architecture/host.md:
-    sources: [host/default.nix, host/base/default.nix, host/hyprland/default.nix, host/base/boot.nix, host/base/hardware.nix, host/hyprland/greeter.nix, host/base/users.nix, host/base/locale.nix]
+    sources: [host/default.nix, host/base/default.nix, host/de/sessions.nix, host/base/boot.nix, host/base/hardware.nix, host/de/greeter.nix, host/base/users.nix, host/base/locale.nix]
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve]
 
   desktop/hyprland.md:
-    sources: [home/hyprland/hyprland.nix, home/hyprland/default.nix, home/hyprland/musicfox.nix, home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, home/hyprland/wallpaper.nix, host/hyprland/desktop.nix, host/hyprland/stylix.nix, host/base/boot.nix]
+    sources: [home/de/hyprland.nix, home/de/default.nix, home/de/musicfox.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/wallpaper.nix, home/de/foot.nix, home/de/stylix.nix, host/base/boot.nix]
     memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub, foot-color-nohash]
   desktop/niri.md:
-    sources: [home/hyprland/niri.nix]
+    sources: [home/de/niri.nix]
     memory:  [stylix-color-hub]
   desktop/gnome.md:
     sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
-    sources: [host/base/desktop.nix, host/hyprland/desktop.nix]
+    sources: [host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink]
   desktop/noctalia.md:
-    sources: [home/hyprland/noctalia.nix, host/hyprland/greeter.nix]
+    sources: [home/de/noctalia.nix, host/de/greeter.nix]
     memory:  [stylix-color-hub]
   desktop/shell-switcher.md:
-    sources: [home/hyprland/shell-switcher.nix, home/hyprland/caelestia-shell.nix, home/hyprland/persona-shell.nix, home/hyprland/noctalia.nix]
+    sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix]
     memory:  []
   desktop/shell.md:
-    sources: [home/env/shell.nix, home/env/terminal.nix]
+    sources: [home/env/shell.nix, home/env/systools.nix]
     memory:  []
   desktop/darkmode.md:
-    sources: [home/theme-base.nix, home/theme-hyprland.nix, home/theme-material.nix, host/base/desktop.nix]
+    sources: [home/theme-base.nix, home/theme-de.nix, home/theme-material.nix, host/de/sessions.nix]
     memory:  [portal-gtk-dangling-symlink]
   desktop/keyring.md:
     sources: [host/base/services.nix]
@@ -67,7 +67,7 @@ docs:
     sources: [home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix]
     memory:  [ai-tools-source]
   dev/yazi.md:
-    sources: [home/env/systools.nix]
+    sources: [home/env/yazi.nix, home/env/systools.nix]
     memory:  []
   dev/distrobox.md:
     sources: [home/dev/containers.nix, host/base/containers.nix]

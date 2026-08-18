@@ -56,7 +56,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 顶栏：不透明度 93%，胶囊背景，comfortable 密度，始终可见。
 
-> **维护**：2026-08-13 清理 `noctalia config validate` 的 4 个 warning（`home/hyprland/noctalia.nix`）：bongocat 宠物插件、launcher session 搜索因新版不再识别已移除；网络指示器字段更新为新版（`visualization/show_value/show_glyph`）。现有功能（上传/下载速率等）保持不变。
+> **维护**：2026-08-13 清理 `noctalia config validate` 的 4 个 warning（`home/de/noctalia.nix`）：bongocat 宠物插件、launcher session 搜索因新版不再识别已移除；网络指示器字段更新为新版（`visualization/show_value/show_glyph`）。现有功能（上传/下载速率等）保持不变。
 
 ## 快捷键（与 Hyprland 绑定）
 

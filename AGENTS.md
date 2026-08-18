@@ -1,298 +1,81 @@
-# NixOS Config — Claude Code Context
+# myNixOSConfig — Codex 工作约束
 
-## 硬件信息
-- 机型: MechRevo (机械革命) 笔记本
-- CPU: AMD Ryzen 7 8845HS (8核16线程)
-- GPU: AMD Radeon 780M (HawkPoint1, amdgpu 驱动)
-- 内存: 32GB
-- 硬盘: NVMe SSD, Btrfs 文件系统
-- 屏幕: 2K (2560x1600), Hyprland scale 1.5
+这是 `lishangshui` 的 NixOS flakes + Home Manager 配置仓库。
 
-## 系统信息
-- Hostname: `MechRevo-NixOS`
-- Username: `lishangshui`
-- 系统: NixOS 26.05 (Yarara) with flakes + Home Manager
-- 启动: systemd-boot + EFI (可触控 EFI 变量)
-- 显示管理器: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
-- WM: Hyprland (Lua 配置, scrolling layout) + niri (KDL 配置), 均经 uwsm 启动
-- Shell: fish (plugins: autopair/done/grc/colored-man-pages) + bash (ble.sh 语法高亮/自动补全)
-- 终端: foot (系统级配置，host/hyprland/desktop.nix)，默认 shell: fish
-- 代理: mihomo TUN 模式 + nftables 防火墙，webui: zashboard (127.0.0.1:9090)
+## 环境
 
-## 文件系统 (Btrfs subvolumes)
-```
-/          → subvol=@       (系统根)
-/home      → subvol=@home   (用户目录)
-/nix       → subvol=@nix    (nix store)
-/persist   → subvol=@persist (持久化数据: mihomo.env, secrets)
-/var/log   → subvol=@log    (日志)
-/boot      → vfat (EFI 分区)
-```
+- 主机：MechRevo-NixOS，AMD Ryzen 7 8845HS，Radeon 780M，2560x1600。
+- 主 DE：Hyprland + niri，均经 UWSM 从 kmscon TTY 会话启动。
+- GNOME：`specialisation/gnome/` 独立变体，不能依赖主 DE 配置。
+- Shell：fish + bash/ble.sh；终端：Foot；输入法：fcitx5；代理：mihomo TUN。
 
-## 目录结构
+## 配置边界
 
-```
-myNixOSConfig/
-├── flake.nix                  # 入口 — 依赖声明 + 模块引用，不含 inline 包定义
-├── flake.lock                 # root 拥有，更新需 sudo
-├── hardware-configuration.nix # 自动生成，不要手动大改
-├── assets/
-│   └── yamadaryou.png         # 桌面壁纸 + Hyprland 锁屏
-│
-├── local-deriv/                # 自定义包（不在 nixpkgs 中的全新包）
-│   ├── netease-cloud-music-web-player.nix
-│   ├── animeko.nix
-│   ├── qoder-ide.nix           # Qoder — AI IDE (Electron)
-│   ├── aionui.nix              # AionUi — AI agent 桌面协作平台
-│   ├── anthropic-fonts.nix     # Anthropic Serif/Sans/Mono
-│   ├── rtk.nix                 # rtk-ai/rtk — token 优化 CLI proxy（nixpkgs 撞名 exprtk）
-│   ├── deepseek-harness.nix    # DeepSeek Harness (dsh) — DeepSeek 官方 CLI（npm 预编译产物）
-│   └── material-gnome-theme.nix  # Material GNOME 主题（matugen 壁纸取色 + Shell 布局参数化，模板在 material-gnome/）
-│
-├── host/                      # NixOS 系统级配置（main = Hyprland 主桌面）
-│   ├── default.nix            # main 入口 — base + Hyprland + specialisation 声明
-│   ├── base/                  # 共享系统层（main 与 specialisation/gnome 共同 import）
-│   │   ├── default.nix        # 入口 — imports 全部
-│   │   ├── boot.nix           # systemd-boot, EFI, /boot 安全设置, stateVersion
-│   │   ├── hardware.nix       # AMD GPU, udev rules, nix-ld
-│   │   ├── locale.nix         # 时区, locale, console 字体/键盘
-│   │   ├── nix.nix            # nix 配置: flakes, substituters, allowUnfree
-│   │   ├── users.nix          # 用户声明, groups, sudo rules
-│   │   ├── network.nix        # NetworkManager, mihomo TUN, nftables, firewall
-│   │   ├── services.nix       # PipeWire, 蓝牙, CUPS, 电源管理, fstrim, gvfs
-│   │   ├── desktop.nix        # 共享桌面：keyring, 字体, X server, fcitx5 核心
-│   │   ├── gaming.nix         # Steam, 32-bit graphics, Flatpak, libvirtd
-│   │   ├── containers.nix     # Waydroid, Podman, 镜像加速
-│   │   └── sops.nix           # sops-nix secrets
-│   └── hyprland/              # Hyprland 主桌面系统层（仅 main import，host/default.nix 直接 import）
-│       ├── desktop.nix        # Hyprland, foot, XDG portal(wlr), qt5ct
-│       ├── stylix.nix         # stylix 配色中枢（foot 配色注入，hyprland/niri 手工）
-│       └── greeter.nix        # TTY 登录（kmscon + CJK，howdy 人脸解锁）
-│
-├── home/                      # Home Manager 用户级配置
-│   ├── base.nix               # 共享 home 入口（两 DE）— 通用工具
-│   ├── hyprland.nix           # main home 入口 — base + Hyprland 特有
-│   ├── theme-base.nix         # 共享主题基础：指针光标, CJK字体, 图标, 深浅色
-│   ├── theme-material.nix     # Material-Gnome GTK 主题应用（两 DE 共享，被 theme-hyprland + gnome home import）
-│   ├── theme-hyprland.nix     # Hyprland Qt 主题（qt5ct, breeze）+ GTK 主题 import theme-material
-│   ├── git.nix                # Git 用户配置
-│   ├── env/                   # 通用环境（两 DE）
-│   │   ├── shell.nix          # starship, zellij, bash/ble.sh, fish + CLI工具
-│   │   ├── terminal.nix       # (foot 在 host/hyprland/desktop.nix)
-│   │   ├── systools.nix       # btop, yazi, fastfetch, 系统工具
-│   │   └── onedrive.nix       # OneDrive 同步
-│   ├── hyprland/              # Hyprland 用户组（仅 main）
-│   │   ├── default.nix        # 入口
-│   │   ├── hyprland.nix       # Hyprland Lua 配置 + Wayland 工具 + 截图
-│   │   ├── noctalia.nix       # Noctalia shell 面板
-│   │   ├── caelestia-shell.nix # caelestia-dots shell（可切换，wantedBy 空由 switcher 启停）
-│   │   ├── persona-shell.nix   # Persona-Quickshell（纯 QML，local-deriv 打包 + qs -c）
-│   │   ├── niri.nix           # niri 滚动平铺合成器
-│   │   ├── musicfox.nix       # go-musicfox（依赖 foot）
-│   │   └── shell-switcher.nix # shell-switcher 运行时配置（声明可切换 shell）
-│   ├── dev/                   # 开发工具
-│   │   ├── nvim.nix           # Neovim
-│   │   ├── nvim/init.lua      # Neovim 配置文件
-│   │   ├── vscode.nix         # VS Code
-│   │   ├── tools.nix          # direnv, gh, CLI 工具
-│   │   ├── ai.nix             # claude-code, codex, codex-desktop, claude-desktop, qoder-cli, qoder-ide, officecli, pi, opencode, cc-switch, codebase-memory-mcp, rtk
-│   │   └── containers.nix     # distrobox assemble manifest (arch + ubuntu)
-│   ├── productivity/          # 办公与通讯
-│   │   ├── office.nix         # LibreOffice, OnlyOffice, Obsidian + Markdown 编辑器
-│   │   ├── comms.nix          # QQ, Telegram, WeChat(缩放), LocalSend
-│   │   ├── files.nix          # Nemo 桌面配置 + 文件管理器 + 归档工具
-│   │   └── compat.nix         # virt-manager, Flatseal (Flatpak 权限管理)
-│   └── leisure/               # 影音、游戏与浏览器
-│       ├── player.nix         # mpv, 网易云(gtk/web), OBS, loupe, animeko
-│       ├── browser.nix        # Firefox, Chrome
-│       └── gaming.nix         # mangohud
-│
-├── specialisation/            # 桌面变体（与 host/、home/ 平级；boot 菜单选）
-│   └── gnome/                 # GNOME 变体全部代码（inheritParentConfig=false 完全隔离）
-│       ├── default.nix        # 变体入口 — import 共享 base + GNOME + home-manager
-│       ├── host.nix           # 系统层：GDM/GNOME/扩展/material 主题/dconf overrides
-│       └── home.nix           # 用户层：Material-Gnome + GTK4 链接 + ~/.themes + flatpak
-│
-├── wiki/                      # 操作手册 — 回答「怎么用」，含故障排查
-│   ├── README.md              # wiki 导航首页（分类 MOC）
-│   ├── _sources.yaml          # 来源映射清单（单真源，驱动 doc-sync hook）
-│   ├── overview.md            # 项目概述
-│   ├── architecture/          # 系统架构: index/flake/host
-│   ├── desktop/               # 桌面环境: hyprland/fcitx5/noctalia/shell/shell-switcher/darkmode/keyring
-│   ├── productivity/          # 生产力: office
-│   ├── dev/                   # 开发与工具: nvim/vscode/yazi/distrobox/bottles
-│   ├── leisure/               # 娱乐: gaming/media
-│   ├── networking/            # 网络与代理: mihomo
-│   ├── security/              # 安全与隐私: index/sops/pam
-│   ├── customization/         # 定制与扩展: overlays
-│   ├── services.md            # 系统服务聚合
-│   ├── deployment.md          # 部署与维护
-│   ├── troubleshooting.md     # 故障排除聚合
-│   └── constraints.md         # 约束与惯例
-│
-├── memory/                    # 决策记忆（为什么 + 硬件特性，AI 参考）
-│   ├── INDEX.md               # 卡片索引
-│   ├── _template.md           # 卡片模板
-│   └── cards/                 # 原子化决策卡
-│
-├── issues/                    # 本地排障/待办记录（.gitignore，不进 git）
-│   ├── README.md              # 索引（OPEN 列表 + CLOSED 归档链接）
-│   └── archived/              # 已关闭 issue
-│
-├── CLAUDE.md
-└── README.md
+- 系统集成、硬件、网络、启动、字体和服务放 `host/`。
+- 用户配置、桌面应用和工具放 `home/`；能由 Home Manager 管理的用户配置优先放 HM。
+- 自定义且不在 nixpkgs 的包放 `local-deriv/`，直接 import；不要为单点包创建 overlay。
+- `hardware-configuration.nix` 自动生成，除非用户明确要求不要手改。
+- secrets 只放 `/persist/secrets/` 或 sops 加密文件，不进 git。
+- 不修改网络/TUN、内核、AMD 背光、硬件、sudo 规则和 secrets，除非用户明确要求。
+
+## 当前结构
+
+```text
+host/
+├── default.nix
+├── base/                 # 两个桌面变体共享的系统层
+└── de/                   # 主 DE 的系统集成：sessions.nix、greeter.nix
+
+home/
+├── base.nix              # 两个桌面变体共享的 HM 入口
+├── de.nix                # 主 DE HM 入口
+├── de/                   # Hyprland/niri、Foot、Stylix、Shell
+├── env/                  # Shell、系统工具、OneDrive
+├── dev/                  # 编辑器、AI、开发工具、容器
+├── productivity/         # 办公、通讯、文件管理
+└── leisure/              # 浏览器、影音、游戏
+
+specialisation/gnome/     # 完全隔离的 GNOME 系统与 HM 入口
+wiki/                     # 怎么用；_sources.yaml 是配置来源清单
+memory/                   # 为什么这么配；INDEX.md 是入口
+.agents/skills/           # 项目通用技能单一真源
 ```
 
-## 配置原则
-- **按职责分模块**：每个文件只负责一个关注点
-- **系统级** → `host/`，**用户级** → `home/`
-- `hardware-configuration.nix` 由 nixos-generate-config 自动生成，不手动修改
-- 包管理：基础 CLI/系统服务走系统包（`host/`），桌面应用走用户包（`home/`）
-- Hyprland 配置走 Lua（`hyprland.lua`），不是 hyprlang `.conf` 文件
+## 验证与应用
 
-### Overlay / override / direct import 选择规则
+修改带自校验的配置时，先用包自带工具校验，再写入 Nix：
 
-**用 `nixpkgs.overlays` 仅当：**
-- 向已有 attrset 添加名字，且其他模块通过 `pkgs.*` 引用（如 `pkgs.vimPlugins.some-alias`）
-- 被修改的包有反向依赖也需要看到新版本
-
-**用 `overrideAttrs` 内联（不要 overlay）当：**
-- 修补一个只在一处使用的包
-- 该包没有反向依赖需要变更
-
-**用 `local-deriv/*.nix` + 直接 import 当：**
-- 定义一个不在 nixpkgs 中的全新包
-- 模式：`(import ../local-deriv/foo.nix { inherit pkgs; })`
-- 如果 derivation 需要本地 `assets/` 路径，把 `src` 作为参数传入：
-  ```nix
-  # local-deriv/foo.nix
-  { pkgs, src }: pkgs.stdenv.mkDerivation { inherit src; ... }
-  # 调用方
-  (import ../local-deriv/foo.nix { inherit pkgs; src = ../assets/foo.tar.gz; })
-  ```
-
-**禁止把新包定义放进 `nixpkgs.overlays`。**
-
-### flake.nix
-- `flake.nix` 只做入口和依赖声明
-- Flake inputs: nixpkgs, home-manager, noctalia, nix-flatpak, llm-agents (numtide/llm-agents.nix, AI 工具包来源), codex-desktop-linux (ilysenko, Codex Desktop for Linux)
-- 当前无 overlay 需求，`overlays/` 目录已删；需要时重建目录 + `nixpkgs.overlays = import ./overlays` 挂载
-- 不允许 inline derivations、inline `mkDerivation`、inline `appimageTools`
-
-### 去重规则
-- 网络诊断工具 (`dnsutils iputils tcpdump mtr nmap iperf3 ethtool iptables`) **只在** `host/network.nix` 的 `environment.systemPackages` 中声明
-  → 不要加到任何 `home/` 模块
-- 字体包在 `host/base/desktop.nix` 的 `fonts.packages` 声明（两 DE 共享）
-- 不要把一个包的 override 拆到两个模块（如 src 在 overlay、flags 在 home 模块 → 合并到一处）
-
-### 链式 override
-当一个包需要多个修改（新 src + 额外 flags + desktop entry），在一个 `overrideAttrs` 调用中完成。
-
-如果通过 `xdg.desktopEntries` 定义了 `.desktop` 文件，`exec` 行**不**应重复 `postInstall` 中 `wrapProgram` 已经注入的 flags。
-
-### systemd user services
-`programs.onedrive` (HM) 只管理配置文件 — 它**不**生成 systemd user service。`home/env/onedrive.nix` 中手写的 `systemd.user.services.onedrive` 是有意为之且必须的。不要删除它。
-
-### sudo rules
-`host/users.nix` 中的 NOPASSWD 规则（`nix`, `nixos-rebuild`, `tee`, `chmod`, `chown`, `install`, `mv`, `cp`, `rm`）是**有意为之**的（单用户笔记本）。不要删除或收紧它们。
-
-### 作用域与风格
-`home.packages = with pkgs; [ ... ]` 内，裸名（不带 `pkgs.` 前缀）即使在嵌套 `let...in` 表达式中也能正确解析。两种写法都可以接受，不要仅为风格一致性做批量重命名。
-
-## rebuild 命令
 ```bash
-cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
+niri validate -c ~/.config/niri/config.kdl
+hyprland --verify-config
 ```
 
-## 验证命令
+通用检查：
+
 ```bash
-# 语法检查（只查语法，不跑 evaluation）
 nix-instantiate --parse <file>
-
-# 完整 evaluation 检查（捕获类型错误、缺参数、坏 import）
-cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake .
+nixos-rebuild dry-build --flake .
 ```
-语法通过不代表 evaluation 通过。结构性的修改（新增文件、移动包、改 import 路径）必须跑 `dry-build`。
 
-### 配置先验证后落盘（必守）
+系统应用由用户手动执行，Codex 不自动 rebuild：
 
-改**任何带自身配置校验的包**（Hyprland `hyprland --verify-config`、niri `niri validate` 等）的配置文件时，必须按这个顺序：
+```bash
+sudo nixos-rebuild switch --flake .
+```
 
-1. **先**直接编辑该包的真实配置文件（`~/.config/<pkg>/`）
-2. **用包自带的 validate/check 命令**验收通过（确认语法 + 语义，部分包支持热载直接验证）
-3. **验收后才写入 Nix**（`home/env/*.nix` 或 `host/*.nix`）
+当前环境如需 root 权限，用户自行执行命令；不要用非 Nix 包管理器改系统。
 
-**Why:** 直接写 Nix 后要 rebuild 才生效，若语法错会浪费一次完整 rebuild 周期才暴露。用 validate 命令（通常毫秒级）先本地验收，能立刻发现错误。
+## Git 与文档
 
-**所有包改配置前**：先查该包是否有 validate/check 机制——`<pkg> --help`、`--validate`、`--check-config`、`--verify-config`、`validate-config` 等，或查 wiki/官方文档确认。有则必须先用它验收；没有的包才允许直接写 Nix + dry-build。
+- 破坏启动、显示或网络的改动在 `codex/` feature 分支完成；不要在 `main` 做实验。
+- 保留用户已有脏改动，不使用 destructive reset/checkout 覆盖它们。
+- 修改 Nix、移动模块或删除功能后，同步 README、wiki 来源清单和必要的 memory 卡。
+- 提交前使用 `project-commit` skill；会话收尾使用 `session-wrapup` skill。
+- `.vscode/`、`.codex/` 和本地排障记录不进 git。
 
-**How to apply:**
-- niri: 改 `config.kdl` 前 `niri validate -c <路径>` 快速验证语法
-- Hyprland: 改 `hyprland.lua` 后 `hyprland --verify-config` 诊断
-- 其他包: 先 `--help` 查 validate 类参数，没有再用 `nix-instantiate --parse` + `dry-build`
+## 维护偏好
 
-## 已启用服务
-- **启动**: systemd-boot (EFI)
-- **显示管理器**: 无（纯 TTY 登录（kmscon + CJK），howdy 人脸解锁）
-- **显示**: Hyprland (Lua, scrolling layout) + niri (KDL), Noctalia shell (Quickshell 面板)
-- **输入法**: fcitx5 (rime-ice + moegirl + zhwiki 词库)
-- **音频**: PipeWire (pulse/alsa/jack)
-- **蓝牙**: bluetooth + blueman
-- **打印**: CUPS
-- **代理**: mihomo TUN 模式 (nftables 防火墙 + ip_forward + zashboard webui)，配置模板 Nix 管理，节点/规则从订阅自动更新
-- **电源**: thermald + power-profiles-daemon + upower
-- **SSD**: fstrim
-- **深色模式**: Noctalia 调度 (dconf/qt5ct) + xdg-desktop-portal-gtk 暴露 Settings portal
-- **云同步**: OneDrive (systemd user service, 首次需 `onedrive` 认证)
-- **AI 代理**: cc-switch (API 路由)
-- **二进制兼容**: nix-ld (运行非 NixOS 编译的二进制)
-- **文件管理**: gvfs
-- **USB 自动挂载**: udiskie (systemd user service)
-- **udev**: stlink, openocd
-- **Steam**: programs.steam + 32-bit OpenGL/Vulkan (host/gaming.nix)
-- **Flatpak**: services.flatpak + nix-flatpak 声明式管理
-- **虚拟化**: libvirtd + QEMU/KVM + virt-manager
-- **Android 容器**: Waydroid (LXC, binder, waydroid-nftables)
-- **Nix 管理**: nh (CLI helper + systemd timer 每周 GC, 保留 10 代 + 7 天)
-
-## Nix 配置
-- **Channel**: nixos-unstable
-- **Cache mirrors**: cache.nixos.org, TUNA, USTC, SJTU
-- **Features**: nix-command, flakes
-- **allowUnfree**: true
-- **stateVersion**: 25.11
-
-## 注意事项
-
-- **MS CJK 字体**: `/persist/Fonts/` 存放从 Windows 提取的字体文件（不进 git）。`home.activation.copyMsCjkFonts` 在 rebuild 时复制到 `~/.local/share/fonts/MS/`。`20-ms-office-cjk.conf` 配置原生优先的 fallback 链。**不要删除 `/persist/Fonts/` 下的字体文件。**
-- **查包强制多路径**：Nix 没有模糊搜索，查 options/module 时至少尝试 2-3 种路径/方式（`nix eval` 换路径、搜 HM/NixOS 源码树、MyNixOS 在线文档），禁止一次查不到就手搓模块
-- **查阅文档**：在修改配置或排查问题前，必须先查阅 `wiki/`，确认官方支持的配置方式。
-- **强制先查文档（禁止逆向）**：排障时（尤其运行时/工具链问题），第一步必须查官方文档（wiki/man/官方 README）和该工具自带的官方辅助工具（查 `PATH`），确认没有官方方案后才允许逆向（`ldd`/`strings`/读源码）。教训：cosmic 无法从 TTY 启动，逆向 cosmic-comp 二进制 + systemd 源码绕了大圈，而 kmscon 官方自带 `kmscon-launch-gui`（发 `setBackground` OSC 释放 DRM master 后跑合成器）就是正解。
-- **决策记忆**：遇到「为什么这么配」「历史决策」「硬件特性」问题，先查 `memory/INDEX.md`，找到对应卡片再动手；改配置前若涉及已知决策，读相关卡片确认不冲突
-### 分支隔离
-- **main 分支必须保持可工作、可部署状态**。任何可能破坏系统的实验性改动（尤其是网络、显示、启动相关）必须在 feature 分支上进行
-- 涉及 mihomo / TUN / nftables / DNS 等网络基础设施的改动，**一律开 feature 分支**。原因：网络组件出问题时可能阻断 nixos-rebuild（缓存下载走 TUN → 代理坏了 → SSL 失败 → 无法 rebuild 恢复），形成死锁
-- feature 分支验证通过（rebuild 成功 + 服务正常运行）后再合并回 main
-- **每次改动后**：更新 README.md 和 CLAUDE.md → commit → rebuild → push main（private repo，不需要 PR）
-- 修改后**不要自动 rebuild**，给出命令让我手动执行
-- 优先用 Home Manager 管用户级配置，系统级才动 host/
-- 涉及 overlay 或 unstable channel 的包，说明原因
-- secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），解密私钥为 SSH host key（`/etc/ssh/ssh_host_ed25519_key`），启用 `useSystemdActivation`
-- 硬件相关（显卡、网卡驱动）改动要谨慎，先说明影响
-- 2K 屏 2560x1600，compositor scale 1.5（Hyprland/niri），涉及 DPI/scale 改动时注意
-- 鼠标: epic-mouse-v1，sensitivity -0.5
-- **所有改动必须通过 nixos-rebuild 应用，禁止用非 nix 方式修改系统配置**
-- flake.lock 被 root 拥有，更新 flake inputs 需 sudo
-- **会话收尾**：会话结束前运行 session-wrapup skill，沉淀本次决策到 `memory/` 并核查 wiki 同步
-- **commit 门禁**：项目级 PreToolUse hook（`.claude/hooks/check-doc-sync.sh`）会拦截「改了 .nix 但没改 wiki/memory」的 git commit，commit 前先确保文档同步
-- **AMD 背光/内核**：`host/boot.nix` 内核参数 `amdgpu.dcdebugmask=0x40000` 禁用 custom brightness curve，修 100% 亮度变黑，**不要删**。内核用 nixpkgs 默认 `linuxPackages`（当前 6.18.42 LTS），**不要换 `linuxPackages_latest`/7.x**——有 RDNA3/4 硬挂起回归。详见 `memory/cards/mechrevo-amd-backlight-curve.md` + `amd-kernel-stay-lts.md`
-
-## Skills（`.agents/skills/` 单真源）
-
-`.claude/skills` 是到 `.agents/skills` 的软链，三方 agent 共用（Claude Code / Codex / Qoder）：
-
-| Skill | 触发 | 作用 |
-|-------|------|------|
-| `wiki-maintainer` | 写文档/更新文档/审查 wiki | 创建和维护 wiki + memory + README.md + CLAUDE.md；清单驱动工作流 |
-| `project-commit` | "commit"/"提交" | 完整 commit 工作流：review diff → 更新文档 → 提交 |
-| `session-wrapup` | "收尾"/"总结"/"wrap up" | 沉淀决策到 memory 并核查 wiki 同步 |
+- 删除优先：先确认是否仍被 import、引用或运行时需要。
+- 优先使用 NixOS/Home Manager 原生模块，避免手写生成器和重复包声明。
+- 不为单一实现增加抽象层；复杂配置保持按职责拆分。
+- 不删除用户明确保留的编辑器、容器或常用应用，只清理死代码、重复实现和过期文档。

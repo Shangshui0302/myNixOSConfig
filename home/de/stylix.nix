@@ -1,12 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   anthropic-fonts = import ../../local-deriv/anthropic-fonts.nix { inherit pkgs; };
 in
 {
-  # stylix — 配色中枢（暴露 config.lib.stylix.colors，手工注入到 foot/hyprland/niri）。
-  # 本版本 stylix master 无 foot/hyprland target（target 体系重构）；autoEnable=false 不自动接管任何组件，
-  # 配色由 config.lib.stylix.colors 在 desktop.nix（foot）与 hyprland/niri 配置里手工引用。
+  # Stylix 只提供统一颜色源；具体组件仍由各自的 HM 模块配置。
   # GTK 保持 Material-Gnome、Qt 保持 qt5ct/breeze、Noctalia 面板保持 yamadaryou。
   stylix = {
     enable = true;

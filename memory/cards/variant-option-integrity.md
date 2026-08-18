@@ -17,7 +17,7 @@ main（Hyprland）与 GNOME 变体通过 `inheritParentConfig=false` 完全隔�
 
 三分类架构（方案 C）：
 1. 纯共享 → `host/base/`、`home/base.nix`
-2. 纯变体专属（Hyprland compositor/foot/Noctalia，GNOME Shell 扩展）→ 物理隔离在 `host/hyprland/`、`specialisation/gnome/`
+2. 纯变体专属（Hyprland compositor/foot/Noctalia，GNOME Shell 扩展）→ 物理隔离在 `host/de/`、`specialisation/gnome/`
 3. **有细微差异的模块 → 一个文件 + `lib.optionals (!gnome)` / `lib.mkIf (!gnome)` 内聚差异**
 
 范例（`host/base/desktop.nix` 的 fcitx5）：

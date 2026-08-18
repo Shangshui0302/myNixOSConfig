@@ -25,23 +25,23 @@ updated: 2026-08-09
 - 安装由 Home Manager 统一管理，改动这个模块后 rebuild 即生效。
 - 配套的工具链在 `home/dev/tools.nix`（Node.js、Python、GCC、搜索工具等），VS Code 插件生态所需的运行时基本都在这里提供。
 - 容器化开发靠 `home/dev/containers.nix` 的 Distrobox 模板，配合 Remote 场景使用。
-- 桌面基础设施（GNOME Keyring、Fcitx5 输入法、字体）由 `host/desktop.nix` 提供，保障凭据存储、中文输入与显示。
+- 桌面基础设施（GNOME Keyring、Fcitx5 输入法、字体）由 `host/base/desktop.nix` 提供，保障凭据存储、中文输入与显示。
 
 ## 组件关系
 
 ```mermaid
 graph LR
-F["flake.nix"] --> H["home/default.nix"]
+F["flake.nix"] --> H["home/base.nix"]
 H --> D["home/dev/default.nix"]
 D --> V["home/dev/vscode.nix"]
 D --> T["home/dev/tools.nix"]
 D --> C["home/dev/containers.nix"]
-F --> S["host/desktop.nix"]
+F --> S["host/base/desktop.nix"]
 ```
 
 - Flake 层：`flake.nix` 引入 Home Manager 并注入用户配置。
-- Home Manager 层：`home/default.nix` 聚合各功能模块，`home/dev/default.nix` 再引入 vscode / tools / containers。
-- 桌面层：`host/desktop.nix` 提供 Keyring、输入法、字体，直接影响 VS Code 的凭据与界面表现。
+- Home Manager 层：`home/base.nix` 聚合各功能模块，`home/dev/default.nix` 再引入 vscode / tools / containers。
+- 桌面层：`host/base/desktop.nix` 提供 Keyring、输入法、字体，直接影响 VS Code 的凭据与界面表现。
 
 ## 工作区配置怎么管
 
@@ -73,7 +73,7 @@ VS-->>Dev : 展示结果
 
 - 调试器：在 `launch.json` 声明；确保 `home/dev/tools.nix` 已装好对应运行时与调试符号。
 - 任务：在 `tasks.json` 定义构建 / 测试 / 格式化，复用工具链路径。
-- 终端：结合 `host/desktop.nix` 的输入法配置获得一致交互。
+- 终端：结合 `host/base/desktop.nix` 的输入法配置获得一致交互。
 
 ## 远程与容器开发
 
@@ -84,15 +84,13 @@ VS-->>Dev : 展示结果
 
 VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI CLI 工具集中在 `home/dev/ai.nix`，走统一来源与安全审查流程，见反链的 memory 卡；扩展本身在 VS Code 商店安装，与 Nix 管理的 CLI 工具互不冲突。
 
-当前 ai.nix 管理的工具：`claude-code`、`codex`、`claude-desktop`、`codex-desktop`、`qoder-cli`/`qoder-ide`、`opencode`、`pi`、`officecli`、`cc-switch`（API 路由），以及 `rtk`（token 优化 CLI proxy，`local-deriv/rtk.nix` 自打包）与 `codebase-memory-mcp`（代码库知识图谱 MCP，nixpkgs 现成包）。
-
-另有 `dsh`（DeepSeek Harness，`local-deriv/deepseek-harness.nix` 打包，官方 npm 预编译产物）——刚出的仓库，暂未接入 packages，仅打包备用。
+当前 ai.nix 管理的工具：`codex`、`codex-desktop`、`officecli`、`cc-switch`（API 路由，按需手动启动），以及 `rtk`（token 优化 CLI proxy，`local-deriv/rtk.nix` 自打包）与 `codebase-memory-mcp`（代码库知识图谱 MCP，nixpkgs 现成包）。
 
 ## 故障排查
 
 | 现象 | 排查 |
 |------|------|
-| 凭据无法保存 | 确认 `host/desktop.nix` 已启用 GNOME Keyring，会话变量正确 |
+| 凭据无法保存 | 确认 `host/base/desktop.nix` 已启用 GNOME Keyring，会话变量正确 |
 | 中文输入异常 | 检查 Fcitx5 与 Wayland/XWayland 兼容配置 |
 | 调试器不可用 | 确认 `tools.nix` 装了对应运行时且 PATH 正确 |
 | 容器内行为不一致 | 核对容器镜像与宿主机 toolchain 版本 |

@@ -26,7 +26,7 @@ myNixOSConfig 是一套为机械革命（MechRevo）笔记本定制的 NixOS + H
 
 - 系统基础设施位于 `host/`；
 - 用户环境与应用位于 `home/`；
-- `overlays/` 与 `local-deriv/` 扩展包能力；
+- `local-deriv/` 提供不在 nixpkgs 的本地包；
 - `wiki/` 记录「怎么用」，`memory/` 记录「为什么这么配」。
 
 ## 项目结构
@@ -36,19 +36,19 @@ myNixOSConfig 是一套为机械革命（MechRevo）笔记本定制的 NixOS + H
 - `flake.nix`：Flake 入口，定义 inputs（`nixpkgs-unstable`、`home-manager`、`noctalia`、`sops-nix` 等）与 outputs（NixOS 系统配置与 Home Manager 用户配置）。
 - `host/`：系统级模块，含启动、硬件、网络、服务、桌面、Greeter、游戏、容器与安全（SOPS）。
 - `home/`：用户级模块，按 `env`/`dev`/`productivity`/`leisure` 划分职责，并集成 Flatpak。
-- `overlays/` 与 `local-deriv/`：对上游包进行覆盖或本地构建补充。
+- `local-deriv/`：对本地构建补充包；单点修补使用模块内 `overrideAttrs`。
 - `wiki/` 与 `memory/`：文档与决策记忆，辅助理解与维护。
 
 ```mermaid
 graph TB
 A["flake.nix"] --> B["host/default.nix"]
 A --> C["home/base.nix"]
-B --> D["host/hyprland/desktop.nix"]
+B --> D["home/de/foot.nix"]
 B --> E["host/base/network.nix"]
 B --> F["host/base/gaming.nix"]
 B --> G["host/base/sops.nix"]
-C --> H["home/hyprland/hyprland.nix"]
-C --> I["overlays/default.nix"]
+C --> H["home/de/hyprland.nix"]
+C --> I["local-deriv/"]
 ```
 
 ## 核心组件
@@ -61,7 +61,7 @@ C --> I["overlays/default.nix"]
 - **游戏与虚拟化**：Steam、Flatpak、libvirtd，满足娱乐与 Windows 兼容需求。
 - **AI 开发工具链**：claude-code/codex 等 agent CLI 走 llm-agents.nix 统一来源；`rtk`（token 优化）与 `codebase-memory-mcp`（代码库记忆）补齐工具链。
 
-配置要点从对应的 nix 模块提取，详见 `host/hyprland/desktop.nix`、`host/base/network.nix`、`host/base/gaming.nix`、`host/base/sops.nix`。
+配置要点从对应的 nix 模块提取，详见 `home/de/foot.nix`、`host/base/network.nix`、`host/base/gaming.nix`、`host/base/sops.nix`。
 
 ## 架构总览
 
@@ -72,10 +72,10 @@ sequenceDiagram
 participant User as "用户"
 participant Flake as "flake.nix"
 participant Host as "host/default.nix"
-participant Desktop as "host/hyprland/desktop.nix"
+participant Desktop as "host/de/sessions.nix"
 participant Net as "host/base/network.nix"
 participant HM as "home/base.nix"
-participant Hypr as "home/hyprland/hyprland.nix"
+participant Hypr as "home/de/hyprland.nix"
 participant SOPS as "host/base/sops.nix"
 User->>Flake : "nixos-rebuild switch --flake ."
 Flake->>Host : "加载系统模块"

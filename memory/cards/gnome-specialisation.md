@@ -17,7 +17,7 @@ GNOME 作为 `inheritParentConfig=false` 的 specialisation 变体（代码在�
 - **完全隔离**：`inheritParentConfig=true`（默认继承）会让 GNOME 闭包混入 Hyprland/foot/fcitx5 主题 addons/wlr portal/qt5ct；继承 + mkForce 反向关闭不彻底（foot-notify 的 hyprctl、xdg portal config、fcitx5 主题 addons 仍被继承，逐一 mkForce 易漏）。`inheritParentConfig=false` 用 `noUserModules.extendModules`（源码 `activation/specialisation.nix`）从零构建，GNOME 闭包天然不含 Hyprland 包体
 - 变体不以代码片段存在：`specialisation/gnome/` 独立目录（default.nix/host.nix/home.nix），main 只留一行声明
 - 共享 base：`host/base/` + `home/base.nix` 被 main 和变体共同 import（硬件/网络/服务/通用工具）；fcitx5 核心共享（GNOME 走 kimpanel、Hyprland 走 classicui），主题分层（main=adw-gtk3-dark，变体=Material-Gnome）
-- GDM 与 kmscon 不硬冲突，但变体不 import `host/hyprland/greeter.nix`，kmscon 天然不存在，无需 mkForce
+- GDM 与 kmscon 不硬冲突，但变体不 import `host/de/greeter.nix`，kmscon 天然不存在，无需 mkForce
 
 ## How to apply
 

@@ -1,7 +1,7 @@
 { pkgs, materialGnomeTheme, ... }:
 {
   # Material-Gnome GTK 主题应用（两 DE 共享，完全相同部分）。
-  # 被 theme-hyprland.nix 与 specialisation/gnome/home.nix 共同 import。
+  # 被 theme-de.nix 与 specialisation/gnome/home.nix 共同 import。
   # 若之后某变体需要差异化 GTK 主题，再从这里拆出去。
 
   # GTK3 主题

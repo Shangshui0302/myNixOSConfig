@@ -25,6 +25,6 @@ Hyprland 0.56 将 `decoration:blur:new_optimizations` 默认值从 `false` 改�
 
 ## How to apply
 
-- 配置位置：`home/env/hyprland.nix` → `blur.new_optimizations = false`
+- 配置位置：`home/de/hyprland.nix` → `blur.new_optimizations = false`
 - 后续 Hyprland 更新时，尝试移除此设置测试是否修复
-- 相关：`home/env/hyprland.nix` L94-102
+- 相关：`home/de/hyprland.nix` L94-102

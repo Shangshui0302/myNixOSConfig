@@ -63,7 +63,7 @@ git log --oneline -5        # 最近提交
 
 - 改了用户可见行为（快捷键/默认值/新组件）→ wiki 对应手册是否已更新？
 - 新决策卡是否引用了 wiki？wiki 相关文档是否需要补链接？
-- 若 hook 门禁在 commit 时拦截过 → 说明 wiki/memory 有遗漏，补齐
+- 若提交前检查发现 wiki/memory 遗漏 → 补齐后再提交
 
 若有遗漏，用 wiki-maintainer 更新 wiki 并提醒用户一起 commit。
 
@@ -81,7 +81,7 @@ git log --oneline -5        # 最近提交
 
 ## 与 commit 的关系
 
-- 若本次会话有改动未 commit，且涉及 .nix 改动 → hook 门禁会要求 wiki/memory 同步。本 skill 在 commit 前运行可避免被拦截。
+- 若本次会话有改动未 commit，且涉及 `.nix` 改动 → 提交前必须完成 wiki/memory 同步。本 skill 在 commit 前运行可避免遗漏。
 - commit 动作本身由 project-commit skill 处理，本 skill 只负责**知识沉淀**，不替代 commit。
 
 ## 质量标准

@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-08-13
+updated: 2026-08-18
 ---
 
 # Niri 使用指南
@@ -23,14 +23,14 @@ Hyprland ↔ niri 切换：注销当前 compositor → 切到其他 TTY 重新�
 
 ## 配置
 
-配置由 Nix 生成（`home/hyprland/niri.nix` → `~/.config/niri/config.kdl`），手动改会被 rebuild 覆盖（与 hyprland.lua 相同约定）。验证语法：`niri validate`。
+配置由 Nix 生成（`home/de/niri.nix` → `~/.config/niri/config.kdl`），手动改会被 rebuild 覆盖（与 hyprland.lua 相同约定）。验证语法：`niri validate`。
 
 要点：
 - **显示器**：`output "eDP-1" { scale 1.5 }`（2K 屏，与 Hyprland 一致）
 - **输入**：xkb `us` + `caps:escape`，触摸板 `natural-scroll`
 - **圆角**：全局 `geometry-corner-radius 10` + `clip-to-geometry true`，focus-ring 跟随圆角
 - **无 CSD**：`prefer-no-csd`，foot 等去掉标题栏，用 focus-ring 标焦点
-- **Noctalia**：`spawn-at-startup "noctalia"` 自动拉起（原生支持 niri，通过 `NIRI_SOCKET` 检测）
+- **Noctalia**：由 Home Manager 声明的 user service 随图形会话启动；不在 niri 配置中重复 `spawn-at-startup`
 
 ## 键位（Mod = Super）
 
