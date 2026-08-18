@@ -263,13 +263,17 @@ proxy-groups:
     type: select
     use: [ikuuu]
 
-  - name: "🇺🇸 美国极速"
-    type: url-test
-    use: [ikuuu]
-    filter: "美国|US|United States|🇺🇸"
-    url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+  - name: "🇺🇸 美国节点"
+    type: select
+    use:
+      - ikuuu
+    filter: "(?i)美国|US|United States|🇺🇸"
+
+  - name: "🇺🇸 AI/Dev"
+    type: select
+    proxies:
+      - "🇺🇸 美国节点"
+      - "🔰 选择节点"
 
   - name: "🌏 爱奇艺&哔哩哔哩"
     type: select
@@ -290,7 +294,7 @@ proxy-groups:
   - name: "🎮 Steam 商店/社区"
     type: select
     proxies: ["🔰 选择节点", "DIRECT"]
-
+    
   - name: "🌩️ Cloudflare"
     type: select
     proxies: ["🔰 选择节点", "DIRECT"]
@@ -315,18 +319,15 @@ proxy-groups:
     type: select
     proxies: ["🔰 选择节点", "DIRECT"]
 
-# 规则：显式直连 > 自身依赖 > 去广告 > 国内直连 > 特定服务 > 国外代理
 rules:
-  # 网易云显式直连
+  # ===== 显式直连 =====
+
   - DOMAIN-SUFFIX,music.163.com,DIRECT
   - DOMAIN-SUFFIX,music.126.net,DIRECT
 
-  # 自身依赖与 CDN 直连
   - DOMAIN-SUFFIX,no-mad-sub.one,DIRECT
   - DOMAIN-SUFFIX,jsdelivr.net,DIRECT
-  - DOMAIN-SUFFIX,gstatic.com,DIRECT
 
-  # 邮件协议直连
   - DST-PORT,25,DIRECT
   - DST-PORT,109,DIRECT
   - DST-PORT,110,DIRECT
@@ -336,36 +337,51 @@ rules:
   - DST-PORT,993,DIRECT
   - DST-PORT,995,DIRECT
 
-  # 去广告
+  # ===== 去广告 =====
+
   - RULE-SET,geosite-ads,🛑 拦截广告
 
-  # 国内域名/IP 直连
-  - RULE-SET,geosite-cn,🇨🇳 国内网站
-  - RULE-SET,geoip-cn,🇨🇳 国内网站
+  # ===== 关键服务：优先于大型 geosite =====
 
-  # 必须在 microsoft 前面，否则 github 会被 microsoft 规则集捕获
+  # 学术网站
+  - DOMAIN-SUFFIX,scholar.google.com,🎓 学术网站
+  - DOMAIN-SUFFIX,ieee.org,🎓 学术网站
+  - DOMAIN-SUFFIX,acm.org,🎓 学术网站
+  - DOMAIN-SUFFIX,arxiv.org,🎓 学术网站
+  - DOMAIN-SUFFIX,sci-hub.se,🎓 学术网站
+  - DOMAIN-SUFFIX,sci-hub.ru,🎓 学术网站
+  - DOMAIN-SUFFIX,springer.com,🎓 学术网站
+  - DOMAIN-SUFFIX,elsevier.com,🎓 学术网站
+  - DOMAIN-SUFFIX,sciencedirect.com,🎓 学术网站
+  - DOMAIN-SUFFIX,nature.com,🎓 学术网站
+  - DOMAIN-SUFFIX,science.org,🎓 学术网站
+  - DOMAIN-SUFFIX,researchgate.net,🎓 学术网站
+  - DOMAIN-SUFFIX,semanticscholar.org,🎓 学术网站
+  - DOMAIN-SUFFIX,pubmed.ncbi.nlm.nih.gov,🎓 学术网站
+
+  # AI
+  - DOMAIN-KEYWORD,openai,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,openai.com,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,chatgpt.com,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,oaistatic.com,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,oaiusercontent.com,🇺🇸 AI/Dev
+  - RULE-SET,geosite-openai,🇺🇸 AI/Dev
+  - DOMAIN-KEYWORD,antigravity,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,claude.ai,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,anthropic.com,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,meta.ai,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,perplexity.ai,🇺🇸 AI/Dev
+  - DOMAIN-SUFFIX,qoder.com,🇺🇸 AI/Dev
+
+  # OneDrive：必须早于 Microsoft
+  - DOMAIN-SUFFIX,onedrive.com,☁️ OneDrive
+  - DOMAIN-SUFFIX,onedrive.live.com,☁️ OneDrive
+  - DOMAIN-SUFFIX,1drv.com,☁️ OneDrive
+  - DOMAIN-SUFFIX,sharepoint.com,☁️ OneDrive
+
+  # GitHub：必须早于 Microsoft
   - RULE-SET,geosite-github,🔰 选择节点
 
-  # 特定服务分流
-  # AI 及其它严格限制中国/香港 IP 的服务
-  - DOMAIN-KEYWORD,antigravity,🇺🇸 美国极速
-  - DOMAIN-SUFFIX,claude.ai,🇺🇸 美国极速
-  - DOMAIN-SUFFIX,anthropic.com,🇺🇸 美国极速
-  - DOMAIN-SUFFIX,meta.ai,🇺🇸 美国极速
-  - DOMAIN-SUFFIX,perplexity.ai,🇺🇸 美国极速
-  - DOMAIN-SUFFIX,qoder.com,🔰 选择节点
-  - RULE-SET,geosite-openai,🔰 选择节点
-  - RULE-SET,geosite-microsoft,🔰 选择节点
-  - RULE-SET,geosite-apple,🔰 选择节点
-
-  # 常规特定服务
-  - DOMAIN-SUFFIX,noctalia.dev,🔰 选择节点
-  - RULE-SET,geosite-google,🔰 选择节点
-  - RULE-SET,geosite-bilibili,🌏 爱奇艺&哔哩哔哩
-  - RULE-SET,geosite-bahamut,📺 动画疯
-  - RULE-SET,geosite-netflix,🔰 选择节点
-  - RULE-SET,geosite-youtube,🔰 选择节点
-  - RULE-SET,geosite-telegram,🔰 选择节点
 
   # Steam 分流（MRS 兜底 + 静态域名双保险）
   - DOMAIN-SUFFIX,steamcontent.com,🎮 Steam 登录/下载
@@ -398,33 +414,31 @@ rules:
   - DOMAIN-SUFFIX,kernel.org,🔰 选择节点
   - DOMAIN-SUFFIX,freedesktop.org,🔰 选择节点
 
-  # OneDrive 直连（geosite:microsoft 太粗，单独提出来）
-  - DOMAIN-SUFFIX,onedrive.com,☁️ OneDrive
-  - DOMAIN-SUFFIX,onedrive.live.com,☁️ OneDrive
-  - DOMAIN-SUFFIX,1drv.com,☁️ OneDrive
-  - DOMAIN-SUFFIX,sharepoint.com,☁️ OneDrive
-
   # Cloudflare 站点（手动切换组 + 静态域名）
   - DOMAIN-SUFFIX,cloudflare.com,🌩️ Cloudflare
   - DOMAIN-SUFFIX,cloudflare-dns.com,🌩️ Cloudflare
   - DOMAIN-SUFFIX,cloudflareinsights.com,🌩️ Cloudflare
   - RULE-SET,geosite-cloudflare,🌩️ Cloudflare
+  - DOMAIN-SUFFIX,challenges.cloudflare.com,🌩️ Cloudflare
 
-  # 学术网站
-  - DOMAIN-SUFFIX,scholar.google.com,🎓 学术网站
-  - DOMAIN-SUFFIX,ieee.org,🎓 学术网站
-  - DOMAIN-SUFFIX,acm.org,🎓 学术网站
-  - DOMAIN-SUFFIX,arxiv.org,🎓 学术网站
-  - DOMAIN-SUFFIX,sci-hub.se,🎓 学术网站
-  - DOMAIN-SUFFIX,sci-hub.ru,🎓 学术网站
-  - DOMAIN-SUFFIX,springer.com,🎓 学术网站
-  - DOMAIN-SUFFIX,elsevier.com,🎓 学术网站
-  - DOMAIN-SUFFIX,sciencedirect.com,🎓 学术网站
-  - DOMAIN-SUFFIX,nature.com,🎓 学术网站
-  - DOMAIN-SUFFIX,science.org,🎓 学术网站
-  - DOMAIN-SUFFIX,researchgate.net,🎓 学术网站
-  - DOMAIN-SUFFIX,semanticscholar.org,🎓 学术网站
-  - DOMAIN-SUFFIX,pubmed.ncbi.nlm.nih.gov,🎓 学术网站
+  # 常规特定服务
+  - DOMAIN-SUFFIX,noctalia.dev,🔰 选择节点
+  - RULE-SET,geosite-bilibili,🌏 爱奇艺&哔哩哔哩
+  - RULE-SET,geosite-bahamut,📺 动画疯
+  - RULE-SET,geosite-netflix,🔰 选择节点
+  - RULE-SET,geosite-youtube,🔰 选择节点
+  - RULE-SET,geosite-telegram,🔰 选择节点
+
+  # ===== 国内 =====
+
+  - RULE-SET,geosite-cn,🇨🇳 国内网站
+  - RULE-SET,geoip-cn,🇨🇳 国内网站
+
+  # ===== 大型服务规则 =====
+
+  - RULE-SET,geosite-microsoft,🔰 选择节点
+  - RULE-SET,geosite-apple,🔰 选择节点
+  - RULE-SET,geosite-google,🔰 选择节点
 
   # 其他国外网站兜底
   - RULE-SET,geosite-geolocation-nocn,🐟 漏网之鱼

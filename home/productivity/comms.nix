@@ -2,7 +2,7 @@
 
 {
   home.packages = with pkgs; [
-    qq telegram-desktop localsend
+    qq localsend
   ];
 
   services.flatpak.packages = [
@@ -29,15 +29,4 @@
       };
     };
   };
-
-  xdg.desktopEntries.qq = {
-    name = "QQ";
-    exec = "qq %U";
-    icon = "qq";
-    categories = [ "InstantMessaging" "Chat" ];
-    settings = {
-      StartupWMClass = "QQ";
-    };
-  };
-
 }
