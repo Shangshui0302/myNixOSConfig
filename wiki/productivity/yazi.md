@@ -1,8 +1,8 @@
 ---
 title: Yazi 文件管理器
-category: dev
+category: 生产力
 tags: [yazi, file-manager, tui]
-updated: 2026-08-18
+updated: 2026-08-19
 ---
 
 # Yazi 文件管理器
@@ -66,7 +66,7 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 
 ### 切换主题
 
-编辑 `/home/lishangshui/myNixOSConfig/home/env/yazi.nix` 中的 `myargonaut` 配置，或显式添加其他主题后再 rebuild。
+编辑 `/home/lishangshui/myNixOSConfig/home/productivity/yazi.nix` 中的 `myargonaut` 配置，或显式添加其他主题后再 rebuild。
 
 ## 预览功能
 
@@ -105,6 +105,6 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 
 ## 相关链接
 
-- [Neovim](nvim.md) — smart-enter 用 Neovim 打开文本文件
+- [Neovim](../dev/nvim.md) — smart-enter 用 Neovim 打开文本文件
 - [Shell 环境](../desktop/shell.md) — `y` 别名的 fish 集成
 - [wiki 首页](../README.md)

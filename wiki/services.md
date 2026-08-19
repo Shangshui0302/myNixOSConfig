@@ -1,8 +1,8 @@
 ---
 title: 系统服务
 category: 顶层
-tags: [systemd, pipewire, bluetooth, cups, networkmanager, mihomo, howdy, polkit]
-updated: 2026-08-12
+tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, howdy, polkit]
+updated: 2026-08-19
 ---
 
 # 系统服务
@@ -63,6 +63,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 - `hardware.bluetooth` 启用且 `powerOnBoot`，开机自动上电。
 - `services.printing`（CUPS）提供系统级打印。
 - `services.gvfs` 启用虚拟文件系统，配合 `ntfs3g` 挂载 NTFS。
+- `services.flatpak.enable` 提供用户级 Flatpak 的系统运行时；具体应用仍按主要用途放在对应的 Home Manager 模块。
 
 ## 电源与存储维护
 

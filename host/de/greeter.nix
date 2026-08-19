@@ -21,5 +21,4 @@
       libseat = false;
     };
   };
-  fonts.packages = [ pkgs.sarasa-gothic ];
 }

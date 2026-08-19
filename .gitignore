@@ -7,4 +7,5 @@ secrets.nix
 issues/
 # Codex 本地配置不进仓库；项目 skills 位于 .agents/ 并入 git
 .codex/
+memory/
 .vscode/

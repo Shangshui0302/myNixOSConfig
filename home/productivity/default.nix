@@ -4,6 +4,7 @@
     ./office.nix
     ./comms.nix
     ./files.nix
-    ./compat.nix
+    ./graphics.nix
+    ./yazi.nix
   ];
 }

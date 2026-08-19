@@ -14,8 +14,6 @@
     ];
   };
 
-  services.flatpak.enable = true;
-
   virtualisation.libvirtd.enable = true;
 
   users.users.lishangshui.extraGroups = [ "libvirtd" ];

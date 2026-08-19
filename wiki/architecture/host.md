@@ -1,8 +1,8 @@
 ---
 title: 主机系统架构与启动流程
 category: 架构
-tags: [host, boot, hardware, systemd, tty, kmscon, amdgpu]
-updated: 2026-08-13
+tags: [host, boot, hardware, compat, systemd, tty, kmscon, amdgpu]
+updated: 2026-08-19
 ---
 
 # 主机系统架构与启动流程
@@ -30,7 +30,9 @@ updated: 2026-08-13
 - **文件系统**：统一使用 UUID 绑定块设备，通过 btrfs 子卷组织 `/`、`/home`、`/nix`、`/persist`、`/var/log`；`/boot` 为 vfat 用于 EFI。
 - **交换分区** 与 **CPU 平台/微码**：`nixpkgs.hostPlatform = x86_64-linux`，`hardware.cpu.amd.updateMicrocode` 跟随可再分发固件开关。
 
-该文件顶部注释明确提示**不要手工修改**，变更应通过模块覆盖。`host/base/hardware.nix` 在其之上叠加 GPU 与外设策略：启用 `amdgpu` 驱动、声明 X server 视频驱动、通过 udev 规则设置串口设备（`dialout` 组）权限，并用 `nix-ld` 支持运行非 Nix 二进制。
+该文件顶部注释明确提示**不要手工修改**，变更应通过模块覆盖。`host/base/hardware.nix` 在其之上叠加 GPU 与外设策略：启用 `amdgpu` 驱动、声明 X server 视频驱动，并通过 udev 规则设置串口设备（`dialout` 组）权限。
+
+运行时兼容层单独放在 `host/base/compat.nix`：其中的 `nix-ld` 与库列表为 AppImage 等非 Nix 二进制提供动态链接支持，避免把硬件策略和兼容策略混在一起。
 
 ```mermaid
 flowchart TD

@@ -1,8 +1,8 @@
 ---
 title: 游戏平台
 category: 娱乐
-tags: [steam, proton, gaming, amdgpu, libvirtd, mangohud]
-updated: 2026-08-12
+tags: [steam, proton, gaming, amdgpu, libvirtd, flatpak, mangohud]
+updated: 2026-08-19
 ---
 
 # 游戏平台
@@ -14,9 +14,9 @@ updated: 2026-08-12
 ```mermaid
 graph TB
 A["flake.nix<br/>定义系统与 HM 模块"] --> B["host/default.nix<br/>导入各子系统模块"]
-B --> C["host/base/gaming.nix<br/>Steam/图形/Flatpak/libvirtd"]
-B --> D["host/base/hardware.nix<br/>amdgpu/nix-ld"]
-B --> E["host/base/services.nix<br/>PipeWire/蓝牙/电源等"]
+B --> C["host/base/gaming.nix<br/>Steam/图形/libvirtd"]
+B --> D["host/base/hardware.nix<br/>amdgpu/udev"]
+B --> E["host/base/services.nix<br/>PipeWire/蓝牙/Flatpak"]
 A --> F["home/leisure/gaming.nix<br/>mangohud"]
 ```
 
@@ -24,8 +24,9 @@ A --> F["home/leisure/gaming.nix<br/>mangohud"]
 | --- | --- | --- |
 | Steam 平台 | `host/base/gaming.nix` | 客户端 + 远程游玩防火墙 |
 | 32 位图形 + 视频加速 | `host/base/gaming.nix` | `enable32Bit` + `libva-vdpau-driver`、`libvdpau-va-gl` |
-| AMD GPU 驱动 | `host/base/hardware.nix` | amdgpu 内核模块与 nix-ld |
+| AMD GPU 驱动 | `host/base/hardware.nix` | amdgpu 内核模块与显示驱动 |
 | 音频/蓝牙手柄 | `host/base/services.nix` | PipeWire（Pulse/ALSA/JACK）+ 蓝牙开机自启 |
+| Flatpak 运行时 | `host/base/services.nix` | 为用户级 Flatpak 应用提供系统运行时 |
 | Windows 虚拟机 | `host/base/gaming.nix` | libvirtd + 用户加入 `libvirtd` 组 |
 | 性能监控 / 录制 | `home/leisure/gaming.nix`、`home/leisure/player.nix` | mangohud、obs-studio |
 
@@ -62,7 +63,7 @@ A --> F["home/leisure/gaming.nix<br/>mangohud"]
 
 ## Windows 虚拟机
 
-`virtualisation.libvirtd.enable = true`，并将用户加入 `libvirtd` 组，即可用 `virt-manager` 创建管理 KVM 虚拟机。适合反作弊严格或需要原生 Windows 环境的游戏；若硬件支持，可考虑 GPU 直通获得接近原生的性能。
+`virtualisation.libvirtd.enable = true`，并将用户加入 `libvirtd` 组；用户级 `home/leisure/gaming.nix` 提供 `virt-manager` 创建和管理 KVM 虚拟机。适合反作弊严格或需要原生 Windows 环境的游戏；若硬件支持，可考虑 GPU 直通获得接近原生的性能。
 
 ## 故障排查
 

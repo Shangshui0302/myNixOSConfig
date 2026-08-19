@@ -29,12 +29,12 @@ home/
 ├── de/                   # Hyprland、niri、Foot、Stylix、Shell
 ├── env/                  # Shell、系统工具、OneDrive
 ├── dev/                  # 编辑器、AI、开发工具、容器
-├── productivity/         # 办公、通讯、文件管理
+├── productivity/         # 办公、通讯、文件管理、图像工具、Yazi
 └── leisure/              # 浏览器、影音、游戏
 specialisation/gnome/     # 独立 GNOME 系统和用户配置
 local-deriv/              # 不在 nixpkgs 的本地包
 wiki/                     # 操作手册与来源映射
-memory/                   # 决策卡与硬件约束
+memory/                   # 本地决策卡与硬件约束（不进 Git）
 .agents/skills/           # 项目通用 skills
 ```
 

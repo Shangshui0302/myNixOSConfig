@@ -3,7 +3,7 @@
 {
   home.packages = with pkgs; [
     ouch p7zip unzip file-roller
-    nautilus sushi
+    nautilus sushi ffmpegthumbnailer tumbler
     kdePackages.dolphin
   ];
 

@@ -18,6 +18,13 @@
 - secrets 只放 `/persist/secrets/` 或 sops 加密文件，不进 git。
 - 不修改网络/TUN、内核、AMD 背光、硬件、sudo 规则和 secrets，除非用户明确要求。
 
+## 包分类硬规则
+
+- 按主要用途单一归类：系统集成放 `host/`，共享环境放 `home/env/`，生产力放 `home/productivity/`，开发放 `home/dev/`，娱乐放 `home/leisure/`，DE 专属内容放对应的 `host/de/` 或 `specialisation/gnome/`。
+- 支撑包跟随实际消费者；公共系统能力放 `host/`，用户应用放 `home/`，禁止重复声明。
+- 新增包先检查已有声明和 nixpkgs；改动后同步导入关系与 Wiki 来源映射，并执行 parse 和 dry-build。
+- 分类结构不是永久固定的；现有目录无法合理容纳时，允许新增、删除、合并或重命名目录/模块，但必须同步迁移导入、文档和来源映射。
+
 ## 当前结构
 
 ```text
@@ -32,12 +39,12 @@ home/
 ├── de/                   # Hyprland/niri、Foot、Stylix、Shell
 ├── env/                  # Shell、系统工具、OneDrive
 ├── dev/                  # 编辑器、AI、开发工具、容器
-├── productivity/         # 办公、通讯、文件管理
+├── productivity/         # 办公、通讯、文件管理、图像工具、Yazi
 └── leisure/              # 浏览器、影音、游戏
 
 specialisation/gnome/     # 完全隔离的 GNOME 系统与 HM 入口
 wiki/                     # 怎么用；_sources.yaml 是配置来源清单
-memory/                   # 为什么这么配；INDEX.md 是入口
+memory/                   # 为什么这么配；本地知识库，不进 Git
 .agents/skills/           # 项目通用技能单一真源
 ```
 

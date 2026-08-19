@@ -1,11 +1,13 @@
 ---
-title: Bottles 离线韧性改造
+title: Bottles 离线韧性改造（历史方案）
 category: dev
-tags: [bottles, wine, flatpak, offline]
-updated: 2026-08-06
+tags: [bottles, wine, flatpak, offline, historical]
+updated: 2026-08-19
 ---
 
 # Bottles 离线韧性改造
+
+> 这是历史方案记录。当前仓库不再声明 Bottles 的兼容层 activation，也不再通过 `home/productivity/compat.nix` 自动应用下面的步骤；仅在维护旧代配置或手工复现历史环境时参考。
 
 ## 触发原因
 
@@ -21,9 +23,9 @@ Flatpak 版 Bottles 的组件/依赖/安装器索引托管在 `proxy.usebottles.
 
 ## 解决方案
 
-### 策略 A：本地索引接管（`compat.nix` 管理）
+### 历史策略 A：本地索引接管（旧版 `compat.nix` 管理）
 
-`home/productivity/compat.nix` 中的 `home.activation.bottlesOffline` 在
+旧版 `home/productivity/compat.nix` 中的 `home.activation.bottlesOffline` 曾在
 每次 `nixos-rebuild` 时自动：
 
 1. 从 GitHub 拉取/更新三个索引仓库到 `~/.local/share/bottles-repos/`
@@ -75,7 +77,7 @@ rm -rf ~/.local/share/bottles-repos
 rm -rf ~/.var/app/com.usebottles.bottles/data/bottles/{dxvk,vkd3d,nvapi,runners}
 ```
 
-下次 `nixos-rebuild` 会重新应用 `compat.nix` 中定义的原始 overrides。
+旧版配置的下次 `nixos-rebuild` 会重新应用 `compat.nix` 中定义的原始 overrides；当前配置不会自动执行这一步。
 
 ## 已知限制
 

@@ -1,20 +1,20 @@
 ---
 title: 媒体播放
 category: 娱乐
-tags: [mpv, media, pipewire, animeko, go-musicfox, obs]
-updated: 2026-08-12
+tags: [mpv, media, pipewire, animeko, go-musicfox, obs, loupe]
+updated: 2026-08-19
 ---
 
 # 媒体播放
 
-用户级媒体环境：视频/图片查看、音乐播放、动漫客户端与在线流媒体。应用在 `home/leisure/player.nix` 安装，音频与图形运行时由 `host/base/services.nix`（PipeWire）与 `host/base/hardware.nix`（amdgpu）支撑。
+用户级媒体环境：视频/图片查看、音乐播放、动漫客户端与在线流媒体。媒体应用在 `home/leisure/player.nix` 安装；文件管理器缩略图工具跟随 `home/productivity/files.nix`。音频与图形运行时由 `host/base/services.nix`（PipeWire）与 `host/base/hardware.nix`（amdgpu）支撑。
 
 ## 组件总览
 
 ```mermaid
 graph TB
 subgraph "用户层"
-P["player.nix<br/>mpv, loupe, ffmpegthumbnailer, tumbler, go-musicfox, animeko"]
+P["player.nix<br/>mpv, loupe, go-musicfox, animeko"]
 B["browser.nix<br/>Firefox, Google Chrome"]
 end
 subgraph "本地派生"
@@ -23,7 +23,7 @@ N["netease-cloud-music-web-player.nix<br/>Electron 包装"]
 end
 subgraph "系统服务"
 S["services.nix<br/>PipeWire(Pulse/ALSA/JACK), 蓝牙, gvfs"]
-H["hardware.nix<br/>amdgpu, nix-ld"]
+H["hardware.nix<br/>amdgpu"]
 end
 P --> A
 P --> N
@@ -39,13 +39,14 @@ N --> |"运行依赖"| H
 | --- | --- |
 | `mpv` | 通用视频/音频播放器 |
 | `loupe` | GNOME 图片查看器 |
-| `ffmpegthumbnailer` + `tumbler` | 为视频生成缩略图，供文件管理器显示 |
 | `go-musicfox` | 终端网易云音乐播放器（附桌面入口 `foot -e musicfox`） |
 | `obs-studio` | 直播与本地录制 |
 | Animeko | 动漫播放器，本地派生 `local-deriv/animeko.nix` 封装 AppImage |
 | 网易云网页版 | 本地派生 `local-deriv/netease-cloud-music-web-player.nix` Electron 打包 |
 
 浏览器（Firefox、Google Chrome）在 `home/leisure/browser.nix`，用于访问 Netflix、YouTube、Bilibili 等在线流媒体。
+
+文件管理器的图片/视频缩略图由 `home/productivity/files.nix` 中的 `ffmpegthumbnailer` 与 `tumbler` 提供；它们属于文件管理支撑包，而不是播放器本身。
 
 ## 音频与硬件加速
 
@@ -71,7 +72,7 @@ N --> |"运行依赖"| H
 - **无法播放/黑屏**：确认 amdgpu 驱动已加载；切换 mpv 渲染后端或禁用硬件解码对比。
 - **无声或声音异常**：确认 PipeWire 正常运行并选对输出设备；检查音量/静音，必要时重启音频服务。
 - **流媒体无法播放**：确认浏览器已启用硬件加速与 DRM；检查网络与地区限制。
-- **缩略图不显示**：确认 `ffmpegthumbnailer` 与 `tumbler` 已安装且正常工作。
+- **缩略图不显示**：确认 `home/productivity/files.nix` 提供的 `ffmpegthumbnailer` 与 `tumbler` 已安装且正常工作。
 - **日志定位**：结合 PipeWire 日志与 mpv 日志排查。
 
 ## 相关链接

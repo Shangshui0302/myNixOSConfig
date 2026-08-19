@@ -2,7 +2,7 @@
 title: Wiki 首页
 category: 顶层
 tags: [index, moc]
-updated: 2026-08-07
+updated: 2026-08-19
 ---
 
 # Wiki — NixOS 配置操作手册
@@ -44,6 +44,8 @@ updated: 2026-08-07
 | 文档 | 内容 |
 |------|------|
 | [办公软件套件](productivity/office.md) | LibreOffice、OnlyOffice、Obsidian、Markdown 编辑器 |
+| [图像工具](productivity/graphics.md) | gThumb 快速处理、GIMP 专业编辑 |
+| [Yazi 文件管理器](productivity/yazi.md) | 文件管理器：按键、插件、主题 |
 
 ## 开发与工具 `dev/`
 
@@ -51,9 +53,8 @@ updated: 2026-08-07
 |------|------|
 | [Neovim](dev/nvim.md) | 编辑器：按键、插件、LSP、工作流 |
 | [VS Code](dev/vscode.md) | VS Code 集成、AI 工具、扩展 |
-| [Yazi 文件管理器](dev/yazi.md) | 文件管理器：按键、插件、主题 |
 | [Distrobox](dev/distrobox.md) | 容器（arch + ubuntu）：创建、进入、导出 |
-| [Bottles 离线韧性改造](dev/bottles-offline-workaround.md) | Flatpak Bottles 离线索引接管 |
+| [Bottles 离线方案（历史）](dev/bottles-offline-workaround.md) | 历史 Flatpak Bottles 离线索引接管方案 |
 
 ## 娱乐 `leisure/`
 

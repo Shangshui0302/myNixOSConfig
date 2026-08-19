@@ -5,6 +5,7 @@
     ../../hardware-configuration.nix
     ./boot.nix
     ./hardware.nix
+    ./compat.nix
     ./locale.nix
     ./nix.nix
     ./users.nix

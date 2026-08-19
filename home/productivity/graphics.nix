@@ -1,5 +1,8 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+
+{
   home.packages = with pkgs; [
-    virt-manager
+    gthumb
+    gimp
   ];
 }
