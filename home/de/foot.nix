@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   foot-notify = pkgs.writeShellScriptBin "foot-notify" ''
@@ -44,24 +44,28 @@ in
       "colors-dark" = {
         blur = "yes";
         alpha = "0.8";
-        background = config.lib.stylix.colors.base00;
-        foreground = config.lib.stylix.colors.base05;
-        regular0 = config.lib.stylix.colors.base00;
-        regular1 = "ff000f";
-        regular2 = "8ce10b";
-        regular3 = "ffb900";
-        regular4 = "008df8";
-        regular5 = "6d43a6";
-        regular6 = "00d8eb";
-        regular7 = config.lib.stylix.colors.base05;
-        bright0 = "888888";
-        bright1 = "ff2740";
-        bright2 = "abe15b";
-        bright3 = "ffd242";
-        bright4 = "0092ff";
-        bright5 = "9a5feb";
-        bright6 = "67fff0";
-        bright7 = "ffffff";
+        foreground = "e0e2e8";
+        background = "101418";
+        selection-foreground = "e0e2e8";
+        selection-background = "0d47a1";
+        cursor = "101418 42a5f5";
+        regular0 = "101418";
+        regular1 = "ff3270";
+        regular2 = "42f558";
+        regular3 = "fff332";
+        regular4 = "1c8de8";
+        regular5 = "003e71";
+        regular6 = "42a5f5";
+        regular7 = "e8f4ff";
+        bright0 = "8d979f";
+        bright1 = "ff739e";
+        bright2 = "7cff8d";
+        bright3 = "fff77c";
+        bright4 = "60b8ff";
+        bright5 = "7cc4ff";
+        bright6 = "abd9ff";
+        bright7 = "f5faff";
+        dim-blend-towards = "black";
       };
     };
   };
