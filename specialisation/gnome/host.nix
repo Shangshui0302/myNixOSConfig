@@ -56,7 +56,7 @@ in
 
   # ===== 用户设置持久化（从 dconf dump 提取）=====
   # 主题外观（gtk-theme/icon-theme/cursor/color-scheme）：gtk-theme 在 home.nix（Material-Gnome），
-  # 图标/深浅色由 home/base.nix 共享；壁纸指向 git 源文件 assets/yamadaryou.png。
+  # 图标/深浅色由 home/base.nix 共享；壁纸使用 Nix 声明的默认资源。
   # 官方文档（gnome.md）：override 某包 schema 必须把该包加进 extraGSettingsOverridePackages，
   # 否则对应段 override 不生效（gschema 编译时丢弃未知段）。
   # 注意：只能加标准 gsettings-schemas 路径的包；GNOME Shell 扩展的 schema 在
@@ -90,11 +90,11 @@ in
     two-finger-scrolling-enabled=true
 
     [org.gnome.desktop.background]
-    picture-uri='file:///home/lishangshui/myNixOSConfig/assets/yamadaryou.png'
+    picture-uri='file:///home/lishangshui/myNixOSConfig/assets/nixos_logo.png'
     picture-options='zoom'
 
     [org.gnome.desktop.screensaver]
-    picture-uri='file:///home/lishangshui/myNixOSConfig/assets/yamadaryou.png'
+    picture-uri='file:///home/lishangshui/myNixOSConfig/assets/nixos_logo.png'
     picture-options='zoom'
 
     [org.gnome.nautilus.preferences]

@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout]
-updated: 2026-08-13
+updated: 2026-08-19
 ---
 
 # Hyprland 使用指南
@@ -23,7 +23,7 @@ updated: 2026-08-13
 
 **配色（stylix）**：`home/de/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Anthropic Mono Variable:size=12`（stylix 接入时曾被误删、字号退回默认，已恢复）。
 
-**壁纸动态取色**：壁纸由 waypaper + awww 管理（swww 在 nixpkgs 改名 awww，同作者继任，与 shell 解耦），切壁纸时 post_command 触发 matugen 取色（`-t scheme-content`，与 Noctalia m3-content 同源），一次生成多端产物：caelestia `~/.local/state/caelestia/scheme.json`（`Colours.qml` watchChanges 自动热载）、Noctalia `~/.config/noctalia/palettes/matugen.json`（`custom_palette = "matugen"`）。Noctalia 的 palette 文件不被 file_watcher 监听，分发脚本在 matugen 写完后触发 `noctalia msg config-reload` 让它重读换色。waypaper `config.ini` 用可写副本（Nix symlink 只读报 "permission error"）且 section 必须 `[Settings]`（大写），并预设 `folder = ~/Pictures/Wallpapers`（否则 waypaper 每次打开回退默认 Pictures 需重选）。post_command 指向固定路径 `~/.local/bin/wallpaper-theme`（waypaper 常驻进程会缓存 post_command 并写回 config.ini，store hash 路径每次 rebuild 变导致值漂移，固定路径 + activation 更新内容解决）。**Hyprland 边框**由分发脚本 `hyprctl eval` 运行时下发（Lua provider 下必须 eval，改 general/group 的 border 色，不落盘不破坏 Nix）；**niri 边框**由 matugen 直接写 `~/.config/niri/wallpaper-colors.kdl`（niri include 自动热载）。实现见 `home/de/wallpaper.nix` + `matugen/*.tpl`。GTK 保持 Material-Gnome、Qt 保持 qt5ct/breeze。
+**壁纸动态取色**：壁纸由 waypaper + awww 管理；切壁纸时 post_command 触发 Matugen（`-t scheme-content`）一次生成 Caelestia、Noctalia、Hyprland/niri、GTK 和 Qt 的配色。Noctalia palette 写完后会 `config-reload`；Hyprland 边框由 `hyprctl eval` 运行时下发，niri include 自动重读；Material-Gnome 的主桌面副本直接更新 `colors.css`，GTK 应用随即刷新；Qt5/Qt6 共用 qtct 调色板，新启动的 Qt 应用读取最新颜色。Foot 仍由 Stylix 管理，不随壁纸改变。
 
 ## 基本概念
 
@@ -55,6 +55,7 @@ updated: 2026-08-13
 | `Super + K` | 控制中心 (Noctalia) |
 | `Super + ,` | 设置面板 (Noctalia) |
 | `Super + Tab` | 工作区总览 (Noctalia) |
+| `Super + Shift + D` | Darkman 切换深浅模式 |
 
 ### 截图
 
@@ -174,7 +175,7 @@ Shift + Print   # 区域截图 → Swappy 标注 → 存文件 + 剪贴板
 
 边框颜色由 stylix 注入（壁纸取色，与 foot 终端同源），见 `home/de/stylix.nix`。Noctalia 切主题不影响合成器边框。
 
-当前主题：**yamadaryou**
+当前主题：**NixOS 默认壁纸 / Matugen 动态配色**
 
 ---
 
@@ -203,7 +204,7 @@ cat /sys/module/amdgpu/parameters/dcdebugmask   # 应为 262144
 
 - [Noctalia](noctalia.md) — 顶栏/控制中心/应用启动器，快捷键与 Hyprland 绑定
 - [Shell 环境](shell.md) — `Super + Q` 启动的 foot 终端配置
-- [深色模式架构](darkmode.md) — Noctalia 深色调度（合成器边框配色归 stylix）
+- [深色模式架构](darkmode.md) — Darkman 模式状态；合成器边框由 Matugen 运行时覆盖 Stylix 底色
 - [Memory: AMD 背光曲线溢出](../../memory/cards/mechrevo-amd-backlight-curve.md) — 100% 亮度变黑的内核参数修复
 - [Memory: Hyprland 模糊 / AMD 780M](../../memory/cards/hyprland-056-blur-amd.md) — 模糊在 AMD 核显失效的处理
 - [wiki 首页](../README.md)

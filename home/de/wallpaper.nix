@@ -1,53 +1,16 @@
 { config, lib, pkgs, ... }:
 
 let
-  # matugen 配置：一次取色输出多端产物
-  # caelestia scheme.json + Noctalia palette + Hyprland/niri 边框色片段
-  matugenConfig = pkgs.writeText "matugen-wp.toml" ''
-    [config]
-
-    [templates.caelestia]
-    input_path = '${./matugen/caelestia-scheme.json.tpl}'
-    output_path = '${config.home.homeDirectory}/.local/state/caelestia/scheme.json'
-
-    [templates.noctalia]
-    input_path = '${./matugen/noctalia-palette.json.tpl}'
-    output_path = '${config.home.homeDirectory}/.config/noctalia/palettes/matugen.json'
-
-    [templates.hyprland]
-    input_path = '${./matugen/hyprland-colors.lua.tpl}'
-    output_path = '${config.home.homeDirectory}/.cache/wallpaper-colors/hyprland.lua'
-
-    [templates.niri]
-    input_path = '${./matugen/niri-colors.kdl.tpl}'
-    output_path = '${config.home.homeDirectory}/.config/niri/wallpaper-colors.kdl'
-  '';
-
-  # waypaper post_command 分发脚本：matugen 从壁纸取色 → 多端产物
-  # caelestia scheme.json（Colours.qml watchChanges 自动热载）
-  # Noctalia matugen.json（palette 文件不被 file_watcher 监听，需 config-reload 触发重读）
-  # Hyprland 边框（hyprctl eval 运行时下发，不落盘不破坏 Nix）
-  # niri 边框（matugen 直接写 wallpaper-colors.kdl，niri include 该文件自动热载）
+  # waypaper 缓存 post_command；此稳定 wrapper 将壁纸变化委托给主题模式模块。
   wallpaperThemeScript = pkgs.writeShellScript "wallpaper-theme" ''
-    set -euo pipefail
-    WALL="$1"
-    # matugen 4.x 新版 --prefer=saturation；旧版用 --prefer saturation（空格），fallback 两个
-    # scheme-content = M3 content 方案（辅助色更收敛，与 Noctalia m3-content 同源）
-    ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-content \
-      --prefer=saturation -c ${matugenConfig} 2>/dev/null \
-      || ${pkgs.matugen}/bin/matugen image "$WALL" -m dark -t scheme-content \
-      --prefer saturation -c ${matugenConfig}
-    # Hyprland 运行时改 border 色（eval 下发 hl.config，Lua provider 下必须 eval 而非 keyword）
-    if command -v hyprctl >/dev/null 2>&1 && [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-      hyprctl eval "$(cat '${config.home.homeDirectory}/.cache/wallpaper-colors/hyprland.lua')" 2>/dev/null || true
+    mode="$(${pkgs.darkman}/bin/darkman get 2>/dev/null || true)"
+    if [ "$mode" != dark ] && [ "$mode" != light ]; then
+      mode="$(cat "${config.home.homeDirectory}/.cache/darkman/mode.txt" 2>/dev/null || printf '%s' dark)"
     fi
-    # Noctalia palette 文件不自动监听，触发 config-reload 让它重读 matugen.json（切壁纸换色）
-    # Noctalia 未运行时忽略（当前 shell 可能是 caelestia）
-    ${pkgs.noctalia}/bin/noctalia msg config-reload 2>/dev/null || true
+    exec "${config.home.homeDirectory}/.local/bin/theme-apply" "$mode" "$1"
   '';
 in {
-  # 壁纸管理 + 动态取色（与 shell 解耦）：waypaper 切壁纸 → matugen 取色 → 各 shell 消费统一产物。
-  # 消费端：caelestia（scheme.json watchChanges 热载）、Noctalia（palette）、Hyprland/niri（边框）。
+  # 壁纸管理与主题模式解耦：waypaper 只传递新壁纸，theme-apply 决定当前深浅模式。
   # swww 在 nixpkgs 已改名 awww（同作者 LGFae 继任，提供 awww/awww-daemon），waypaper 2.8 原生支持 awww 后端。
   home.packages = [ pkgs.waypaper pkgs.awww pkgs.matugen ];
 
@@ -69,23 +32,36 @@ in {
 
   # waypaper 运行时需写 config.ini（保存当前壁纸等）；Nix symlink 只读会导致
   # "Could not save config file due to permission error" 且 post_command 不触发。
-  # 用 activation 复制为普通可写文件（rebuild 重新生成声明配置，覆盖 waypaper 运行时保存）。
+  # 用 activation 复制为普通可写文件；config.ini 只在首次部署时创建，保留 waypaper 运行时状态。
   # 注意 section 必须是 [Settings]（大写 S）——waypaper config.get("Settings", ...)，小写读不到导致 post_command 为空。
   #
   # 关键：post_command 指向固定路径 wrapper（~/.local/bin/wallpaper-theme），而非 store hash 路径。
   # waypaper 是常驻进程，缓存 post_command 并写回 config.ini；store 路径每次 rebuild 都变，
   # 会被覆盖成旧值。固定路径 + activation 更新内容，路径稳定、内容每次执行读最新。
-  home.activation.setupWaypaperTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p "$HOME/.local/bin" "$HOME/.config/waypaper"
+  home.activation.setupWaypaperTheme = lib.hm.dag.entryAfter [ "writeBoundary" "setupMatugenGtkTheme" "setupDarkmanMode" ] ''
+    mkdir -p "$HOME/.local/bin" "$HOME/.config/waypaper" "$HOME/.config/qt5ct/colors"
     cp ${wallpaperThemeScript} "$HOME/.local/bin/wallpaper-theme"
     chmod 755 "$HOME/.local/bin/wallpaper-theme"
 
-    cat > "$HOME/.config/waypaper/config.ini" <<INI
+    if [ ! -e "$HOME/.config/waypaper/config.ini" ]; then
+      cat > "$HOME/.config/waypaper/config.ini" <<INI
 [Settings]
 backend = awww
 folder = ${config.home.homeDirectory}/Pictures/Wallpapers
 post_command = ${config.home.homeDirectory}/.local/bin/wallpaper-theme \$wallpaper
+wallpaper = ${../../assets/nixos_logo.png}
 INI
-    chmod 644 "$HOME/.config/waypaper/config.ini"
+      chmod 644 "$HOME/.config/waypaper/config.ini"
+    fi
+
+    # 首次部署或迁移到 GTK4 双 palette 时生成完整初始产物；之后保持当前壁纸颜色。
+    if [ ! -f "$HOME/.config/qt5ct/colors/matugen.conf" ] \
+      || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null; then
+      initial_wallpaper="$(${pkgs.waypaper}/bin/waypaper --list 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[0].wallpaper // empty' 2>/dev/null || true)"
+      if [ ! -f "$initial_wallpaper" ]; then
+        initial_wallpaper=${../../assets/nixos_logo.png}
+      fi
+      "$HOME/.local/bin/wallpaper-theme" "$initial_wallpaper"
+    fi
   '';
 }

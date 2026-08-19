@@ -114,10 +114,9 @@
   home.sessionVariables.XDG_DATA_DIRS =
     "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:\${XDG_DATA_DIRS}";
 
-  # 共享 dconf：深浅色 + 图标主题（gtk-theme 各 DE 自行设置）
+  # 共享 dconf：图标主题（深浅色由各桌面变体自行决定）。
   dconf.settings = {
     "org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
       icon-theme = "Papirus";
     };
   };

@@ -1,19 +1,9 @@
 { config, pkgs, inputs, ... }:
 
 let
-  darkModeScript = pkgs.writeShellScript "noctalia-darkmode-toggle" ''
-    DCONF="${pkgs.dconf}/bin/dconf"
-    # 不写 gtk-theme：主题由声明式配置（Material-Gnome）固定，深浅靠 prefer-dark 切换。
-    # Material-Gnome 提供 gtk.css + gtk-dark.css，GTK3 通过 prefer-dark 选深色变体。
-    if [ "$NOCTALIA_THEME_MODE" = "dark" ]; then
-      $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "true"
-      mkdir -p ~/.config/qt5ct
-      printf '[Appearance]\nstyle=Fusion\ncolor_scheme=darker\n' > ~/.config/qt5ct/qt5ct.conf
-    else
-      $DCONF write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme "false"
-      mkdir -p ~/.config/qt5ct
-      printf '[Appearance]\nstyle=Fusion\n' > ~/.config/qt5ct/qt5ct.conf
-    fi
+  darkmanSync = pkgs.writeShellScript "noctalia-darkman-sync" ''
+    mode="$(${pkgs.darkman}/bin/darkman get)"
+    exec ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode"
   '';
 in
 {
@@ -165,9 +155,6 @@ in
         type = "nightlight";
       })
       ({
-        type = "dark_mode";
-      })
-      ({
         type = "power_profile";
       })
       ({
@@ -220,7 +207,7 @@ in
     show_dots = true;
   };
   hooks = {
-    theme_mode_changed = "${darkModeScript}";
+    started = "${darkmanSync}";
   };
   hot_corners = {
     enabled = true;
@@ -541,7 +528,6 @@ in
   theme = {
     community_palette = "Tokyo Night Moon";
     custom_palette = "matugen";
-    mode = "dark";
     source = "custom";
     wallpaper_scheme = "muted";
     templates = {
@@ -567,17 +553,6 @@ in
     ];
     transition_duration = 1500;
     transition_on_startup = true;
-    default = {
-      path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
-    };
-    last = {
-      path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
-    };
-    monitors = {
-      eDP-1 = {
-        path = "${config.home.homeDirectory}/Pictures/Wallpapers/yamadaryou.png";
-      };
-    };
   };
   weather = {
     effects = true;
@@ -657,9 +632,7 @@ in
 ;
   };
 
-  # yamadaryou wallpaper + avatar（源在 assets，可重建）
-  home.file."Pictures/Wallpapers/yamadaryou.png".source = ../../assets/yamadaryou.png;
-  home.file."Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg".source = ../../assets/yamadaRyou_glassesHeadsphone.jpg;
+  # 壁纸仓库和头像均由用户在本地维护，不由 Home Manager 创建文件。
 
   # yamadaryou color scheme
   xdg.configFile."noctalia/palettes/yamadaryou.json".text = builtins.toJSON {

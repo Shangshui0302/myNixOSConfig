@@ -1,6 +1,6 @@
 layout {
     focus-ring {
-        active-color "{{colors.primary.dark.hex}}"
-        inactive-color "{{colors.outline.dark.hex}}"
+        active-color "{{colors.primary.default.hex}}"
+        inactive-color "{{colors.outline.default.hex}}"
     }
 }

@@ -113,6 +113,7 @@
           Mod+C     { spawn-sh "noctalia msg panel-toggle clipboard"; }
           Mod+K     { spawn-sh "noctalia msg panel-toggle control-center"; }
           Mod+Shift+Comma { spawn-sh "noctalia msg settings-toggle"; }
+          Mod+Shift+D { spawn-sh "darkman toggle"; }
           Mod+Tab   { spawn-sh "noctalia msg window-switcher"; }
 
           // ---- 截图（复用 Hyprland 的 screenshot 脚本）----

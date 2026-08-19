@@ -29,6 +29,8 @@ in
   services.xserver.enable = true;
   services.xserver.xkb.layout = "us";
 
+  environment.pathsToLink = [ "/share/fcitx5" ];
+
   # Fcitx5（两 DE 共享核心，差异用 option 表达）：
   # - 核心 addons（rime/chinese-addons/configtool/qt）+ kimpanel 两 DE 都要
   # - Hyprland 专属：fcitx5-gtk 桥 + 主题 addons + classicui 候选窗
@@ -54,12 +56,12 @@ in
     # 无全局坐标，必须靠 kimpanel 扩展绘制候选窗）。已在运行时 ~/.config/fcitx5/config 的
     # [Behavior/DisabledAddons] 中移除 kimpanel，此声明防止再次被禁用。
     fcitx5.settings.globalOptions.Behavior.EnabledAddons = "kimpanel";
-    # classicui 候选窗主题（仅 Hyprland；GNOME 候选窗由 kimpanel 扩展绘制）
+    # classicui 系统级回退配置（仅主桌面；GNOME 候选窗由 kimpanel 扩展绘制）。
+    # theme-apply 为 GTK Wayland 客户端写入当前模式的用户层 Theme。
     fcitx5.settings.addons.classicui.globalSection = lib.mkIf (!gnome) {
       Theme = "mellow-wechat";
       DarkTheme = "mellow-wechat-dark";
       UseDarkTheme = "True";
-      # 垂直候选窗（键名含空格，需引号）
       "Vertical Candidate List" = "True";
     };
   };

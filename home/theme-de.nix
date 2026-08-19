@@ -1,14 +1,18 @@
-{ pkgs, materialGnomeTheme, ... }:
-{
-  # Hyprland 主桌面 Qt 主题 + GTK Material-Gnome（GTK 应用部分抽在 theme-material.nix，与 GNOME 共享）。
-  imports = [
-    ./theme-material.nix
-  ];
+{ config, lib, pkgs, materialGnomeTheme, ... }:
 
-  home.packages = with pkgs; [
-    libsForQt5.qt5ct
-    kdePackages.breeze
-    kdePackages.breeze-icons
+let
+  matugenThemeName = "Material-Gnome-Matugen";
+  matugenDarkThemeName = "${matugenThemeName}-Dark";
+  matugenThemeDir = "${config.home.homeDirectory}/.themes/${matugenThemeName}";
+  qtAppearance = {
+    color_scheme_path = "${config.home.homeDirectory}/.config/qt5ct/colors/matugen.conf";
+    custom_palette = true;
+    icon_theme = "Papirus";
+    style = "Breeze";
+  };
+in
+{
+  home.packages = [
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.
     # Provide our own .portal file with Hyprland added so the Settings
     # interface (used by fcitx5 for dark/light theme) gets registered.
@@ -23,8 +27,57 @@ PORTALEOF
     '')
   ];
 
-  # Hyprland 主桌面 dconf：GTK 主题 Material-Gnome + 深色偏好
-  dconf.settings."org/gnome/desktop/interface" = {
-    gtk-application-prefer-dark-theme = true;
+  # qtct 同时提供 Qt5 和 Qt6 平台插件；两者共用 matugen 生成的 QPalette。
+  qt = {
+    enable = true;
+    platformTheme.name = "qtct";
+    style.name = "breeze";
+    qt5ctSettings.Appearance = qtAppearance;
+    qt6ctSettings.Appearance = qtAppearance;
+  };
+
+  # GTK4 在一个可写主题里常驻双 palette；GTK3 使用两个稳定主题目录。
+  # GNOME specialisation 继续单独 import theme-material.nix，保持固定深色。
+  home.activation.setupMatugenGtkTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    matugen_theme_dir="${config.home.homeDirectory}/.themes/${matugenThemeName}"
+    matugen_theme_next="${config.home.homeDirectory}/.themes/.${matugenThemeName}.next"
+    matugen_dark_theme_dir="${config.home.homeDirectory}/.themes/${matugenDarkThemeName}"
+    matugen_dark_theme_next="${config.home.homeDirectory}/.themes/.${matugenDarkThemeName}.next"
+    mkdir -p "$HOME/.themes"
+
+    chmod -R u+w "$matugen_theme_next" "$matugen_dark_theme_next" 2>/dev/null || true
+    rm -rf "$matugen_theme_next" "$matugen_dark_theme_next"
+    cp -r ${materialGnomeTheme}/share/themes/Material-Gnome "$matugen_theme_next"
+    cp -r ${materialGnomeTheme}/share/themes/Material-Gnome "$matugen_dark_theme_next"
+    chmod -R u+w "$matugen_theme_next" "$matugen_dark_theme_next"
+
+    for matugen_colors in gtk-3.0/colors.css gtk-4.0/colors.css; do
+      if [ -f "$matugen_theme_dir/$matugen_colors" ]; then
+        cp -p "$matugen_theme_dir/$matugen_colors" "$matugen_theme_next/$matugen_colors"
+      fi
+    done
+    if [ -f "$matugen_dark_theme_dir/gtk-3.0/colors.css" ]; then
+      cp -p "$matugen_dark_theme_dir/gtk-3.0/colors.css" "$matugen_dark_theme_next/gtk-3.0/colors.css"
+    fi
+
+    rm -rf "$matugen_theme_dir" "$matugen_dark_theme_dir"
+    mv "$matugen_theme_next" "$matugen_theme_dir"
+    mv "$matugen_dark_theme_next" "$matugen_dark_theme_dir"
+    chmod -R u+w "$matugen_theme_dir" "$matugen_dark_theme_dir"
+  '';
+
+  home.file.".config/gtk-4.0/gtk.css".source = lib.mkForce (
+    config.lib.file.mkOutOfStoreSymlink "${matugenThemeDir}/gtk-4.0/gtk.css"
+  );
+  home.file.".config/gtk-4.0/gtk-dark.css".source = lib.mkForce (
+    config.lib.file.mkOutOfStoreSymlink "${matugenThemeDir}/gtk-4.0/gtk-dark.css"
+  );
+  home.file.".config/gtk-4.0/colors.css".source = lib.mkForce (
+    config.lib.file.mkOutOfStoreSymlink "${matugenThemeDir}/gtk-4.0/colors.css"
+  );
+
+  services.flatpak.overrides.settings.global = {
+    Context.filesystems = "$HOME/.themes:ro";
+    Environment.GTK_THEME = lib.mkForce matugenThemeName;
   };
 }

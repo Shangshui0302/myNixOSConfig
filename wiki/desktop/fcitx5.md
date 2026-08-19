@@ -2,12 +2,12 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, 输入法, wayland, 深色模式]
-updated: 2026-08-18
+updated: 2026-08-19
 ---
 
 # Fcitx5 输入法框架
 
-本文说明本仓库如何在 NixOS + Home Manager 下启用并集成 Fcitx5：引擎与主题管理、中文输入方案、Wayland/Hyprland 集成、候选窗定制与常见排障。核心 + 变体差异集中在系统级 `host/base/desktop.nix`，用 `lib.optionals (!gnome)` 表达 Hyprland 专属 addons、`lib.mkIf (!gnome)` 控制 classicui（GNOME 走 kimpanel）；崩溃自恢复在用户级 `home/de/hyprland.nix`。
+本文说明本仓库如何在 NixOS + Home Manager 下启用并集成 Fcitx5：引擎与主题管理、中文输入方案、Wayland 主桌面集成、候选窗定制与常见排障。核心 + 变体差异集中在系统级 `host/base/desktop.nix`；主桌面（Hyprland/niri）使用 ClassicUI，GNOME 走 kimpanel。
 
 ## 目录
 1. [快速上手](#快速上手)
@@ -43,27 +43,28 @@ journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
 - 主桌面 HM 配置补充 `GTK_IM_MODULE=fcitx` 与 `SDL_IM_MODULE=fcitx`；GNOME 保持 GTK 原生 Wayland text-input-v3。
 - 启用 `i18n.inputMethod`，`type = "fcitx5"`，并开启 `fcitx5.waylandFrontend = true` 以获得 Wayland 下更好的兼容性与性能。
 - 安装插件与主题包（见下文）。
-- `org.freedesktop.impl.portal.Settings` 由 `host/de/sessions.nix` 的 GTK Portal 提供，供 Fcitx5 检测系统深浅色。
+- `org.freedesktop.impl.portal.Settings` 由 Darkman 提供，供 Fcitx5 检测系统深浅色；GTK portal 继续提供文件选择等其他接口。
 
 ## 引擎与中文输入方案
 中文能力由 Rime 引擎提供，在 `host/base/desktop.nix` 的 `fcitx5.addons` 中声明：
 
 - `fcitx5-rime`，并通过 `rimeDataPkgs` 注入 `rime-ice`、`rime-moegirl`、`rime-zhwiki` 数据包。
 - 核心（两 DE）：`qt6Packages.fcitx5-chinese-addons`、`qt6Packages.fcitx5-configtool`、`kdePackages.fcitx5-qt`。
-- Hyprland 专属（`lib.optionals (!gnome)`）：`fcitx5-gtk` 桥 + 主题包（mellow/material/catppuccin）。
+- 主桌面（`lib.optionals (!gnome)`）：`fcitx5-gtk` 桥 + 主题包（mellow/material/catppuccin）。
 
 拼音、五笔、注音等具体方案由 Rime 数据与用户方案决定；上述数据包提供基础词库能力。如需新增或切换方案，在 Rime 数据层配置即可（不在本仓库内直接体现）。
 
 ## 主题与候选窗定制
-ClassicUI 主题与候选窗在 `host/base/desktop.nix` 的 `fcitx5.settings.addons.classicui.globalSection` 中设置（`lib.mkIf (!gnome)`，仅 Hyprland；GNOME 候选窗由 kimpanel 扩展绘制）：
+主桌面（Hyprland/niri）的 ClassicUI 系统级配置由 `host/base/desktop.nix` 生成，运行时覆盖由 `theme-apply` 写入；GNOME 候选窗由 kimpanel 扩展绘制：
 
 - 浅色主题 `Theme = "mellow-wechat"`，深色主题 `DarkTheme = "mellow-wechat-dark"`。
-- `UseDarkTheme = "True"`：让 Fcitx5 通过 XDG Settings 接口自动跟随系统深浅色（由 Noctalia 调度）。
+- `UseDarkTheme = "True"`：让服务端 ClassicUI 通过 XDG Settings 接口跟随 Darkman。
+- GTK Wayland 客户端只读取 `Theme`，因此 `theme-apply` 会写入当前模式的完整用户配置；模式切换后重启 Fcitx5。
 - `"Vertical Candidate List" = "True"`：启用垂直候选列表，更适合长词条与高分屏。
 
 安装的主题包：`fcitx5-mellow-themes`、`fcitx5-material-color`、`catppuccin-fcitx5`。
 
-> 注意：键名含空格必须加引号（如 `"Vertical Candidate List"`）；布尔值必须大写 `True`/`False`。相关踩坑见反链 memory 卡。
+> 注意：该文件由 `theme-apply` 原子生成，不要用图形配置工具手动覆盖；完整无 section header 的格式是必要的。
 
 ## 桌面集成与崩溃自恢复
 - GTK/Qt/SDL 应用均通过环境变量接入 fcitx，无需逐应用配置。
@@ -110,7 +111,7 @@ SESSION["UWSM / graphical-session.target"] --> IM
 - 输入法不显示：检查 IM 环境变量（`GTK_IM_MODULE`、`QT_IM_MODULE`、`XMODIFIERS`）是否生效；确认 Fcitx5 进程在运行，若崩溃查看 systemd user service 是否自动重启。
 - 候选窗位置异常/不可见：确认 `"Vertical Candidate List"` 为 `True`（键名含空格加引号、布尔值大写）；检查 XDG Portal 的 Settings 接口可用。
 - GNOME Wayland 下候选窗飞远/不跟随光标：GNOME 只实现 `text-input-v3` 无全局坐标，必须靠 kimpanel 链路。检查 fcitx5 的 kimpanel addon 未被禁用（`~/.config/fcitx5/config` 的 `[Behavior/DisabledAddons]` 不应含 kimpanel）；`host/base/desktop.nix` 已声明 `fcitx5.settings.globalOptions.Behavior.EnabledAddons = "kimpanel"` 防复发，且 GNOME kimpanel 扩展需启用。kimpanel 启用后候选窗由扩展绘制，classicui 主题（mellow-wechat）不再作用于 GNOME 会话——GNOME 下候选窗跟随 Shell 主题（本机 Material-Gnome）。
-- 主题不跟随深浅色：确认 `UseDarkTheme = "True"` 且 gtk portal 已在当前桌面注册。
+- 主题不跟随深浅色：执行 `darkman get` 确认状态，再运行 `fcitx5-remote --check -r`；确认 portal 查询能返回 `1`（dark）或 `2`（light）。
 - 候选窗样式/透明度问题：调整 ClassicUI 的 `Theme`/`DarkTheme`，并确保字体与 DPI 设置合理。
 
 ## 配置速查
@@ -118,7 +119,7 @@ SESSION["UWSM / graphical-session.target"] --> IM
 - 插件与主题：`fcitx5-gtk`、`qt6Packages.fcitx5-chinese-addons`、mellow/material/catppuccin 主题包。
 - Rime 数据：`rime-ice`、`rime-moegirl`、`rime-zhwiki`。
 - 候选窗：`"Vertical Candidate List" = "True"`。
-- 深浅色联动：`UseDarkTheme = "True"`，配合 XDG Settings 接口。
+- 深浅色联动：`darkman set dark|light` 后由 `theme-apply` 更新 GTK 客户端配置、重启 Fcitx5，并同步 Settings portal。
 
 ## 相关链接
 - 桌面深色模式与主题联动：[darkmode.md](./darkmode.md)
@@ -126,3 +127,4 @@ SESSION["UWSM / graphical-session.target"] --> IM
 - 决策：垂直候选窗与布尔值大写等踩坑 → [fcitx5-vertical-candidates](../../memory/cards/fcitx5-vertical-candidates.md)
 - 决策：Portal / gtk 悬空软链问题 → [portal-gtk-dangling-symlink](../../memory/cards/portal-gtk-dangling-symlink.md)
 - 决策：TTY、UWSM 与 Fcitx5 autostart → [uwsm-kmscon-session-handoff](../../memory/cards/uwsm-kmscon-session-handoff.md)
+- 决策：Darkman 状态、Matugen 渲染与 Stylix 基线 → [darkman-theme-authority](../../memory/cards/darkman-theme-authority.md)

@@ -9,17 +9,17 @@
   };
 
   xdg.portal = {
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr pkgs.darkman ];
 
     config.hyprland = {
       default = [ "hyprland" "gtk" ];
-      "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+      "org.freedesktop.impl.portal.Settings" = [ "darkman" ];
     };
 
     config.niri = {
       default = [ "wlr" "gtk" ];
       "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
-      "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+      "org.freedesktop.impl.portal.Settings" = [ "darkman" ];
     };
   };
 }

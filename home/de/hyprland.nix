@@ -222,6 +222,7 @@ in
     hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
     hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"))
     hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia msg settings-toggle"))
+    hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("darkman toggle"))
     -- v5: plugin:workspace-overview not yet available, use window-switcher as alternative
     hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia msg window-switcher"))
 

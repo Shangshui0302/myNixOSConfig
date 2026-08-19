@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-08-18
+updated: 2026-08-19
 ---
 
 # Niri 使用指南
@@ -38,6 +38,7 @@ Hyprland ↔ niri 切换：注销当前 compositor → 切到其他 TTY 重新�
 |------|------|
 | Mod+W / E / B / N / O | foot / nautilus / chrome / nvim / obsidian |
 | Mod+Space / C / K / Shift+Comma / Tab | Noctalia launcher / 剪贴板 / 控制中心 / 设置 / window-switcher |
+| Mod+Shift+D | Darkman 切换深浅模式 |
 | Mod+Q / F / V / Shift+M / Shift+W | 关闭 / 全屏 / 浮动 / 退出 / tabbed-display |
 | Mod+方向键 | 聚焦（列/窗口） |
 | Mod+Ctrl+方向键 | 移动（列/窗口） |

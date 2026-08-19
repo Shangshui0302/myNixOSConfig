@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-08-13
+updated: 2026-08-19
 ---
 
 # Noctalia Shell 使用指南
@@ -15,7 +15,7 @@ updated: 2026-08-13
 > 5. [控制中心](#控制中心)
 > 6. [Dock](#dock)
 > 7. [壁纸管理](#壁纸管理)
-> 8. [配色方案 (yamadaryou)](#配色方案-yamadaryou)
+> 8. [配色方案 (Matugen)](#配色方案-matugen)
 > 9. [锁屏与空闲](#锁屏与空闲)
 > 10. [通知与 OSD](#通知与-osd)
 > 11. [会话菜单](#会话菜单)
@@ -23,7 +23,7 @@ updated: 2026-08-13
 > 13. [故障排查](#故障排查)
 > 14. [相关链接](#相关链接)
 
-Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用启动器等组件，统一管理壁纸、配色、通知、锁屏等。
+Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用启动器等组件，提供壁纸入口、配色显示、通知与锁屏等功能。
 
 **启动方式**：由 systemd user service（`noctalia.service`，`WantedBy=graphical-session.target`）拉起，不再是 compositor autostart——为 shell-switcher（多 shell 运行时切换）铺路，shell 生命周期归 systemd 管理，hyprland/niri 零 shell 配置。
 
@@ -103,7 +103,6 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 | PowerProfile | 电源方案切换 |
 | KeepAwake | 阻止自动休眠 |
 | NightLight | 夜间色温（已配置自动调度） |
-| DarkMode | 暗色模式切换 |
 | Color Scheme Creator | 配色方案生成器 |
 
 **卡片区域：** Profile、Shortcuts、Audio、Brightness、Network、Weather、Media/Sysmon
@@ -118,16 +117,13 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 ## 壁纸管理
 
-壁纸已由 **waypaper + awww** 统一管理（与 shell 解耦，见 [Hyprland](hyprland.md) 的壁纸动态取色），Noctalia 不再切壁纸（`wallpaper.enabled = false`）。原 `~/Pictures/Wallpapers/` 目录仍作为 waypaper 的壁纸来源；`assets/yamadaryou.png` 为默认壁纸（由 `home.file` 复制）。
+壁纸已由 **waypaper + awww** 统一管理（与 shell 解耦，见 [Hyprland](hyprland.md) 的壁纸动态取色），Noctalia 不再切壁纸（`wallpaper.enabled = false`）。`~/Pictures/Wallpapers/` 是用户可写的 Git 壁纸仓库；Nix 只用 `assets/nixos_logo.png` 作为构建期和首次初始化的默认壁纸，不向仓库创建软链接。
 
 ## 配色方案 (matugen)
 
-当前主题：**matugen**——由 waypaper 切壁纸时 matugen 动态取色生成（`~/.config/noctalia/palettes/matugen.json`，`theme.custom_palette = "matugen"`）。配色随壁纸动态变化（M3 语义色 primary/secondary/surface 等），不再固定 yamadaryou。终端配色（foot）仍由 stylix 构建期管理，不随壁纸。**模板全部禁用**（`builtin_ids = []`、enable 均 false），配色统一由 matugen 接管。
+当前主题：**matugen**——waypaper 切壁纸后生成 `~/.config/noctalia/palettes/matugen.json`，由 `theme.custom_palette = "matugen"` 消费。模板全部禁用，Noctalia 只读取 Matugen 产物。主桌面的 GTK、Qt、Hyprland 与 niri 也由同一次 Matugen 运行更新；Foot 仍保持 Stylix 构建期配色。
 
-**调度模式**：根据地理位置（成都）自动切换暗色/亮色模式。
-**模板同步**：Qt/GTK 主题、Steam、Telegram 皮肤自动跟随配色。合成器配色（Hyprland 边框 / niri focus-ring）已改由 stylix 注入（壁纸取色），不再走 Noctalia 模板。
-
-暗色模式切换时：`color-scheme` 由 Noctalia GTK 模板通过 gsettings → portal 分发（避免 dconf/gsettings 双重写入导致 Chrome 闪烁）；hook 仅写入 `gtk-theme`、`gtk-application-prefer-dark-theme` 和 `qt5ct.conf`。
+深浅模式由 Darkman 管理。Noctalia 启动时和每次 Darkman 切换后都会同步当前模式，但不会反向修改系统主题；使用 `Super + Shift + D` 或 `darkman toggle` 切换。
 
 ## 锁屏与空闲
 
@@ -159,12 +155,11 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 ## 常用操作流程
 
-### 切换主题（暗色/亮色）
+### 切换深浅模式
 
 ```
-Super + K        # 打开控制中心
-点击 DarkMode    # 切换暗色/亮色模式
-# 自动触发 hook 写入 dconf 和 qt5ct
+Super + Shift + D  # Darkman 切换暗色/亮色
+# 或 darkman set dark / darkman set light
 ```
 
 ### 更换壁纸

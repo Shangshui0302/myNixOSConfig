@@ -41,7 +41,7 @@
     # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
     materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
       inherit pkgs;
-      wallpaper = ./assets/yamadaryou.png;
+      wallpaper = ./assets/nixos_logo.png;
       shellLayout = "default"; # GNOME 原版实心通栏
     };
   in {

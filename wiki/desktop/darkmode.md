@@ -1,130 +1,82 @@
 ---
-title: 深色模式架构
+title: 深色模式与动态配色
 category: desktop
-tags: [darkmode, noctalia, dconf, qt5ct, portal]
-updated: 2026-08-13
+tags: [darkmode, darkman, matugen, gtk, qt, portal]
+updated: 2026-08-20
 ---
 
-# 深色模式架构
+# 深色模式与动态配色
 
-## 概览
-
-Noctalia 是唯一调度器，基于经纬度自动计算日出日落。hook 直接写 dconf 和 qt5ct，xdg-desktop-portal-gtk 读取 gsettings 并暴露 Settings portal，应用通过 portal 查询当前配色。
+主桌面由 **Darkman** 保存唯一的深浅色状态；它同时提供 XDG Settings portal。初始为深色，第一版只手动切换，不读取位置也不按日出日落自动调度。
 
 ```
-Noctalia (唯一调度器, 30.57/104.07)
-  │
-  │ darkModeChange hook
-  ├─ dconf color-scheme ──→ GTK3/GTK4 应用
-  ├─ qt5ct ──→ Qt5 应用 (WPS)
-  └─→ gsettings ←── portal-gtk 读取 ──→ XDG Portal ──→ Chrome/Firefox/WebKitGTK
+darkman set/toggle
+  ├─ XDG Settings portal → GTK4 双配色媒体查询、Firefox、浏览器、portal-aware 应用
+  └─ theme-apply
+      ├─ Matugen → GTK4 双配色、GTK3 双主题、Qt、Noctalia、Caelestia、Hyprland/niri
+      ├─ dconf color-scheme + GTK3 当前主题名
+      ├─ Fcitx5 GTK 客户端 Theme + 模式切换时重启 Fcitx5
+      └─ Noctalia 当前模式
 ```
 
-## 为什么不需要 darkman
+## 切换模式
 
-之前 darkman 的角色被拆成了两块，各自由已有的组件承担：
+| 操作 | 命令/快捷键 |
+|------|-------------|
+| 切换深浅色 | `darkman toggle` 或 `Super + Shift + D` |
+| 强制深色 | `darkman set dark` |
+| 强制浅色 | `darkman set light` |
+| 查看当前模式 | `darkman get` |
 
-| 原来 darkman | 现在 |
-|-------------|------|
-| 日出日落调度 | Noctalia（本就支持 location scheduling） |
-| 写 dconf/qt5ct | Noctalia darkModeChange hook |
-| 暴露 XDG Settings portal | xdg-desktop-portal-gtk |
+Darkman 自带“Toggle darkman”桌面入口，可从任意启动器调用。Noctalia 不再提供 DarkMode 开关；它只显示并跟随 Darkman 已选择的模式。
 
-砍掉 darkman 后少了一个常驻进程，架构更简单，app 跟随率反而更高（portal-gtk 比 darkman 实现了更多 portal 接口）。
+## GTK 与 Qt
 
-## 关键原则
+- **GTK4**：`Material-Gnome-Matugen/gtk-4.0/colors.css` 始终同时包含浅色和深色变量，用 `@media (prefers-color-scheme: dark)` 选择。GTK4 收到 portal 模式事件时不再依赖 Matugen 写文件的先后顺序，因此不会读取上一轮颜色而反向。
+- **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`。
+- **Flatpak GTK 应用**：继续通过 `$HOME/.themes:ro` 和固定 `GTK_THEME=Material-Gnome-Matugen` 读取主题。GTK4 4.20 及以上可使用双配色媒体查询；GTK3 Flatpak 暂不动态切换到 `-Dark` 目录。
+- **Qt5/Qt6**：Home Manager 的 `qtct` 同时管理两代平台插件，二者共用 `~/.config/qt5ct/colors/matugen.conf`。Qt 应用通常只在启动时读取调色板，切壁纸后重新打开即可。
+- **Foot**：继续由 Stylix 管理，不随壁纸变化。
+- **Fcitx5**：系统级 ClassicUI 配置是回退值；`theme-apply` 为 GTK Wayland 客户端生成当前模式的用户配置。模式切换时重启 Fcitx5，切壁纸不重启。
 
-**不要在 `settings.json` 中硬编码 `darkMode` 初始值。**
+部分拥有自绘主题的应用可能忽略系统 GTK/Qt 调色板，这是应用本身的限制。
 
-```nix
-# home/de/noctalia.nix → programs.noctalia-shell.settings.colorSchemes
-colorSchemes = {
-  schedulingMode = "location";    # Noctalia 根据日出日落自动决定
-  predefinedScheme = "yamadaryou";
-  # 不设 darkMode！
-};
-```
-
-如果设了 `darkMode = false`，会在只读文件中形成一个固定锚点。调度器算出来该是暗色，文件说亮色，两者拉扯导致振荡。
-
-## 配置文件
-
-### Noctalia 调度 + hook (`home/de/noctalia.nix`)
-
-```nix
-colorSchemes = {
-  schedulingMode = "location";  # 经纬度 30.57/104.07，自动计算日出日落
-  predefinedScheme = "yamadaryou";
-};
-
-hooks = {
-  enabled = true;
-  darkModeChange = <script>;  # 写 dconf color-scheme + qt5ct
-};
-```
-
-hook 直接写入 dconf 和 qt5ct，不再经过 darkman 中转。
-
-### XDG Portal (`host/de/sessions.nix`)
-
-portal-gtk 从 gsettings 读取 color-scheme，暴露给所有 portal-aware 应用：
-
-```nix
-xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-xdg.portal.config.hyprland = {
-  default = [ "hyprland" "gtk" ];
-  "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
-};
-```
-
-### dconf 默认值 (`home/theme-base.nix` + 变体各自 theme)
-
-```nix
-# home/theme-base.nix（共享：深浅色 + 图标）
-dconf.settings = {
-  "org/gnome/desktop/interface" = {
-    color-scheme = "prefer-dark";
-    icon-theme = "Papirus";
-  };
-};
-
-# home/theme-de.nix 与 specialisation/gnome/home.nix（GTK 主题统一 Material-Gnome，路径分开）
-dconf.settings."org/gnome/desktop/interface".gtk-theme = "Material-Gnome";
-```
-
-## 调试命令
+## 常用检查
 
 ```bash
-# 查看 dconf 配色
+# 当前 Darkman 状态、深色偏好与 portal 返回值
+darkman get
 dconf read /org/gnome/desktop/interface/color-scheme
-
-# 查看 portal 配色 (0=跟随default, 1=dark, 2=light)
 busctl --user call org.freedesktop.portal.Desktop \
   /org/freedesktop/portal/desktop \
   org.freedesktop.portal.Settings ReadOne ss \
   org.freedesktop.appearance color-scheme
 
-# Noctalia 手动切换
-noctalia-shell ipc call darkMode setDark
-noctalia-shell ipc call darkMode setLight
+# 最近一次壁纸取色产物
+stat ~/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css \
+  ~/.themes/Material-Gnome-Matugen-Dark/gtk-3.0/colors.css \
+  ~/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css \
+  ~/.config/qt5ct/colors/matugen.conf
 
-# portal-gtk 状态
-systemctl --user status xdg-desktop-portal-gtk
+# GTK4 产物应包含运行时深色分支
+grep -n 'prefers-color-scheme: dark' \
+  ~/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css
 ```
 
-**portal 查询报「未找到请求的设置」或「Could not activate ... portal.gtk」时**：portal-gtk 未激活。检查 `systemctl --user status xdg-desktop-portal-gtk` 是否 not-found，若是则大概率是 `~/.config/systemd/user/xdg-desktop-portal-gtk.service` 是 dangling symlink（指向已 GC 的 store 路径），删除后 `systemctl --user daemon-reload && systemctl --user start xdg-desktop-portal-gtk`，systemd 会 fallback 到 `/etc/systemd/user` 的正确 unit。详见 `memory/cards/portal-gtk-dangling-symlink.md`。
+宿主 GTK4 应用应在模式切换时立即跟随；GTK3 是否实时刷新取决于应用是否监听主题名变化。切壁纸只更新颜色文件，不保证已运行 GTK 应用热载；应等旧进程退出后重新打开。Qt 应用同样通常需要重新打开。portal 查询失败时，先检查：
 
-## 注意事项
+```bash
+systemctl --user status darkman xdg-desktop-portal
+journalctl --user -u darkman -b
+```
 
-- `settings.json` 是只读 nix store symlink，Noctalia 运行时修改只存于内存
-- 不要手动修改 `~/.config/noctalia/settings.json`
-- Chrome 可能需要重启才能跟随 portal 变化
-- **fcitx5 深色联动**：`host/base/desktop.nix` 里 `i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection`（`lib.mkIf (!gnome)`）配 `Theme=mellow-wechat, DarkTheme=mellow-wechat-dark, UseDarkTheme=True`。fcitx5 通过 portal 检测深浅色，portal-gtk 未激活时 fcitx5 永远浅色
-- **垂直候选窗**：classicui 的 `"Vertical Candidate List" = "True"`（键名含空格需引号，值必须大写 `True`）
-- Firefox 动态跟随 portal，无需重启
+若 portal 后端无法启动，先执行 `systemctl --user restart darkman xdg-desktop-portal`。GTK 的文件选择器仍由 gtk portal 提供；若它单独报 `not-found`，再排查历史遗留的 `xdg-desktop-portal-gtk.service` dangling symlink。
 
 ## 相关链接
 
-- [Noctalia](noctalia.md) — 深色模式调度器，hook 写 dconf/qt5ct
-- [Hyprland](hyprland.md) — 合成器边框配色由 stylix 注入（壁纸取色）
-- [wiki 首页](../README.md)
+- [Hyprland](hyprland.md) — 壁纸切换与合成器边框
+- [Noctalia](noctalia.md) — 面板 palette
+- [Fcitx5](fcitx5.md) — 候选窗深浅主题
+- [Darkman 主题状态决策卡](../../memory/cards/darkman-theme-authority.md)
+- [portal-gtk 故障决策卡](../../memory/cards/portal-gtk-dangling-symlink.md)
+- [Matugen 动态取色决策卡](../../memory/cards/matugen-wallpaper-theming.md)

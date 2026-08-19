@@ -29,8 +29,8 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve]
 
   desktop/hyprland.md:
-    sources: [home/de/hyprland.nix, home/de/default.nix, home/de/musicfox.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/wallpaper.nix, home/de/foot.nix, home/de/stylix.nix, host/base/boot.nix]
-    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub, foot-color-nohash, desktop-environment-host-hm-boundary]
+    sources: [home/de/hyprland.nix, home/de/default.nix, home/de/musicfox.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/wallpaper.nix, home/de/foot.nix, home/de/stylix.nix, home/theme-de.nix, host/base/boot.nix]
+    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, stylix-color-hub, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
     sources: [home/de/niri.nix]
     memory:  [stylix-color-hub]
@@ -38,11 +38,11 @@ docs:
     sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
-    sources: [host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix]
-    memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, uwsm-kmscon-session-handoff]
+    sources: [host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix, home/de/theme-mode.nix]
+    memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff]
   desktop/noctalia.md:
-    sources: [home/de/noctalia.nix, host/de/greeter.nix]
-    memory:  [stylix-color-hub]
+    sources: [home/de/noctalia.nix, home/de/theme-mode.nix, host/de/greeter.nix]
+    memory:  [darkman-theme-authority, stylix-color-hub, matugen-wallpaper-theming]
   desktop/shell-switcher.md:
     sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix]
     memory:  []
@@ -50,8 +50,8 @@ docs:
     sources: [home/env/shell.nix, home/env/systools.nix]
     memory:  []
   desktop/darkmode.md:
-    sources: [home/theme-base.nix, home/theme-de.nix, home/theme-material.nix, host/de/sessions.nix]
-    memory:  [portal-gtk-dangling-symlink]
+    sources: [home/theme-base.nix, home/theme-de.nix, home/theme-material.nix, home/de/theme-mode.nix, home/de/wallpaper.nix, home/de/noctalia.nix, host/de/sessions.nix, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk4-dual.tpl]
+    memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
     sources: [host/base/services.nix]
     memory:  []

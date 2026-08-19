@@ -8,6 +8,7 @@
 - 主 DE：Hyprland + niri，均经 UWSM 从 kmscon TTY 会话启动。
 - GNOME：`specialisation/gnome/` 独立变体，不能依赖主 DE 配置。
 - Shell：fish + bash/ble.sh；终端：Foot；输入法：fcitx5；代理：mihomo TUN。
+- 主桌面深浅模式：Darkman 是唯一状态源，Matugen 负责运行时取色与模板渲染。
 
 ## 配置边界
 
