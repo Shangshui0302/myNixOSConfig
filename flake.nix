@@ -57,7 +57,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.backupFileExtension = "backup";
+          home-manager.backupFileExtension = "hm-backup";
           home-manager.users.lishangshui = import ./home/de.nix;
           home-manager.extraSpecialArgs = { inherit inputs materialGnomeTheme; };
         }

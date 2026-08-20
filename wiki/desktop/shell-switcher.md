@@ -64,6 +64,8 @@ fish 补全由 `home/de/shell-switcher.nix` 显式装到 `~/.config/fish/complet
 
 新增可切换 shell 时：定义它的 service（`wantedBy` 置空）+ 在 config.toml 加一条 `[[shell]]` 映射。
 
+Caelestia 会自动保存 `~/.config/caelestia/shell.json`，而 Home Manager 的声明式文件默认是只读链接。`caelestia.service` 启动前会把该链接解引用为可写副本；Home Manager 通过 `xdg.configFile."caelestia/shell.json".force = true` 在激活时直接覆盖这个运行时文件，不再创建会冲突的 `.backup` / `.hm-backup`。因此运行时改动要先同步回 Nix，下一次激活会以 Nix 配置为准。
+
 ## 快捷键兼容层
 
 Hyprland 的 shell 相关快捷键统一调用 `desktop-shell-action`，它按当前 active service 分发到对应 shell，因此切换后无需更换快捷键：
@@ -90,6 +92,7 @@ Clipse 由 Home Manager 独立运行，和 shell 切换无关；壁纸仍统一�
 | `set` 报"未知 shell" | 先 `shell-switcher list` 确认名字，config.toml 是否声明 |
 | 切换后双顶栏 / 通知异常 | 某 shell 未被 stop。`systemctl --user status noctalia caelestia` 查，手动 `systemctl --user stop <卡住的>` |
 | 切换失败自动回退 noctalia | `systemctl --user status <目标>` 看日志（`journalctl --user -u <service> -e`） |
+| Caelestia 报 `failed to write config` | 执行一次 HM/NixOS rebuild，再用 `shell-switcher set noctalia`、`shell-switcher set caelestia` 重启目标 service；无需手动删除备份文件，若仍失败检查 `systemctl --user status caelestia` 和 `journalctl --user -u caelestia -e` |
 | 想清理 current 标记 | 删 `~/.config/shell-switcher/current`（默认仍走 Noctalia 自动起） |
 
 ## 相关链接

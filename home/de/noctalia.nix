@@ -190,7 +190,7 @@ in
     };
   };
   dock = {
-    auto_hide = true;
+    auto_hide = false;
     background_opacity = 0.65999998524785042;
     enabled = true;
     inactive_opacity = 0.99999997764825821;
@@ -198,13 +198,17 @@ in
     launcher_icon = "brand-snowflake";
     launcher_position = "start";
     magnification_scale = 1.2000000029802322;
+    margin_edge = 10;
     pinned = [
-      ("qq")
+      ("org.gnome.Nautilus")
+      ("codex-desktop")
+      ("google-chrome")
     ];
     position = "bottom";
     radius = 20;
     reserve_space = false;
     show_dots = true;
+    smart_auto_hide = true;
   };
   hooks = {
     started = "${darkmanSync}";
@@ -529,7 +533,7 @@ in
     community_palette = "Tokyo Night Moon";
     custom_palette = "matugen";
     source = "custom";
-    wallpaper_scheme = "muted";
+    wallpaper_scheme = "m3-content";
     templates = {
       # 模板全部禁用：配色由 matugen 统一接管（Noctalia palette ~/.config/noctalia/palettes/matugen.json），
       # 不再分发内置/社区模板（对齐 Noctalia 实际配置）

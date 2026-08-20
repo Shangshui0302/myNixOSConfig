@@ -4,6 +4,25 @@ let
   homeDir = config.home.homeDirectory;
   defaultWallpaper = ../../assets/nixos_logo.png;
 
+  papirusFolderApply = pkgs.writeShellScript "papirus-folder-apply" ''
+    set -eu
+
+    color="''${1:-}"
+    [ -n "$color" ] || exit 0
+
+    theme_dir="$HOME/.local/share/icons/Papirus-Matugen"
+    if [ ! -f "$theme_dir/index.theme" ]; then
+      mkdir -p "$theme_dir"
+      cp -a ${pkgs.papirus-icon-theme}/share/icons/Papirus/. "$theme_dir/"
+      chmod -R u+w "$theme_dir"
+    fi
+
+    PATH="${pkgs.gtk3}/bin:$PATH" ${pkgs.papirus-folders}/bin/papirus-folders \
+      -o -C "$color" -t "$theme_dir" >/dev/null 2>&1 || {
+      echo "theme-apply: unable to set Papirus folder color '$color'" >&2
+    }
+  '';
+
   matugenConfig = pkgs.writeText "matugen-theme-mode.toml" ''
     [config]
 
@@ -38,6 +57,38 @@ let
     [templates.qtct]
     input_path = '${./matugen/qtct-colors.conf.tpl}'
     output_path = '${homeDir}/.config/qt5ct/colors/matugen.conf'
+
+    [templates.papirus-folders]
+    input_path = '${./matugen/papirus-color.tpl}'
+    output_path = '${homeDir}/.cache/wallpaper-colors/papirus-folder-color'
+    colors_to_compare = [
+        { name = "black",      color = "#4f4f4f" },
+        { name = "blue",       color = "#5294e2" },
+        { name = "bluegrey",   color = "#607d8b" },
+        { name = "brown",      color = "#ae8e6c" },
+        { name = "carmine",    color = "#a30002" },
+        { name = "cyan",       color = "#00bcd4" },
+        { name = "darkcyan",   color = "#45abb7" },
+        { name = "deeporange", color = "#eb6637" },
+        { name = "green",      color = "#87b158" },
+        { name = "grey",       color = "#8e8e8e" },
+        { name = "indigo",     color = "#5c6bc0" },
+        { name = "magenta",    color = "#ca71df" },
+        { name = "nordic",     color = "#81a1c1" },
+        { name = "orange",     color = "#ee923a" },
+        { name = "palebrown",  color = "#d1bfae" },
+        { name = "paleorange", color = "#eeca8f" },
+        { name = "pink",       color = "#f06292" },
+        { name = "red",        color = "#e25252" },
+        { name = "teal",       color = "#16a085" },
+        { name = "violet",     color = "#7e57c2" },
+        { name = "white",      color = "#e4e4e4" },
+        { name = "yaru",       color = "#676767" },
+        { name = "yellow",     color = "#f9bd30" }
+    ]
+    compare_to = "{{ colors.primary.default.hex }}"
+    post_hook = '${papirusFolderApply} {{ closest_color }}'
+    index = 1
   '';
 
   themeApply = pkgs.writeShellScript "theme-apply" ''
@@ -128,8 +179,11 @@ EOF
   '';
 in
 {
-  # No location source: Darkman becomes a persistent, manually controlled mode state.
+  # Fixed Chengdu coordinates keep sunrise/sunset scheduling independent of Mihomo's
+  # proxy exit and avoid making Geoclue a runtime dependency.
   xdg.configFile."darkman/config.yaml".text = ''
+    lat: 30.57
+    lng: 104.07
     usegeoclue: false
     portal: true
   '';

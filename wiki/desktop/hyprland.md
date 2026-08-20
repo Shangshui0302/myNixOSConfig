@@ -110,6 +110,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 | 音量 +/- | 调整 2% |
 | 静音 | 切换静音 |
 | 麦克风静音 | 切换麦克风 |
+| `Fn + F5` / `XF86TouchpadToggle` | 切换触控板 |
 | 亮度 +/- | 调整亮度 |
 
 ### 鼠标操作
@@ -195,6 +196,10 @@ cat /tmp/hypr/$(ls -t /tmp/hypr/ | head -1)/hyprland.log
 hyprctl reload
 ```
 
+### WUJIE14XA 触控板 Fn 键
+
+WUJIE14XA 的 `Fn + F5` 应进入 `XF86TouchpadToggle`。Hyprland 通过 HM 生成的 `toggle-touchpad` 脚本切换实际设备 `uniw0001:00-093a:0255-touchpad`；脚本只保存当前用户会话的启用状态，不读写 EC。`atkbd` 日志中的 `e078` 未作为未知键映射，避免误伤其他 Fn 键。
+
 ### 亮度调到最高反而变黑
 
 AMD 核显（Radeon 780M）内核 6.15+ 的 custom brightness curve 在顶端溢出、100% 亮度变全黑。已在 `host/base/boot.nix` 用内核参数 `amdgpu.dcdebugmask=0x40000` 禁用该曲线修复（需 reboot。为何不升内核见 `memory/cards/mechrevo-amd-backlight-curve.md`）。若重现，验证：
@@ -209,5 +214,6 @@ cat /sys/module/amdgpu/parameters/dcdebugmask   # 应为 262144
 - [Shell 环境](shell.md) — `Super + W` 启动的 foot 终端配置
 - [深色模式架构](darkmode.md) — Darkman 模式状态；合成器边框由 Matugen 运行时覆盖 Stylix 底色
 - [Memory: AMD 背光曲线溢出](../../memory/cards/mechrevo-amd-backlight-curve.md) — 100% 亮度变黑的内核参数修复
+- [Memory: WUJIE14XA Fn 输入链路](../../memory/cards/mechrevo-wujie14xa-fn-input.md) — 触控板 Fn 的 Hyprland 用户态处理
 - [Memory: Hyprland 模糊 / AMD 780M](../../memory/cards/hyprland-056-blur-amd.md) — 模糊在 AMD 核显失效的处理
 - [wiki 首页](../README.md)

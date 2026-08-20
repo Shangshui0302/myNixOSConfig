@@ -11,8 +11,8 @@ in
     animeko
   ];
 
-  xdg.dataFile."icons/hicolor/512x512/apps/animeko.png".source =
-    "${animeko.passthru.extracted}/icon.png";
+  xdg.dataFile."icons/hicolor/1024x1024/apps/animeko.png".source =
+    "${animeko.passthru.extracted}/usr/lib/Ani.png";
 
   xdg.desktopEntries.animeko = {
     name = "Animeko";

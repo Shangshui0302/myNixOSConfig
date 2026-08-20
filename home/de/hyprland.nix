@@ -2,10 +2,31 @@
 
 let
   homeDir = config.home.homeDirectory;
+  touchpadToggle = pkgs.writeShellScriptBin "toggle-touchpad" ''
+    set -eu
+
+    device="uniw0001:00-093a:0255-touchpad"
+    # ponytail: runtime state is minimal; external device toggles can desync it;
+    # replace with a compositor state query if Hyprland exposes one.
+    state="''${XDG_RUNTIME_DIR:-/tmp}/mechrevo-touchpad-enabled"
+    enabled=true
+    if [ -r "$state" ]; then
+      enabled=$(cat "$state")
+    fi
+
+    if [ "$enabled" = true ]; then
+      ${pkgs.hyprland}/bin/hyprctl keyword "device[$device]:enabled" false >/dev/null
+      printf '%s\n' false > "$state"
+    else
+      ${pkgs.hyprland}/bin/hyprctl keyword "device[$device]:enabled" true >/dev/null
+      printf '%s\n' true > "$state"
+    fi
+  '';
 in
 {
   home.packages = with pkgs; [
     grim slurp wl-clipboard grimblast swappy wdisplays
+    touchpadToggle
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
       mkdir -p "$dir"
@@ -159,10 +180,15 @@ in
         "float, class:^(sushi)$",
         "center, class:^(sushi)$",
         "size 70% 70%, class:^(sushi)$",
-        "float, class:^(clipse)$",
-        "center, class:^(clipse)$",
-        "size 60% 70%, class:^(clipse)$",
       },
+    })
+
+    hl.window_rule({
+      name = "clipse-float",
+      match = { class = "^clipse$" },
+      float = true,
+      center = true,
+      size = "60% 70%",
     })
 
     -- Noctalia layer blur: frosted glass for bar / panel / dock / notifications / OSD
@@ -319,6 +345,7 @@ in
     hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"), { repeating = true })
     hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
     hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
+    hl.bind("XF86TouchpadToggle", hl.dsp.exec_cmd("toggle-touchpad"))
     hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("desktop-shell-action brightness-up"), { repeating = true })
     hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("desktop-shell-action brightness-down"), { repeating = true })
 

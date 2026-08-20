@@ -56,7 +56,8 @@ INI
 
     # 首次部署或迁移到 GTK4 双 palette 时生成完整初始产物；之后保持当前壁纸颜色。
     if [ ! -f "$HOME/.config/qt5ct/colors/matugen.conf" ] \
-      || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null; then
+      || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null \
+      || [ ! -f "$HOME/.local/share/icons/Papirus-Matugen/index.theme" ]; then
       initial_wallpaper="$(${pkgs.waypaper}/bin/waypaper --list 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[0].wallpaper // empty' 2>/dev/null || true)"
       if [ ! -f "$initial_wallpaper" ]; then
         initial_wallpaper=${../../assets/nixos_logo.png}

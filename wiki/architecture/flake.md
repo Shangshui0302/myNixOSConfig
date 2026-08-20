@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-08-13
+updated: 2026-08-20
 ---
 
 # Flake 配置管理
@@ -40,7 +40,7 @@ updated: 2026-08-13
 - `system` 指定为 `x86_64-linux`。
 - `specialArgs = { inherit inputs; }` 将全部输入整体传入，供各模块共享。
 - `modules` 列表组合：本地 `host/default.nix`、sops-nix 和 Home Manager 的 NixOS 模块。
-- Home Manager 侧：`useGlobalPkgs`/`useUserPackages` 开启，`backupFileExtension = "backup"`，主配置指向 `home/de.nix`，GNOME 变体指向 `specialisation/gnome/home.nix`。
+- Home Manager 侧：`useGlobalPkgs`/`useUserPackages` 开启，`backupFileExtension = "hm-backup"`，主配置指向 `home/de.nix`，GNOME 变体指向 `specialisation/gnome/home.nix`。
 
 ```mermaid
 flowchart TD

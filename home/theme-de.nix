@@ -7,7 +7,7 @@ let
   qtAppearance = {
     color_scheme_path = "${config.home.homeDirectory}/.config/qt5ct/colors/matugen.conf";
     custom_palette = true;
-    icon_theme = "Papirus";
+    icon_theme = "Papirus-Matugen";
     style = "Breeze";
   };
 in
@@ -35,6 +35,8 @@ PORTALEOF
     qt5ctSettings.Appearance = qtAppearance;
     qt6ctSettings.Appearance = qtAppearance;
   };
+
+  dconf.settings."org/gnome/desktop/interface".icon-theme = lib.mkForce "Papirus-Matugen";
 
   # GTK4 在一个可写主题里常驻双 palette；GTK3 使用两个稳定主题目录。
   # GNOME specialisation 继续单独 import theme-material.nix，保持固定深色。

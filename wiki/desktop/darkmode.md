@@ -7,7 +7,7 @@ updated: 2026-08-20
 
 # 深色模式与动态配色
 
-主桌面由 **Darkman** 保存唯一的深浅色状态；它同时提供 XDG Settings portal。初始为深色，第一版只手动切换，不读取位置也不按日出日落自动调度。
+主桌面由 **Darkman** 保存唯一的深浅色状态；它同时提供 XDG Settings portal，并按成都坐标的日出日落自动调度。Mihomo 不参与定位：Darkman 使用固定坐标，不读取代理出口 IP。
 
 ```
 darkman set/toggle
@@ -29,6 +29,24 @@ darkman set/toggle
 | 查看当前模式 | `darkman get` |
 
 Darkman 自带“Toggle darkman”桌面入口，可从任意启动器调用。Noctalia 不再提供 DarkMode 开关；它只显示并跟随 Darkman 已选择的模式。
+
+## 自动调度
+
+Darkman 使用成都的固定坐标计算日出和日落：
+
+```text
+latitude:  30.57
+longitude: 104.07
+```
+
+因此自动切换不依赖 Geoclue、Wi-Fi 定位或外部 IP 定位，也不会因为 Mihomo 的代理节点在其他地区而误判位置。需要临时手动切换时仍可使用 `darkman set dark|light`；下一次日出或日落会恢复自动节奏。
+
+检查 Darkman 是否已按当前配置运行：
+
+```bash
+darkman check
+journalctl --user -u darkman -b
+```
 
 ## GTK 与 Qt
 
@@ -70,7 +88,7 @@ systemctl --user status darkman xdg-desktop-portal
 journalctl --user -u darkman -b
 ```
 
-若 portal 后端无法启动，先执行 `systemctl --user restart darkman xdg-desktop-portal`。GTK 的文件选择器仍由 gtk portal 提供；若它单独报 `not-found`，再排查历史遗留的 `xdg-desktop-portal-gtk.service` dangling symlink。
+若自动切换时间明显不对，确认当前运行的配置包含成都坐标，并检查系统时区；不要根据 Mihomo 当前节点判断 Darkman 的位置。若 portal 后端无法启动，先执行 `systemctl --user restart darkman xdg-desktop-portal`。GTK 的文件选择器仍由 gtk portal 提供；若它单独报 `not-found`，再排查历史遗留的 `xdg-desktop-portal-gtk.service` dangling symlink。
 
 ## 相关链接
 
