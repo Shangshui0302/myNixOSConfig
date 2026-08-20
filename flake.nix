@@ -30,6 +30,10 @@
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    fcitx5-matugen-theme = {
+      url = "github:Shangshui0302/fcitx5-mellow-themes-matugen";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   nixConfig = {
     extra-substituters = [ "https://nix-community.cachix.org" ];

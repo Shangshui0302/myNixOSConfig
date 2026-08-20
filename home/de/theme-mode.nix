@@ -1,8 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ config, inputs, lib, pkgs, ... }:
 
 let
   homeDir = config.home.homeDirectory;
   defaultWallpaper = ../../assets/nixos_logo.png;
+  fcitxMatugenTheme = inputs.fcitx5-matugen-theme.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  fcitxTemplateRoot = "${fcitxMatugenTheme}/share/matugen/fcitx5-matugen-theme";
 
   papirusFolderApply = pkgs.writeShellScript "papirus-folder-apply" ''
     set -eu
@@ -89,6 +91,24 @@ let
     compare_to = "{{ colors.primary.default.hex }}"
     post_hook = '${papirusFolderApply} {{ closest_color }}'
     index = 1
+
+    [templates.fcitx5-highlight-light]
+    input_path = '${fcitxTemplateRoot}/mellow-matugen/highlight.svg.tpl'
+    output_path = '${homeDir}/.local/share/fcitx5/themes/mellow-matugen/highlight.svg'
+
+    [templates.fcitx5-highlight-dark]
+    input_path = '${fcitxTemplateRoot}/mellow-matugen-dark/highlight.svg.tpl'
+    output_path = '${homeDir}/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg'
+
+    [templates.fcitx5-colors-light]
+    # fcitx5-gtk loads the first theme.conf as a complete file; it does not
+    # merge a user-level color fragment with the Nix profile's base theme.
+    input_path = '${fcitxTemplateRoot}/mellow-matugen/theme.conf.tpl'
+    output_path = '${homeDir}/.local/share/fcitx5/themes/mellow-matugen/theme.conf'
+
+    [templates.fcitx5-colors-dark]
+    input_path = '${fcitxTemplateRoot}/mellow-matugen-dark/theme.conf.tpl'
+    output_path = '${homeDir}/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf'
   '';
 
   themeApply = pkgs.writeShellScript "theme-apply" ''
@@ -104,12 +124,12 @@ let
       dark)
         color_scheme=prefer-dark
         gtk_theme=Material-Gnome-Matugen-Dark
-        fcitx_theme=mellow-wechat-dark
+        fcitx_theme=mellow-matugen-dark
         ;;
       light)
         color_scheme=prefer-light
         gtk_theme=Material-Gnome-Matugen
-        fcitx_theme=mellow-wechat
+        fcitx_theme=mellow-matugen
         ;;
       *)
         echo "theme-apply: expected dark or light, got '$mode'" >&2
@@ -150,16 +170,17 @@ let
     trap 'rm -f "$fcitx_tmp"' EXIT
     cat > "$fcitx_tmp" <<EOF
 Theme=$fcitx_theme
-DarkTheme=mellow-wechat-dark
+DarkTheme=mellow-matugen-dark
 UseDarkTheme=True
 Vertical Candidate List=True
 EOF
     mv "$fcitx_tmp" "$fcitx_dir/classicui.conf"
     trap - EXIT
 
-    # Darkman passes only the mode; waypaper passes mode + wallpaper. Restart
-    # only for an actual mode change, not for every wallpaper recolor.
-    if [ "$wallpaper_arg" -eq 0 ]; then
+    # The generated Fcitx SVG and theme.conf are cached by both ClassicUI and
+    # fcitx5-gtk. Restart after every successful Matugen run so wallpaper
+    # recolors reach GTK embedded candidate windows as well as ClassicUI.
+    if [ "$matugen_ok" -eq 1 ] || [ "$wallpaper_arg" -eq 0 ]; then
       ${pkgs.systemd}/bin/systemctl --user restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
         || ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null || true
     fi
@@ -209,5 +230,7 @@ in
       chmod 600 "$darkman_mode_file"
     fi
   '';
+
+  home.packages = [ fcitxMatugenTheme ];
 
 }

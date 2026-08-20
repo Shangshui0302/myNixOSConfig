@@ -167,6 +167,26 @@
         "type": "github"
       }
     },
+    "fcitx5-matugen-theme": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787225339,
+        "narHash": "sha256-sRuluMQspKLCmdqUE30AQz9KXCPPLgrj/zGfr5+9asg=",
+        "owner": "Shangshui0302",
+        "repo": "fcitx5-mellow-themes-matugen",
+        "rev": "a8b2fb6a33b4b265c17aa13917d41e9c72a4818a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Shangshui0302",
+        "repo": "fcitx5-mellow-themes-matugen",
+        "type": "github"
+      }
+    },
     "firefox-gnome-theme": {
       "flake": false,
       "locked": {
@@ -488,6 +508,7 @@
       "inputs": {
         "caelestia": "caelestia",
         "codex-desktop-linux": "codex-desktop-linux",
+        "fcitx5-matugen-theme": "fcitx5-matugen-theme",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "nix-flatpak": "nix-flatpak",

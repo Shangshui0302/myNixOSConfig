@@ -59,8 +59,8 @@ in
     # classicui 系统级回退配置（仅主桌面；GNOME 候选窗由 kimpanel 扩展绘制）。
     # theme-apply 为 GTK Wayland 客户端写入当前模式的用户层 Theme。
     fcitx5.settings.addons.classicui.globalSection = lib.mkIf (!gnome) {
-      Theme = "mellow-wechat";
-      DarkTheme = "mellow-wechat-dark";
+      Theme = "mellow-matugen";
+      DarkTheme = "mellow-matugen-dark";
       UseDarkTheme = "True";
       "Vertical Candidate List" = "True";
     };

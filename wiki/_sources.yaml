@@ -38,7 +38,7 @@ docs:
     sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
-    sources: [host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix, home/de/theme-mode.nix]
+    sources: [flake.nix, host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix, home/de/theme-mode.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff]
   desktop/noctalia.md:
     sources: [home/de/noctalia.nix, home/de/theme-mode.nix, host/de/greeter.nix]
@@ -50,7 +50,7 @@ docs:
     sources: [home/env/shell.nix, home/env/systools.nix]
     memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
-    sources: [home/theme-base.nix, home/theme-de.nix, home/theme-material.nix, home/de/theme-mode.nix, home/de/wallpaper.nix, home/de/noctalia.nix, host/de/sessions.nix, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk4-dual.tpl]
+    sources: [flake.nix, home/theme-base.nix, home/theme-de.nix, home/theme-material.nix, home/de/theme-mode.nix, home/de/wallpaper.nix, home/de/noctalia.nix, host/de/sessions.nix, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk4-dual.tpl]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
     sources: [host/base/services.nix]
