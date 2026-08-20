@@ -2,7 +2,7 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-08-13
+updated: 2026-08-20
 ---
 
 # Shell 环境指南
@@ -98,6 +98,26 @@ Ghostty 配置：`Catppuccin Mocha` 深色主题，字号 14，滚动限制 1000
 | `grc` | 给 `ping`/`traceroute`/`df` 等输出上色 |
 | `colored-man-pages` | man 手册语法高亮 |
 
+## Fish 命令补全
+
+补全文件由 Home Manager 显式安装到 `~/.config/fish/completions/`。这样不依赖 NixOS 固化 profile 中可能缺失的 `vendor_completions.d`。
+
+- `noctalia`：主命令静态补全，`msg` 子命令从当前 CLI 帮助动态读取
+- `darkman`：使用包自带的 Fish 补全
+- `hyprctl`：根据当前 Hyprland 的 `hyprctl --help` 生成命令列表，避免上游生成文件的错位描述
+- `hyprland`、`podman`、`howdy`、`shell-switcher`：同样放在用户补全目录
+
+排查补全是否已加载：
+
+```bash
+ls ~/.config/fish/completions
+fish -c 'complete -C "noctalia msg "'
+fish -c 'complete -C "darkman "'
+fish -c 'complete -C "hyprctl "'
+```
+
+如果目录中的文件已更新但当前终端仍无补全，重新打开 Fish；配置修改需要手动执行 `sudo nixos-rebuild switch --flake .`。
+
 ## Bash ble.sh 配置
 
 - 语法高亮：内置命令绿色 (`#abe15b`)、可执行文件蓝色 (`#33adff`)、变量黄色 (`#ffd242`)
@@ -140,4 +160,5 @@ ouch x file.zip    # 通用解压
 
 - [Hyprland](hyprland.md) — `Super + Q` 启动 foot 终端
 - [Noctalia](noctalia.md) — 应用启动器默认终端命令 foot
+- [NixOS /etc/static 补全约束](../../memory/cards/nixos-etc-static-fish-completion.md) — Fish 补全显式安装到用户目录
 - [wiki 首页](../README.md)

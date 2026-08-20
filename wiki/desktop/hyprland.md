@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout]
-updated: 2026-08-19
+updated: 2026-08-20
 ---
 
 # Hyprland 使用指南
@@ -20,6 +20,8 @@ updated: 2026-08-19
 本机 Hyprland 配置基于 Lua (`~/.config/hypr/hyprland.lua`)，使用 **scrolling layout**（滚动列布局）。
 
 **桌面 shell 切换**：默认 Noctalia（systemd 拉起；默认 shell 由 config.toml 的 `default` 指定），可运行时切到 Caelestia：`shell-switcher set caelestia|noctalia`（切换器配置 `~/.config/shell-switcher/config.toml`，见 `home/de/shell-switcher.nix`）。两个 shell 的 service 由切换器互斥启停，避免抢占 `org.freedesktop.Notifications` DBus。shell-switcher 二进制经 flake input 接入（`github:Shangshui0302/shell-switcher`）。
+
+Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 分发，切换到 Caelestia 后仍使用同一套按键；壁纸和 Matugen 配色继续沿用主桌面的统一管线。
 
 **配色（stylix）**：`home/de/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Anthropic Mono Variable:size=12`（stylix 接入时曾被误删、字号退回默认，已恢复）。
 
@@ -49,12 +51,13 @@ updated: 2026-08-19
 
 | 按键 | 功能 |
 |------|------|
-| `Super + Q` | 终端 (foot) |
-| `Super + E` | 文件管理器 (Nemo) |
-| `Super + Space` | 应用启动器 (Noctalia) |
-| `Super + K` | 控制中心 (Noctalia) |
-| `Super + ,` | 设置面板 (Noctalia) |
-| `Super + Tab` | 工作区总览 (Noctalia) |
+| `Super + W` | 终端 (foot) |
+| `Super + E` | 文件管理器 (Nautilus) |
+| `Super + C` | 剪贴板（Noctalia 面板 / Caelestia 的 Clipse） |
+| `Super + Space` | 应用启动器（Noctalia / Caelestia） |
+| `Super + K` | 控制中心（Noctalia / Caelestia utilities） |
+| `Super + ,` | 设置面板（Noctalia / Caelestia Nexus） |
+| `Super + Tab` | 窗口切换（Noctalia window switcher / Caelestia 下一个窗口） |
 | `Super + Shift + D` | Darkman 切换深浅模式 |
 
 ### 截图
@@ -70,7 +73,7 @@ updated: 2026-08-19
 
 | 按键 | 功能 |
 |------|------|
-| `Super + W` | 关闭窗口 |
+| `Super + Q` | 关闭窗口 |
 | `Super + V` | 浮动 / 平铺切换 |
 | `Super + F` | 全屏切换 |
 | `Super + P` | 伪平铺（保持窗口位置但参与布局） |
@@ -131,7 +134,7 @@ updated: 2026-08-19
 ## 启动时自动运行
 
 1. **fcitx5** — 输入法
-2. **Noctalia Shell** — 顶栏/侧边栏面板
+2. **桌面 Shell** — 默认 Noctalia，切换后由 Caelestia 接管顶栏/面板
 3. **HVE Watchdog** — Noctalia 主题热加载守护进程
 
 ---
@@ -203,7 +206,7 @@ cat /sys/module/amdgpu/parameters/dcdebugmask   # 应为 262144
 ## 相关链接
 
 - [Noctalia](noctalia.md) — 顶栏/控制中心/应用启动器，快捷键与 Hyprland 绑定
-- [Shell 环境](shell.md) — `Super + Q` 启动的 foot 终端配置
+- [Shell 环境](shell.md) — `Super + W` 启动的 foot 终端配置
 - [深色模式架构](darkmode.md) — Darkman 模式状态；合成器边框由 Matugen 运行时覆盖 Stylix 底色
 - [Memory: AMD 背光曲线溢出](../../memory/cards/mechrevo-amd-backlight-curve.md) — 100% 亮度变黑的内核参数修复
 - [Memory: Hyprland 模糊 / AMD 780M](../../memory/cards/hyprland-056-blur-amd.md) — 模糊在 AMD 核显失效的处理

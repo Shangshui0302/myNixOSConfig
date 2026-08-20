@@ -45,10 +45,10 @@ docs:
     memory:  [darkman-theme-authority, stylix-color-hub, matugen-wallpaper-theming]
   desktop/shell-switcher.md:
     sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix]
-    memory:  []
+    memory:  [shell-switcher-generic]
   desktop/shell.md:
     sources: [home/env/shell.nix, home/env/systools.nix]
-    memory:  []
+    memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
     sources: [home/theme-base.nix, home/theme-de.nix, home/theme-material.nix, home/de/theme-mode.nix, home/de/wallpaper.nix, home/de/noctalia.nix, host/de/sessions.nix, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk4-dual.tpl]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]

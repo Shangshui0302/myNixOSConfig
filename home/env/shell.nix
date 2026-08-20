@@ -1,5 +1,28 @@
 { config, pkgs, ... }:
 
+let
+  hyprctlFishCompletion = pkgs.runCommand "hyprctl-fish-completion" { } ''
+    {
+      cat <<'EOF'
+    complete -c hyprctl -f
+    complete -c hyprctl -s j -d "Output in JSON"
+    complete -c hyprctl -s r -d "Refresh state after issuing command"
+    complete -c hyprctl -l batch -d "Execute batch of commands separated by ;"
+    complete -c hyprctl -s i -l instance -d "Use a specific Hyprland instance" -x
+    complete -c hyprctl -s q -l quiet -d "Disable output"
+EOF
+      { ${pkgs.hyprland}/bin/hyprctl --help 2>&1 || true; } |
+        awk '
+          /^commands:/ { in_commands = 1; next }
+          /^flags:/ { in_commands = 0 }
+          in_commands && /^    [a-z]/ {
+            print "complete -c hyprctl -n \"__fish_use_subcommand\" -a " $1
+          }
+        '
+    } > "$out"
+  '';
+
+in
 {
   home.packages = with pkgs; [
     fzf bat fd blesh
@@ -241,7 +264,7 @@
     '';
   };
 
-  xdg.configFile."fish/completions/hyprctl.fish".source = "${pkgs.hyprland}/share/fish/vendor_completions.d/hyprctl.fish";
+  xdg.configFile."fish/completions/hyprctl.fish".source = hyprctlFishCompletion;
 
   xdg.configFile."fish/completions/hyprland.fish".text = ''
     complete -c hyprland -s h -l help -d "Show help message"
@@ -261,16 +284,16 @@
   '';
 
   xdg.configFile."fish/completions/noctalia.fish".text = ''
-    function __noctalia_complete
-      set -l words (commandline -opc)
-      set -l help noctalia --help
-      if test (count $words) -gt 1; and test "$words[2]" = msg
-        set help noctalia msg --help
-      end
-      $help 2>&1 | string match -r "^  [a-z][a-z0-9-]+ " | string replace -r "^  ([a-z][a-z0-9-]+).*" "$1"
-    end
-    complete -c noctalia -f -a "(__noctalia_complete)"
+    complete -c noctalia -f
+    complete -c noctalia -s h -l help
+    complete -c noctalia -s v -l version
+    complete -c noctalia -s d -l daemon
+    complete -c noctalia -n "__fish_use_subcommand" -a "msg theme config plugins"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "(noctalia msg --help 2>&1 | string match -r '^  [a-z][a-z0-9-]+' | string trim)"
   '';
+
+  xdg.configFile."fish/completions/darkman.fish".source =
+    "${pkgs.darkman}/share/fish/vendor_completions.d/darkman.fish";
 
   xdg.dataFile."bash-completion/completions/noctalia".text = ''
     _noctalia_completion() {

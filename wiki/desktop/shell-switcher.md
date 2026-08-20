@@ -2,7 +2,7 @@
 title: 桌面 Shell 切换
 category: desktop
 tags: [shell-switcher, shell, noctalia, caelestia, systemd]
-updated: 2026-08-13
+updated: 2026-08-20
 ---
 
 # 桌面 Shell 切换指南
@@ -63,6 +63,19 @@ service = "caelestia.service"
 fish 补全由 `home/de/shell-switcher.nix` 显式装到 `~/.config/fish/completions/`：NixOS 的 `/etc/static` 固化 profile 不暴露 fish 的 `vendor_completions.d` 目录，故显式安装（与 hyprctl/hyprland 补全同模式）。bash 补全走 profile 的 `bash-completion`（固化保留）。
 
 新增可切换 shell 时：定义它的 service（`wantedBy` 置空）+ 在 config.toml 加一条 `[[shell]]` 映射。
+
+## 快捷键兼容层
+
+Hyprland 的 shell 相关快捷键统一调用 `desktop-shell-action`，它按当前 active service 分发到对应 shell，因此切换后无需更换快捷键：
+
+- `Super + Space`：打开启动器
+- `Super + K`：打开控制中心（Caelestia 的 utilities drawer）
+- `Super + ,`：打开设置（Caelestia 的 Nexus）
+- `Super + C`：Noctalia 剪贴板面板；Caelestia 打开 Clipse
+- `Super + Tab`：Noctalia window switcher；Caelestia 切换到下一个 Hyprland 窗口
+- 亮度键：两套 shell 都按 5% 步进
+
+Clipse 由 Home Manager 独立运行，和 shell 切换无关；壁纸仍统一交给 waypaper + Matugen 管线。
 
 ## 启动流程
 

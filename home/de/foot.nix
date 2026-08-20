@@ -46,9 +46,9 @@ in
         alpha = "0.8";
         foreground = "e0e2e8";
         background = "101418";
-        selection-foreground = "e0e2e8";
-        selection-background = "0d47a1";
-        cursor = "101418 42a5f5";
+        selection-background = "34383d";
+        selection-foreground = "f0f2f5";
+        cursor = "101418 e0e2e8";
         regular0 = "101418";
         regular1 = "ff3270";
         regular2 = "42f558";

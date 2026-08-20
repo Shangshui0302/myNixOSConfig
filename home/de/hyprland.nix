@@ -159,6 +159,9 @@ in
         "float, class:^(sushi)$",
         "center, class:^(sushi)$",
         "size 70% 70%, class:^(sushi)$",
+        "float, class:^(clipse)$",
+        "center, class:^(clipse)$",
+        "size 60% 70%, class:^(clipse)$",
       },
     })
 
@@ -216,15 +219,15 @@ in
     hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"))
     hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus"))
     hl.bind("SUPER + B", hl.dsp.exec_cmd("google-chrome"))
-    hl.bind("SUPER + C", hl.dsp.exec_cmd("noctalia msg panel-toggle clipboard"))
+    hl.bind("SUPER + C", hl.dsp.exec_cmd("desktop-shell-action clipboard"))
     hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"))
     hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
-    hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
-    hl.bind("SUPER + K", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"))
-    hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia msg settings-toggle"))
+    hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("desktop-shell-action launcher"))
+    hl.bind("SUPER + K", hl.dsp.exec_cmd("desktop-shell-action control"))
+    hl.bind("SUPER + comma", hl.dsp.exec_cmd("desktop-shell-action settings"))
     hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("darkman toggle"))
-    -- v5: plugin:workspace-overview not yet available, use window-switcher as alternative
-    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia msg window-switcher"))
+    -- Caelestia 没有 Noctalia 的 window-switcher，兼容层退化为 cyclenext。
+    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("desktop-shell-action window-switcher"))
 
     -- Window management
     hl.bind("SUPER + Q", hl.dsp.window.close())
@@ -232,7 +235,6 @@ in
     hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
     hl.bind("SUPER + P", hl.dsp.window.pseudo())
     hl.bind("SUPER + SHIFT + M", hl.dsp.exit())
-    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("noctalia msg window-switcher"))
 
     -- Focus
     hl.bind("SUPER + left", hl.dsp.focus({ direction = "l" }))
@@ -317,8 +319,8 @@ in
     hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"), { repeating = true })
     hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
     hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
-    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("noctalia msg brightness-up"), { repeating = true })
-    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("noctalia msg brightness-down"), { repeating = true })
+    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("desktop-shell-action brightness-up"), { repeating = true })
+    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("desktop-shell-action brightness-down"), { repeating = true })
 
     -- ===== Gestures =====
 
