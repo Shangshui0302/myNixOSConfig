@@ -15,10 +15,10 @@ let
     fi
 
     if [ "$enabled" = true ]; then
-      ${pkgs.hyprland}/bin/hyprctl keyword "device[$device]:enabled" false >/dev/null
+      ${pkgs.hyprland}/bin/hyprctl eval "hl.device({ name = '$device', enabled = false })" >/dev/null
       printf '%s\n' false > "$state"
     else
-      ${pkgs.hyprland}/bin/hyprctl keyword "device[$device]:enabled" true >/dev/null
+      ${pkgs.hyprland}/bin/hyprctl eval "hl.device({ name = '$device', enabled = true })" >/dev/null
       printf '%s\n' true > "$state"
     fi
   '';
