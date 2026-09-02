@@ -26,20 +26,20 @@ docs:
     memory:  [flake-unstable-strategy]
   architecture/host.md:
     sources: [host/default.nix, host/base/default.nix, host/de/sessions.nix, host/base/boot.nix, host/base/hardware.nix, host/base/compat.nix, host/de/greeter.nix, host/base/users.nix, host/base/locale.nix]
-    memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve]
+    memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve, greetd-tuigreet-tty]
 
   desktop/hyprland.md:
     sources: [home/de/hyprland.nix, home/de/default.nix, home/de/musicfox.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/wallpaper.nix, home/de/foot.nix, home/de/stylix.nix, home/theme-de.nix, host/base/boot.nix]
     memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, stylix-color-hub, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
-    sources: [home/de/niri.nix]
-    memory:  [stylix-color-hub]
+    sources: [home/de/niri.nix, host/de/sessions.nix, host/de/greeter.nix]
+    memory:  [stylix-color-hub, greetd-tuigreet-tty]
   desktop/gnome.md:
-    sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix]
+    sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix, host/de/greeter.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
     sources: [flake.nix, host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix, home/de/theme-mode.nix]
-    memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff]
+    memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff, greetd-tuigreet-tty]
   desktop/noctalia.md:
     sources: [home/de/noctalia.nix, home/de/theme-mode.nix, host/de/greeter.nix]
     memory:  [darkman-theme-authority, stylix-color-hub, matugen-wallpaper-theming]
@@ -83,7 +83,7 @@ docs:
     sources: [host/base/gaming.nix, home/leisure/gaming.nix]
     memory:  []
   leisure/media.md:
-    sources: [home/leisure/player.nix, home/leisure/browser.nix, home/leisure/default.nix]
+    sources: [home/leisure/player.nix, local-deriv/animeko.nix, home/leisure/browser.nix, home/leisure/default.nix]
     memory:  []
 
   networking/mihomo.md:
@@ -91,7 +91,7 @@ docs:
     memory:  [mihomo-tun-stack]
 
   security/index.md:
-    sources: [host/base/sops.nix, host/base/users.nix]
+    sources: [host/base/sops.nix, host/base/users.nix, host/de/greeter.nix]
     memory:  [portal-gtk-dangling-symlink]
   security/sops.md:
     sources: [host/base/sops.nix]

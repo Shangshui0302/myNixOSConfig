@@ -11,6 +11,5 @@ in
     cc-switch
     codexDesktop
     codebase-memory-mcp
-    (import ../../local-deriv/rtk.nix { inherit pkgs; })
   ];
 }

@@ -16,7 +16,6 @@
     nix-index
     steam-run
     rclone
-    ventoy-full
     imagemagick
     poppler-utils
   ];

@@ -1,7 +1,7 @@
 { config, pkgs, inputs, ... }:
 
 let
-  shellSwitcher = inputs.shell-switcher.packages.${pkgs.system}.default;
+  shellSwitcher = inputs.shell-switcher.packages.${pkgs.stdenv.hostPlatform.system}.default;
   desktopShellAction = pkgs.writeShellApplication {
     name = "desktop-shell-action";
     runtimeInputs = [

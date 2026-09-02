@@ -7,7 +7,7 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 | 项目 | 配置 |
 | --- | --- |
 | 系统 | NixOS 26.05，nixos-unstable |
-| 主桌面 | Hyprland + niri，UWSM，kmscon TTY |
+| 主桌面 | Hyprland（UWSM）+ niri（niri-session），greetd + tuigreet TTY |
 | 变体 | GNOME specialisation，独立 GDM 会话 |
 | Shell | fish、bash/ble.sh、Starship、zellij |
 | 终端 | Foot，由 Home Manager 管理 |

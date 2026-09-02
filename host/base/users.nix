@@ -8,6 +8,10 @@
     extraGroups = [ "wheel" "networkmanager" "video" "dialout" ];
   };
 
+  security.sudo.extraConfig = ''
+    Defaults env_keep += "XDG_RUNTIME_DIR WAYLAND_DISPLAY GDK_BACKEND"
+  '';
+
   security.sudo.extraRules = [
     {
       users = [ "lishangshui" ];

@@ -50,14 +50,13 @@ stdenv.mkDerivation {
       input_path = '${./material-gnome/gtk4.tpl}'
       output_path = '$out/share/themes/Material-Gnome/gtk-4.0/colors.css'
       EOF
-      # matugen 取色：nixpkgs-unstable 分支新版已移除 --prefer（多源色自动选色），
-      # nixos-unstable 分支旧版需 --prefer 非交互选色。先试无 --prefer（新版首选），
-      # 旧版报错则 fallback 带 --prefer。
+      # matugen 取色：先尝试自动选色；非交互构建遇到多个候选色时，
+      # fallback 到显式 --prefer saturation，兼容当前及旧版。
       if ${pkgs.matugen}/bin/matugen image ${wallpaper} -m ${mode} -t ${schemeType} --contrast ${toString contrast} -c matugen.toml; then
-        echo "matugen: 新版自动选色"
+        echo "matugen: 自动选色成功"
       else
         ${pkgs.matugen}/bin/matugen image ${wallpaper} -m ${mode} -t ${schemeType} --contrast ${toString contrast} --prefer saturation -c matugen.toml
-        echo "matugen: 旧版 fallback --prefer"
+        echo "matugen: fallback --prefer saturation"
       fi
       # GNOME Shell 配色硬编码 hex：按 token 映射批量替换
       ${pkgs.python3}/bin/python3 ${./material-gnome/recolor-shell.py} \

@@ -2,7 +2,7 @@
 title: 媒体播放
 category: 娱乐
 tags: [mpv, media, pipewire, animeko, go-musicfox, obs, loupe]
-updated: 2026-08-19
+updated: 2026-09-02
 ---
 
 # 媒体播放
@@ -41,7 +41,7 @@ N --> |"运行依赖"| H
 | `loupe` | GNOME 图片查看器 |
 | `go-musicfox` | 终端网易云音乐播放器（附桌面入口 `foot -e musicfox`） |
 | `obs-studio` | 直播与本地录制 |
-| Animeko | 动漫播放器，本地派生 `local-deriv/animeko.nix` 封装 AppImage |
+| Animeko | 动漫播放器，本地派生 `local-deriv/animeko.nix` 封装 AppImage，并通过 JVM 参数匹配 1.5 倍桌面缩放 |
 | 网易云网页版 | 本地派生 `local-deriv/netease-cloud-music-web-player.nix` Electron 打包 |
 
 浏览器（Firefox、Google Chrome）在 `home/leisure/browser.nix`，用于访问 Netflix、YouTube、Bilibili 等在线流媒体。

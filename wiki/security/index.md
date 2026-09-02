@@ -2,7 +2,7 @@
 title: 安全与隐私总览
 category: 安全
 tags: [security, sops, pam, howdy, firewall, polkit, keyring]
-updated: 2026-08-12
+updated: 2026-09-02
 ---
 
 # 安全与隐私总览
@@ -36,7 +36,7 @@ updated: 2026-08-12
 | `host/base/services.nix` | 系统服务、Howdy、PAM 集成、Polkit |
 | `host/base/users.nix` | 用户与 sudo 白名单命令 |
 | `home/de/foot.nix` | GNOME Keyring 启用与桌面集成 |
-| `host/de/greeter.nix` | 登录界面（Noctalia Greeter） |
+| `host/de/greeter.nix` | 登录界面（greetd + tuigreet） |
 | `host/base/boot.nix` | 引导与 EFI 分区权限加固 |
 
 ```mermaid
@@ -56,7 +56,7 @@ A --> H["host/base/boot.nix"]
 ```mermaid
 sequenceDiagram
 participant U as "用户"
-participant G as "Noctalia Greeter"
+participant G as "greetd/tuigreet"
 participant P as "PAM"
 participant H as "Howdy(pam_howdy)"
 participant K as "GNOME Keyring"

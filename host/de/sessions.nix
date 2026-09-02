@@ -8,6 +8,9 @@
     withUWSM = true;
   };
 
+  # Expose niri's session entry to greetd; its actual user configuration stays in Home Manager.
+  services.displayManager.sessionPackages = [ pkgs.niri ];
+
   xdg.portal = {
     extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr pkgs.darkman ];
 

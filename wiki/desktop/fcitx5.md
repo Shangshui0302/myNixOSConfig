@@ -2,7 +2,7 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, 输入法, wayland, 深色模式]
-updated: 2026-08-20
+updated: 2026-09-02
 ---
 
 # Fcitx5 输入法框架
@@ -25,7 +25,7 @@ Fcitx5 在系统构建后即随会话启动，无需额外操作：
 
 - 应用通过环境变量自动接入 fcitx（GTK/Qt/SDL 统一）。
 - `i18n.inputMethod` 安装 Fcitx5 及 addons，并提供 XDG autostart desktop entry。
-- UWSM 激活图形会话后，`systemd-xdg-autostart-generator` 将其转换为用户单元 `app-org.fcitx.Fcitx5@autostart.service`。
+- UWSM 或 niri-session 激活图形会话后，`systemd-xdg-autostart-generator` 将其转换为用户单元 `app-org.fcitx.Fcitx5@autostart.service`。
 - 使用桌面环境快捷键（如 `Super+Space`）在中英文/输入法间切换。
 - 首次使用建议运行 `fcitx5-configtool` 检查方案与顺序。
 
@@ -107,7 +107,7 @@ THEME --> PORTAL["XDG Settings 接口"]
 IM --> GTK["GTK 应用"]
 IM --> QT["Qt 应用"]
 IM --> SDL["SDL 应用"]
-SESSION["UWSM / graphical-session.target"] --> IM
+SESSION["UWSM / niri-session / graphical-session.target"] --> IM
 ```
 
 ## 故障排查
@@ -131,5 +131,6 @@ SESSION["UWSM / graphical-session.target"] --> IM
 - Hyprland 桌面配置：[hyprland.md](./hyprland.md)
 - 决策：垂直候选窗与布尔值大写等踩坑 → [fcitx5-vertical-candidates](../../memory/cards/fcitx5-vertical-candidates.md)
 - 决策：Portal / gtk 悬空软链问题 → [portal-gtk-dangling-symlink](../../memory/cards/portal-gtk-dangling-symlink.md)
-- 决策：TTY、UWSM 与 Fcitx5 autostart → [uwsm-kmscon-session-handoff](../../memory/cards/uwsm-kmscon-session-handoff.md)
+- 决策：greetd/tuigreet TTY 与会话入口 → [greetd-tuigreet-tty](../../memory/cards/greetd-tuigreet-tty.md)
+- 历史：TTY、UWSM 与 Fcitx5 autostart → [uwsm-kmscon-session-handoff](../../memory/cards/uwsm-kmscon-session-handoff.md)
 - 决策：Darkman 状态、Matugen 渲染与 Stylix 基线 → [darkman-theme-authority](../../memory/cards/darkman-theme-authority.md)

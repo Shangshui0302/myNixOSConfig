@@ -1,8 +1,8 @@
 ---
 title: 主机系统架构与启动流程
 category: 架构
-tags: [host, boot, hardware, compat, systemd, tty, kmscon, amdgpu]
-updated: 2026-08-19
+tags: [host, boot, hardware, compat, systemd, tty, greetd, tuigreet, amdgpu]
+updated: 2026-09-02
 ---
 
 # 主机系统架构与启动流程
@@ -55,7 +55,7 @@ FW --> End(["就绪"])
 
 ## 启动流程：从固件到桌面
 
-登录管理器全部禁用，使用 kmscon（DRM/KMS 终端，pango 渲染支持 CJK）作为 TTY 登录界面（`login` PAM 含 Howdy 人脸识别）。
+main 变体使用 greetd + tuigreet 作为 tty1 登录界面（`greetd` PAM 含 Howdy 人脸识别），显示静态欢迎语，并从 Wayland session 菜单启动 Hyprland/niri。时间栏使用英文区域设置；为规避 tuigreet 0.11.x 的重复会话请求问题，用户菜单关闭，但仍保留记住用户名与按用户记住会话。旧的 kmscon 配置仍保留为注释，便于回退。
 
 ```mermaid
 sequenceDiagram
@@ -64,14 +64,14 @@ participant Bootloader as "systemd-boot"
 participant Kernel as "Linux 内核"
 participant Init as "systemd"
 participant Services as "系统服务"
-participant TTY as "TTY 登录 (kmscon)"
+participant TTY as "TTY 登录 (greetd/tuigreet)"
 participant Session as "用户会话 (Hyprland)"
 participant Desktop as "桌面应用"
 Firmware->>Bootloader : 启动引导
 Bootloader->>Kernel : 加载内核与 initramfs
 Kernel->>Init : 切换到根文件系统并启动 systemd
 Init->>Services : 启动基础服务（网络、音频、电源等）
-Services-->>TTY : kmscon 准备就绪
+Services-->>TTY : greetd/tuigreet 准备就绪
 TTY->>Session : 用户登录后启动会话
 Session->>Desktop : 加载 Hyprland 与桌面组件
 Desktop-->>User : 呈现桌面环境
@@ -83,7 +83,7 @@ Desktop-->>User : 呈现桌面环境
 
 - **音频**：PipeWire（PulseAudio 兼容 + ALSA + JACK）。
 - **外设与电源**：蓝牙开机自动上电、打印、`power-profiles-daemon` + upower、GVFS 文件虚拟化。
-- **认证**：Howdy 人脸识别集成到 `sudo`/`su`/`login` 的 PAM 链。
+- **认证**：Howdy 人脸识别集成到 `sudo`/`su`/`login`/`greetd` 的 PAM 链。
 - **存储**：`fstrim` 定时维持 SSD 性能；inotify 上限提升以适配 IDE/日志监控。
 - **网络**：NetworkManager、OpenSSH、Mihomo（TUN 模式）、nftables 防火墙与内核转发。
 
@@ -94,8 +94,8 @@ graph LR
 SB["systemd-boot"] --> K["内核"]
 K --> SD["systemd"]
 SD --> SV["系统服务"]
-SV --> TTY["kmscon (TTY)"]
-TTY --> HS["用户登录 (uwsm)"]
+SV --> TTY["greetd/tuigreet (TTY)"]
+TTY --> HS["用户会话（Hyprland: UWSM / niri: niri-session）"]
 HS --> APP["桌面应用"]
 SV --> NET["NetworkManager/OpenSSH/Mihomo"]
 SV --> AUD["PipeWire"]
@@ -113,6 +113,7 @@ SV --> IM["Fcitx5"]
 ## 故障排查
 
 - **无法进入桌面/黑屏**：确认 `amdgpu` 已加载，检查 `host/base/boot.nix` 中的 `dcdebugmask` 内核参数是否生效。
+- **greetd 启动后立即退出**：检查 `journalctl -b -u greetd`。若命令中直接写 `LANG=... tuigreet`，应使用 `env LANG=... tuigreet`；greetd 会用 `exec` 包装 greeter 命令。
 - **亮度异常（100% 全黑）**：确认亮度曲线已被内核参数禁用。
 - **存储无法挂载**：核对 UUID 与 btrfs 子卷名是否与 `hardware-configuration.nix` 一致；确认 `/boot` 为 vfat 且权限正确。
 - **登录失败**：检查 `host/base/users.nix` 中用户组（`wheel`/`networkmanager`/`video`/`dialout`），以及 PAM 链是否含 Howdy。
@@ -126,3 +127,4 @@ SV --> IM["Fcitx5"]
 - [项目概述](../overview.md)
 - AMD 内核为何留在 LTS：[../../memory/cards/amd-kernel-stay-lts.md](../../memory/cards/amd-kernel-stay-lts.md)
 - 亮度曲线溢出与内核参数：[../../memory/cards/mechrevo-amd-backlight-curve.md](../../memory/cards/mechrevo-amd-backlight-curve.md)
+- greetd/tuigreet 取代 kmscon 的决策：[../../memory/cards/greetd-tuigreet-tty.md](../../memory/cards/greetd-tuigreet-tty.md)

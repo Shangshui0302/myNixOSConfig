@@ -2,7 +2,7 @@
 
 {
   home.packages = with pkgs; [
-    libreoffice-fresh
+    libreoffice-stable
     onlyoffice-desktopeditors
     obsidian typora zettlr kdePackages.ghostwriter
   ];

@@ -152,7 +152,13 @@ let
       --prefer saturation -c ${matugenConfig}; then
       matugen_ok=1
     else
-      echo "theme-apply: matugen failed for $wallpaper" >&2
+      failure_message="theme-apply: matugen failed for $wallpaper"
+      echo "$failure_message" >&2
+      ${pkgs.util-linux}/bin/logger -t theme-apply -p user.err "$failure_message" 2>/dev/null || true
+      ${pkgs.libnotify}/bin/notify-send \
+        --app-name=theme-apply --urgency=critical --expire-time=10000 \
+        "主题切换失败" "$failure_message" 2>/dev/null || true
+      exit 1
     fi
 
     # GTK4 already has both palettes and follows Darkman's portal directly.

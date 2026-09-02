@@ -2,24 +2,24 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-08-19
+updated: 2026-09-02
 ---
 
 # Niri 使用指南
 
-Niri 是滚动平铺 Wayland 合成器（scrollable-tiling window layout），窗口沿一条无限纵向流排列，通过滚动切换窗口而非工作区。与 Hyprland 平级，都是通过 uwsm 启动的 compositor。
+Niri 是滚动平铺 Wayland 合成器（scrollable-tiling window layout），窗口沿一条无限纵向流排列，通过滚动切换窗口而非工作区。与 Hyprland 平级；greetd 菜单中的 `niri.desktop` 由原生 `niri-session` 启动，Hyprland 则使用 UWSM 会话入口。
 
 ## 启动与切换
 
 ```bash
-# TTY 登录后启动 niri（uwsm 通过 wayland-sessions/niri.desktop 自动发现）
-uwsm start niri
+# greetd 菜单中选择 Niri；手动启动时直接运行原生 session wrapper
+niri-session
 
 # 注销当前 compositor
-uwsm stop
+systemctl --user stop niri.service
 ```
 
-Hyprland ↔ niri 切换：注销当前 compositor → 切到其他 TTY 重新登录 → `uwsm start <另一个>`。
+Hyprland ↔ niri 切换：注销当前 compositor 回到 greetd → 选择另一个 Wayland session；Hyprland 的手动入口仍是 `uwsm start hyprland`。
 
 ## 配置
 
