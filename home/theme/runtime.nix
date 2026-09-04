@@ -1,4 +1,10 @@
-{ config, inputs, lib, pkgs, ... }:
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   homeDir = config.home.homeDirectory;
@@ -112,97 +118,97 @@ let
   '';
 
   themeApply = pkgs.writeShellScript "theme-apply" ''
-    set -u
+        set -u
 
-    mode="''${1:-}"
-    wallpaper_arg=0
-    if [ "$#" -ge 2 ]; then
-      wallpaper_arg=1
-    fi
-    wallpaper="''${2:-}"
-    case "$mode" in
-      dark)
-        color_scheme=prefer-dark
-        gtk_theme=Material-Gnome-Matugen-Dark
-        fcitx_theme=mellow-matugen-dark
-        ;;
-      light)
-        color_scheme=prefer-light
-        gtk_theme=Material-Gnome-Matugen
-        fcitx_theme=mellow-matugen
-        ;;
-      *)
-        echo "theme-apply: expected dark or light, got '$mode'" >&2
-        exit 2
-        ;;
-    esac
+        mode="''${1:-}"
+        wallpaper_arg=0
+        if [ "$#" -ge 2 ]; then
+          wallpaper_arg=1
+        fi
+        wallpaper="''${2:-}"
+        case "$mode" in
+          dark)
+            color_scheme=prefer-dark
+            gtk_theme=Material-Gnome-Matugen-Dark
+            fcitx_theme=mellow-matugen-dark
+            ;;
+          light)
+            color_scheme=prefer-light
+            gtk_theme=Material-Gnome-Matugen
+            fcitx_theme=mellow-matugen
+            ;;
+          *)
+            echo "theme-apply: expected dark or light, got '$mode'" >&2
+            exit 2
+            ;;
+        esac
 
-    if [ -z "$wallpaper" ]; then
-      wallpaper="$(${pkgs.waypaper}/bin/waypaper --list 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[0].wallpaper // empty' 2>/dev/null || true)"
-    fi
-    if [ ! -f "$wallpaper" ]; then
-      wallpaper=${defaultWallpaper}
-    fi
+        if [ -z "$wallpaper" ]; then
+          wallpaper="$(${pkgs.waypaper}/bin/waypaper --list 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[0].wallpaper // empty' 2>/dev/null || true)"
+        fi
+        if [ ! -f "$wallpaper" ]; then
+          wallpaper=${defaultWallpaper}
+        fi
 
-    matugen_ok=0
-    if ${pkgs.matugen}/bin/matugen image "$wallpaper" -m "$mode" -t scheme-content \
-      --prefer=saturation -c ${matugenConfig} 2>/dev/null; then
-      matugen_ok=1
-    elif ${pkgs.matugen}/bin/matugen image "$wallpaper" -m "$mode" -t scheme-content \
-      --prefer saturation -c ${matugenConfig}; then
-      matugen_ok=1
-    else
-      failure_message="theme-apply: matugen failed for $wallpaper"
-      echo "$failure_message" >&2
-      ${pkgs.util-linux}/bin/logger -t theme-apply -p user.err "$failure_message" 2>/dev/null || true
-      ${pkgs.libnotify}/bin/notify-send \
-        --app-name=theme-apply --urgency=critical --expire-time=10000 \
-        "主题切换失败" "$failure_message" 2>/dev/null || true
-      exit 1
-    fi
+        matugen_ok=0
+        if ${pkgs.matugen}/bin/matugen image "$wallpaper" -m "$mode" -t scheme-content \
+          --prefer=saturation -c ${matugenConfig} 2>/dev/null; then
+          matugen_ok=1
+        elif ${pkgs.matugen}/bin/matugen image "$wallpaper" -m "$mode" -t scheme-content \
+          --prefer saturation -c ${matugenConfig}; then
+          matugen_ok=1
+        else
+          failure_message="theme-apply: matugen failed for $wallpaper"
+          echo "$failure_message" >&2
+          ${pkgs.util-linux}/bin/logger -t theme-apply -p user.err "$failure_message" 2>/dev/null || true
+          ${pkgs.libnotify}/bin/notify-send \
+            --app-name=theme-apply --urgency=critical --expire-time=10000 \
+            "主题切换失败" "$failure_message" 2>/dev/null || true
+          exit 1
+        fi
 
-    # GTK4 already has both palettes and follows Darkman's portal directly.
-    # GTK3 has no color-scheme media query, so select its pre-rendered theme
-    # only after Matugen has finished writing both variants.
-    ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
-    ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
+        # GTK4 already has both palettes and follows Darkman's portal directly.
+        # GTK3 has no color-scheme media query, so select its pre-rendered theme
+        # only after Matugen has finished writing both variants.
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
 
-    # fcitx5-gtk's Wayland client reads Theme directly; it does not select
-    # DarkTheme from UseDarkTheme. Keep the complete no-header config here so
-    # both the GTK client and server-side ClassicUI see the same mode.
-    fcitx_dir="$HOME/.config/fcitx5/conf"
-    mkdir -p "$fcitx_dir"
-    fcitx_tmp=$(mktemp "$fcitx_dir/.classicui.conf.XXXXXX")
-    trap 'rm -f "$fcitx_tmp"' EXIT
-    cat > "$fcitx_tmp" <<EOF
-Theme=$fcitx_theme
-DarkTheme=mellow-matugen-dark
-UseDarkTheme=True
-Vertical Candidate List=True
-EOF
-    mv "$fcitx_tmp" "$fcitx_dir/classicui.conf"
-    trap - EXIT
+        # fcitx5-gtk's Wayland client reads Theme directly; it does not select
+        # DarkTheme from UseDarkTheme. Keep the complete no-header config here so
+        # both the GTK client and server-side ClassicUI see the same mode.
+        fcitx_dir="$HOME/.config/fcitx5/conf"
+        mkdir -p "$fcitx_dir"
+        fcitx_tmp=$(mktemp "$fcitx_dir/.classicui.conf.XXXXXX")
+        trap 'rm -f "$fcitx_tmp"' EXIT
+        cat > "$fcitx_tmp" <<EOF
+    Theme=$fcitx_theme
+    DarkTheme=mellow-matugen-dark
+    UseDarkTheme=True
+    Vertical Candidate List=True
+    EOF
+        mv "$fcitx_tmp" "$fcitx_dir/classicui.conf"
+        trap - EXIT
 
-    # The generated Fcitx SVG and theme.conf are cached by both ClassicUI and
-    # fcitx5-gtk. Restart after every successful Matugen run so wallpaper
-    # recolors reach GTK embedded candidate windows as well as ClassicUI.
-    if [ "$matugen_ok" -eq 1 ] || [ "$wallpaper_arg" -eq 0 ]; then
-      ${pkgs.systemd}/bin/systemctl --user restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
-        || ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null || true
-    fi
+        # The generated Fcitx SVG and theme.conf are cached by both ClassicUI and
+        # fcitx5-gtk. Restart after every successful Matugen run so wallpaper
+        # recolors reach GTK embedded candidate windows as well as ClassicUI.
+        if [ "$matugen_ok" -eq 1 ] || [ "$wallpaper_arg" -eq 0 ]; then
+          ${pkgs.systemd}/bin/systemctl --user restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
+            || ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null || true
+        fi
 
-    # Noctalia stores its runtime choice separately from its Nix-managed defaults.
-    ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode" 2>/dev/null || true
+        # Noctalia stores its runtime choice separately from its Nix-managed defaults.
+        ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode" 2>/dev/null || true
 
-    if [ "$matugen_ok" -eq 1 ]; then
-      if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-        ${pkgs.hyprland}/bin/hyprctl eval "$(cat '${homeDir}/.cache/wallpaper-colors/hyprland.lua')" 2>/dev/null || true
-      fi
-      ${pkgs.noctalia}/bin/noctalia msg config-reload 2>/dev/null || true
-      exit 0
-    fi
+        if [ "$matugen_ok" -eq 1 ]; then
+          if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+            ${pkgs.hyprland}/bin/hyprctl eval "$(cat '${homeDir}/.cache/wallpaper-colors/hyprland.lua')" 2>/dev/null || true
+          fi
+          ${pkgs.noctalia}/bin/noctalia msg config-reload 2>/dev/null || true
+          exit 0
+        fi
 
-    exit 1
+        exit 1
   '';
 in
 {

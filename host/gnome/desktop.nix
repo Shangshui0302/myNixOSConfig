@@ -1,16 +1,24 @@
-{ config, lib, pkgs, materialGnomeTheme, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  materialGnomeTheme,
+  ...
+}:
 
 let
   # 扩展 schema 在 share/gnome-shell/extensions/<uuid>/schemas/（非标准路径），
   # nixos-gsettings-overrides 编译时不包含 → [org.gnome.shell.extensions.*] 的 override 段被丢弃。
   # 把 schema 链接到标准 gsettings-schemas 路径，扩展 schema 才进入 override 包，override 才生效。
-  withStandardSchemas = ext: ext.overrideAttrs (old: {
-    postInstall = (old.postInstall or "") + ''
-      mkdir -p $out/share/gsettings-schemas/${ext.name}/glib-2.0/schemas
-      cp -r $out/share/gnome-shell/extensions/*/schemas/*.gschema.xml \
-        $out/share/gsettings-schemas/${ext.name}/glib-2.0/schemas/ 2>/dev/null || true
-    '';
-  });
+  withStandardSchemas =
+    ext:
+    ext.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        mkdir -p $out/share/gsettings-schemas/${ext.name}/glib-2.0/schemas
+        cp -r $out/share/gnome-shell/extensions/*/schemas/*.gschema.xml \
+          $out/share/gsettings-schemas/${ext.name}/glib-2.0/schemas/ 2>/dev/null || true
+      '';
+    });
 in
 {
   # GNOME 变体系统层（inheritParentConfig=false，不继承 main 的 Hyprland/foot/fcitx5 主题配置）。
@@ -55,7 +63,7 @@ in
   ];
 
   # ===== 用户设置持久化（从 dconf dump 提取）=====
-  # 主题外观（gtk-theme/icon-theme/cursor/color-scheme）：gtk-theme 在 home.nix（Material-Gnome），
+  # 主题外观（gtk-theme/icon-theme/cursor/color-scheme）：gtk-theme 在 home/gnome.nix（Material-Gnome），
   # 图标/深浅色由 home/base.nix 共享；壁纸使用 Nix 声明的默认资源。
   # 官方文档（gnome.md）：override 某包 schema 必须把该包加进 extraGSettingsOverridePackages，
   # 否则对应段 override 不生效（gschema 编译时丢弃未知段）。

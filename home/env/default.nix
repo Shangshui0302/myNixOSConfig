@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ./shell.nix
+    ./shell
     ./systools.nix
     ./onedrive.nix
   ];

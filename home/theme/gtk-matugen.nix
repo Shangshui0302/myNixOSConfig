@@ -1,4 +1,10 @@
-{ config, lib, pkgs, materialGnomeTheme, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  materialGnomeTheme,
+  ...
+}:
 
 let
   matugenThemeName = "Material-Gnome-Matugen";
@@ -17,13 +23,13 @@ in
     # Provide our own .portal file with Hyprland added so the Settings
     # interface (used by fcitx5 for dark/light theme) gets registered.
     (pkgs.runCommand "gtk-portal-hyprland" { } ''
-      mkdir -p $out/share/xdg-desktop-portal/portals
-      cat > $out/share/xdg-desktop-portal/portals/gtk.portal << 'PORTALEOF'
-[portal]
-DBusName=org.freedesktop.impl.portal.desktop.gtk
-Interfaces=org.freedesktop.impl.portal.FileChooser;org.freedesktop.impl.portal.AppChooser;org.freedesktop.impl.portal.Print;org.freedesktop.impl.portal.Notification;org.freedesktop.impl.portal.Inhibit;org.freedesktop.impl.portal.Access;org.freedesktop.impl.portal.Account;org.freedesktop.impl.portal.Email;org.freedesktop.impl.portal.DynamicLauncher;org.freedesktop.impl.portal.Lockdown;org.freedesktop.impl.portal.Settings;org.freedesktop.impl.portal.Wallpaper;
-UseIn=gnome;Hyprland
-PORTALEOF
+            mkdir -p $out/share/xdg-desktop-portal/portals
+            cat > $out/share/xdg-desktop-portal/portals/gtk.portal << 'PORTALEOF'
+      [portal]
+      DBusName=org.freedesktop.impl.portal.desktop.gtk
+      Interfaces=org.freedesktop.impl.portal.FileChooser;org.freedesktop.impl.portal.AppChooser;org.freedesktop.impl.portal.Print;org.freedesktop.impl.portal.Notification;org.freedesktop.impl.portal.Inhibit;org.freedesktop.impl.portal.Access;org.freedesktop.impl.portal.Account;org.freedesktop.impl.portal.Email;org.freedesktop.impl.portal.DynamicLauncher;org.freedesktop.impl.portal.Lockdown;org.freedesktop.impl.portal.Settings;org.freedesktop.impl.portal.Wallpaper;
+      UseIn=gnome;Hyprland
+      PORTALEOF
     '')
   ];
 
@@ -39,7 +45,7 @@ PORTALEOF
   dconf.settings."org/gnome/desktop/interface".icon-theme = lib.mkForce "Papirus-Matugen";
 
   # GTK4 在一个可写主题里常驻双 palette；GTK3 使用两个稳定主题目录。
-  # GNOME specialisation 继续单独 import theme-material.nix，保持固定深色。
+  # GNOME 变体不 import 本文件，用 gtk-static.nix 保持固定深色。
   home.activation.setupMatugenGtkTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     matugen_theme_dir="${config.home.homeDirectory}/.themes/${matugenThemeName}"
     matugen_theme_next="${config.home.homeDirectory}/.themes/.${matugenThemeName}.next"

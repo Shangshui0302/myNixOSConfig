@@ -216,4 +216,8 @@
         }
     }
   '';
+
+  # 补全（跟随消费者）：包内 fish vendor 补全。
+  xdg.configFile."fish/completions/niri.fish".source =
+    "${pkgs.niri}/share/fish/vendor_completions.d/niri.fish";
 }

@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   darkmanSync = pkgs.writeShellScript "noctalia-darkman-sync" ''
@@ -15,625 +20,624 @@ in
     enable = true;
 
     settings = {
-  audio = {
-    enable_overdrive = false;
-    enable_sounds = true;
-  };
-  bar = {
-    order = [
-      ("main")
-    ];
-    main = {
-      background_opacity = 0.0;
-      capsule = true;
-      capsule_opacity = 0.8;
-      center = [
-        ("group:g4")
-        ("active_window")
-        ("workspaces")
-      ];
-      end = [
-        ("group:g6")
-        ("tray")
-        ("group:g2")
-        ("privacy")
-        ("group:g1")
-      ];
-      font_weight = 400;
-      margin_edge = 0;
-      margin_ends = 0;
-      padding = 10;
-      position = "top";
-      radius = 80;
-      reserve_space = true;
-      scale = 1.1000000089406967;
-      shadow = false;
-      start = [
-        ("launcher")
-        ("clock")
-        ("sysmon")
-        ("media")
-        ("group:g3")
-        ("group:g5")
-      ];
-      thickness = 42;
-      widget_spacing = 6;
-      dead_zone = {
-        actions = {
-          middle = "exec noctalia msg settings-toggle";
-        };
+      audio = {
+        enable_overdrive = false;
+        enable_sounds = true;
       };
-      capsule_group = [
-        ({
-          fill = "surface_variant";
-          id = "g1";
-          members = [
-            ("battery")
-            ("session")
-          ];
-          opacity = 0.80000001192092896;
-          padding = 6.0;
-        })
-        ({
-          fill = "surface_variant";
-          id = "g2";
-          members = [
-            ("clipboard")
-            ("screenshot")
-            ("notifications")
-            ("control-center")
-          ];
-          opacity = 0.80000001192092896;
-          padding = 6.0;
-        })
-        ({
-          fill = "surface_variant";
-          id = "g3";
-          members = [
-            ("network_tx")
-            ("network_rx")
-          ];
-          opacity = 0.80000001192092896;
-          padding = 6.0;
-        })
-        ({
-          fill = "surface_variant";
-          id = "g4";
-          members = [
-            ("taskbar")
-          ];
-          opacity = 0.80000001192092896;
-          padding = 6.0;
-        })
-        ({
-          fill = "surface_variant";
-          id = "g5";
-          members = [
-            ("audio_visualizer")
-            ("media")
-          ];
-          opacity = 1.0;
-          padding = 6.0;
-        })
-        ({
-          fill = "surface_variant";
-          id = "g6";
-          members = [
-            ("volume")
-            ("brightness")
-            ("network")
-          ];
-          opacity = 0.80000001192092896;
-          padding = 6.0;
-        })
-      ];
-    };
-  };
-  battery = {
-    warning_threshold = 20;
-  };
-  calendar = {
-    enabled = true;
-    account = {
-      personal_google = {
-        type = "google";
-      };
-    };
-  };
-  control_center = {
-    sidebar = "full";
-    sidebar_section = "full";
-    width = 900;
-    shortcuts = [
-      ({
-        type = "wifi";
-      })
-      ({
-        type = "bluetooth";
-      })
-      ({
-        type = "nightlight";
-      })
-      ({
-        type = "power_profile";
-      })
-      ({
-        type = "clipboard";
-      })
-    ];
-  };
-  desktop_widgets = {
-    schema_version = 2;
-    widget_order = [
-      ("desktop-widget-0000000000000003")
-    ];
-    grid = {
-      cell_size = 8;
-      major_interval = 4;
-      visible = true;
-    };
-    widget = {
-      desktop-widget-0000000000000003 = {
-        box_height = 240.0;
-        box_width = 256.0;
-        cx = 1776.0;
-        cy = 1064.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "fancy_audio_visualizer";
-        settings = {
-          background = false;
-          secondary_color = "on_primary";
-          visualization_mode = "wave_rings";
-        };
-      };
-    };
-  };
-  dock = {
-    auto_hide = false;
-    background_opacity = 0.65999998524785042;
-    enabled = true;
-    inactive_opacity = 0.99999997764825821;
-    inactive_scale = 1.0;
-    launcher_icon = "brand-snowflake";
-    launcher_position = "start";
-    magnification_scale = 1.2000000029802322;
-    margin_edge = 10;
-    pinned = [
-      ("org.gnome.Nautilus")
-      ("codex-desktop")
-      ("google-chrome")
-    ];
-    position = "bottom";
-    radius = 20;
-    reserve_space = false;
-    show_dots = true;
-    smart_auto_hide = true;
-  };
-  hooks = {
-    started = "${darkmanSync}";
-  };
-  hot_corners = {
-    enabled = true;
-    bottom_left = {
-      action = "window_switcher";
-    };
-    top_left = {
-      action = "launcher";
-    };
-    top_right = {
-      action = "control_center";
-    };
-  };
-  idle = {
-    behavior = {
-      lock = {
-        action = "lock";
-        enabled = true;
-        timeout = 600;
-      };
-      screen-off = {
-        action = "screen_off";
-        enabled = true;
-        timeout = 660;
-      };
-    };
-  };
-  keybinds = {
-    down = [
-      ("Down")
-      ("Alt+j")
-    ];
-    left = [
-      ("Left")
-      ("Alt+h")
-    ];
-    right = [
-      ("Right")
-      ("Alt+l")
-    ];
-    up = [
-      ("Up")
-      ("Alt+k")
-    ];
-  };
-  location = {
-    address = "Chengdu, China";
-    auto_locate = false;
-  };
-  lockscreen = {
-    blur_intensity = 0.6;
-    blurred_desktop = true;
-    enabled = true;
-    tint_intensity = 0.0;
-  };
-  lockscreen_widgets = {
-    enabled = true;
-    schema_version = 2;
-    widget_order = [
-      ("lockscreen-login-box@eDP-1")
-    ];
-    grid = {
-      cell_size = 8;
-      major_interval = 4;
-      visible = true;
-    };
-    widget = {
-      "lockscreen-login-box@eDP-1" = {
-        box_height = 196.0;
-        box_width = 720.0;
-        cx = 960.0;
-        cy = 1014.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "login_box";
-        settings = {
-          background_color = "surface_variant";
-          background_opacity = 1.0;
-          background_radius = 32.0;
-          center_password_text = false;
-          input_opacity = 1.0;
-          input_radius = 32.0;
-          layout = "regular";
-          show_caps_lock = true;
-          show_keyboard_layout = true;
-          show_login_button = true;
-          show_media = true;
-          show_session_buttons = true;
-          show_unlock_hint = true;
-          show_weather = true;
-        };
-      };
-      lockscreen-widget-0000000000000001 = {
-        box_height = 456.0;
-        box_width = 688.0;
-        cx = 960.0;
-        cy = 404.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "clock";
-        settings = {
-          background = true;
+      bar = {
+        order = [
+          ("main")
+        ];
+        main = {
           background_opacity = 0.0;
-          background_radius = 32;
-          center_text = false;
-          color = "primary";
-          font_family = ".PingFang SC";
-          format = "{:%H:%M}";
+          capsule = true;
+          capsule_opacity = 0.8;
+          center = [
+            ("group:g4")
+            ("active_window")
+            ("workspaces")
+          ];
+          end = [
+            ("group:g6")
+            ("tray")
+            ("group:g2")
+            ("privacy")
+            ("group:g1")
+          ];
+          font_weight = 400;
+          margin_edge = 0;
+          margin_ends = 0;
+          padding = 10;
+          position = "top";
+          radius = 80;
+          reserve_space = true;
+          scale = 1.1000000089406967;
           shadow = false;
+          start = [
+            ("launcher")
+            ("clock")
+            ("sysmon")
+            ("media")
+            ("group:g3")
+            ("group:g5")
+          ];
+          thickness = 42;
+          widget_spacing = 6;
+          dead_zone = {
+            actions = {
+              middle = "exec noctalia msg settings-toggle";
+            };
+          };
+          capsule_group = [
+            ({
+              fill = "surface_variant";
+              id = "g1";
+              members = [
+                ("battery")
+                ("session")
+              ];
+              opacity = 0.80000001192092896;
+              padding = 6.0;
+            })
+            ({
+              fill = "surface_variant";
+              id = "g2";
+              members = [
+                ("clipboard")
+                ("screenshot")
+                ("notifications")
+                ("control-center")
+              ];
+              opacity = 0.80000001192092896;
+              padding = 6.0;
+            })
+            ({
+              fill = "surface_variant";
+              id = "g3";
+              members = [
+                ("network_tx")
+                ("network_rx")
+              ];
+              opacity = 0.80000001192092896;
+              padding = 6.0;
+            })
+            ({
+              fill = "surface_variant";
+              id = "g4";
+              members = [
+                ("taskbar")
+              ];
+              opacity = 0.80000001192092896;
+              padding = 6.0;
+            })
+            ({
+              fill = "surface_variant";
+              id = "g5";
+              members = [
+                ("audio_visualizer")
+                ("media")
+              ];
+              opacity = 1.0;
+              padding = 6.0;
+            })
+            ({
+              fill = "surface_variant";
+              id = "g6";
+              members = [
+                ("volume")
+                ("brightness")
+                ("network")
+              ];
+              opacity = 0.80000001192092896;
+              padding = 6.0;
+            })
+          ];
         };
       };
-      lockscreen-widget-0000000000000002 = {
-        box_height = 136.0;
-        box_width = 248.0;
-        cx = 1008.0;
-        cy = 664.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "media_player";
-        settings = {
-          background_opacity = 1.0;
-          background_radius = 32;
+      battery = {
+        warning_threshold = 20;
+      };
+      calendar = {
+        enabled = true;
+        account = {
+          personal_google = {
+            type = "google";
+          };
         };
       };
-      lockscreen-widget-0000000000000003 = {
-        box_height = 136.0;
-        box_width = 144.0;
-        cx = 1216.0;
-        cy = 664.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "fancy_audio_visualizer";
-        settings = {
-          background = true;
-          background_opacity = 1.0;
-          background_radius = 32;
+      control_center = {
+        sidebar = "full";
+        sidebar_section = "full";
+        width = 900;
+        shortcuts = [
+          ({
+            type = "wifi";
+          })
+          ({
+            type = "bluetooth";
+          })
+          ({
+            type = "nightlight";
+          })
+          ({
+            type = "power_profile";
+          })
+          ({
+            type = "clipboard";
+          })
+        ];
+      };
+      desktop_widgets = {
+        schema_version = 2;
+        widget_order = [
+          ("desktop-widget-0000000000000003")
+        ];
+        grid = {
+          cell_size = 8;
+          major_interval = 4;
+          visible = true;
+        };
+        widget = {
+          desktop-widget-0000000000000003 = {
+            box_height = 240.0;
+            box_width = 256.0;
+            cx = 1776.0;
+            cy = 1064.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "fancy_audio_visualizer";
+            settings = {
+              background = false;
+              secondary_color = "on_primary";
+              visualization_mode = "wave_rings";
+            };
+          };
         };
       };
-      lockscreen-widget-0000000000000004 = {
-        box_height = 296.0;
-        box_width = 232.0;
-        cx = 752.0;
-        cy = 744.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "weather";
-        settings = {
-          background_opacity = 1.0;
-          background_padding = 21;
-          background_radius = 32;
-          forecast_days = 6;
-          shadow = false;
-          show_forecast = true;
+      dock = {
+        auto_hide = false;
+        background_opacity = 0.65999998524785042;
+        enabled = true;
+        inactive_opacity = 0.99999997764825821;
+        inactive_scale = 1.0;
+        launcher_icon = "brand-snowflake";
+        launcher_position = "start";
+        magnification_scale = 1.2000000029802322;
+        margin_edge = 10;
+        pinned = [
+          ("org.gnome.Nautilus")
+          ("codex-desktop")
+          ("google-chrome")
+        ];
+        position = "bottom";
+        radius = 20;
+        reserve_space = false;
+        show_dots = true;
+        smart_auto_hide = true;
+      };
+      hooks = {
+        started = "${darkmanSync}";
+      };
+      hot_corners = {
+        enabled = true;
+        bottom_left = {
+          action = "window_switcher";
+        };
+        top_left = {
+          action = "launcher";
+        };
+        top_right = {
+          action = "control_center";
         };
       };
-      lockscreen-widget-0000000000000005 = {
-        box_height = 144.0;
-        box_width = 192.0;
-        cx = 980.0;
-        cy = 820.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "sysmon";
-        settings = {
-          background_opacity = 1.0;
-          background_radius = 32;
-          shadow = false;
+      idle = {
+        behavior = {
+          lock = {
+            action = "lock";
+            enabled = true;
+            timeout = 600;
+          };
+          screen-off = {
+            action = "screen_off";
+            enabled = true;
+            timeout = 660;
+          };
+        };
+      };
+      keybinds = {
+        down = [
+          ("Down")
+          ("Alt+j")
+        ];
+        left = [
+          ("Left")
+          ("Alt+h")
+        ];
+        right = [
+          ("Right")
+          ("Alt+l")
+        ];
+        up = [
+          ("Up")
+          ("Alt+k")
+        ];
+      };
+      location = {
+        address = "Chengdu, China";
+        auto_locate = false;
+      };
+      lockscreen = {
+        blur_intensity = 0.6;
+        blurred_desktop = true;
+        enabled = true;
+        tint_intensity = 0.0;
+      };
+      lockscreen_widgets = {
+        enabled = true;
+        schema_version = 2;
+        widget_order = [
+          ("lockscreen-login-box@eDP-1")
+        ];
+        grid = {
+          cell_size = 8;
+          major_interval = 4;
+          visible = true;
+        };
+        widget = {
+          "lockscreen-login-box@eDP-1" = {
+            box_height = 196.0;
+            box_width = 720.0;
+            cx = 960.0;
+            cy = 1014.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "login_box";
+            settings = {
+              background_color = "surface_variant";
+              background_opacity = 1.0;
+              background_radius = 32.0;
+              center_password_text = false;
+              input_opacity = 1.0;
+              input_radius = 32.0;
+              layout = "regular";
+              show_caps_lock = true;
+              show_keyboard_layout = true;
+              show_login_button = true;
+              show_media = true;
+              show_session_buttons = true;
+              show_unlock_hint = true;
+              show_weather = true;
+            };
+          };
+          lockscreen-widget-0000000000000001 = {
+            box_height = 456.0;
+            box_width = 688.0;
+            cx = 960.0;
+            cy = 404.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "clock";
+            settings = {
+              background = true;
+              background_opacity = 0.0;
+              background_radius = 32;
+              center_text = false;
+              color = "primary";
+              font_family = ".PingFang SC";
+              format = "{:%H:%M}";
+              shadow = false;
+            };
+          };
+          lockscreen-widget-0000000000000002 = {
+            box_height = 136.0;
+            box_width = 248.0;
+            cx = 1008.0;
+            cy = 664.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "media_player";
+            settings = {
+              background_opacity = 1.0;
+              background_radius = 32;
+            };
+          };
+          lockscreen-widget-0000000000000003 = {
+            box_height = 136.0;
+            box_width = 144.0;
+            cx = 1216.0;
+            cy = 664.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "fancy_audio_visualizer";
+            settings = {
+              background = true;
+              background_opacity = 1.0;
+              background_radius = 32;
+            };
+          };
+          lockscreen-widget-0000000000000004 = {
+            box_height = 296.0;
+            box_width = 232.0;
+            cx = 752.0;
+            cy = 744.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "weather";
+            settings = {
+              background_opacity = 1.0;
+              background_padding = 21;
+              background_radius = 32;
+              forecast_days = 6;
+              shadow = false;
+              show_forecast = true;
+            };
+          };
+          lockscreen-widget-0000000000000005 = {
+            box_height = 144.0;
+            box_width = 192.0;
+            cx = 980.0;
+            cy = 820.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "sysmon";
+            settings = {
+              background_opacity = 1.0;
+              background_radius = 32;
+              shadow = false;
+              stat = "cpu_usage";
+              stat2 = "cpu_temp";
+            };
+          };
+          lockscreen-widget-0000000000000006 = {
+            box_height = 336.0;
+            box_width = 688.0;
+            cx = 960.0;
+            cy = 744.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "label";
+            settings = {
+              background_radius = 32;
+              title = "";
+            };
+          };
+          lockscreen-widget-0000000000000009 = {
+            box_height = 144.0;
+            box_width = 200.0;
+            cx = 1188.0;
+            cy = 820.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "sysmon";
+            settings = {
+              background_opacity = 1.0;
+              background_radius = 32;
+              shadow = false;
+              stat = "ram_pct";
+              stat2 = "swap_pct";
+            };
+          };
+          lockscreen-widget-000000000000000a = {
+            box_height = 1200.0;
+            box_width = 776.0;
+            cx = 960.0;
+            cy = 600.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "label";
+            settings = {
+              background_opacity = 0.66;
+              background_radius = 0;
+              opacity = 0.9500000000000001;
+              title = "";
+            };
+          };
+          lockscreen-widget-000000000000000c = {
+            box_height = 16.0;
+            box_width = 760.0;
+            cx = 960.0;
+            cy = 1184.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "label";
+            settings = {
+              background = false;
+              background_opacity = 0.66;
+              background_radius = 0;
+              color = "on_surface_variant";
+              description = "NixOS          //          Hyprland          //          Noctalia";
+              opacity = 0.56;
+              shadow = false;
+              title = "";
+            };
+          };
+        };
+      };
+      nightlight = {
+        enabled = false;
+      };
+      notification = {
+        background_opacity = 0.8;
+        enable_daemon = true;
+        layer = "overlay";
+        position = "bottom_right";
+      };
+      osd = {
+        background_opacity = 0.8;
+        position = "top_center";
+        position_vertical = "center_right";
+      };
+      plugin_settings = {
+        "noctalia/translator" = {
+          target_lang = "zh";
+        };
+      };
+      plugins = {
+        enabled = [
+          ("noctalia/kaomoji")
+          ("noctalia/translator")
+        ];
+      };
+      shell = {
+        app_icon_color = "error";
+        avatar_path = "${config.home.homeDirectory}/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
+        clipboard_auto_paste = "auto";
+        clipboard_enabled = true;
+        corner_radius_scale = 0.80000001192092896;
+        date_format = "%A, %x";
+        font_family = "Anthropic Serif Web Text";
+        launch_apps_as_systemd_services = true;
+        password_style = "random";
+        polkit_agent = true;
+        screen_time_enabled = true;
+        settings_show_advanced = true;
+        show_location = true;
+        telemetry_enabled = false;
+        external_ip_enabled = true;
+        time_format = "{:%H:%M}";
+        animation = {
+          speed = 1.0;
+        };
+        launcher = {
+          app_grid = true;
+        };
+        greeter_sync = {
+          auto_sync = true;
+        };
+        panel = {
+          borders = true;
+          control_center_placement = "floating";
+          open_near_click_clipboard = true;
+          open_near_click_control_center = true;
+          open_near_click_launcher = true;
+          open_near_click_session = true;
+          open_near_click_wallpaper = true;
+          polkit_placement = "attached";
+          session_placement = "floating";
+          transparency_mode = "glass";
+          wallpaper_position = "center";
+        };
+        screen_corners = {
+          enabled = true;
+          size = 10;
+        };
+        screenshot = {
+          confirm_region = true;
+          directory = "${config.home.homeDirectory}/Pictures/Screenshots/2026-06";
+        };
+        shadow = {
+          direction = "down";
+        };
+      };
+      system = {
+        monitor = {
+          enabled = true;
+        };
+      };
+      theme = {
+        community_palette = "Tokyo Night Moon";
+        custom_palette = "matugen";
+        source = "custom";
+        wallpaper_scheme = "m3-content";
+        templates = {
+          # 模板全部禁用：配色由 matugen 统一接管（Noctalia palette ~/.config/noctalia/palettes/matugen.json），
+          # 不再分发内置/社区模板（对齐 Noctalia 实际配置）
+          builtin_ids = [ ];
+          enable_builtin_templates = false;
+          enable_community_templates = false;
+        };
+      };
+      wallpaper = {
+        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+        # 壁纸由 waypaper + awww 统一管理（与 shell 解耦），Noctalia 不再切壁纸
+        enabled = false;
+        fill_mode = "crop";
+        transition = [
+          ("fade")
+          ("wipe")
+          ("disc")
+          ("stripes")
+          ("zoom")
+          ("honeycomb")
+        ];
+        transition_duration = 1500;
+        transition_on_startup = true;
+      };
+      weather = {
+        effects = true;
+        enabled = true;
+        unit = "metric";
+      };
+      widget = {
+        active_window = {
+          display = "icon_and_text";
+          max_length = 280.0;
+        };
+        battery = {
+          hide_when_plugged = false;
+        };
+        brightness = {
+          show_label = true;
+        };
+        clock = {
+          format = "{:%H:%M %A, %Y年%b%d日}";
+          tooltip_format = "{:%A, %B %d, %Y}";
+        };
+        control-center = {
+          glyph = "noctalia";
+        };
+        launcher = {
+          glyph = "brand-snowflake";
+        };
+        media = {
+          hide_album_art = false;
+          hide_when_no_media = true;
+          max_length = 220.0;
+        };
+        network = {
+          show_label = false;
+        };
+        network_rx = {
+          type = "sysmon";
+          stat = "net_rx";
+          visualization = "none";
+          show_value = true;
+          show_glyph = true;
+          glyph = "square-rounded-chevrons-down-filled";
+        };
+        network_tx = {
+          type = "sysmon";
+          stat = "net_tx";
+          visualization = "none";
+          show_value = true;
+          show_glyph = true;
+          glyph = "square-rounded-chevrons-up-filled";
+        };
+        notifications = {
+          hide_when_no_unread = false;
+        };
+        privacy = {
+          hide_inactive = false;
+        };
+        sysmon = {
+          visualization = "graph";
+          show_value = true;
           stat = "cpu_usage";
-          stat2 = "cpu_temp";
         };
-      };
-      lockscreen-widget-0000000000000006 = {
-        box_height = 336.0;
-        box_width = 688.0;
-        cx = 960.0;
-        cy = 744.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "label";
-        settings = {
-          background_radius = 32;
-          title = "";
+        tray = {
+          pinned = [
+            ("chrome_status_icon_1")
+          ];
         };
-      };
-      lockscreen-widget-0000000000000009 = {
-        box_height = 144.0;
-        box_width = 200.0;
-        cx = 1188.0;
-        cy = 820.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "sysmon";
-        settings = {
-          background_opacity = 1.0;
-          background_radius = 32;
-          shadow = false;
-          stat = "ram_pct";
-          stat2 = "swap_pct";
+        volume = {
+          show_label = true;
         };
-      };
-      lockscreen-widget-000000000000000a = {
-        box_height = 1200.0;
-        box_width = 776.0;
-        cx = 960.0;
-        cy = 600.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "label";
-        settings = {
-          background_opacity = 0.66;
-          background_radius = 0;
-          opacity = 0.9500000000000001;
-          title = "";
-        };
-      };
-      lockscreen-widget-000000000000000c = {
-        box_height = 16.0;
-        box_width = 760.0;
-        cx = 960.0;
-        cy = 1184.0;
-        output = "eDP-1";
-        rotation = 0.0;
-        type = "label";
-        settings = {
-          background = false;
-          background_opacity = 0.66;
-          background_radius = 0;
-          color = "on_surface_variant";
-          description = "NixOS          //          Hyprland          //          Noctalia";
-          opacity = 0.56;
-          shadow = false;
-          title = "";
+        workspaces = {
+          label_source = "id";
+          labels_only_when_occupied = true;
         };
       };
     };
-  };
-  nightlight = {
-    enabled = false;
-  };
-  notification = {
-    background_opacity = 0.8;
-    enable_daemon = true;
-    layer = "overlay";
-    position = "bottom_right";
-  };
-  osd = {
-    background_opacity = 0.8;
-    position = "top_center";
-    position_vertical = "center_right";
-  };
-  plugin_settings = {
-    "noctalia/translator" = {
-      target_lang = "zh";
-    };
-  };
-  plugins = {
-    enabled = [
-      ("noctalia/kaomoji")
-      ("noctalia/translator")
-    ];
-  };
-  shell = {
-    app_icon_color = "error";
-    avatar_path = "${config.home.homeDirectory}/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
-    clipboard_auto_paste = "auto";
-    clipboard_enabled = true;
-    corner_radius_scale = 0.80000001192092896;
-    date_format = "%A, %x";
-    font_family = "Anthropic Serif Web Text";
-    launch_apps_as_systemd_services = true;
-    password_style = "random";
-    polkit_agent = true;
-    screen_time_enabled = true;
-    settings_show_advanced = true;
-    show_location = true;
-    telemetry_enabled = false;
-    external_ip_enabled = true;
-    time_format = "{:%H:%M}";
-    animation = {
-      speed = 1.0;
-    };
-    launcher = {
-      app_grid = true;
-    };
-    greeter_sync = {
-      auto_sync = true;
-    };
-    panel = {
-      borders = true;
-      control_center_placement = "floating";
-      open_near_click_clipboard = true;
-      open_near_click_control_center = true;
-      open_near_click_launcher = true;
-      open_near_click_session = true;
-      open_near_click_wallpaper = true;
-      polkit_placement = "attached";
-      session_placement = "floating";
-      transparency_mode = "glass";
-      wallpaper_position = "center";
-    };
-    screen_corners = {
-      enabled = true;
-      size = 10;
-    };
-    screenshot = {
-      confirm_region = true;
-      directory = "${config.home.homeDirectory}/Pictures/Screenshots/2026-06";
-    };
-    shadow = {
-      direction = "down";
-    };
-  };
-  system = {
-    monitor = {
-      enabled = true;
-    };
-  };
-  theme = {
-    community_palette = "Tokyo Night Moon";
-    custom_palette = "matugen";
-    source = "custom";
-    wallpaper_scheme = "m3-content";
-    templates = {
-      # 模板全部禁用：配色由 matugen 统一接管（Noctalia palette ~/.config/noctalia/palettes/matugen.json），
-      # 不再分发内置/社区模板（对齐 Noctalia 实际配置）
-      builtin_ids = [ ];
-      enable_builtin_templates = false;
-      enable_community_templates = false;
-    };
-  };
-  wallpaper = {
-    directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
-    # 壁纸由 waypaper + awww 统一管理（与 shell 解耦），Noctalia 不再切壁纸
-    enabled = false;
-    fill_mode = "crop";
-    transition = [
-      ("fade")
-      ("wipe")
-      ("disc")
-      ("stripes")
-      ("zoom")
-      ("honeycomb")
-    ];
-    transition_duration = 1500;
-    transition_on_startup = true;
-  };
-  weather = {
-    effects = true;
-    enabled = true;
-    unit = "metric";
-  };
-  widget = {
-    active_window = {
-      display = "icon_and_text";
-      max_length = 280.0;
-    };
-    battery = {
-      hide_when_plugged = false;
-    };
-    brightness = {
-      show_label = true;
-    };
-    clock = {
-      format = "{:%H:%M %A, %Y年%b%d日}";
-      tooltip_format = "{:%A, %B %d, %Y}";
-    };
-    control-center = {
-      glyph = "noctalia";
-    };
-    launcher = {
-      glyph = "brand-snowflake";
-    };
-    media = {
-      hide_album_art = false;
-      hide_when_no_media = true;
-      max_length = 220.0;
-    };
-    network = {
-      show_label = false;
-    };
-    network_rx = {
-      type = "sysmon";
-      stat = "net_rx";
-      visualization = "none";
-      show_value = true;
-      show_glyph = true;
-      glyph = "square-rounded-chevrons-down-filled";
-    };
-    network_tx = {
-      type = "sysmon";
-      stat = "net_tx";
-      visualization = "none";
-      show_value = true;
-      show_glyph = true;
-      glyph = "square-rounded-chevrons-up-filled";
-    };
-    notifications = {
-      hide_when_no_unread = false;
-    };
-    privacy = {
-      hide_inactive = false;
-    };
-    sysmon = {
-      visualization = "graph";
-      show_value = true;
-      stat = "cpu_usage";
-    };
-    tray = {
-      pinned = [
-        ("chrome_status_icon_1")
-      ];
-    };
-    volume = {
-      show_label = true;
-    };
-    workspaces = {
-      label_source = "id";
-      labels_only_when_occupied = true;
-    };
-  };
-}
-;
   };
 
   # 壁纸仓库和头像均由用户在本地维护，不由 Home Manager 创建文件。
@@ -753,4 +757,25 @@ in
       WantedBy = [ "graphical-session.target" ];
     };
   };
+
+  # 补全（跟随消费者）：fish + bash。
+  xdg.configFile."fish/completions/noctalia.fish".text = ''
+    complete -c noctalia -f
+    complete -c noctalia -s h -l help
+    complete -c noctalia -s v -l version
+    complete -c noctalia -s d -l daemon
+    complete -c noctalia -n "__fish_use_subcommand" -a "msg theme config plugins"
+    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "(noctalia msg --help 2>&1 | string match -r '^  [a-z][a-z0-9-]+' | string trim)"
+  '';
+
+  xdg.dataFile."bash-completion/completions/noctalia".text = ''
+    _noctalia_completion() {
+      local cur=''${COMP_WORDS[COMP_CWORD]}
+      local args=(noctalia --help)
+      [[ ''${COMP_WORDS[1]} == msg ]] && args=(noctalia msg --help)
+      local commands=$("''${args[@]}" 2>&1 | sed -n "s/^  \([a-z][a-z0-9-]*\).*/\1/p")
+      COMPREPLY=( $(compgen -W "$commands" -- "$cur") )
+    }
+    complete -F _noctalia_completion noctalia
+  '';
 }

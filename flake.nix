@@ -37,35 +37,65 @@
   };
   nixConfig = {
     extra-substituters = [ "https://nix-community.cachix.org" ];
-    extra-trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
   };
-  outputs = { self, nixpkgs, ... }@inputs: let
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
-    materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
-      inherit pkgs;
-      wallpaper = ./assets/nixos_logo.png;
-      shellLayout = "default"; # GNOME 原版实心通栏
-    };
-  in {
-    packages.${system}.material-gnome-theme = materialGnomeTheme;
+  outputs =
+    { nixpkgs, ... }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+      # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
+      materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
+        inherit pkgs;
+        wallpaper = ./assets/nixos_logo.png;
+        shellLayout = "default"; # GNOME 原版实心通栏
+      };
+    in
+    {
+      packages.${system} = {
+        material-gnome-theme = materialGnomeTheme;
+        animeko = import ./local-deriv/animeko.nix { inherit pkgs; };
+        anthropic-fonts = import ./local-deriv/anthropic-fonts.nix { inherit pkgs; };
+        cliamp = import ./local-deriv/cliamp.nix { inherit pkgs; };
+        scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
+        netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
+          inherit pkgs;
+        };
+      };
 
-    nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {
-      inherit system;
-      specialArgs = { inherit inputs materialGnomeTheme; };
-      modules = [
-        ./host/default.nix
-        inputs.sops-nix.nixosModules.sops
-        inputs.home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.backupFileExtension = "hm-backup";
-          home-manager.users.lishangshui = import ./home/de.nix;
-          home-manager.extraSpecialArgs = { inherit inputs materialGnomeTheme; };
-        }
-      ];
+      devShells.${system}.packaging = pkgs.mkShellNoCC {
+        packages = with pkgs; [
+          binutils
+          deadnix
+          file
+          nix-init
+          nix-update
+          nixfmt
+          nurl
+          patchelf
+          statix
+        ];
+      };
+
+      nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs materialGnomeTheme; };
+        modules = [
+          ./host/default.nix
+          inputs.sops-nix.nixosModules.sops
+          inputs.home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "hm-backup";
+              users.lishangshui = import ./home/home.nix;
+              extraSpecialArgs = { inherit inputs materialGnomeTheme; };
+            };
+          }
+        ];
+      };
     };
-  };
 }

@@ -1,16 +1,14 @@
 { ... }:
 {
+  # 主 DE compositor 域：Hyprland/niri、终端、桌面 shell、快捷键路由。
+  # 颜色/壁纸/主题在 ../theme/（由 home.nix 引入），本目录不做主题配置。
   imports = [
     ./hyprland.nix
     ./foot.nix
-    ./stylix.nix
     ./noctalia.nix
     ./caelestia-shell.nix
     ./niri.nix
-    ./musicfox.nix
     ./shell-switcher.nix
-    ./theme-mode.nix
-    ./wallpaper.nix
   ];
 
   home.sessionVariables = {

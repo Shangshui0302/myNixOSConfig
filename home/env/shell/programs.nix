@@ -1,33 +1,6 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
-let
-  hyprctlFishCompletion = pkgs.runCommand "hyprctl-fish-completion" { } ''
-    {
-      cat <<'EOF'
-    complete -c hyprctl -f
-    complete -c hyprctl -s j -d "Output in JSON"
-    complete -c hyprctl -s r -d "Refresh state after issuing command"
-    complete -c hyprctl -l batch -d "Execute batch of commands separated by ;"
-    complete -c hyprctl -s i -l instance -d "Use a specific Hyprland instance" -x
-    complete -c hyprctl -s q -l quiet -d "Disable output"
-EOF
-      { ${pkgs.hyprland}/bin/hyprctl --help 2>&1 || true; } |
-        awk '
-          /^commands:/ { in_commands = 1; next }
-          /^flags:/ { in_commands = 0 }
-          in_commands && /^    [a-z]/ {
-            print "complete -c hyprctl -n \"__fish_use_subcommand\" -a " $1
-          }
-        '
-    } > "$out"
-  '';
-
-in
 {
-  home.packages = with pkgs; [
-    fzf bat fd blesh
-  ];
-
   programs.eza = {
     enable = true;
     icons = "auto";
@@ -39,15 +12,6 @@ in
     enable = true;
     enableBashIntegration = true;
     enableFishIntegration = true;
-  };
-
-  home.shellAliases = {
-    cat = "bat";
-    grep = "rg";
-    find = "fd";
-    top = "btop";
-    tree = "eza --tree --icons=auto";
-    snvim = "sudo HOME=$HOME XDG_CONFIG_HOME=$XDG_CONFIG_HOME XDG_DATA_HOME=$XDG_DATA_HOME nvim";
   };
 
   programs.starship = {
@@ -150,7 +114,10 @@ in
         symbol = "";
         style = "#ffd242 bold";
         format = "[$symbol $version( \\($virtualenv\\))]($style)";
-        python_binary = [ "python3" "python" ];
+        python_binary = [
+          "python3"
+          "python"
+        ];
       };
 
       nodejs = {
@@ -195,9 +162,18 @@ in
         empty_symbol = "󰂎";
 
         display = [
-          { threshold = 20; style = "#ff2740 bold"; }
-          { threshold = 50; style = "#ffd242 bold"; }
-          { threshold = 100; style = "#abe15b bold"; }
+          {
+            threshold = 20;
+            style = "#ff2740 bold";
+          }
+          {
+            threshold = 50;
+            style = "#ffd242 bold";
+          }
+          {
+            threshold = 100;
+            style = "#abe15b bold";
+          }
         ];
       };
 
@@ -216,7 +192,6 @@ in
     };
   };
 
-
   programs.bash = {
     enable = true;
     initExtra = ''
@@ -231,7 +206,6 @@ in
     '';
   };
 
-
   xdg.configFile."blesh/init.sh".text = ''
     # ble.sh color override — 内置命令不用红色
     ble-face command_builtin=fg=#abe15b
@@ -242,11 +216,26 @@ in
   programs.fish = {
     enable = true;
     plugins = [
-      { name = "autopair"; src = pkgs.fishPlugins.autopair; }
-      { name = "done"; src = pkgs.fishPlugins.done; }
-      { name = "grc"; src = pkgs.fishPlugins.grc; }
-      { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages; }
-      { name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish; }
+      {
+        name = "autopair";
+        src = pkgs.fishPlugins.autopair;
+      }
+      {
+        name = "done";
+        src = pkgs.fishPlugins.done;
+      }
+      {
+        name = "grc";
+        src = pkgs.fishPlugins.grc;
+      }
+      {
+        name = "colored-man-pages";
+        src = pkgs.fishPlugins.colored-man-pages;
+      }
+      {
+        name = "fzf-fish";
+        src = pkgs.fishPlugins.fzf-fish;
+      }
     ];
 
     interactiveShellInit = ''
@@ -263,88 +252,4 @@ in
 
     '';
   };
-
-  xdg.configFile."fish/completions/hyprctl.fish".source = hyprctlFishCompletion;
-
-  xdg.configFile."fish/completions/hyprland.fish".text = ''
-    complete -c hyprland -s h -l help -d "Show help message"
-    complete -c hyprland -s v -l version -d "Print version"
-    complete -c hyprland -l version-json -d "Print version as JSON"
-    complete -c hyprland -s c -l config -r -d "Specify config file to use"
-    complete -c hyprland -l socket -x -d "Set Wayland socket name"
-    complete -c hyprland -l wayland-fd -x -d "Set Wayland socket fd"
-    complete -c hyprland -l safe-mode -d "Start in safe mode"
-    complete -c hyprland -l systeminfo -d "Print system info"
-    complete -c hyprland -l verify-config -d "Verify config and exit"
-  '';
-
-  xdg.configFile."fish/completions/podman.fish".source = pkgs.runCommand "podman-fish-completion" { } ''
-    export HOME="$TMPDIR"
-    ${pkgs.podman}/bin/podman completion fish > "$out"
-  '';
-
-  xdg.configFile."fish/completions/noctalia.fish".text = ''
-    complete -c noctalia -f
-    complete -c noctalia -s h -l help
-    complete -c noctalia -s v -l version
-    complete -c noctalia -s d -l daemon
-    complete -c noctalia -n "__fish_use_subcommand" -a "msg theme config plugins"
-    complete -c noctalia -n "__fish_seen_subcommand_from msg" -a "(noctalia msg --help 2>&1 | string match -r '^  [a-z][a-z0-9-]+' | string trim)"
-  '';
-
-  xdg.configFile."fish/completions/darkman.fish".source =
-    "${pkgs.darkman}/share/fish/vendor_completions.d/darkman.fish";
-
-  xdg.dataFile."bash-completion/completions/noctalia".text = ''
-    _noctalia_completion() {
-      local cur=''${COMP_WORDS[COMP_CWORD]}
-      local args=(noctalia --help)
-      [[ ''${COMP_WORDS[1]} == msg ]] && args=(noctalia msg --help)
-      local commands=$("''${args[@]}" 2>&1 | sed -n "s/^  \([a-z][a-z0-9-]*\).*/\1/p")
-      COMPREPLY=( $(compgen -W "$commands" -- "$cur") )
-    }
-    complete -F _noctalia_completion noctalia
-  '';
-
-  xdg.configFile."fish/completions/howdy.fish".text = ''
-    complete -c howdy -f
-
-    # Options
-    complete -c howdy -s h -l help -d "Show help message and exit"
-    complete -c howdy -s y -d "Skip all questions"
-    complete -c howdy -l plain -d "Print machine-friendly output"
-    complete -c howdy -s U -l user -x -d "Set the user account to use"
-
-    # Commands
-    set -l cmds add clear config disable list remove snapshot set test version
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a add -d "Add a new face model"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a clear -d "Clear all face models"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a config -d "Open config file"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a disable -d "Disable or enable howdy"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a list -d "List all face models"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a remove -d "Remove a specific face model"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a snapshot -d "Generate a snapshot from the camera"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a set -d "Set a config option"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a test -d "Test face recognition"
-    complete -c howdy -n "not __fish_seen_subcommand_from $cmds" -a version -d "Print version"
-  '';
-
-  xdg.dataFile."bash-completion/completions/howdy".text = ''
-    _howdy_completion() {
-        local cur prev words cword
-        _init_completion -s || {
-            COMPREPLY=()
-            local cur="''${COMP_WORDS[COMP_CWORD]}"
-        }
-
-        local cmds="add clear config disable list remove snapshot set test version"
-        local opts="-h --help -y --plain -U --user"
-
-        if [[ ''${COMP_CWORD} -eq 1 ]]; then
-            COMPREPLY=( $(compgen -W "$cmds $opts" -- "$cur") )
-        fi
-    }
-    complete -F _howdy_completion howdy
-  '';
-
 }

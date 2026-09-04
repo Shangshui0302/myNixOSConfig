@@ -1,8 +1,7 @@
 { pkgs, materialGnomeTheme, ... }:
 {
-  # Material-Gnome GTK 主题应用（两 DE 共享，完全相同部分）。
-  # 被 theme-de.nix 与 specialisation/gnome/home.nix 共同 import。
-  # 若之后某变体需要差异化 GTK 主题，再从这里拆出去。
+  # 静态 Material-Gnome GTK 主题：仅 GNOME 变体使用（固定深色，不接 Darkman/matugen）。
+  # 主 DE 用 gtk-matugen.nix（运行时取色）；若未来变体需要差异化 GTK 主题再拆。
 
   # GTK3 主题
   dconf.settings."org/gnome/desktop/interface".gtk-theme = "Material-Gnome";
@@ -16,8 +15,7 @@
     "${materialGnomeTheme}/share/themes/Material-Gnome/gtk-4.0/colors.css";
 
   # 主题源 ~/.themes（GTK3 应用 / flatpak 访问）
-  home.file.".themes/Material-Gnome".source =
-    "${materialGnomeTheme}/share/themes/Material-Gnome";
+  home.file.".themes/Material-Gnome".source = "${materialGnomeTheme}/share/themes/Material-Gnome";
 
   # Flatpak 沙箱跟随（读 ~/.themes + GTK_THEME）
   services.flatpak.overrides.settings = {

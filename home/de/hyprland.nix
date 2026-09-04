@@ -1,7 +1,29 @@
 { config, pkgs, ... }:
 
 let
+  hyprctlFishCompletion = pkgs.runCommand "hyprctl-fish-completion" { } ''
+        {
+          cat <<'EOF'
+        complete -c hyprctl -f
+        complete -c hyprctl -s j -d "Output in JSON"
+        complete -c hyprctl -s r -d "Refresh state after issuing command"
+        complete -c hyprctl -l batch -d "Execute batch of commands separated by ;"
+        complete -c hyprctl -s i -l instance -d "Use a specific Hyprland instance" -x
+        complete -c hyprctl -s q -l quiet -d "Disable output"
+    EOF
+          { ${pkgs.hyprland}/bin/hyprctl --help 2>&1 || true; } |
+            awk '
+              /^commands:/ { in_commands = 1; next }
+              /^flags:/ { in_commands = 0 }
+              in_commands && /^    [a-z]/ {
+                print "complete -c hyprctl -n \"__fish_use_subcommand\" -a " $1
+              }
+            '
+        } > "$out"
+  '';
+
   homeDir = config.home.homeDirectory;
+  scrolloverview = import ../../local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
   touchpadToggle = pkgs.writeShellScriptBin "toggle-touchpad" ''
     set -eu
 
@@ -25,7 +47,12 @@ let
 in
 {
   home.packages = with pkgs; [
-    grim slurp wl-clipboard grimblast swappy wdisplays
+    grim
+    slurp
+    wl-clipboard
+    grimblast
+    swappy
+    wdisplays
     touchpadToggle
     (pkgs.writeShellScriptBin "screenshot" ''
       dir="$HOME/Pictures/Screenshots/$(date +%Y-%m)"
@@ -83,281 +110,304 @@ in
   '';
 
   xdg.configFile."hypr/hyprland.lua" = {
-    force = true;  # generated from nix, no manual edits to preserve
+    force = true; # generated from nix, no manual edits to preserve
     text = ''
-    local home = "${homeDir}"
+      local home = "${homeDir}"
 
-    -- stylix 配色（壁纸取色，与 foot/终端同源）
-    pcall(require, "stylix-colors")
+      -- ScrollOverview is loaded explicitly because this Lua file replaces HM's generated file.
+      hl.plugin.load("${scrolloverview}/lib/libscrolloverview.so")
 
-    hl.env("XCURSOR_SIZE", "24")
-    hl.env("HYPRCURSOR_SIZE", "24")
+      -- stylix 配色（壁纸取色，与 foot/终端同源）
+      pcall(require, "stylix-colors")
 
-    hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.5 })
+      hl.env("XCURSOR_SIZE", "24")
+      hl.env("HYPRCURSOR_SIZE", "24")
 
-    hl.config({
+      hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.5 })
 
-      general = {
-        gaps_in = 5,
-        gaps_out = 5,
-        border_size = 2,
-        resize_on_border = true,
-        allow_tearing = false,
-        layout = "scrolling",
-      },
+      hl.config({
 
-      decoration = {
-        rounding = 10,
-        rounding_power = 2,
-        active_opacity = 0.88,
-        inactive_opacity = 0.82,
-        shadow = {
+        plugin = {
+          scrolloverview = {
+            gesture_distance = 300,
+            scale = 0.5,
+            workspace_gap = 100,
+            layout = "vertical",
+            wallpaper = 2,
+            blur = true,
+            shadow = {
+              enabled = true,
+              range = 50,
+            },
+          },
+        },
+
+        general = {
+          gaps_in = 5,
+          gaps_out = 5,
+          border_size = 2,
+          resize_on_border = true,
+          allow_tearing = false,
+          layout = "scrolling",
+        },
+
+        decoration = {
+          rounding = 10,
+          rounding_power = 2,
+          active_opacity = 0.88,
+          inactive_opacity = 0.82,
+          shadow = {
+            enabled = true,
+            range = 4,
+            render_power = 3,
+            color = "rgba(1a1a1aee)",
+          },
+          blur = {
+            enabled = true,
+            size = 15,
+            passes = 4,
+            vibrancy = 0.3,
+            ignore_opacity = true,
+            popups = true,
+            popups_ignorealpha = 0.2,
+          },
+        },
+
+        animations = {
           enabled = true,
-          range = 4,
-          render_power = 3,
-          color = "rgba(1a1a1aee)",
+          workspace_wraparound = true,
         },
-        blur = {
-          enabled = true,
-          size = 15,
-          passes = 4,
-          vibrancy = 0.3,
-          ignore_opacity = true,
-          popups = true,
-          popups_ignorealpha = 0.2,
+
+        scrolling = {
+          column_width = 0.5,
+          direction = "right",
+          follow_focus = true,
+          fullscreen_on_one_column = true,
+          explicit_column_widths = "0.33, 0.5, 0.67, 0.81, 0.96",
         },
-      },
 
-      animations = {
-        enabled = true,
-        workspace_wraparound = true,
-      },
-
-      scrolling = {
-        column_width = 0.5,
-        direction = "right",
-        follow_focus = true,
-        fullscreen_on_one_column = true,
-        explicit_column_widths = "0.33, 0.5, 0.67, 0.81, 0.96",
-      },
-
-      misc = {
-        force_default_wallpaper = -1,
-        disable_hyprland_logo = false,
-      },
-
-      xwayland = {
-        force_zero_scaling = true,
-      },
-
-      input = {
-        kb_layout = "us",
-        kb_options = "caps:escape",
-        follow_mouse = 1,
-        sensitivity = 0,
-        touchpad = {
-          natural_scroll = true,
+        misc = {
+          force_default_wallpaper = -1,
+          disable_hyprland_logo = false,
         },
-      },
 
-      device = {
-        {
-          name = "epic-mouse-v1",
-          sensitivity = -0.5,
+        xwayland = {
+          force_zero_scaling = true,
         },
-      },
 
-      binds = {
-        drag_threshold = 10,
-        workspace_back_and_forth = true,
-        allow_workspace_cycles = true,
-      },
+        input = {
+          kb_layout = "us",
+          kb_options = "caps:escape",
+          follow_mouse = 1,
+          sensitivity = 0,
+          touchpad = {
+            natural_scroll = true,
+          },
+        },
 
-      windowrulev2 = {
-        "float, class:^(org.gnome.NautilusPreviewer)$",
-        "center, class:^(org.gnome.NautilusPreviewer)$",
-        "size 70% 70%, class:^(org.gnome.NautilusPreviewer)$",
-        "float, class:^(sushi)$",
-        "center, class:^(sushi)$",
-        "size 70% 70%, class:^(sushi)$",
-      },
-    })
+        device = {
+          {
+            name = "epic-mouse-v1",
+            sensitivity = -0.5,
+          },
+        },
 
-    hl.window_rule({
-      name = "clipse-float",
-      match = { class = "^clipse$" },
-      float = true,
-      center = true,
-      size = "60% 70%",
-    })
+        binds = {
+          drag_threshold = 10,
+          workspace_back_and_forth = true,
+          allow_workspace_cycles = true,
+        },
 
-    -- Noctalia layer blur: frosted glass for bar / panel / dock / notifications / OSD
-    hl.layer_rule({
-      name = "noctalia",
-      match = {
-        namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$",
-      },
-      no_anim = true,
-      ignore_alpha = 0.3,
-      blur = true,
-      blur_popups = true,
-      order = -1,
-    })
+        windowrulev2 = {
+          "float, class:^(org.gnome.NautilusPreviewer)$",
+          "center, class:^(org.gnome.NautilusPreviewer)$",
+          "size 70% 70%, class:^(org.gnome.NautilusPreviewer)$",
+          "float, class:^(sushi)$",
+          "center, class:^(sushi)$",
+          "size 70% 70%, class:^(sushi)$",
+        },
+      })
 
-    -- ===== Animation curves =====
-    hl.curve("easeOutQuint",  { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
-    hl.curve("linear",         { type = "bezier", points = { {0, 0}, {1, 1} } })
-    hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5}, {0.75, 1} } })
-    hl.curve("quick",          { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
-    hl.curve("easeInOutCirc",  { type = "bezier", points = { {0.85, 0}, {0.15, 1} } })
-    hl.curve("easeInCirc",     { type = "bezier", points = { {0.55, 0}, {1, 0.45} } })
-    -- ===== Animations =====
-    hl.animation({ leaf = "global",    enabled = true, speed = 10, bezier = "linear" })
-    hl.animation({ leaf = "border",    enabled = true, speed = 5.39, bezier = "easeOutQuint" })
-    hl.animation({ leaf = "windows",   enabled = true, speed = 4.79, bezier = "easeOutQuint" })
-    hl.animation({ leaf = "windowsIn",  enabled = true, speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
-    hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear",        style = "popin 87%" })
-    hl.animation({ leaf = "fadeIn",    enabled = true, speed = 3.0,  bezier = "easeInCirc" })
-    hl.animation({ leaf = "fadeOut",   enabled = true, speed = 1.46, bezier = "almostLinear" })
-    hl.animation({ leaf = "fade",      enabled = true, speed = 3.03, bezier = "quick" })
-    hl.animation({ leaf = "layers",    enabled = true, speed = 3.81, bezier = "easeOutQuint" })
-    hl.animation({ leaf = "layersIn",  enabled = true, speed = 4,    bezier = "easeOutQuint", style = "fade" })
-    hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5,  bezier = "linear",        style = "fade" })
-    hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 1.79, bezier = "almostLinear" })
-    hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
-    hl.animation({ leaf = "workspaces",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "slidefadevert" })
-    hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
-    hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
-    hl.animation({ leaf = "specialWorkspace",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "fade" })
-    hl.animation({ leaf = "specialWorkspaceIn",  enabled = true, speed = 3.6, bezier = "quick",          style = "fade" })
-    hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "fade" })
-    hl.animation({ leaf = "zoomFactor",  enabled = true, speed = 7, bezier = "quick" })
+      hl.window_rule({
+        name = "clipse-float",
+        match = { class = "^clipse$" },
+        float = true,
+        center = true,
+        size = "60% 70%",
+      })
 
-    -- Noctalia 由 systemd user service 拉起（graphical-session.target），此处不再 autostart。
+      -- Noctalia layer blur: frosted glass for bar / panel / dock / notifications / OSD
+      hl.layer_rule({
+        name = "noctalia",
+        match = {
+          namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$",
+        },
+        no_anim = true,
+        ignore_alpha = 0.3,
+        blur = true,
+        blur_popups = true,
+        order = -1,
+      })
 
-    -- Noctalia theme colors loaded via v5 template system (hyprland-lua user template).
+      -- ===== Animation curves =====
+      hl.curve("easeOutQuint",  { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
+      hl.curve("linear",         { type = "bezier", points = { {0, 0}, {1, 1} } })
+      hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5}, {0.75, 1} } })
+      hl.curve("quick",          { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
+      hl.curve("easeInOutCirc",  { type = "bezier", points = { {0.85, 0}, {0.15, 1} } })
+      hl.curve("easeInCirc",     { type = "bezier", points = { {0.55, 0}, {1, 0.45} } })
+      -- ===== Animations =====
+      hl.animation({ leaf = "global",    enabled = true, speed = 10, bezier = "linear" })
+      hl.animation({ leaf = "border",    enabled = true, speed = 5.39, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "windows",   enabled = true, speed = 4.79, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "windowsIn",  enabled = true, speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
+      hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear",        style = "popin 87%" })
+      hl.animation({ leaf = "fadeIn",    enabled = true, speed = 3.0,  bezier = "easeInCirc" })
+      hl.animation({ leaf = "fadeOut",   enabled = true, speed = 1.46, bezier = "almostLinear" })
+      hl.animation({ leaf = "fade",      enabled = true, speed = 3.03, bezier = "quick" })
+      hl.animation({ leaf = "layers",    enabled = true, speed = 3.81, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "layersIn",  enabled = true, speed = 4,    bezier = "easeOutQuint", style = "fade" })
+      hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5,  bezier = "linear",        style = "fade" })
+      hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 1.79, bezier = "almostLinear" })
+      hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
+      hl.animation({ leaf = "workspaces",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "slidefadevert" })
+      hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
+      hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
+      hl.animation({ leaf = "specialWorkspace",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "fade" })
+      hl.animation({ leaf = "specialWorkspaceIn",  enabled = true, speed = 3.6, bezier = "quick",          style = "fade" })
+      hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "fade" })
+      hl.animation({ leaf = "zoomFactor",  enabled = true, speed = 7, bezier = "quick" })
 
-    -- ===== Keybinds =====
+      -- Noctalia 由 systemd user service 拉起（graphical-session.target），此处不再 autostart。
 
-    -- Launch
-    hl.bind("SUPER + W", hl.dsp.exec_cmd("foot"))
-    hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"))
-    hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"))
-    hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus"))
-    hl.bind("SUPER + B", hl.dsp.exec_cmd("google-chrome"))
-    hl.bind("SUPER + C", hl.dsp.exec_cmd("desktop-shell-action clipboard"))
-    hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"))
-    hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
-    hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("desktop-shell-action launcher"))
-    hl.bind("SUPER + K", hl.dsp.exec_cmd("desktop-shell-action control"))
-    hl.bind("SUPER + comma", hl.dsp.exec_cmd("desktop-shell-action settings"))
-    hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("darkman toggle"))
-    -- Caelestia 没有 Noctalia 的 window-switcher，兼容层退化为 cyclenext。
-    hl.bind("SUPER + TAB", hl.dsp.exec_cmd("desktop-shell-action window-switcher"))
+      -- Noctalia theme colors loaded via v5 template system (hyprland-lua user template).
 
-    -- Window management
-    hl.bind("SUPER + Q", hl.dsp.window.close())
-    hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
-    hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
-    hl.bind("SUPER + P", hl.dsp.window.pseudo())
-    hl.bind("SUPER + SHIFT + M", hl.dsp.exit())
+      -- ===== Keybinds =====
 
-    -- Focus
-    hl.bind("SUPER + left", hl.dsp.focus({ direction = "l" }))
-    hl.bind("SUPER + right", hl.dsp.focus({ direction = "r" }))
-    hl.bind("SUPER + up", hl.dsp.focus({ direction = "u" }))
-    hl.bind("SUPER + down", hl.dsp.focus({ direction = "d" }))
+      -- ScrollOverview: niri-style workspace overview
+      hl.bind("SUPER + G", function()
+        hl.plugin.scrolloverview.overview("toggle all")
+      end)
 
-    -- Workspace
-    hl.bind("SUPER + 1", hl.dsp.focus({ workspace = 1 }))
-    hl.bind("SUPER + 2", hl.dsp.focus({ workspace = 2 }))
-    hl.bind("SUPER + 3", hl.dsp.focus({ workspace = 3 }))
-    hl.bind("SUPER + 4", hl.dsp.focus({ workspace = 4 }))
-    hl.bind("SUPER + 5", hl.dsp.focus({ workspace = 5 }))
-    hl.bind("SUPER + 6", hl.dsp.focus({ workspace = 6 }))
-    hl.bind("SUPER + 7", hl.dsp.focus({ workspace = 7 }))
-    hl.bind("SUPER + 8", hl.dsp.focus({ workspace = 8 }))
-    hl.bind("SUPER + 9", hl.dsp.focus({ workspace = 9 }))
-    hl.bind("SUPER + 0", hl.dsp.focus({ workspace = 10 }))
+      -- Launch
+      hl.bind("SUPER + W", hl.dsp.exec_cmd("foot"))
+      hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"))
+      hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"))
+      hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus"))
+      hl.bind("SUPER + B", hl.dsp.exec_cmd("google-chrome"))
+      hl.bind("SUPER + C", hl.dsp.exec_cmd("desktop-shell-action clipboard"))
+      hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"))
+      hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
+      hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("desktop-shell-action launcher"))
+      hl.bind("SUPER + K", hl.dsp.exec_cmd("desktop-shell-action control"))
+      hl.bind("SUPER + comma", hl.dsp.exec_cmd("desktop-shell-action settings"))
+      hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("darkman toggle"))
+      -- Caelestia 没有 Noctalia 的 window-switcher，兼容层退化为 cyclenext。
+      hl.bind("SUPER + TAB", hl.dsp.exec_cmd("desktop-shell-action window-switcher"))
 
-    -- Move to workspace
-    hl.bind("SUPER + SHIFT + 1", hl.dsp.window.move({ workspace = "1" }))
-    hl.bind("SUPER + SHIFT + 2", hl.dsp.window.move({ workspace = "2" }))
-    hl.bind("SUPER + SHIFT + 3", hl.dsp.window.move({ workspace = "3" }))
-    hl.bind("SUPER + SHIFT + 4", hl.dsp.window.move({ workspace = "4" }))
-    hl.bind("SUPER + SHIFT + 5", hl.dsp.window.move({ workspace = "5" }))
-    hl.bind("SUPER + SHIFT + 6", hl.dsp.window.move({ workspace = "6" }))
-    hl.bind("SUPER + SHIFT + 7", hl.dsp.window.move({ workspace = "7" }))
-    hl.bind("SUPER + SHIFT + 8", hl.dsp.window.move({ workspace = "8" }))
-    hl.bind("SUPER + SHIFT + 9", hl.dsp.window.move({ workspace = "9" }))
-    hl.bind("SUPER + SHIFT + 0", hl.dsp.window.move({ workspace = "10" }))
+      -- Window management
+      hl.bind("SUPER + Q", hl.dsp.window.close())
+      hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
+      hl.bind("SUPER + F", hl.dsp.window.fullscreen({ action = "toggle" }))
+      hl.bind("SUPER + P", hl.dsp.window.pseudo())
+      hl.bind("SUPER + SHIFT + M", hl.dsp.exit())
 
-    -- Special workspace
-    hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("magic"))
-    hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+      -- Focus
+      hl.bind("SUPER + left", hl.dsp.focus({ direction = "l" }))
+      hl.bind("SUPER + right", hl.dsp.focus({ direction = "r" }))
+      hl.bind("SUPER + up", hl.dsp.focus({ direction = "u" }))
+      hl.bind("SUPER + down", hl.dsp.focus({ direction = "d" }))
 
-    -- Window resize actions
-    hl.bind("SUPER + CTRL + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
-    hl.bind("SUPER + CTRL + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
-    hl.bind("SUPER + CTRL + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
-    hl.bind("SUPER + CTRL + down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }))
+      -- Workspace
+      hl.bind("SUPER + 1", hl.dsp.focus({ workspace = 1 }))
+      hl.bind("SUPER + 2", hl.dsp.focus({ workspace = 2 }))
+      hl.bind("SUPER + 3", hl.dsp.focus({ workspace = 3 }))
+      hl.bind("SUPER + 4", hl.dsp.focus({ workspace = 4 }))
+      hl.bind("SUPER + 5", hl.dsp.focus({ workspace = 5 }))
+      hl.bind("SUPER + 6", hl.dsp.focus({ workspace = 6 }))
+      hl.bind("SUPER + 7", hl.dsp.focus({ workspace = 7 }))
+      hl.bind("SUPER + 8", hl.dsp.focus({ workspace = 8 }))
+      hl.bind("SUPER + 9", hl.dsp.focus({ workspace = 9 }))
+      hl.bind("SUPER + 0", hl.dsp.focus({ workspace = 10 }))
 
-    -- Window resize presets for a 2880x1800 @ 1.5x display.
-    -- Hyprland uses logical pixels here, so the effective size is 1920x1200.
-    -- relative=false means absolute pixel size (maps to resizewindow x y exact).
-    hl.bind("SUPER + CTRL + 1", hl.dsp.window.resize({ x = 192, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 2", hl.dsp.window.resize({ x = 384, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 3", hl.dsp.window.resize({ x = 576, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 4", hl.dsp.window.resize({ x = 768, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 5", hl.dsp.window.resize({ x = 960, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 6", hl.dsp.window.resize({ x = 1152, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 7", hl.dsp.window.resize({ x = 1344, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 8", hl.dsp.window.resize({ x = 1536, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 9", hl.dsp.window.resize({ x = 1728, y = 1200, relative = false }))
-    hl.bind("SUPER + CTRL + 0", hl.dsp.window.resize({ x = 1920, y = 1200, relative = false }))
+      -- Move to workspace
+      hl.bind("SUPER + SHIFT + 1", hl.dsp.window.move({ workspace = "1" }))
+      hl.bind("SUPER + SHIFT + 2", hl.dsp.window.move({ workspace = "2" }))
+      hl.bind("SUPER + SHIFT + 3", hl.dsp.window.move({ workspace = "3" }))
+      hl.bind("SUPER + SHIFT + 4", hl.dsp.window.move({ workspace = "4" }))
+      hl.bind("SUPER + SHIFT + 5", hl.dsp.window.move({ workspace = "5" }))
+      hl.bind("SUPER + SHIFT + 6", hl.dsp.window.move({ workspace = "6" }))
+      hl.bind("SUPER + SHIFT + 7", hl.dsp.window.move({ workspace = "7" }))
+      hl.bind("SUPER + SHIFT + 8", hl.dsp.window.move({ workspace = "8" }))
+      hl.bind("SUPER + SHIFT + 9", hl.dsp.window.move({ workspace = "9" }))
+      hl.bind("SUPER + SHIFT + 0", hl.dsp.window.move({ workspace = "10" }))
 
-    -- Window move
-    hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "l" }))
-    hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "r" }))
-    hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "u" }))
-    hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "d" }))
+      -- Special workspace
+      hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("magic"))
+      hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
-    -- Window swap
-    hl.bind("SUPER + ALT + left", hl.dsp.window.swap({ direction = "l" }))
-    hl.bind("SUPER + ALT + right", hl.dsp.window.swap({ direction = "r" }))
-    hl.bind("SUPER + ALT + up", hl.dsp.window.swap({ direction = "u" }))
-    hl.bind("SUPER + ALT + down", hl.dsp.window.swap({ direction = "d" }))
+      -- Window resize actions
+      hl.bind("SUPER + CTRL + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
+      hl.bind("SUPER + CTRL + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
+      hl.bind("SUPER + CTRL + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
+      hl.bind("SUPER + CTRL + down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }))
 
-    -- Mouse workspace scroll
-    hl.bind("SUPER + mouse_down", function()
-      hl.dispatch(hl.dsp.focus({ workspace = "e+1" }))
-    end)
-    hl.bind("SUPER + mouse_up", function()
-      hl.dispatch(hl.dsp.focus({ workspace = "e-1" }))
-    end)
+      -- Window resize presets for a 2880x1800 @ 1.5x display.
+      -- Hyprland uses logical pixels here, so the effective size is 1920x1200.
+      -- relative=false means absolute pixel size (maps to resizewindow x y exact).
+      hl.bind("SUPER + CTRL + 1", hl.dsp.window.resize({ x = 192, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 2", hl.dsp.window.resize({ x = 384, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 3", hl.dsp.window.resize({ x = 576, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 4", hl.dsp.window.resize({ x = 768, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 5", hl.dsp.window.resize({ x = 960, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 6", hl.dsp.window.resize({ x = 1152, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 7", hl.dsp.window.resize({ x = 1344, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 8", hl.dsp.window.resize({ x = 1536, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 9", hl.dsp.window.resize({ x = 1728, y = 1200, relative = false }))
+      hl.bind("SUPER + CTRL + 0", hl.dsp.window.resize({ x = 1920, y = 1200, relative = false }))
 
-    -- Mouse window drag/resize
-    hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
-    hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
+      -- Window move
+      hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "l" }))
+      hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "r" }))
+      hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "u" }))
+      hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "d" }))
 
-    -- Media / brightness (long-press for repeating)
-    hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 2%+"), { repeating = true })
-    hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"), { repeating = true })
-    hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
-    hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
-    hl.bind("XF86TouchpadToggle", hl.dsp.exec_cmd("toggle-touchpad"))
-    hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("desktop-shell-action brightness-up"), { repeating = true })
-    hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("desktop-shell-action brightness-down"), { repeating = true })
+      -- Window swap
+      hl.bind("SUPER + ALT + left", hl.dsp.window.swap({ direction = "l" }))
+      hl.bind("SUPER + ALT + right", hl.dsp.window.swap({ direction = "r" }))
+      hl.bind("SUPER + ALT + up", hl.dsp.window.swap({ direction = "u" }))
+      hl.bind("SUPER + ALT + down", hl.dsp.window.swap({ direction = "d" }))
 
-    -- ===== Gestures =====
+      -- Mouse workspace scroll
+      hl.bind("SUPER + mouse_down", function()
+        hl.dispatch(hl.dsp.focus({ workspace = "e+1" }))
+      end)
+      hl.bind("SUPER + mouse_up", function()
+        hl.dispatch(hl.dsp.focus({ workspace = "e-1" }))
+      end)
 
-    -- 3-finger vertical: workspace switch
-    hl.gesture({ fingers = 3, direction = "vertical", action = "workspace" })
+      -- Mouse window drag/resize
+      hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
+      hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
-    -- 3-finger horizontal: smooth scroll_move (Task #6)
-    hl.gesture({ fingers = 3, direction = "left", action = "scroll_move" })
-    hl.gesture({ fingers = 3, direction = "right", action = "scroll_move" })
-  '';
+      -- Media / brightness (long-press for repeating)
+      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 2%+"), { repeating = true })
+      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"), { repeating = true })
+      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
+      hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
+      hl.bind("XF86TouchpadToggle", hl.dsp.exec_cmd("toggle-touchpad"))
+      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("desktop-shell-action brightness-up"), { repeating = true })
+      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("desktop-shell-action brightness-down"), { repeating = true })
+
+      -- ===== Gestures =====
+
+      -- 3-finger vertical: workspace switch
+      hl.gesture({ fingers = 3, direction = "vertical", action = "workspace" })
+
+      -- 3-finger horizontal: smooth scroll_move (Task #6)
+      hl.gesture({ fingers = 3, direction = "left", action = "scroll_move" })
+      hl.gesture({ fingers = 3, direction = "right", action = "scroll_move" })
+    '';
   };
 
   # fcitx5 XDG autostart: 崩溃后自动拉起
@@ -365,5 +415,20 @@ in
     [Service]
     Restart=on-failure
     RestartSec=3
+  '';
+
+  # 补全（跟随消费者）：hyprctl（动态生成）+ hyprland + hyprpm。
+  xdg.configFile."fish/completions/hyprctl.fish".source = hyprctlFishCompletion;
+
+  xdg.configFile."fish/completions/hyprland.fish".text = ''
+    complete -c hyprland -s h -l help -d "Show help message"
+    complete -c hyprland -s v -l version -d "Print version"
+    complete -c hyprland -l version-json -d "Print version as JSON"
+    complete -c hyprland -s c -l config -r -d "Specify config file to use"
+    complete -c hyprland -l socket -x -d "Set Wayland socket name"
+    complete -c hyprland -l wayland-fd -x -d "Set Wayland socket fd"
+    complete -c hyprland -l safe-mode -d "Start in safe mode"
+    complete -c hyprland -l systeminfo -d "Print system info"
+    complete -c hyprland -l verify-config -d "Verify config and exit"
   '';
 }
