@@ -19,7 +19,7 @@ docs:
     memory:  [flake-unstable-strategy]
 
   architecture/index.md:
-    sources: [flake.nix, host/default.nix, home/base.nix, home/de.nix, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
+    sources: [flake.nix, host/default.nix, home/base.nix, home/home.nix, home/theme, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
     memory:  [flake-unstable-strategy, desktop-environment-host-hm-boundary]
   architecture/flake.md:
     sources: [flake.nix, host/base/nix.nix]
@@ -29,28 +29,28 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve, greetd-tuigreet-tty]
 
   desktop/hyprland.md:
-    sources: [home/de/hyprland.nix, home/de/default.nix, home/de/musicfox.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/wallpaper.nix, home/de/foot.nix, home/de/stylix.nix, home/theme-de.nix, host/base/boot.nix]
-    memory:  [hyprland-056-blur-amd, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, stylix-color-hub, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
+    sources: [home/de/hyprland.nix, local-deriv/hyprland-scroll-overview.nix, home/de/default.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/stylix.nix, home/theme/gtk-matugen.nix, host/base/boot.nix]
+    memory:  [hyprland-056-blur-amd, hyprland-scrolloverview-plugin, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, stylix-color-hub, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
     sources: [home/de/niri.nix, host/de/sessions.nix, host/de/greeter.nix]
     memory:  [stylix-color-hub, greetd-tuigreet-tty]
   desktop/gnome.md:
-    sources: [specialisation/gnome/default.nix, specialisation/gnome/host.nix, specialisation/gnome/home.nix, host/de/greeter.nix]
+    sources: [host/gnome/default.nix, host/gnome/desktop.nix, home/gnome.nix, host/de/greeter.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
-    sources: [flake.nix, host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix, home/de/theme-mode.nix]
+    sources: [flake.nix, host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix, home/theme/runtime.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff, greetd-tuigreet-tty]
   desktop/noctalia.md:
-    sources: [home/de/noctalia.nix, home/de/theme-mode.nix, host/de/greeter.nix]
+    sources: [home/de/noctalia.nix, home/theme/runtime.nix, host/de/greeter.nix]
     memory:  [darkman-theme-authority, stylix-color-hub, matugen-wallpaper-theming]
   desktop/shell-switcher.md:
     sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix]
     memory:  [shell-switcher-generic]
   desktop/shell.md:
-    sources: [home/env/shell.nix, home/env/systools.nix]
+    sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix]
     memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
-    sources: [flake.nix, home/theme-base.nix, home/theme-de.nix, home/theme-material.nix, home/de/theme-mode.nix, home/de/wallpaper.nix, home/de/noctalia.nix, host/de/sessions.nix, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk4-dual.tpl]
+    sources: [flake.nix, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/gtk-static.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/de/noctalia.nix, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk4-dual.tpl]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
     sources: [host/base/services.nix]
@@ -63,7 +63,7 @@ docs:
     sources: [home/productivity/graphics.nix]
     memory:  []
   productivity/yazi.md:
-    sources: [home/productivity/yazi.nix]
+    sources: [home/productivity/yazi.nix, home/productivity/graphics.nix]
     memory:  []
 
   dev/nvim.md:
@@ -72,6 +72,9 @@ docs:
   dev/vscode.md:
     sources: [home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix]
     memory:  [ai-tools-source]
+  dev/nix-packaging.md:
+    sources: [flake.nix, local-deriv/animeko.nix, local-deriv/anthropic-fonts.nix, local-deriv/cliamp.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/material-gnome-theme.nix, local-deriv/netease-cloud-music-web-player.nix]
+    memory:  [nix-package-runtime-freshness]
   dev/distrobox.md:
     sources: [home/dev/containers.nix, host/base/containers.nix]
     memory:  []
@@ -80,11 +83,11 @@ docs:
     memory:  []
 
   leisure/gaming.md:
-    sources: [host/base/gaming.nix, home/leisure/gaming.nix]
+    sources: [host/base/gaming.nix, host/base/hardware.nix, host/base/services.nix, host/base/virtualization.nix, home/dev/containers.nix, home/leisure/player.nix]
     memory:  []
   leisure/media.md:
-    sources: [home/leisure/player.nix, local-deriv/animeko.nix, home/leisure/browser.nix, home/leisure/default.nix]
-    memory:  []
+    sources: [home/leisure/player.nix, local-deriv/animeko.nix, local-deriv/cliamp.nix, local-deriv/netease-cloud-music-web-player.nix, home/leisure/browser.nix, home/leisure/default.nix]
+    memory:  [cliamp-nix-package]
 
   networking/mihomo.md:
     sources: [host/base/network.nix]

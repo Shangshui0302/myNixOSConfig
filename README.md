@@ -23,16 +23,18 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 flake.nix                 # inputs、outputs、主机入口
 host/
 ├── base/                 # 两个桌面变体共享的系统层
-└── de/                   # 主 DE 的 sessions、portal、greeter
+├── de/                   # 主 DE 的 sessions、portal、greeter
+└── gnome/                # GNOME 系统层：default.nix（变体入口）、desktop.nix
 home/
+├── home.nix              # 主 DE HM 入口（base + theme/ + de/）
 ├── base.nix              # 共享 HM 入口
-├── de.nix                # 主 DE 入口
-├── de/                   # Hyprland、niri、Foot、Stylix、Shell
+├── theme/                # 颜色/壁纸/主题域（base、gtk-matugen、gtk-static、runtime、wallpaper、stylix）
+├── de/                   # Hyprland、niri、Foot、桌面 Shell
+├── gnome.nix             # GNOME 变体 HM 入口（base + theme/gtk-static）
 ├── env/                  # Shell、系统工具、OneDrive
 ├── dev/                  # 编辑器、AI、开发工具、容器
 ├── productivity/         # 办公、通讯、文件管理、图像工具、Yazi
 └── leisure/              # 浏览器、影音、游戏
-specialisation/gnome/     # 独立 GNOME 系统和用户配置
 local-deriv/              # 不在 nixpkgs 的本地包
 wiki/                     # 操作手册与来源映射
 memory/                   # 本地决策卡与硬件约束（不进 Git）
@@ -59,6 +61,7 @@ nixos-rebuild dry-build --flake .
 - [Wiki 来源清单](wiki/_sources.yaml)：Nix 模块与文档的映射。
 - [Memory 索引](memory/INDEX.md)：查询非显而易见的配置决策。
 - [项目约束](wiki/constraints.md)：包管理、变体、secrets 和验证规则。
+- [Nix 手工打包](wiki/dev/nix-packaging.md)：`$nix-package`、本地派生和验证流程。
 
 ## 约束
 

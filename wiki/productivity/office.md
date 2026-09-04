@@ -33,7 +33,7 @@ end
 subgraph "用户层(home)"
 U1["productivity/default.nix<br/>导入办公模块"]
 U2["productivity/office.nix<br/>安装LibreOffice/OnlyOffice"]
-U3["theme-base.nix<br/>fontconfig规则"]
+U3["home/theme/base.nix<br/>fontconfig规则"]
 end
 U1 --> U2
 U2 --> U3
@@ -48,7 +48,7 @@ S3 --> U2
 
 - **系统开源字体**（`host/base/desktop.nix`）：WQY、Noto CJK、思源宋体/黑体、方正系列、Emoji、多种等宽字体。
 - **MS 授权字体**：`office.nix` 里有一段 activation 脚本，每次 rebuild 把 `/persist/Fonts/` 下的 `.ttf`/`.ttc` 复制到 `~/.local/share/fonts/MS/` 并刷新 `fc-cache`，避免首次部署缺字。
-- **fontconfig 替换链**（`home/theme-base.nix`）：实现"原生优先、开源回退"，让 Office 中英文混排更自然。
+- **fontconfig 替换链**（`home/theme/base.nix`）：实现"原生优先、开源回退"，让 Office 中英文混排更自然。
 
 ```mermaid
 flowchart TD

@@ -2,7 +2,7 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-08-20
+updated: 2026-09-02
 ---
 
 # Shell 环境指南
@@ -100,10 +100,13 @@ Ghostty 配置：`Catppuccin Mocha` 深色主题，字号 14，滚动限制 1000
 
 ## Fish 命令补全
 
-补全文件由 Home Manager 显式安装到 `~/.config/fish/completions/`。这样不依赖 NixOS 固化 profile 中可能缺失的 `vendor_completions.d`。
+系统层启用 `programs.fish`，让 NixOS 生成系统包的 vendor/manpage 补全；用户层再把需要固定路径的补全显式安装到 `~/.config/fish/completions/`，不依赖固化 profile 是否暴露 `vendor_completions.d`。
 
 - `noctalia`：主命令静态补全，`msg` 子命令从当前 CLI 帮助动态读取
 - `darkman`：使用包自带的 Fish 补全
+- `nix`、`nixos-rebuild`、`nh`、`codex`、`eza`、`flatpak`、`hyprpm`、`niri`、`nixos-firewall-tool`、`podman-remote`、`rclone`、`starship`、`tree-sitter`、`wl-copy`、`wl-paste`、`ya`：直接链接包内 Fish 补全，与 Bash 补全保持同源
+- `lxc-*`、旧 `nix-*`、`nixos-container`、`npm`、`sops`、`copilot`、`fdformat`、`newgrp`、`pg`、`raw`、`tunelp`、`powerprofilesctl`、`storagectl`、`systemd-*`、`virsh`、`virt-admin`、`swapoff`：在 `fish/conf.d/bash-missing-completions.fish` 手写或调用 CLI 的动态补全，覆盖 Bash 对照清单中没有包内 Fish 文件的命令
+- `systemd`、`libvirt`、`lxc` 等系统包同时由 NixOS 的 Fish completion generator 从 manpage 生成补全；conf.d 中的手写项用于保持 Bash 清单中的旧命令和动态参数
 - `hyprctl`：根据当前 Hyprland 的 `hyprctl --help` 生成命令列表，避免上游生成文件的错位描述
 - `hyprland`、`podman`、`howdy`、`shell-switcher`：同样放在用户补全目录
 
@@ -113,6 +116,12 @@ Ghostty 配置：`Catppuccin Mocha` 深色主题，字号 14，滚动限制 1000
 ls ~/.config/fish/completions
 fish -c 'complete -C "noctalia msg "'
 fish -c 'complete -C "darkman "'
+fish -c 'complete -C "nix "'
+fish -c 'complete -C "nixos-rebuild "'
+fish -c 'complete -C "nh os "'
+fish -c 'complete -C "lxc-start --"'
+fish -c 'complete -C "nix-build --"'
+fish -c 'complete -C "virsh "'
 fish -c 'complete -C "hyprctl "'
 ```
 

@@ -1,8 +1,8 @@
 ---
 title: Yazi 文件管理器
 category: 生产力
-tags: [yazi, file-manager, tui]
-updated: 2026-08-19
+tags: [yazi, file-manager, tui, ffmpeg]
+updated: 2026-09-02
 ---
 
 # Yazi 文件管理器
@@ -75,6 +75,12 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 - **视频**：缩略图预览（ffmpeg）
 - **预览尺寸限制**：1000×1000 像素
 - **面板比例**：`[2, 3, 4]`（父目录：当前目录：预览）
+
+视频预览调用 `ffmpeg` 命令行工具；FFmpeg 作为视频工具声明在 `home/productivity/graphics.nix`，Yazi 只复用其可执行文件。
+
+## 故障排查
+
+- **视频没有缩略图**：确认 `command -v ffmpeg` 能找到可执行文件；修改包声明后由用户手动 rebuild。
 
 ## 文件图标
 

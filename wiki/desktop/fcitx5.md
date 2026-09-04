@@ -73,7 +73,7 @@ journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
 - GTK/Qt/SDL 应用均通过环境变量接入 fcitx，无需逐应用配置。
 - Wayland 下启用 `waylandFrontend` 减少 X11 桥接开销。
 - 在 Hyprland 下，`home/de/hyprland.nix` 为 Fcitx5 提供 systemd user service 的崩溃自恢复策略（on-failure 重启），提升长期稳定性。
-- `host/de/sessions.nix` 负责 GTK Portal 注册；`home/theme-base.nix` 只负责共享字体、光标和主题基础。
+- `host/de/sessions.nix` 负责 GTK Portal 注册；`home/theme/base.nix` 只负责共享字体、光标和主题基础。
 
 ## 架构总览
 下图展示从应用到 Fcitx5 再到 Rime 的数据流，以及主题与 Portal 的交互路径。

@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-08-20
+updated: 2026-09-04
 ---
 
 # Flake 配置管理
@@ -35,26 +35,32 @@ updated: 2026-08-20
 
 ## outputs：系统装配
 
-`outputs` 使用 `nixpkgs.lib.nixosSystem` 构建名为 `MechRevo-NixOS` 的系统配置：
+`outputs` 同时提供本地包、打包开发环境和名为 `MechRevo-NixOS` 的系统配置：
+
+- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包，可用 `nix build path:.#<pname>` 独立构建。
+- `devShells.x86_64-linux.packaging` 提供 `$nix-package` 流程使用的预取、更新、格式化和 ELF 诊断工具。
+- `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。
 
 - `system` 指定为 `x86_64-linux`。
-- `specialArgs = { inherit inputs; }` 将全部输入整体传入，供各模块共享。
+- `specialArgs` 将 `inputs` 与共享的 `materialGnomeTheme` 传入系统模块。
 - `modules` 列表组合：本地 `host/default.nix`、sops-nix 和 Home Manager 的 NixOS 模块。
-- Home Manager 侧：`useGlobalPkgs`/`useUserPackages` 开启，`backupFileExtension = "hm-backup"`，主配置指向 `home/de.nix`，GNOME 变体指向 `specialisation/gnome/home.nix`。
+- Home Manager 侧：`useGlobalPkgs`/`useUserPackages` 开启，`backupFileExtension = "hm-backup"`，主配置指向 `home/home.nix`，GNOME 变体指向 `home/gnome.nix`。
 
 ```mermaid
 flowchart TD
 Start(["flake.nix 入口"]) --> Inputs["声明 inputs<br/>nixpkgs/home-manager/noctalia/sops-nix..."]
 Inputs --> Outputs["outputs 定义"]
+Outputs --> Packages["packages.x86_64-linux<br/>本地手工包"]
+Outputs --> DevShell["devShells.x86_64-linux.packaging<br/>打包工具环境"]
 Outputs --> NixOS["nixosSystem(system=x86_64-linux)"]
-NixOS --> SpecialArgs["specialArgs={inherit inputs}"]
+NixOS --> SpecialArgs["specialArgs={inherit inputs materialGnomeTheme}"]
 SpecialArgs --> Modules["modules=[host, sops-nix, home-manager]"]
-Modules --> HM["home-manager.users.<user> = import ./home/de.nix"]
-HM --> ExtraArgs["extraSpecialArgs={inherit inputs}"]
+Modules --> HM["home-manager.users.<user> = import ./home/home.nix"]
+HM --> ExtraArgs["extraSpecialArgs={inherit inputs materialGnomeTheme}"]
 ExtraArgs --> End(["生成系统配置"])
 ```
 
-各子模块的组合方式：`host/default.nix` 集中导入 `boot`、`hardware`、`locale`、`nix`、`users`、`network`、`services`、`desktop`、`greeter`、`gaming`、`containers`、`sops`；`home/base.nix` 导入 Git、主题、环境、开发、生产力、娱乐等模块，并启用 nix-flatpak 用户模块。
+各子模块的组合方式：`host/default.nix` 导入共享的 `host/base/default.nix` 与主桌面的 session/greeter；`host/base/default.nix` 再集中导入 `boot`、`hardware`、`locale`、`nix`、`users`、`network`、`services`、`desktop`、`gaming`、`virtualization`、`containers`、`sops`。`home/base.nix` 导入两个变体共享的环境、开发、生产力和娱乐模块，并启用 nix-flatpak 用户模块；主题与桌面模块由各自 HM 入口组合。
 
 ## 依赖锁定与跟随
 
@@ -98,6 +104,8 @@ Flake-->>User : 生成可重现的系统与用户配置
 
 - 始终提交 `flake.lock` 锁定依赖，避免版本漂移。
 - 通过 `follows` 复用 `nixpkgs`，减少版本碎片化。
+- 手工包通过 `$nix-package` 维护，并用 flake package output 独立构建后再进入系统 dry-build。
+- 打包辅助工具从 `nix develop .#packaging` 获取，不常驻安装到用户环境。
 - 系统级变更用 `sudo nixos-rebuild switch --flake .`；用户级变更由 rebuild 自动处理。
 - 缓存加速：在 `host/base/nix.nix` 配置多个 substituters（官方 + 镜像源），并启用 `nix-command`、`flakes` 实验特性；`nh` 自动清理旧代际以维持磁盘空间。
 

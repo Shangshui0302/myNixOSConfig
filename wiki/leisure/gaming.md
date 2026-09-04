@@ -2,33 +2,35 @@
 title: 游戏平台
 category: 娱乐
 tags: [steam, proton, gaming, amdgpu, libvirtd, flatpak, mangohud]
-updated: 2026-08-19
+updated: 2026-09-04
 ---
 
 # 游戏平台
 
-在 NixOS 上搭建游戏环境：Steam + Proton 兼容层、AMD 图形栈、手柄与音频、性能监控，以及 KVM 虚拟机运行 Windows 游戏。系统级配置在 `host/base/gaming.nix`，用户级工具在 `home/leisure/gaming.nix`。
+在 NixOS 上搭建游戏环境：Steam + Proton 兼容层、AMD 图形栈、手柄与音频、性能监控，以及 KVM 虚拟机运行 Windows 游戏。Steam 在 `host/base/gaming.nix`，图形栈在 `host/base/hardware.nix`，虚拟化在 `host/base/virtualization.nix`，用户级工具在 `home/dev/containers.nix`。
 
 ## 组件总览
 
 ```mermaid
 graph TB
 A["flake.nix<br/>定义系统与 HM 模块"] --> B["host/default.nix<br/>导入各子系统模块"]
-B --> C["host/base/gaming.nix<br/>Steam/图形/libvirtd"]
-B --> D["host/base/hardware.nix<br/>amdgpu/udev"]
+B --> C["host/base/gaming.nix<br/>Steam"]
+B --> D["host/base/hardware.nix<br/>amdgpu/udev/graphics 32bit"]
 B --> E["host/base/services.nix<br/>PipeWire/蓝牙/Flatpak"]
-A --> F["home/leisure/gaming.nix<br/>mangohud"]
+B --> V["host/base/virtualization.nix<br/>libvirtd"]
+A --> F["home/dev/containers.nix<br/>virt-manager"]
+A --> G["home/leisure/player.nix<br/>MangoHud/OBS"]
 ```
 
 | 能力 | 提供者 | 说明 |
 | --- | --- | --- |
 | Steam 平台 | `host/base/gaming.nix` | 客户端 + 远程游玩防火墙 |
-| 32 位图形 + 视频加速 | `host/base/gaming.nix` | `enable32Bit` + `libva-vdpau-driver`、`libvdpau-va-gl` |
+| 32 位图形 + 视频加速 | `host/base/hardware.nix` | `enable32Bit` + `libva-vdpau-driver`、`libvdpau-va-gl` |
 | AMD GPU 驱动 | `host/base/hardware.nix` | amdgpu 内核模块与显示驱动 |
 | 音频/蓝牙手柄 | `host/base/services.nix` | PipeWire（Pulse/ALSA/JACK）+ 蓝牙开机自启 |
 | Flatpak 运行时 | `host/base/services.nix` | 为用户级 Flatpak 应用提供系统运行时 |
-| Windows 虚拟机 | `host/base/gaming.nix` | libvirtd + 用户加入 `libvirtd` 组 |
-| 性能监控 / 录制 | `home/leisure/gaming.nix`、`home/leisure/player.nix` | mangohud、obs-studio |
+| Windows 虚拟机 | `host/base/virtualization.nix` | libvirtd + 用户加入 `libvirtd` 组 |
+| 性能监控 / 录制 | `home/leisure/player.nix` | mangohud、obs-studio |
 
 ## Steam 与 Proton
 
@@ -43,7 +45,7 @@ A --> F["home/leisure/gaming.nix<br/>mangohud"]
 ## AMD 图形栈
 
 - `host/base/hardware.nix` 启用 amdgpu 内核模块，保障图形子系统正常工作。
-- `host/base/gaming.nix` 启用 32 位图形支持，满足 Windows 游戏与工具的依赖需求。
+- `host/base/hardware.nix` 启用 32 位图形支持，满足 Windows 游戏与工具的依赖需求。
 - 额外安装 `libva-vdpau-driver` 与 `libvdpau-va-gl`，提升视频解码/编码与转码效率。
 - 渲染后端优先 Vulkan（性能与延迟更佳），出现兼容性问题再回退 OpenGL。
 
@@ -63,7 +65,7 @@ A --> F["home/leisure/gaming.nix<br/>mangohud"]
 
 ## Windows 虚拟机
 
-`virtualisation.libvirtd.enable = true`，并将用户加入 `libvirtd` 组；用户级 `home/leisure/gaming.nix` 提供 `virt-manager` 创建和管理 KVM 虚拟机。适合反作弊严格或需要原生 Windows 环境的游戏；若硬件支持，可考虑 GPU 直通获得接近原生的性能。
+`host/base/virtualization.nix` 的 `virtualisation.libvirtd.enable = true`，并将用户加入 `libvirtd` 组；用户级 `home/dev/containers.nix` 提供 `virt-manager` 创建和管理 KVM 虚拟机。适合反作弊严格或需要原生 Windows 环境的游戏；若硬件支持，可考虑 GPU 直通获得接近原生的性能。
 
 ## 故障排查
 

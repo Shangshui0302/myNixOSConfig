@@ -32,16 +32,17 @@ Review for these project-specific issues:
   cause parse errors.
 - **Import chain broken?** New nix files must be imported by their parent module
   (e.g., new `home/env/foo.nix` must appear in `home/base.nix` as an import).
-- **Override vs overlay rule**: New packages added via `overrideAttrs` only if used in
-  one place. New packages in nixpkgs only via overlays. New standalone packages go in
-  `local-deriv/` and are imported directly — never put new packages in `nixpkgs.overlays`.
+- **Override vs overlay rule**: Modify an existing package with `overrideAttrs` when
+  it is used in one place. New standalone packages go in `local-deriv/`, are imported
+  directly, and expose a flake package build target — never create an overlay for one package.
 - **Stale paths**: If a file was renamed/moved, are all import paths updated?
 - **Hardcoded secrets**: No API keys, tokens, or passwords in nix files. Secrets
   belong in `/persist/secrets/`.
 - **Deduplication**: Tools already declared in `host/network.nix`
   (dnsutils, iputils, tcpdump, mtr, nmap, iperf3, ethtool, iptables) should not
   appear in `home/` modules.
-- **Fonts**: New fonts go in `local-deriv/fonts.nix`, imported by `home/theme.nix`.
+- **Fonts**: Custom fonts use a focused `local-deriv/<name>.nix`; shared system fonts
+  are consumed from `host/base/desktop.nix`, with additional consumers only when required.
 
 If anything looks wrong, flag it to the user before proceeding.
 
@@ -58,7 +59,7 @@ Not every change needs wiki/memory updates. Use this matrix to decide:
 | Non-obvious decision (why not derivable from code/commit) | memory decision card + INDEX.md |
 | Hardware trait / environment constraint change | memory hardware/constraint card + INDEX.md |
 | New/removed component | wiki/README.md (nav home) |
-| New custom package in local-deriv/ | README.md + AGENTS.md |
+| New custom package in local-deriv/ | wiki/dev/nix-packaging.md + wiki/_sources.yaml + affected component wiki; README.md/AGENTS.md only if structure or rules changed |
 | New overlay | Usually none |
 | Adding/removing a flatpak or user app | Usually none |
 | Tweak to an existing config value | Usually none |
