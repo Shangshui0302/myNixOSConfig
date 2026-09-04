@@ -1,11 +1,11 @@
 { pkgs }:
 pkgs.stdenv.mkDerivation rec {
   pname = "netease-cloud-music-web-player";
-  version = "1.6.0";
+  version = "1.6.1";
 
   src = pkgs.fetchurl {
-    url = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player/releases/download/1.6.0/netease-cloud-music-web-player-1.6.0.tar.gz";
-    sha256 = "12dnmxjdps96ijd77bddx90ayhj7kfzgpr1vhpkyjfy9s90yn8x9";
+    url = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player/releases/download/1.6.1/netease-cloud-music-web-player-1.6.1.tar.gz";
+    sha256 = "0m0j6r6kg3clhdfhwjjahd00l4j80wwr42r2s9qyvmp4189z7sfy";
   };
 
   sourceRoot = ".";
