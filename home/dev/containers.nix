@@ -1,5 +1,9 @@
 { pkgs, ... }: {
-  home.packages = with pkgs; [ distrobox ];
+  # 容器与虚拟化的用户侧工具（libvirtd 系统服务在 host/base/virtualization.nix）。
+  home.packages = with pkgs; [
+    distrobox
+    virt-manager
+  ];
 
   xdg.configFile."distrobox/distrobox.ini".text = ''
     # ==========================================
