@@ -47,7 +47,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 ### 光标
 
-启用 `hypr-dynamic-cursors` 的 shake-to-find：快速摇动鼠标即可放大光标。已关闭旋转、倾斜和拉伸效果，只保留找光标功能。
+启用 `hypr-dynamic-cursors` 的 shake-to-find：快速摇动鼠标即可放大光标。已关闭旋转、倾斜和拉伸效果，只保留找光标功能。由于 Hyprland 0.56.2 的 hook 变化，插件固定到上游对应提交以保持 ABI 匹配。
 
 ---
 

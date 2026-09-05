@@ -23,6 +23,16 @@ let
   '';
 
   scrolloverview = import ../../local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
+  # Hyprland 0.56.2 hook compatibility: use the upstream release pin.
+  dynamicCursors = pkgs.hyprlandPlugins.hypr-dynamic-cursors.overrideAttrs (_: {
+    version = "0-unstable-2026-08-06";
+    src = pkgs.fetchFromGitHub {
+      owner = "VirtCode";
+      repo = "hypr-dynamic-cursors";
+      rev = "5a224284872208b5324759d535d65061043725de";
+      hash = "sha256-BQjuQplkQFA30/7evDxmEAvr2ArIG09JffEBQhuzo80=";
+    };
+  });
   touchpadToggle = pkgs.writeShellScriptBin "toggle-touchpad" ''
     set -eu
 
@@ -82,7 +92,7 @@ in
     portalPackage = null;
     plugins = [
       scrolloverview
-      pkgs.hyprlandPlugins.hypr-dynamic-cursors
+      dynamicCursors
     ];
 
     # HM owns the generated Lua file; this module is loaded before settings.
