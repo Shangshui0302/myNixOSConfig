@@ -17,21 +17,6 @@ in
     go-musicfox
   ];
 
-  xdg.dataFile."icons/hicolor/256x256/apps/animeko.png".source = animeko.passthru.icon;
-
-  xdg.desktopEntries.animeko = {
-    name = "Animeko";
-    comment = "集找番、追番、看番的一站式弹幕追番平台";
-    exec = "animeko";
-    icon = "animeko";
-    terminal = false;
-    categories = [
-      "AudioVideo"
-      "Player"
-      "Video"
-    ];
-  };
-
   xdg.desktopEntries.musicfox = {
     name = "go-musicfox";
     genericName = "Terminal Music Player";

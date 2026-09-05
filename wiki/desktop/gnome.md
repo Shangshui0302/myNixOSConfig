@@ -2,14 +2,14 @@
 title: GNOME
 category: 桌面
 tags: [gnome, gdm, specialisation, wayland]
-updated: 2026-09-02
+updated: 2026-09-04
 ---
 
 # GNOME
 
 ## 定位
 
-完整 GNOME 桌面，作为 **`inheritParentConfig=false` 的 specialisation 变体**存在（代码在独立的 `host/gnome/`（系统层）+ `home/gnome.nix`（HM 入口），不继承 main 的 Hyprland 配置——Hyprland/foot/fcitx5 主题等包体完全不进 GNOME 闭包）。默认 boot 使用 greetd + tuigreet 启动 Hyprland/niri；想用 GNOME 时开机选 GNOME 变体，进 GDM 登录。
+完整 GNOME 桌面，作为 **`inheritParentConfig=false` 的 specialisation 变体**存在（代码在独立的 `host/gnome/`（系统层）+ `home/gnome.nix`（HM 入口），不继承 main 的 Hyprland/niri/Foot 专属模块；共享 base 中的 fcitx5 与通用应用仍按实际引用进入闭包）。默认 boot 使用 greetd + tuigreet 启动 Hyprland/niri；想用 GNOME 时开机选 GNOME 变体，进 GDM 登录。
 
 ## 启动
 
@@ -26,7 +26,7 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 
 ## 配置要点（host/gnome/ + home/gnome.nix）
 
-- **隔离机制**：`inheritParentConfig=false`，变体从零 import 共享 `host/base/` + GNOME 专属（`host/gnome/desktop.nix`）+ 变体 home（`home/gnome.nix`，import 共享 `home/base.nix` + Material 主题）。Hyprland 闭包不含 material-gnome-theme，GNOME 闭包不含 Hyprland/foot/wlr portal/qt5ct/adw-gtk3/noctalia
+- **隔离机制**：`inheritParentConfig=false`，变体从零 import 共享 `host/base/` + GNOME 专属（`host/gnome/desktop.nix`）+ 变体 home（`home/gnome.nix`，import 共享 `home/base.nix` + Material 主题）。Material 主题包由共享主题路径提供给需要它的桌面；GNOME 闭包不含 Hyprland/foot/wlr portal/qt5ct/adw-gtk3/noctalia 等主 DE 专属内容
 - **GSettings override 生效条件**（gnome.md 官方）：override 某包 schema 必须把该包加进 `extraGSettingsOverridePackages`，否则对应段被编译丢弃（Console/nautilus 曾因此失效）。GNOME Shell 扩展 schema 在非标准路径（`share/gnome-shell/extensions/<uuid>/schemas/`），需用 `withStandardSchemas` 链接到标准 gsettings-schemas 路径后加入 override 包，dash-to-dock/blur-my-shell/user-theme 的 override 才生效
 
 - **GNOME 应用**：`core-apps.enable = true`（core apps）+ `core-developer-tools.enable = true`（开发者工具）；`games.enable = false`（小游戏关闭）
@@ -37,7 +37,7 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
   - 集成/锁屏：gsconnect（手机互通）、lockscreen-studio（锁屏美化）
   - 注：no-title-bar / pano 已被 nixpkgs 移除（上游停维护）；tray-icons-reloaded / forge / just-perfection / unite / hide-activities-button 未启用故移除（2026-08-12 清理）
 - **dash-to-dock**：intellihide 全窗口避让（遮挡即隐藏、鼠标移边缘呼出）+ 底部 + DASHES 白条指示器，经 `extraGSettingsOverrides` 配置
-- **主题**：`material-gnome-theme`（local-deriv 自建包：构建期 matugen 从壁纸取色 + shellLayout 布局参数化），`user-theme name='Material-Gnome'` 加载；GTK4 链接 + `~/.themes` + flatpak override 限定 GNOME 变体（Hyprland 主桌面保持 adw-gtk3-dark）
+- **主题**：`material-gnome-theme`（local-deriv 自建包：构建期 matugen 从壁纸取色 + shellLayout 布局参数化），`user-theme name='Material-Gnome'` 加载；GNOME 变体使用静态 Material-Gnome 主题，Hyprland 主桌面使用 matugen 主题链路
 - **console**：`[org.gnome.Console]` 设 `shell=['fish']`（系统 passwd 默认是 bash）+ `ignore-scrollback-limit=true`
 - **blur-my-shell**：静态高斯模糊 + 自带 corner pipeline（`pipeline_default_rounded`），panel/applications/dash-to-dock 分段配置，无需 rounded-blur 库
 - **用户设置持久化**：`extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus/console 偏好 + dash-to-dock + blur-my-shell + user-theme + enabled-extensions）+ `favoriteAppsOverride`（Dock：Nautilus/Chrome/Console/Code）；默认壁纸使用 `assets/nixos_logo.png`。图标/深浅色由 `home/theme/base.nix` 共享，gtk-theme 在变体 `home/gnome.nix` 设 Material-Gnome

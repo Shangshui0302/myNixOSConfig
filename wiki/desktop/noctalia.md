@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-08-19
+updated: 2026-09-05
 ---
 
 # Noctalia Shell 使用指南
@@ -36,13 +36,8 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 | 左 | 启动器 (🚀) | 点击打开应用启动器 |
 | 左 | 时钟 | `HH:mm ddd, MMM dd` 格式 |
 | 左 | 系统监视器 | CPU 使用率/温度/核心数 + 内存使用，紧凑模式 |
-| 左 | 媒体面板 | 专辑封面、进度环、可视化效果（播放时显示） |
-| 中 | 活动窗口 | 当前窗口标题，悬停滚动截断文本 |
 | 中 | 工作区 | 数字索引标签，圆点指示占用状态，滚轮切换 |
-| 中 | 特殊工作区 | 抽屉式弹出，含 messaging 工作区 |
-| 中 | 工作区总览 | 点击进入 Exposé 风格总览 |
-| 中 | GitHub 动态 | GitHub 通知/Star/Fork/PR 面板 |
-| 中 | AI 助手 | Gemini 2.5 Flash 对话面板（右侧弹出，宽 520px） |
+| 右 | 媒体 / 音频可视化 | 播放时显示进度和可视化效果 |
 | 右 | 网络指示器 | 上传/下载速率 |
 | 右 | 电池 | 简洁图形模式，无电池时隐藏 |
 | 右 | 音量 | 悬停展开调整，中键打开 pavucontrol |
@@ -65,7 +60,9 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 | `Super + Space` | 应用启动器 |
 | `Super + K` | 控制中心 |
 | `Super + ,` | 设置面板 |
-| `Super + Tab` | 工作区总览 |
+| `Super + Tab` | Hyprland 的 ScrollOverview；niri 使用原生 `toggle-overview`，不经过 Noctalia |
+
+Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下角热角保留为自定义 ScrollOverview 命令。
 
 ## 鼠标操作
 

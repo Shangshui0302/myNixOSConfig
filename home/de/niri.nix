@@ -114,7 +114,9 @@
           Mod+K     { spawn-sh "noctalia msg panel-toggle control-center"; }
           Mod+Shift+Comma { spawn-sh "noctalia msg settings-toggle"; }
           Mod+Shift+D { spawn-sh "darkman toggle"; }
-          Mod+Tab   { spawn-sh "noctalia msg window-switcher"; }
+
+          // Niri 原生工作区总览（不经过 Noctalia）
+          Mod+Tab   { toggle-overview; }
 
           // ---- 截图（复用 Hyprland 的 screenshot 脚本）----
           Print       { spawn-sh "screenshot screen"; }

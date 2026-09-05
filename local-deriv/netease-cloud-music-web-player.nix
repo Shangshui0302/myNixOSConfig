@@ -1,11 +1,11 @@
 { pkgs }:
-pkgs.stdenv.mkDerivation rec {
+pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "netease-cloud-music-web-player";
   version = "1.6.1";
 
   src = pkgs.fetchurl {
-    url = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player/releases/download/1.6.1/netease-cloud-music-web-player-1.6.1.tar.gz";
-    sha256 = "0m0j6r6kg3clhdfhwjjahd00l4j80wwr42r2s9qyvmp4189z7sfy";
+    url = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player/releases/download/${finalAttrs.version}/netease-cloud-music-web-player-${finalAttrs.version}.tar.gz";
+    hash = "sha256-3unzEwrk1u1x0iILkjkHSBIKQINKSg5dg5SNN002ElQ=";
   };
 
   sourceRoot = ".";
@@ -13,26 +13,31 @@ pkgs.stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgs.makeWrapper ];
 
   installPhase = ''
-    mkdir -p $out/{bin,lib/${pname},share/{applications,icons/hicolor/scalable/apps}}
+    runHook preInstall
+    install -d "$out/bin" "$out/lib/${finalAttrs.pname}" \
+      "$out/share/applications" "$out/share/icons/hicolor/scalable/apps"
 
-    cp app.asar $out/lib/${pname}/
-    cp netease-cloud-music.svg $out/share/icons/hicolor/scalable/apps/
+    install -Dm644 app.asar "$out/lib/${finalAttrs.pname}/app.asar"
+    install -Dm644 netease-cloud-music.svg \
+      "$out/share/icons/hicolor/scalable/apps/${finalAttrs.pname}.svg"
 
     substitute netease-cloud-music-web-player.desktop \
-      $out/share/applications/${pname}.desktop \
-      --replace-fail "/usr/bin/${pname}" "${pname}" \
-      --replace-fail "Icon=netease-cloud-music" "Icon=netease-cloud-music"
+      "$out/share/applications/${finalAttrs.pname}.desktop" \
+      --replace-fail "/usr/bin/${finalAttrs.pname}" "${finalAttrs.pname}"
 
-    makeWrapper ${pkgs.electron}/bin/electron $out/bin/${pname} \
-      --add-flags "$out/lib/${pname}/app.asar" \
+    makeWrapper ${pkgs.electron}/bin/electron "$out/bin/${finalAttrs.pname}" \
+      --add-flags "$out/lib/${finalAttrs.pname}/app.asar" \
       --add-flags "--no-sandbox --disable-gpu-sandbox --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --password-store=basic" \
       --set-default ELECTRON_FORCE_IS_PACKAGED 1
+    runHook postInstall
   '';
 
   meta = with pkgs.lib; {
     description = "Unofficial NetEase Cloud Music web player desktop client";
     homepage = "https://github.com/feng-yifan/Netease-Cloud-Music-Web-Player";
     license = licenses.mit;
+    mainProgram = finalAttrs.pname;
     platforms = [ "x86_64-linux" ];
+    sourceProvenance = with sourceTypes; [ binaryBytecode ];
   };
-}
+})

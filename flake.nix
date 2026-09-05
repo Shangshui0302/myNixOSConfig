@@ -45,7 +45,10 @@
     { nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "anthropic-fonts" ];
+      };
       # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
       materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
         inherit pkgs;
@@ -69,7 +72,9 @@
         packages = with pkgs; [
           binutils
           deadnix
+          desktop-file-utils
           file
+          fontconfig
           nix-init
           nix-update
           nixfmt

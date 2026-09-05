@@ -2,7 +2,7 @@
 title: 桌面 Shell 切换
 category: desktop
 tags: [shell-switcher, shell, noctalia, caelestia, systemd]
-updated: 2026-08-20
+updated: 2026-09-05
 ---
 
 # 桌面 Shell 切换指南
@@ -68,13 +68,13 @@ Caelestia 会自动保存 `~/.config/caelestia/shell.json`，而 Home Manager �
 
 ## 快捷键兼容层
 
-Hyprland 的 shell 相关快捷键统一调用 `desktop-shell-action`，它按当前 active service 分发到对应 shell，因此切换后无需更换快捷键：
+Hyprland 的 shell 相关快捷键统一调用 `desktop-shell-action`，它按当前 active service 分发到对应 shell，因此切换后无需更换快捷键。工作区总览快捷键由各 compositor 原生处理，不经过此兼容层：
 
 - `Super + Space`：打开启动器
 - `Super + K`：打开控制中心（Caelestia 的 utilities drawer）
 - `Super + ,`：打开设置（Caelestia 的 Nexus）
 - `Super + C`：Noctalia 剪贴板面板；Caelestia 打开 Clipse
-- `Super + Tab`：Noctalia window switcher；Caelestia 切换到下一个 Hyprland 窗口
+- `Super + Tab`：Hyprland 使用 ScrollOverview；niri 使用原生 `toggle-overview`
 - 亮度键：两套 shell 都按 5% 步进
 
 Clipse 由 Home Manager 独立运行，和 shell 切换无关；壁纸仍统一交给 waypaper + Matugen 管线。

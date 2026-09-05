@@ -17,13 +17,10 @@ pkgs.hyprlandPlugins.mkHyprlandPlugin {
 
   buildInputs = [ pkgs.lua5_4 ];
   enableParallelBuilding = true;
-  dontUseCmakeConfigure = true;
 
-  buildPhase = ''
-    runHook preBuild
+  makeFlags = [ "LUA_PKG=lua5.4" ];
+  preBuild = ''
     export SCROLLOVERVIEW_BUILD_VERSION="${version}"
-    make all
-    runHook postBuild
   '';
 
   installPhase = ''
@@ -37,5 +34,6 @@ pkgs.hyprlandPlugins.mkHyprlandPlugin {
     homepage = "https://github.com/yayuuu/hyprland-scroll-overview";
     license = pkgs.lib.licenses.bsd3;
     platforms = pkgs.lib.platforms.linux;
+    sourceProvenance = with pkgs.lib.sourceTypes; [ fromSource ];
   };
 }

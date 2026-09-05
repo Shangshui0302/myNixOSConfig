@@ -1,4 +1,12 @@
-{ pkgs, wallpaper ? null, shellLayout ? "floating-capsule", schemeType ? "scheme-tonal-spot", contrast ? 0.0, mode ? "dark", ... }:
+{
+  pkgs,
+  wallpaper ? null,
+  shellLayout ? "floating-capsule",
+  schemeType ? "scheme-tonal-spot",
+  contrast ? 0.0,
+  mode ? "dark",
+  ...
+}:
 
 # Material GNOME — Material You/Material 3 风格 GNOME 桌面主题。
 # 纯主题文件无需编译：把仓库内容整体作为 share/themes/Material-Gnome/。
@@ -7,21 +15,24 @@
 # wallpaper 非空时，构建期用 matugen 从壁纸取色，重着色 gtk-3.0/gtk-4.0 的 colors.css，
 # 并按 token 映射批量替换 gnome-shell.css 的硬编码 hex —— 整套主题（Shell + GTK）跟随壁纸配色。
 let
-  inherit (pkgs) lib stdenv fetchFromGitHub;
+  inherit (pkgs) lib stdenvNoCC fetchFromGitHub;
   hasWallpaper = wallpaper != null;
 in
-stdenv.mkDerivation {
+stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "material-gnome-theme";
   version = "1.3.0";
 
   src = fetchFromGitHub {
     owner = "SakibShahariar";
     repo = "material-gnome-theme";
-    rev = "v.1.3.0";
+    rev = "v.${finalAttrs.version}";
     hash = "sha256-/oHVl8erXsLfvsFVk9qx5eI8M234IZYdzOjNQjE9UvU=";
   };
 
-  nativeBuildInputs = lib.optionals hasWallpaper [ pkgs.matugen pkgs.python3 ];
+  nativeBuildInputs = lib.optionals hasWallpaper [
+    pkgs.matugen
+    pkgs.python3
+  ];
 
   installPhase = ''
     runHook preInstall
@@ -71,5 +82,7 @@ stdenv.mkDerivation {
     description = "Material You / Material 3 GNOME desktop theme (Shell + GTK3/4), recolorable via Matugen wallpaper";
     homepage = "https://github.com/SakibShahariar/material-gnome-theme";
     license = lib.licenses.gpl3;
+    platforms = lib.platforms.linux;
+    sourceProvenance = with lib.sourceTypes; [ fromSource ];
   };
-}
+})

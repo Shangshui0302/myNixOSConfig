@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-09-03
+updated: 2026-09-05
 ---
 
 # Hyprland 使用指南
@@ -21,7 +21,7 @@ updated: 2026-09-03
 
 **桌面 shell 切换**：默认 Noctalia（systemd 拉起；默认 shell 由 config.toml 的 `default` 指定），可运行时切到 Caelestia：`shell-switcher set caelestia|noctalia`（切换器配置 `~/.config/shell-switcher/config.toml`，见 `home/de/shell-switcher.nix`）。两个 shell 的 service 由切换器互斥启停，避免抢占 `org.freedesktop.Notifications` DBus。shell-switcher 二进制经 flake input 接入（`github:Shangshui0302/shell-switcher`）。
 
-Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 分发，切换到 Caelestia 后仍使用同一套按键；壁纸和 Matugen 配色继续沿用主桌面的统一管线。
+Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 分发，切换到 Caelestia 后仍使用同一套按键；工作区总览由 compositor 直接处理，不依赖桌面 shell。壁纸和 Matugen 配色继续沿用主桌面的统一管线。
 
 **配色（stylix）**：`home/theme/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Anthropic Mono Variable:size=12`（stylix 接入时曾被误删、字号退回默认，已恢复）。
 
@@ -43,7 +43,11 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 ### 工作区总览 (ScrollOverview)
 
-`Super + G` 打开或关闭 ScrollOverview。它以纵向缩略图显示所有工作区，选择窗口后返回当前布局；插件由 Nix 随 Hyprland 加载，不需要手动运行 `hyprpm`。
+`Super + G` 或 `Super + Tab` 打开或关闭 ScrollOverview。四指上下滑动使用同一插件的 overview 手势；它以纵向缩略图显示工作区，选择窗口后返回当前布局。插件由 Nix 随 Hyprland 加载，不需要手动运行 `hyprpm`。
+
+### 光标
+
+启用 `hypr-dynamic-cursors` 的 shake-to-find：快速摇动鼠标即可放大光标。已关闭旋转、倾斜和拉伸效果，只保留找光标功能。
 
 ---
 
@@ -61,7 +65,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 | `Super + Space` | 应用启动器（Noctalia / Caelestia） |
 | `Super + K` | 控制中心（Noctalia / Caelestia utilities） |
 | `Super + ,` | 设置面板（Noctalia / Caelestia Nexus） |
-| `Super + Tab` | 窗口切换（Noctalia window switcher / Caelestia 下一个窗口） |
+| `Super + Tab` | ScrollOverview 工作区总览 |
 | `Super + Shift + D` | Darkman 切换深浅模式 |
 
 ### 截图
@@ -88,7 +92,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 |------|------|
 | `Super + ←/→/↑/↓` | 切换焦点 |
 | `Super + 1–0` | 切换到工作区 1–10 |
-| `Super + G` | 打开 / 关闭 ScrollOverview 工作区总览 |
+| `Super + G` / `Super + Tab` | 打开 / 关闭 ScrollOverview 工作区总览 |
 | `Super + S` | 切换特殊工作区（scratchpad） |
 | `Super + Shift + S` | 移动窗口到特殊工作区 |
 
@@ -132,6 +136,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 | 手势 | 功能 |
 |------|------|
+| 四指上下滑动 | ScrollOverview 工作区总览 |
 | 三指上下滑动 | 切换工作区 |
 | 三指左右滑动 | 平滑滚动列 |
 
@@ -191,15 +196,18 @@ Shift + Print   # 区域截图 → Swappy 标注 → 存文件 + 剪贴板
 ## 故障排查
 
 ```
-# 验证配置文件语法
+# 离线验证配置文件语法（不加载第三方插件）
 hyprland --verify-config
+
+# 运行中的 Hyprland：重载并检查活动配置（configerrors 应无输出）
+hyprctl reload
+hyprctl configerrors
 
 # 查看 Hyprland 日志
 cat /tmp/hypr/$(ls -t /tmp/hypr/ | head -1)/hyprland.log
-
-# 重新加载配置（不重启）
-hyprctl reload
 ```
+
+`hyprland --verify-config` 是离线解析；含第三方插件的配置可能在这里报告插件键不存在。实际会话应以 `hyprctl configerrors` 无输出为准。
 
 ### WUJIE14XA 触控板 Fn 键
 

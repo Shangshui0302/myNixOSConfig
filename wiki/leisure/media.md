@@ -20,7 +20,7 @@ end
 subgraph "本地派生"
 A["animeko.nix<br/>AppImage 封装"]
 N["netease-cloud-music-web-player.nix<br/>Electron 包装"]
-C["cliamp.nix<br/>v2.0.1 release binary 包装"]
+C["cliamp.nix<br/>v2.0.1 Go 源码构建"]
 end
 subgraph "系统服务"
 S["services.nix<br/>PipeWire(Pulse/ALSA/JACK), 蓝牙, gvfs"]
@@ -33,7 +33,7 @@ B --> |"访问流媒体站点"| S
 P --> |"音视频解码/缩略图"| S
 A --> |"运行依赖"| H
 N --> |"运行依赖"| H
-C --> |"ALSA + yt-dlp + ffmpeg"| S
+C --> |"ALSA + yt-dlp + ffmpeg-headless"| S
 ```
 
 `home/leisure/player.nix` 安装的应用：
@@ -47,7 +47,7 @@ C --> |"ALSA + yt-dlp + ffmpeg"| S
 | Animeko | 动漫播放器，`local-deriv/animeko.nix` 封装官方 v6.1.0 AppImage，并通过 JVM 参数匹配 GTK 的 2 倍 UI 缩放 |
 | `ani-cli` | 命令行动漫搜索与播放，默认调用 mpv；使用 `ani-cli` 启动 |
 | Kazumi | 图形化动漫聚合播放器，支持自定义规则、字幕与弹幕；由 nixpkgs 提供桌面入口 |
-| `cliamp` | 复古 Winamp 风格终端音乐播放器；本地派生固定 v2.0.1 release binary，网易云播放依赖 `yt-dlp` 与 `ffmpeg` |
+| `cliamp` | 复古 Winamp 风格终端音乐播放器；本地派生固定 v2.0.1 源码构建，网易云播放依赖 `yt-dlp` 与 `ffmpeg-headless` |
 | 网易云网页版 | 本地派生 `local-deriv/netease-cloud-music-web-player.nix` Electron 打包 |
 
 浏览器（Firefox、Google Chrome）在 `home/leisure/browser.nix`，用于访问 Netflix、YouTube、Bilibili 等在线流媒体。
@@ -69,7 +69,7 @@ enabled = true
 cookies_from = "chrome"
 ```
 
-搜索和歌单由网易云接口提供，播放通过 `yt-dlp` 获取音频并由 `ffmpeg` 解码。歌曲是否可播仍受账号、地区和版权限制影响。
+搜索和歌单由网易云接口提供，播放通过 `yt-dlp` 获取音频并由 `ffmpeg-headless` 提供的 `ffmpeg` 命令解码。歌曲是否可播仍受账号、地区和版权限制影响。
 
 ### cliamp 补全
 

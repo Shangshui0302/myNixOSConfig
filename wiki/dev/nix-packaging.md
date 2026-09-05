@@ -80,6 +80,7 @@ nix develop .#packaging
 | `nix-update` | 辅助更新版本和依赖哈希 |
 | `nixfmt`、`statix`、`deadnix` | 格式化与静态检查 |
 | `readelf`、`patchelf`、`file` | 诊断预编译 ELF |
+| `desktop-file-validate`、`fc-scan` | 分别校验 GUI desktop entry 与字体元数据 |
 
 这些工具是加速器，不是真相源。生成结果必须对照上游和当前 nixpkgs 手工复核。
 
@@ -104,8 +105,10 @@ nix develop .#packaging
 - URL、tag 与文件名里的版本优先引用 `${version}`。
 - 构建工具和 setup hooks 放 `nativeBuildInputs`；链接或运行库放 `buildInputs`。
 - 运行时通过命令名调用的程序使用 store path 或 wrapper 提供 `PATH`。
+- Go 源码包优先使用 `buildGoModule` 并固定 `vendorHash`；仅封装原生发布二进制时标注 `sourceProvenance` 为 `binaryNativeCode`。
 - 优先默认 phases 或 `pre/post*`；完整覆盖 phase 时保留 `runHook preX/postX`。
 - `meta` 从上游核对 `description`、`homepage`、`license`、`mainProgram`、`platforms`。
+- 上游未发布许可证的字体或素材不能标成自由许可证；使用 `licenses.unfree` 并在文档中保留分发风险说明。
 - 普通 build phase 禁止联网下载 Cargo、npm 或 Python 依赖。
 - GUI 包不能只交付命令，必须处理 desktop entry、图标与 `Exec`。
 
@@ -145,7 +148,7 @@ nix build path:.#<pname> -L --no-link --print-out-paths
 nix log path:.#<pname>
 ```
 
-根据类型检查输出：CLI 跑安全的 `--version` 或 `--help`；ELF 检查动态依赖；GUI 检查 wrapper、desktop 和 icon；字体用 `fc-scan`；插件确认 `.so`。不能安全启动的 GUI 或守护进程应记录为“待 switch 后人工验证”。
+根据类型检查输出：CLI 跑安全的 `--version` 或 `--help`；ELF 检查动态依赖；GUI 检查 wrapper、desktop 和 icon；字体用 `fc-scan`；插件确认 `.so`。GUI 与字体包还可运行 `desktop-file-validate "$out/share/applications/<pname>.desktop"` 与 `fc-scan --format '%{family}\n' "$out"/share/fonts/truetype/*.ttf`。不能安全启动的 GUI 或守护进程应记录为“待 switch 后人工验证”。
 
 最后验证系统集成：
 

@@ -71,6 +71,13 @@ niri validate -c ~/.config/niri/config.kdl
 hyprland --verify-config
 ```
 
+对于运行中的 Hyprland，会话重载后再检查活动配置（应无输出）：
+
+```bash
+hyprctl reload
+hyprctl configerrors
+```
+
 通用检查：
 
 ```bash

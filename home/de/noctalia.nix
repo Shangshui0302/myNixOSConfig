@@ -33,11 +33,10 @@ in
           capsule = true;
           capsule_opacity = 0.8;
           center = [
-            ("group:g4")
-            ("active_window")
             ("workspaces")
           ];
           end = [
+            ("group:g5")
             ("group:g6")
             ("tray")
             ("group:g2")
@@ -57,9 +56,7 @@ in
             ("launcher")
             ("clock")
             ("sysmon")
-            ("media")
             ("group:g3")
-            ("group:g5")
           ];
           thickness = 42;
           widget_spacing = 6;
@@ -103,21 +100,12 @@ in
             })
             ({
               fill = "surface_variant";
-              id = "g4";
-              members = [
-                ("taskbar")
-              ];
-              opacity = 0.80000001192092896;
-              padding = 6.0;
-            })
-            ({
-              fill = "surface_variant";
               id = "g5";
               members = [
-                ("audio_visualizer")
                 ("media")
+                ("audio_visualizer")
               ];
-              opacity = 1.0;
+              opacity = 0.80000001192092896;
               padding = 6.0;
             })
             ({
@@ -169,29 +157,11 @@ in
       };
       desktop_widgets = {
         schema_version = 2;
-        widget_order = [
-          ("desktop-widget-0000000000000003")
-        ];
+        widget_order = [ ];
         grid = {
           cell_size = 8;
           major_interval = 4;
           visible = true;
-        };
-        widget = {
-          desktop-widget-0000000000000003 = {
-            box_height = 240.0;
-            box_width = 256.0;
-            cx = 1776.0;
-            cy = 1064.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "fancy_audio_visualizer";
-            settings = {
-              background = false;
-              secondary_color = "on_primary";
-              visualization_mode = "wave_rings";
-            };
-          };
         };
       };
       dock = {
@@ -221,7 +191,8 @@ in
       hot_corners = {
         enabled = true;
         bottom_left = {
-          action = "window_switcher";
+          action = "command";
+          command = "hyprctl dispatch 'hl.plugin.scrolloverview.overview(\"toggle all\")'";
         };
         top_left = {
           action = "launcher";
@@ -309,148 +280,6 @@ in
               show_weather = true;
             };
           };
-          lockscreen-widget-0000000000000001 = {
-            box_height = 456.0;
-            box_width = 688.0;
-            cx = 960.0;
-            cy = 404.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "clock";
-            settings = {
-              background = true;
-              background_opacity = 0.0;
-              background_radius = 32;
-              center_text = false;
-              color = "primary";
-              font_family = ".PingFang SC";
-              format = "{:%H:%M}";
-              shadow = false;
-            };
-          };
-          lockscreen-widget-0000000000000002 = {
-            box_height = 136.0;
-            box_width = 248.0;
-            cx = 1008.0;
-            cy = 664.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "media_player";
-            settings = {
-              background_opacity = 1.0;
-              background_radius = 32;
-            };
-          };
-          lockscreen-widget-0000000000000003 = {
-            box_height = 136.0;
-            box_width = 144.0;
-            cx = 1216.0;
-            cy = 664.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "fancy_audio_visualizer";
-            settings = {
-              background = true;
-              background_opacity = 1.0;
-              background_radius = 32;
-            };
-          };
-          lockscreen-widget-0000000000000004 = {
-            box_height = 296.0;
-            box_width = 232.0;
-            cx = 752.0;
-            cy = 744.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "weather";
-            settings = {
-              background_opacity = 1.0;
-              background_padding = 21;
-              background_radius = 32;
-              forecast_days = 6;
-              shadow = false;
-              show_forecast = true;
-            };
-          };
-          lockscreen-widget-0000000000000005 = {
-            box_height = 144.0;
-            box_width = 192.0;
-            cx = 980.0;
-            cy = 820.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "sysmon";
-            settings = {
-              background_opacity = 1.0;
-              background_radius = 32;
-              shadow = false;
-              stat = "cpu_usage";
-              stat2 = "cpu_temp";
-            };
-          };
-          lockscreen-widget-0000000000000006 = {
-            box_height = 336.0;
-            box_width = 688.0;
-            cx = 960.0;
-            cy = 744.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "label";
-            settings = {
-              background_radius = 32;
-              title = "";
-            };
-          };
-          lockscreen-widget-0000000000000009 = {
-            box_height = 144.0;
-            box_width = 200.0;
-            cx = 1188.0;
-            cy = 820.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "sysmon";
-            settings = {
-              background_opacity = 1.0;
-              background_radius = 32;
-              shadow = false;
-              stat = "ram_pct";
-              stat2 = "swap_pct";
-            };
-          };
-          lockscreen-widget-000000000000000a = {
-            box_height = 1200.0;
-            box_width = 776.0;
-            cx = 960.0;
-            cy = 600.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "label";
-            settings = {
-              background_opacity = 0.66;
-              background_radius = 0;
-              opacity = 0.9500000000000001;
-              title = "";
-            };
-          };
-          lockscreen-widget-000000000000000c = {
-            box_height = 16.0;
-            box_width = 760.0;
-            cx = 960.0;
-            cy = 1184.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "label";
-            settings = {
-              background = false;
-              background_opacity = 0.66;
-              background_radius = 0;
-              color = "on_surface_variant";
-              description = "NixOS          //          Hyprland          //          Noctalia";
-              opacity = 0.56;
-              shadow = false;
-              title = "";
-            };
-          };
         };
       };
       nightlight = {
@@ -468,6 +297,9 @@ in
         position_vertical = "center_right";
       };
       plugin_settings = {
+        "alexmnrs/github-activity" = {
+          calendar_placement = "floating";
+        };
         "noctalia/translator" = {
           target_lang = "zh";
         };
@@ -476,6 +308,20 @@ in
         enabled = [
           ("noctalia/kaomoji")
           ("noctalia/translator")
+          ("alexmnrs/github-activity")
+          ("felipeartur/ai-usagebar")
+          ("dragged/cider")
+          ("nocode-96/cmd-runner")
+          ("weinguyen/shell-command")
+          ("tphilippot/git_companion")
+          ("davemhammer/obsidian")
+          ("mdj2812/mihomo-control")
+          ("alexander/screen-toolkit")
+          ("tmelik/system-monitor")
+          ("kenn/keybind-cheatsheet")
+          ("icefish/phone-operate")
+          ("notfinaldev/web-search")
+          ("avivbintangaringga/nix-monitor")
         ];
       };
       shell = {
@@ -569,6 +415,13 @@ in
         unit = "metric";
       };
       widget = {
+        audio_visualizer = {
+          bands = 128;
+          centered = false;
+          color_2 = "secondary";
+          mirrored = false;
+          width = 80;
+        };
         active_window = {
           display = "icon_and_text";
           max_length = 280.0;
@@ -592,7 +445,10 @@ in
         media = {
           hide_album_art = false;
           hide_when_no_media = true;
-          max_length = 220.0;
+          hide_artist = true;
+          max_length = 120;
+          show_progress = true;
+          title_scroll = "on_hover";
         };
         network = {
           show_label = false;
@@ -620,7 +476,7 @@ in
           hide_inactive = false;
         };
         sysmon = {
-          visualization = "graph";
+          visualization = "gauge";
           show_value = true;
           stat = "cpu_usage";
         };

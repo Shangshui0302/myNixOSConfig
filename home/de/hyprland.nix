@@ -22,7 +22,6 @@ let
         } > "$out"
   '';
 
-  homeDir = config.home.homeDirectory;
   scrolloverview = import ../../local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
   touchpadToggle = pkgs.writeShellScriptBin "toggle-touchpad" ''
     set -eu
@@ -76,207 +75,452 @@ in
     '')
   ];
 
-  # HM 模块 enable 只为拿副作用（fish 补全 + .luarc.json Lua LSP）；
-  # 主配置走下方裸 xdg.configFile 写 lua（用 hl.* 自定义函数，HM settings 表达不了），
-  # force=true 覆盖 HM 用空 settings 生成的空 hyprland.lua。
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "lua";
     systemd.enable = false;
     portalPackage = null;
-  };
+    plugins = [
+      scrolloverview
+      pkgs.hyprlandPlugins.hypr-dynamic-cursors
+    ];
 
-  # stylix 配色注入（替代 Noctalia 模板）：hyprland.lua require stylix-colors，
-  # 合成器 border 配色与 foot/终端同源（config.lib.stylix.colors 壁纸取色）。
-  xdg.configFile."hypr/stylix-colors.lua".text = ''
-    hl.config({
-      general = {
-        ["col.active_border"] = "${config.lib.stylix.colors.withHashtag.base0D}",
-        ["col.inactive_border"] = "${config.lib.stylix.colors.withHashtag.base03}",
-      },
-      group = {
-        ["col.border_active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
-        ["col.border_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
-        ["col.border_locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
-        ["col.border_locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
-        groupbar = {
-          ["col.active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
-          ["col.inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
-          ["col.locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
-          ["col.locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
-        },
-      },
-    })
-  '';
-
-  xdg.configFile."hypr/hyprland.lua" = {
-    force = true; # generated from nix, no manual edits to preserve
-    text = ''
-      local home = "${homeDir}"
-
-      -- ScrollOverview is loaded explicitly because this Lua file replaces HM's generated file.
-      hl.plugin.load("${scrolloverview}/lib/libscrolloverview.so")
-
-      -- stylix 配色（壁纸取色，与 foot/终端同源）
-      pcall(require, "stylix-colors")
-
-      hl.env("XCURSOR_SIZE", "24")
-      hl.env("HYPRCURSOR_SIZE", "24")
-
-      hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.5 })
-
-      hl.config({
-
-        plugin = {
-          scrolloverview = {
-            gesture_distance = 300,
-            scale = 0.5,
-            workspace_gap = 100,
-            layout = "vertical",
-            wallpaper = 2,
-            blur = true,
-            shadow = {
-              enabled = true,
-              range = 50,
+    # HM owns the generated Lua file; this module is loaded before settings.
+    extraLuaFiles = {
+      "stylix-colors" = {
+        content = ''
+          hl.config({
+            general = {
+              ["col.active_border"] = "${config.lib.stylix.colors.withHashtag.base0D}",
+              ["col.inactive_border"] = "${config.lib.stylix.colors.withHashtag.base03}",
             },
-          },
-        },
+            group = {
+              ["col.border_active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
+              ["col.border_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+              ["col.border_locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
+              ["col.border_locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+              groupbar = {
+                ["col.active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
+                ["col.inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+                ["col.locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
+                ["col.locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+              },
+            },
+          })
+        '';
+        autoLoad = true;
+      };
+    };
+
+    settings = {
+      env = [
+        {
+          _args = [
+            "XCURSOR_SIZE"
+            "24"
+          ];
+        }
+        {
+          _args = [
+            "HYPRCURSOR_SIZE"
+            "24"
+          ];
+        }
+      ];
+
+      monitor = [
+        {
+          output = "";
+          mode = "preferred";
+          position = "auto";
+          scale = 1.5;
+        }
+      ];
+
+      config = {
+        plugin = {
+          dynamic_cursors = {
+            enabled = true;
+            mode = "none";
+            shake = {
+              enabled = true;
+              effects = false;
+            };
+          };
+
+          scrolloverview = {
+            gesture_distance = 300;
+            scale = 0.5;
+            workspace_gap = 100;
+            layout = "vertical";
+            wallpaper = 2;
+            blur = true;
+            shadow = {
+              enabled = true;
+              range = 50;
+            };
+          };
+        };
 
         general = {
-          gaps_in = 5,
-          gaps_out = 5,
-          border_size = 2,
-          resize_on_border = true,
-          allow_tearing = false,
-          layout = "scrolling",
-        },
+          gaps_in = 5;
+          gaps_out = 5;
+          border_size = 2;
+          resize_on_border = true;
+          allow_tearing = false;
+          layout = "scrolling";
+        };
 
         decoration = {
-          rounding = 10,
-          rounding_power = 2,
-          active_opacity = 0.88,
-          inactive_opacity = 0.82,
+          rounding = 10;
+          rounding_power = 2;
+          active_opacity = 0.88;
+          inactive_opacity = 0.82;
           shadow = {
-            enabled = true,
-            range = 4,
-            render_power = 3,
-            color = "rgba(1a1a1aee)",
-          },
+            enabled = true;
+            range = 4;
+            render_power = 3;
+            color = "rgba(1a1a1aee)";
+          };
           blur = {
-            enabled = true,
-            size = 15,
-            passes = 4,
-            vibrancy = 0.3,
-            ignore_opacity = true,
-            popups = true,
-            popups_ignorealpha = 0.2,
-          },
-        },
+            enabled = true;
+            size = 15;
+            passes = 4;
+            vibrancy = 0.3;
+            ignore_opacity = true;
+            popups = true;
+            popups_ignorealpha = 0.2;
+          };
+        };
 
         animations = {
-          enabled = true,
-          workspace_wraparound = true,
-        },
+          enabled = true;
+          workspace_wraparound = true;
+        };
 
         scrolling = {
-          column_width = 0.5,
-          direction = "right",
-          follow_focus = true,
-          fullscreen_on_one_column = true,
-          explicit_column_widths = "0.33, 0.5, 0.67, 0.81, 0.96",
-        },
+          column_width = 0.5;
+          direction = "right";
+          follow_focus = true;
+          fullscreen_on_one_column = true;
+          explicit_column_widths = "0.33, 0.5, 0.67, 0.81, 0.96";
+        };
 
         misc = {
-          force_default_wallpaper = -1,
-          disable_hyprland_logo = false,
-        },
+          force_default_wallpaper = -1;
+          disable_hyprland_logo = false;
+        };
 
         xwayland = {
-          force_zero_scaling = true,
-        },
+          force_zero_scaling = true;
+        };
 
         input = {
-          kb_layout = "us",
-          kb_options = "caps:escape",
-          follow_mouse = 1,
-          sensitivity = 0,
+          kb_layout = "us";
+          kb_options = "caps:escape";
+          follow_mouse = 1;
+          sensitivity = 0;
           touchpad = {
-            natural_scroll = true,
-          },
-        },
+            natural_scroll = true;
+          };
+        };
 
-        device = {
+        device = [
           {
-            name = "epic-mouse-v1",
-            sensitivity = -0.5,
-          },
-        },
+            name = "epic-mouse-v1";
+            sensitivity = -0.5;
+          }
+        ];
 
         binds = {
-          drag_threshold = 10,
-          workspace_back_and_forth = true,
-          allow_workspace_cycles = true,
-        },
+          drag_threshold = 10;
+          workspace_back_and_forth = true;
+          allow_workspace_cycles = true;
+        };
 
-        windowrulev2 = {
-          "float, class:^(org.gnome.NautilusPreviewer)$",
-          "center, class:^(org.gnome.NautilusPreviewer)$",
-          "size 70% 70%, class:^(org.gnome.NautilusPreviewer)$",
-          "float, class:^(sushi)$",
-          "center, class:^(sushi)$",
-          "size 70% 70%, class:^(sushi)$",
-        },
-      })
+        windowrulev2 = [
+          "float, class:^(org.gnome.NautilusPreviewer)$"
+          "center, class:^(org.gnome.NautilusPreviewer)$"
+          "size 70% 70%, class:^(org.gnome.NautilusPreviewer)$"
+          "float, class:^(sushi)$"
+          "center, class:^(sushi)$"
+          "size 70% 70%, class:^(sushi)$"
+        ];
+      };
 
-      hl.window_rule({
-        name = "clipse-float",
-        match = { class = "^clipse$" },
-        float = true,
-        center = true,
-        size = "60% 70%",
-      })
+      window_rule = [
+        {
+          name = "clipse-float";
+          match = {
+            class = "^clipse$";
+          };
+          float = true;
+          center = true;
+          size = "60% 70%";
+        }
+      ];
 
-      -- Noctalia layer blur: frosted glass for bar / panel / dock / notifications / OSD
-      hl.layer_rule({
-        name = "noctalia",
-        match = {
-          namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$",
-        },
-        no_anim = true,
-        ignore_alpha = 0.3,
-        blur = true,
-        blur_popups = true,
-        order = -1,
-      })
+      layer_rule = [
+        {
+          name = "noctalia";
+          match = {
+            namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$";
+          };
+          no_anim = true;
+          ignore_alpha = 0.3;
+          blur = true;
+          blur_popups = true;
+          order = -1;
+        }
+      ];
 
-      -- ===== Animation curves =====
-      hl.curve("easeOutQuint",  { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
-      hl.curve("linear",         { type = "bezier", points = { {0, 0}, {1, 1} } })
-      hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5}, {0.75, 1} } })
-      hl.curve("quick",          { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
-      hl.curve("easeInOutCirc",  { type = "bezier", points = { {0.85, 0}, {0.15, 1} } })
-      hl.curve("easeInCirc",     { type = "bezier", points = { {0.55, 0}, {1, 0.45} } })
-      -- ===== Animations =====
-      hl.animation({ leaf = "global",    enabled = true, speed = 10, bezier = "linear" })
-      hl.animation({ leaf = "border",    enabled = true, speed = 5.39, bezier = "easeOutQuint" })
-      hl.animation({ leaf = "windows",   enabled = true, speed = 4.79, bezier = "easeOutQuint" })
-      hl.animation({ leaf = "windowsIn",  enabled = true, speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
-      hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear",        style = "popin 87%" })
-      hl.animation({ leaf = "fadeIn",    enabled = true, speed = 3.0,  bezier = "easeInCirc" })
-      hl.animation({ leaf = "fadeOut",   enabled = true, speed = 1.46, bezier = "almostLinear" })
-      hl.animation({ leaf = "fade",      enabled = true, speed = 3.03, bezier = "quick" })
-      hl.animation({ leaf = "layers",    enabled = true, speed = 3.81, bezier = "easeOutQuint" })
-      hl.animation({ leaf = "layersIn",  enabled = true, speed = 4,    bezier = "easeOutQuint", style = "fade" })
-      hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5,  bezier = "linear",        style = "fade" })
-      hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 1.79, bezier = "almostLinear" })
-      hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
-      hl.animation({ leaf = "workspaces",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "slidefadevert" })
-      hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
-      hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "slidevert" })
-      hl.animation({ leaf = "specialWorkspace",    enabled = true, speed = 9,   bezier = "easeInOutCirc", style = "fade" })
-      hl.animation({ leaf = "specialWorkspaceIn",  enabled = true, speed = 3.6, bezier = "quick",          style = "fade" })
-      hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 1.8, bezier = "easeInOutCirc", style = "fade" })
-      hl.animation({ leaf = "zoomFactor",  enabled = true, speed = 7, bezier = "quick" })
+      curve = [
+        {
+          _args = [
+            "easeOutQuint"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.23
+                  1
+                ]
+                [
+                  0.32
+                  1
+                ]
+              ];
+            }
+          ];
+        }
+        {
+          _args = [
+            "linear"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0
+                  0
+                ]
+                [
+                  1
+                  1
+                ]
+              ];
+            }
+          ];
+        }
+        {
+          _args = [
+            "almostLinear"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.5
+                  0.5
+                ]
+                [
+                  0.75
+                  1
+                ]
+              ];
+            }
+          ];
+        }
+        {
+          _args = [
+            "quick"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.15
+                  0
+                ]
+                [
+                  0.1
+                  1
+                ]
+              ];
+            }
+          ];
+        }
+        {
+          _args = [
+            "easeInOutCirc"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.85
+                  0
+                ]
+                [
+                  0.15
+                  1
+                ]
+              ];
+            }
+          ];
+        }
+        {
+          _args = [
+            "easeInCirc"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.55
+                  0
+                ]
+                [
+                  1
+                  0.45
+                ]
+              ];
+            }
+          ];
+        }
+      ];
+
+      animation = [
+        {
+          leaf = "global";
+          enabled = true;
+          speed = 10;
+          bezier = "linear";
+        }
+        {
+          leaf = "border";
+          enabled = true;
+          speed = 5.39;
+          bezier = "easeOutQuint";
+        }
+        {
+          leaf = "windows";
+          enabled = true;
+          speed = 4.79;
+          bezier = "easeOutQuint";
+        }
+        {
+          leaf = "windowsIn";
+          enabled = true;
+          speed = 4.1;
+          bezier = "easeOutQuint";
+          style = "popin 87%";
+        }
+        {
+          leaf = "windowsOut";
+          enabled = true;
+          speed = 1.49;
+          bezier = "linear";
+          style = "popin 87%";
+        }
+        {
+          leaf = "fadeIn";
+          enabled = true;
+          speed = 3.0;
+          bezier = "easeInCirc";
+        }
+        {
+          leaf = "fadeOut";
+          enabled = true;
+          speed = 1.46;
+          bezier = "almostLinear";
+        }
+        {
+          leaf = "fade";
+          enabled = true;
+          speed = 3.03;
+          bezier = "quick";
+        }
+        {
+          leaf = "layers";
+          enabled = true;
+          speed = 3.81;
+          bezier = "easeOutQuint";
+        }
+        {
+          leaf = "layersIn";
+          enabled = true;
+          speed = 4;
+          bezier = "easeOutQuint";
+          style = "fade";
+        }
+        {
+          leaf = "layersOut";
+          enabled = true;
+          speed = 1.5;
+          bezier = "linear";
+          style = "fade";
+        }
+        {
+          leaf = "fadeLayersIn";
+          enabled = true;
+          speed = 1.79;
+          bezier = "almostLinear";
+        }
+        {
+          leaf = "fadeLayersOut";
+          enabled = true;
+          speed = 1.39;
+          bezier = "almostLinear";
+        }
+        {
+          leaf = "workspaces";
+          enabled = true;
+          speed = 9;
+          bezier = "easeInOutCirc";
+          style = "slidefadevert";
+        }
+        {
+          leaf = "workspacesIn";
+          enabled = true;
+          speed = 1.8;
+          bezier = "easeInOutCirc";
+          style = "slidevert";
+        }
+        {
+          leaf = "workspacesOut";
+          enabled = true;
+          speed = 1.8;
+          bezier = "easeInOutCirc";
+          style = "slidevert";
+        }
+        {
+          leaf = "specialWorkspace";
+          enabled = true;
+          speed = 9;
+          bezier = "easeInOutCirc";
+          style = "fade";
+        }
+        {
+          leaf = "specialWorkspaceIn";
+          enabled = true;
+          speed = 3.6;
+          bezier = "quick";
+          style = "fade";
+        }
+        {
+          leaf = "specialWorkspaceOut";
+          enabled = true;
+          speed = 1.8;
+          bezier = "easeInOutCirc";
+          style = "fade";
+        }
+        {
+          leaf = "zoomFactor";
+          enabled = true;
+          speed = 7;
+          bezier = "quick";
+        }
+      ];
+    };
+
+    # Function-valued binds and gesture callbacks remain literal Lua, but are still generated by HM.
+    extraConfig = ''
 
       -- Noctalia 由 systemd user service 拉起（graphical-session.target），此处不再 autostart。
 
@@ -302,8 +546,10 @@ in
       hl.bind("SUPER + K", hl.dsp.exec_cmd("desktop-shell-action control"))
       hl.bind("SUPER + comma", hl.dsp.exec_cmd("desktop-shell-action settings"))
       hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("darkman toggle"))
-      -- Caelestia 没有 Noctalia 的 window-switcher，兼容层退化为 cyclenext。
-      hl.bind("SUPER + TAB", hl.dsp.exec_cmd("desktop-shell-action window-switcher"))
+      -- ScrollOverview: compositor-level overview, independent of desktop shell.
+      hl.bind("SUPER + TAB", function()
+        hl.plugin.scrolloverview.overview("toggle all")
+      end)
 
       -- Window management
       hl.bind("SUPER + Q", hl.dsp.window.close())
@@ -400,6 +646,9 @@ in
       hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("desktop-shell-action brightness-down"), { repeating = true })
 
       -- ===== Gestures =====
+
+      -- 4-finger vertical: ScrollOverview overview swipe (up/down)
+      hl.plugin.scrolloverview.gesture({ fingers = 4, direction = "vertical" })
 
       -- 3-finger vertical: workspace switch
       hl.gesture({ fingers = 3, direction = "vertical", action = "workspace" })
