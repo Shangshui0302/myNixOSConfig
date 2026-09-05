@@ -61,7 +61,7 @@ nixos-rebuild dry-build --flake .
 - [Wiki 来源清单](wiki/_sources.yaml)：Nix 模块与文档的映射。
 - [Memory 索引](memory/INDEX.md)：查询非显而易见的配置决策。
 - [项目约束](wiki/constraints.md)：包管理、变体、secrets 和验证规则。
-- [Nix 手工打包](wiki/dev/nix-packaging.md)：`$nix-package`、本地派生和验证流程。
+- [Nix 手工打包](wiki/dev/nix-packaging.md)：`$nix-packaging`、本地派生和验证流程。
 
 ## 约束
 

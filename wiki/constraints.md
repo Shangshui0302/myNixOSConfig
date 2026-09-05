@@ -12,7 +12,7 @@ updated: 2026-09-04
 - 按主要用途单一归类：系统集成 `host/`，共享环境 `home/env/`，生产力 `home/productivity/`，开发 `home/dev/`，娱乐 `home/leisure/`，DE 专属放对应的 `host/de/`、`host/gnome/` 或 `home/de/`、`home/gnome.nix`。
 - 支撑包跟随实际消费者；公共系统能力放 `host/`，用户应用放 `home/`，禁止重复声明。
 - 新增包先检查已有声明和 nixpkgs；改动后同步导入关系与 Wiki 来源映射，并执行 parse 和 dry-build。
-- 新增、升级、修复或审查 `local-deriv/` 包必须使用 `$nix-package`；每个手工包在 `flake.nix` 暴露同名 package output。
+- 新增、升级、修复或审查 `local-deriv/` 包必须使用 `$nix-packaging`；NixOS、Home Manager、服务、部署和恢复任务使用 `$nixos-ecosystem`；每个手工包在 `flake.nix` 暴露同名 package output。
 - 分类结构可按需要调整。现有目录无法合理容纳时，允许新增、删除、合并或重命名目录/模块，但必须同步迁移导入、文档和来源映射。
 
 ### Repo structure
@@ -137,5 +137,5 @@ committing structural changes.
 ## 相关链接
 
 - [Wiki 首页](README.md) — 各组件操作手册导航
-- [Nix 手工打包](dev/nix-packaging.md) — `$nix-package`、本地派生和验证流程
+- [Nix 手工打包](dev/nix-packaging.md) — `$nix-packaging`、本地派生和验证流程
 - [Memory 决策记忆](../memory/INDEX.md) — 配置决策的背景与原因

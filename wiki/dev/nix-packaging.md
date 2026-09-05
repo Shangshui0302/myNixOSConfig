@@ -7,7 +7,7 @@ updated: 2026-09-04
 
 # Nix 手工打包
 
-本仓库用 `local-deriv/` 维护尚未进入 nixpkgs、需要固定版本或需要本机集成的包。以后新增、升级、修复或审查这些包，必须调用 `$nix-package` skill；不要直接凭经验写 derivation。
+本仓库用 `local-deriv/` 维护尚未进入 nixpkgs、需要固定版本或需要本机集成的包。以后新增、升级、修复或审查这些包，必须调用 `$nix-packaging` skill；不要直接凭经验写 derivation。
 
 ## 目录
 
@@ -39,7 +39,7 @@ updated: 2026-09-04
 
 ## 流程新鲜度
 
-`$nix-package` 不是一份冻结的打包口诀。每次执行都必须先记录 `flake.lock` 中的 nixpkgs revision，检查本次使用的 builder/helper 在锁定源码中的真实接口，并与当前官方 Nixpkgs Reference Manual 和 nix.dev 打包教程对照。
+`$nix-packaging` 不是一份冻结的打包口诀。每次执行都必须先记录 `flake.lock` 中的 nixpkgs revision，检查本次使用的 builder/helper 在锁定源码中的真实接口，并与当前官方 Nixpkgs Reference Manual 和 nix.dev 打包教程对照。
 
 锁定源码决定当前仓库能使用什么，最新官方文档用于发现弃用、替代接口和流程变化。若两者不一致，Agent 必须先报告差异与迁移影响，再决定保持兼容或随 flake 升级迁移；不能静默混用。稳定变化确认后，应在同一份受审查的改动中同步 skill、引用资料和本手册并重新验证。
 
@@ -50,14 +50,14 @@ updated: 2026-09-04
 在 Codex 中明确调用 skill，并给出软件名称或官方地址：
 
 ```text
-$nix-package 打包 <软件名或上游 URL>
+$nix-packaging 打包 <软件名或上游 URL>
 ```
 
 更新或修复已有包时说明目标：
 
 ```text
-$nix-package 将 cliamp 更新到 2.1.0
-$nix-package 查明 animeko AppImage 的启动失败并修复打包
+$nix-packaging 将 cliamp 更新到 2.1.0
+$nix-packaging 查明 animeko AppImage 的启动失败并修复打包
 ```
 
 skill 会先只读调查并提交方案。非小型改动需要回复“确认”或“进行实施”后才会写文件。

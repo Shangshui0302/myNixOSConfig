@@ -38,7 +38,7 @@ updated: 2026-09-04
 `outputs` 同时提供本地包、打包开发环境和名为 `MechRevo-NixOS` 的系统配置：
 
 - `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包，可用 `nix build path:.#<pname>` 独立构建。
-- `devShells.x86_64-linux.packaging` 提供 `$nix-package` 流程使用的预取、更新、格式化和 ELF 诊断工具。
+- `devShells.x86_64-linux.packaging` 提供 `$nix-packaging` 流程使用的预取、更新、格式化和 ELF 诊断工具。
 - `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。
 
 - `system` 指定为 `x86_64-linux`。
@@ -104,7 +104,7 @@ Flake-->>User : 生成可重现的系统与用户配置
 
 - 始终提交 `flake.lock` 锁定依赖，避免版本漂移。
 - 通过 `follows` 复用 `nixpkgs`，减少版本碎片化。
-- 手工包通过 `$nix-package` 维护，并用 flake package output 独立构建后再进入系统 dry-build。
+- 手工包通过 `$nix-packaging` 维护，并用 flake package output 独立构建后再进入系统 dry-build。
 - 打包辅助工具从 `nix develop .#packaging` 获取，不常驻安装到用户环境。
 - 系统级变更用 `sudo nixos-rebuild switch --flake .`；用户级变更由 rebuild 自动处理。
 - 缓存加速：在 `host/base/nix.nix` 配置多个 substituters（官方 + 镜像源），并启用 `nix-command`、`flakes` 实验特性；`nh` 自动清理旧代际以维持磁盘空间。

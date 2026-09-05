@@ -53,7 +53,7 @@ updated: 2026-09-04
 |------|------|
 | [Neovim](dev/nvim.md) | 编辑器：按键、插件、LSP、工作流 |
 | [VS Code](dev/vscode.md) | VS Code 集成、AI 工具、扩展 |
-| [Nix 手工打包](dev/nix-packaging.md) | `$nix-package`、本地派生、独立构建和验证流程 |
+| [Nix 手工打包](dev/nix-packaging.md) | `$nix-packaging`、本地派生、独立构建和验证流程 |
 | [Distrobox](dev/distrobox.md) | 容器（arch + ubuntu）：创建、进入、导出 |
 | [Bottles 离线方案（历史）](dev/bottles-offline-workaround.md) | 历史 Flatpak Bottles 离线索引接管方案 |
 

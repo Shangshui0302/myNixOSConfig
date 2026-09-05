@@ -7,5 +7,8 @@ secrets.nix
 issues/
 # Codex 本地配置不进仓库；项目 skills 位于 .agents/ 并入 git
 .codex/
+# skills CLI 为具体 Agent 生成的链接/副本由 .agents/skills 重新生成
+.claude/skills/
+agent/skills/
 memory/
 .vscode/
