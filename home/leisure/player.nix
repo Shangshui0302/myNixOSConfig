@@ -13,7 +13,7 @@ in
     cliamp
     obs-studio
     (import ../../local-deriv/netease-cloud-music-web-player.nix { inherit pkgs; })
-    animeko
+    # animeko
     go-musicfox
   ];
 

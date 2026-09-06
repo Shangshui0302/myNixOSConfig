@@ -38,7 +38,7 @@ docs:
     sources: [flake.nix, host/gnome/default.nix, host/gnome/desktop.nix, home/home.nix, home/gnome.nix, home/base.nix, home/theme/base.nix, home/theme/gtk-static.nix, home/theme/gtk-matugen.nix, local-deriv/material-gnome-theme.nix, host/de/greeter.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
-    sources: [flake.nix, host/base/desktop.nix, host/de/sessions.nix, home/de/default.nix, home/theme/runtime.nix]
+    sources: [flake.nix, host/base/desktop.nix, host/de/sessions.nix, home/home.nix, home/de/default.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff, greetd-tuigreet-tty]
   desktop/noctalia.md:
     sources: [home/de/noctalia.nix, home/theme/runtime.nix, host/de/greeter.nix]

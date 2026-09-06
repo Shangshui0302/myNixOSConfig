@@ -4,6 +4,7 @@
   imports = [
     ./base.nix
     inputs.stylix.homeModules.stylix
+    inputs.fcitx5-matugen-theme.homeManagerModules.default
     ./theme/gtk-matugen.nix
     ./theme/runtime.nix
     ./theme/wallpaper.nix

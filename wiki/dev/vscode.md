@@ -84,7 +84,7 @@ VS-->>Dev : 展示结果
 
 VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI CLI 工具集中在 `home/dev/ai.nix`，走统一来源与安全审查流程，见反链的 memory 卡；扩展本身在 VS Code 商店安装，与 Nix 管理的 CLI 工具互不冲突。
 
-当前 ai.nix 管理的工具：`codex`、`codex-desktop`、`officecli`、`cc-switch`（API 路由，按需手动启动）与 `codebase-memory-mcp`（代码库知识图谱 MCP，nixpkgs 现成包）。`cc-switch` 通过 `local-deriv/cc-switch.nix` 复用 nixpkgs 构建器固定上游 v3.20.1；独立构建入口是 `nix build path:.#cc-switch`。升级时更新上游 tag 与 source、pnpm、Cargo vendor hashes，再执行 parse、build、flake check 和 `nixos-rebuild dry-build`，最后由用户手动 switch。
+当前 ai.nix 管理的工具：`codex`、`codex-desktop`、`cc-switch`（API 路由，按需手动启动）与 `codebase-memory-mcp`（代码库知识图谱 MCP，nixpkgs 现成包）。`cc-switch` 通过 `local-deriv/cc-switch.nix` 复用 nixpkgs 构建器固定上游 v3.20.1；独立构建入口是 `nix build path:.#cc-switch`。升级时更新上游 tag 与 source、pnpm、Cargo vendor hashes，再执行 parse、build、flake check 和 `nixos-rebuild dry-build`，最后由用户手动 switch。
 
 ## 故障排查
 

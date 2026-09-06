@@ -29,7 +29,7 @@ updated: 2026-09-04
 - `noctalia` / `noctalia-greeter`：桌面壳与登录界面模块。
 - `sops-nix`：机密管理与注入。
 - `nix-flatpak`：Flatpak 集成。
-- `llm-agents` / `codex-desktop-linux`：AI 与桌面工具扩展能力。
+- `codex-desktop-linux`：Codex Desktop 的桌面发行来源。
 
 多数输入通过 `inputs.nixpkgs.follows = "nixpkgs"` 复用根 `nixpkgs`，避免多份版本碎片化。
 

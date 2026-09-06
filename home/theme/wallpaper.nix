@@ -21,7 +21,6 @@ in
   home.packages = [
     pkgs.waypaper
     pkgs.awww
-    pkgs.matugen
   ];
 
   # awww daemon：waypaper 设置壁纸的后端（awww-daemon 前台运行）
@@ -49,7 +48,7 @@ in
   # waypaper 是常驻进程，缓存 post_command 并写回 config.ini；store 路径每次 rebuild 都变，
   # 会被覆盖成旧值。固定路径 + activation 更新内容，路径稳定、内容每次执行读最新。
   home.activation.setupWaypaperTheme =
-    lib.hm.dag.entryAfter [ "writeBoundary" "setupMatugenGtkTheme" "setupDarkmanMode" ]
+    lib.hm.dag.entryAfter [ "writeBoundary" "linkGeneration" "setupMatugenGtkTheme" "setupDarkmanMode" ]
       ''
             mkdir -p "$HOME/.local/bin" "$HOME/.config/waypaper" \
               "$HOME/.config/qt5ct/colors" "$HOME/.config/qt6ct/colors" \
@@ -68,7 +67,7 @@ in
               chmod 644 "$HOME/.config/waypaper/config.ini"
             fi
 
-            # 首次部署或迁移到 GTK4 双 palette 时生成完整初始产物；之后保持当前壁纸颜色。
+            # 首次部署时生成完整双模式产物；之后由 theme-apply 按壁纸内容缓存复用。
             if [ ! -f "$HOME/.config/qt5ct/colors/matugen.conf" ] \
               || [ ! -f "$HOME/.config/qt6ct/colors/matugen.conf" ] \
               || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig" ] \

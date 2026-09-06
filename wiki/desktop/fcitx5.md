@@ -2,7 +2,7 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, 输入法, wayland, 深色模式]
-updated: 2026-09-02
+updated: 2026-09-06
 ---
 
 # Fcitx5 输入法框架
@@ -59,15 +59,16 @@ journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
 
 - 浅色主题 `Theme = "mellow-matugen"`，深色主题 `DarkTheme = "mellow-matugen-dark"`。
 - `UseDarkTheme = "True"`：让服务端 ClassicUI 通过 XDG Settings 接口跟随 Darkman。
-- GTK Wayland 客户端只读取 `Theme`，因此 `theme-apply` 会写入当前模式的完整用户配置；模式切换后重启 Fcitx5。
+- GTK Wayland 客户端只读取 `Theme`，因此 `theme-apply` 会写入当前模式的完整用户配置；壁纸素材变化时重启 Fcitx5，单纯模式切换优先执行 `fcitx5-remote --check -r`，失败才回退到重启。
 - [`fcitx5-mellow-themes-matugen`](https://github.com/Shangshui0302/fcitx5-mellow-themes-matugen) 保留 Mellow WeChat 的圆角布局；Matugen 将 `primary` 写入两套主题的高亮 SVG，将 `on_primary` 写入高亮文字配置。
 - 动态主题覆盖位于 `~/.local/share/fcitx5/themes/mellow-matugen[-dark]/`。每份 `theme.conf` 都是完整主题，而不是颜色片段；fcitx5-gtk 只加载 XDG 搜索顺序中的第一份配置，不会与 Nix profile 的基础主题合并。
-- Nix 包继续提供 `panel.svg` 等静态资源和回退主题；GTK 客户端会按文件继续搜索后续 XDG data 目录，因此无需把静态资源复制到用户目录。
+- 主桌面 HM 入口导入上游 `homeManagerModules.default`，并启用 `programs.fcitx5-matugen` 的 `themeSet = "both"`、`style = "blur"`；模块负责安装 `both-blur` 包并把两套 Matugen 模板链接到 `~/.config/matugen/templates/fcitx5-matugen-theme/`。
+- Hyprland 的 `decoration.blur.input_methods = true` 允许主题请求 compositor 原生模糊；不支持该协议的会话会退化为普通主题。
 - `"Vertical Candidate List" = "True"`：启用垂直候选列表，更适合长词条与高分屏。
 
-安装的主题包：`fcitx5-matugen-theme`、`fcitx5-mellow-themes`、`fcitx5-material-color`、`catppuccin-fcitx5`。
+安装的主题包：HM 模块提供的 `fcitx5-matugen-theme`（`both-blur`）、`fcitx5-mellow-themes`、`fcitx5-material-color`、`catppuccin-fcitx5`。
 
-> 注意：该文件由 `theme-apply` 原子生成，不要用图形配置工具手动覆盖；完整无 section header 的格式是必要的。
+> 注意：HM 模块不写 `classicui.conf`；该文件仍由 `theme-apply` 原子生成，不要用图形配置工具手动覆盖。完整无 section header 的格式是必要的。
 
 ## 桌面集成与崩溃自恢复
 - GTK/Qt/SDL 应用均通过环境变量接入 fcitx，无需逐应用配置。
@@ -116,15 +117,15 @@ SESSION["UWSM / niri-session / graphical-session.target"] --> IM
 - GNOME Wayland 下候选窗飞远/不跟随光标：GNOME 只实现 `text-input-v3` 无全局坐标，必须靠 kimpanel 链路。检查 fcitx5 的 kimpanel addon 未被禁用（`~/.config/fcitx5/config` 的 `[Behavior/DisabledAddons]` 不应含 kimpanel）；`host/base/desktop.nix` 已声明 `fcitx5.settings.globalOptions.Behavior.EnabledAddons = "kimpanel"` 防复发，且 GNOME kimpanel 扩展需启用。kimpanel 启用后候选窗由扩展绘制，ClassicUI 主题（mellow-matugen）不再作用于 GNOME 会话——GNOME 下候选窗跟随 Shell 主题（本机 Material-Gnome）。
 - 主题不跟随深浅色或重点色：执行 `darkman get` 确认状态，再运行 `theme-apply "$(darkman get)"`；确认 `~/.local/share/fcitx5/themes/mellow-matugen[-dark]/` 下的 `highlight.svg` 和 `theme.conf` 已更新。
 - GTK 应用内候选窗退回白色方框：检查用户主题的 `theme.conf` 是否包含 `[Metadata]`、`[InputPanel/Background]`、`Image=panel.svg` 和 `[InputPanel/Highlight]`。只有颜色字段的稀疏文件会遮蔽完整 Nix 主题并触发 GTK 默认样式。
-- 壁纸切换后候选窗仍是旧颜色：`theme-apply` 成功后会重启 Fcitx5；检查 `systemctl --user status app-org.fcitx.Fcitx5@autostart.service`，必要时手动执行 `fcitx5-remote --check -r`。
+- 壁纸切换后候选窗仍是旧颜色：新壁纸会复制缓存中的两套 Fcitx 素材并重启服务；单纯深浅切换只 reload。检查 `systemctl --user status app-org.fcitx.Fcitx5@autostart.service`，必要时手动执行 `fcitx5-remote --check -r`。
 - 候选窗样式/透明度问题：调整 ClassicUI 的 `Theme`/`DarkTheme`，并确保字体与 DPI 设置合理。
 
 ## 配置速查
 - 环境变量：`GTK_IM_MODULE`/`QT_IM_MODULE`/`XMODIFIERS`/`SDL_IM_MODULE` 指向 fcitx。
-- 插件与主题：`fcitx5-gtk`、`qt6Packages.fcitx5-chinese-addons`、mellow/material/catppuccin 主题包。
+- 插件与主题：`fcitx5-gtk`、`qt6Packages.fcitx5-chinese-addons`、HM 管理的 `both-blur` mellow-matugen、material/catppuccin 主题包。
 - Rime 数据：`rime-ice`、`rime-moegirl`、`rime-zhwiki`。
 - 候选窗：`"Vertical Candidate List" = "True"`。
-- 深浅色联动：`darkman set dark|light` 后由 `theme-apply` 更新 GTK 客户端配置、Matugen 重点色、重启 Fcitx5，并同步 Settings portal；切换壁纸也会重渲染两套 Fcitx5 重点色并重启服务。
+- 深浅色联动：`darkman set dark|light` 后由 `theme-apply` 从壁纸缓存激活当前模式、更新 GTK 客户端配置、reload Fcitx5，并同步 Settings portal；新壁纸未命中缓存时才重渲染两套 Fcitx5 重点色并重启服务。
 
 ## 相关链接
 - 桌面深色模式与主题联动：[darkmode.md](./darkmode.md)

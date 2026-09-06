@@ -194,6 +194,7 @@ in
           };
           blur = {
             enabled = true;
+            input_methods = true;
             size = 15;
             passes = 4;
             vibrancy = 0.3;

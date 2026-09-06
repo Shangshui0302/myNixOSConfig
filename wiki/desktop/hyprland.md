@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # Hyprland 使用指南
@@ -190,6 +190,8 @@ Shift + Print   # 区域截图 → Swappy 标注 → 存文件 + 剪贴板
 边框颜色由 stylix 注入（壁纸取色，与 foot 终端同源），见 `home/theme/stylix.nix`。Noctalia 切主题不影响合成器边框。
 
 当前主题：**NixOS 默认壁纸 / Matugen 动态配色**
+
+Fcitx5 候选窗使用上游 `both-blur` 主题；`decoration.blur.input_methods = true` 让 Hyprland 接受其原生模糊请求。
 
 ---
 

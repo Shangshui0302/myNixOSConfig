@@ -16,7 +16,6 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-    llm-agents.url = "github:numtide/llm-agents.nix";
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
     sops-nix = {
       url = "github:Mic92/sops-nix";

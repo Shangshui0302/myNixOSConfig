@@ -118,9 +118,9 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 ## 配色方案 (matugen)
 
-当前主题：**matugen**——waypaper 切壁纸后生成 `~/.config/noctalia/palettes/matugen.json`，由 `theme.custom_palette = "matugen"` 消费。模板全部禁用，Noctalia 只读取 Matugen 产物。主桌面的 GTK、Qt、Hyprland 与 niri 也由同一次 Matugen 运行更新；Foot 仍保持 Stylix 构建期配色。
+当前主题：**matugen**——waypaper 切壁纸后生成 `~/.config/noctalia/palettes/matugen.json`，由 `theme.custom_palette = "matugen"` 消费。模板全部禁用，Noctalia 只读取 Matugen 产物。主桌面的 GTK、Qt、Hyprland 与 niri 也由同一次 Matugen 运行更新；Foot 仍保持 Stylix 构建期配色。Matugen 产物按壁纸内容缓存，回到已使用过的壁纸时不再重新取色。
 
-深浅模式由 Darkman 管理。Noctalia 启动时和每次 Darkman 切换后都会同步当前模式，但不会反向修改系统主题；使用 `Super + Shift + D` 或 `darkman toggle` 切换。
+深浅模式由 Darkman 管理。Noctalia 启动时和每次 Darkman 切换后都会同步当前模式，但不会反向修改系统主题；使用 `Super + Shift + D` 或 `darkman toggle` 切换。模式切换只发送 `theme-mode-set`；壁纸 palette 文件变化由 Noctalia 文件监听器负责 reload，不再重复发送 `config-reload`。
 
 ## 锁屏与空闲
 
