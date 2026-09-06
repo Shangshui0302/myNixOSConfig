@@ -1,29 +1,49 @@
 ---
 name: project-commit
 description: >
-  When the user says they're ready to commit, save work, submit changes, 提交, or wrap up
-  a set of changes in this NixOS config repo. This skill orchestrates the full commit
-  workflow: review the diff for issues, update relevant documentation (README.md,
-  AGENTS.md, wiki/*.md, memory/*.md), present a summary for confirmation, then create
-  the commit. Use this skill for any commit in ~/myNixOSConfig — it ensures the
-  "review → update wiki/memory → commit" discipline is followed every time. Do NOT
-  trigger for: writing/saving a file to disk, "commit to memory", or git operations in
-  other repos.
+  When the user says “提交当前更改”“commit”“保存这批改动”“准备提交”或明确要保存一组变更时，
+  在 ~/myNixOSConfig 中执行完整 worktree 审查、wiki/memory 门禁、Nix 结构验证、精确 staging、
+  确认后 commit 和结果交接。不要把普通文件保存、“commit to memory”、push 或自动 rebuild 当作本 skill。
 ---
 
 # Project Commit Workflow
 
+IRON LAW: 未完成完整 worktree 审查、文档门禁、验证、精确文件清单和用户确认前，绝不创建 commit；
+只 stage 批准的路径，默认不 push。
+
 This skill handles the standard commit workflow for the NixOS config repo. Every commit
-goes through review → doc update → confirm → commit, in that order.
+goes through context → review → docs → validation → confirm → commit, in that order.
+
+## 职责边界
+
+- `wiki-maintainer` 负责 wiki/memory/README/AGENTS 的内容与来源一致性；本 skill 只负责 Git 门禁。
+- `session-wrapup` 负责会话决策回顾；commit 不自动生成 memory 卡。
+- parse、dry-build、switch 和 live runtime 是不同证据层；提交成功不代表系统已经部署。
+
+## Step 0: Establish Scope
+
+Before reviewing or staging anything, inspect the complete worktree:
+
+```bash
+git status --short
+git diff HEAD
+git diff --cached
+git ls-files --others --exclude-standard
+git log --oneline -5
+```
+
+Identify exactly which paths the user wants in this commit. If staged, unstaged, or
+untracked files mix unrelated work and the scope is unclear, stop and ask. Preserve
+existing staging, branches, and dirty files; never use `git reset`, `git checkout`, or
+`git clean` to make the worktree convenient.
 
 ## Step 1: Review the Diff
 
 First, gather the full picture of what changed:
 
 ```bash
-git status
-git diff HEAD
-git log --oneline -5
+git diff HEAD --stat
+git diff --name-status HEAD
 ```
 
 Review for these project-specific issues:
@@ -94,6 +114,11 @@ Skip this step for: config value tweaks, adding/removing a package from an exist
 
 If dry-build fails, report the error and stop — don't commit broken config.
 
+Before presenting the summary, always run `git diff --check` and separately inspect
+`git ls-files --others --exclude-standard`. A clean diff check does not prove that new
+untracked files are correct. Report parse/build results separately from any later
+activation or live runtime check; Codex does not run `nixos-rebuild switch` here.
+
 ## Step 4: Present Summary
 
 Show the user a concise summary before committing:
@@ -108,14 +133,36 @@ Show the user a concise summary before committing:
 - <wiki file / memory card> — <what was added/changed>
 - (or "No wiki/memory updates needed")
 
-**Dry-build:** passed / skipped
+**Validation:**
+- `git diff --check` — passed / failed
+- parse/dry-build — passed / skipped / failed
+- other checks — <result>
+
+**Unrelated dirty paths:**
+- <path> / none
+
+**Skipped/blocked/unknown:**
+- <item + reason> / none
+
+**Proposed commit:**
+- `<type>(<scope>): <description>`
 ```
 
 Let the user confirm before proceeding. If they say no, ask what needs adjusting.
 
 ## Step 5: Commit
 
-Create the commit with a conventional message format:
+After explicit confirmation, stage only the approved paths:
+
+```bash
+git add -- <approved-path> ...
+git status --short
+git diff --cached
+```
+
+Never use `git add -A` when unrelated work may exist. If the cached diff differs from
+the confirmed summary, stop and show the discrepancy. Create the commit with a
+conventional message format:
 
 ```
 <type>(<scope>): <description>
@@ -130,7 +177,8 @@ Examples:
 - `fix(hyprland): swap resize/move keybindings`
 - `refactor(overlays): deduplicate vim plugin aliases`
 
-After committing, show the commit hash.
+After committing, show the commit hash and subject. Do not push, create a PR, amend, or
+rewrite history unless the user explicitly requests that separate action.
 
 ## Step 6: Remind to Rebuild
 
@@ -145,6 +193,13 @@ After rebuild, suggest a quick health check:
 ```bash
 systemctl --failed --no-legend | head -5
 ```
+
+## 禁止模式
+
+- 用 `git add -A`、reset、clean 或 checkout 把无关工作带入提交或覆盖掉。
+- 只提交代码而跳过 `wiki-maintainer` 的文档/来源门禁。
+- 把 diff、parse 或 dry-build 结果冒充 activation、switch 或 live runtime 证明。
+- 验证失败仍创建 commit，或未经用户确认自行 amend、push、建 PR。
 
 ## What This Skill Does NOT Do
 

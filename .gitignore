@@ -5,9 +5,9 @@ result-*
 # 如果有硬件相关的 secrets
 secrets.nix
 issues/
-# Codex 本地配置不进仓库；项目 skills 位于 .agents/ 并入 git
+# Codex 本地配置不进仓库；项目专用 skills 位于 .agents/ 并入 git
 .codex/
-# skills CLI 为具体 Agent 生成的链接/副本由 .agents/skills 重新生成
+# 具体 Agent 生成的链接/副本不进仓库；共享 skills 安装在用户级 ~/.agents/skills
 .claude/skills/
 agent/skills/
 memory/

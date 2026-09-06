@@ -1,16 +1,42 @@
 ---
 name: wiki-maintainer
 description: >
-  创建和维护项目知识库（wiki/、memory/、README.md、AGENTS.md）。当用户提到"写文档"、"更新文档"、
-  "文档过时了"、"补充文档"、"完善文档"、"文档化"、"documentation"、"docs"、"wiki"、"memory"、
-  "决策卡"、新增组件后需要记录配置、修改 nix 配置后需要同步 wiki/memory、或者任何涉及项目知识库的
-  创建/更新/审查时，必须使用此 skill。也适用于审查 wiki 是否与 nix 配置一致、整理 wiki 结构、添加
-  使用指南、补写决策卡。简而言之，任何与项目知识库（wiki + memory）相关的操作都触发此 skill。
+  在 ~/myNixOSConfig 中创建、导入、更新、审查或同步项目知识库（wiki/、memory/、README.md、AGENTS.md）。
+  当用户提到“写/更新/审查/同步 wiki”“文档过时”“文档化组件”“补 memory”“决策卡”，或修改 Nix
+  配置后需要同步项目知识时使用。流程覆盖目标根目录确认、来源反查、增量更新、决策沉淀和结果交接；
+  普通一次性文档编辑不触发。
 ---
 
 # Wiki 与 Memory 维护
 
-此 skill 用于在 NixOS 配置仓库 (`~/myNixOSConfig`) 中创建和维护知识库。
+IRON LAW: 先确定仓库根目录、当前 worktree 和来源事实，再写入；不覆盖用户内容、不伪造 Why、
+不维护第二份来源映射。
+
+此 skill 是通用 docs-first wiki workflow 在 `~/myNixOSConfig` 的 NixOS 适配层。外部 project-wiki 的
+核心原则是“先识别模式、先读后写、增量同步、明确未知项和交接结果”；本仓库继续使用已有的
+`wiki/_sources.yaml`、`memory/INDEX.md` 和分类目录，不引入平行的 `wiki/Sources.md`、`wiki/log.md` 或
+plans 体系。
+
+## 模式路由与上下文门禁
+
+先在任务记录中选一个模式：
+
+| 模式 | 适用 | 必须产出 |
+| --- | --- | --- |
+| `bootstrap` | wiki 入口缺失 | 只补明确缺失且不冲突的入口 |
+| `create` / `update` | 新文档或用户可见行为变化 | 文档、导航、来源映射 |
+| `sync` | Nix 改动先于文档或文档疑似过时 | 受影响文档的最小增量更新 |
+| `record_decision` | 非显而易见 Why、硬件事实、约束 | memory 卡与 `INDEX.md` |
+| `audit` | 用户要求检查一致性 | `pass`/`warn`/`fail` 清单和下一步 |
+
+写入前必须完成：
+
+- [ ] 确认当前根目录为 `~/myNixOSConfig`，读取 `AGENTS.md`、`README.md` 和相关现状。
+- [ ] 运行 `git status --short`；保留 staged、unstaged、untracked 和用户 authored 文档。
+- [ ] 明确目标文件和证据来源；目标、来源或已有文档冲突时标记 `blocked`，先询问。
+- [ ] 非小型创建、广泛审查、移动、重命名、删除或 memory 写入先展示范围并等待确认。
+
+“继续/恢复”只做定位：先读当前分支、worktree、计划/文档状态，再询问是创建计划、修订计划还是开始实施。
 
 ## 知识库结构
 
@@ -68,6 +94,15 @@ myNixOSConfig/
 3. 每篇文档 `memory` 里列出的卡在 `memory/cards/<slug>.md` 存在。
 
 **工作流**：改了某个 `.nix` → 读 `_sources.yaml` 反查受影响文档集 → 按三方合并规则更新正文 + 刷新 frontmatter `updated`。新增/删除 wiki 文档或新增 nix 模块时，必须同步本清单。
+
+### 来源与保留规则
+
+- `wiki/_sources.yaml` 是唯一的 Nix→wiki→memory 映射；不要为某个目录再写硬编码清单。
+- 每个 `sources` 路径必须真实存在，每个 `memory` slug 必须对应 `memory/cards/<slug>.md`。
+- 现有 wiki 章节和用户措辞优先保留；源码只负责校正技术事实，Why 通过 memory 相关链接表达。
+- 发现 Docusaurus、MkDocs 或其他既有文档系统时不迁移、不重命名；若没有安全的更新边界，报告
+  `present_but_not_upgraded`，不要整篇覆盖。
+- 只记录能帮助未来 agent 作出更好决定的持久上下文；普通编辑、每次测试和 routine Git 历史不写日志。
 
 ### 文档更新规则
 
@@ -252,3 +287,30 @@ AGENTS.md 是给 LLM 的上下文，需要保持精确。包含：
 - 做了什么决策？
 - 为什么这么决策（Why）？
 - 后续怎么遵守（How to apply）？
+
+## 审查结果与交接
+
+- `pass`：来源、导航、frontmatter、正文和 memory 关联均与当前配置一致。
+- `warn`：证据不足、可安全跳过或已有内容没有安全更新边界；必须写明原因和下一步。
+- `fail`：根目录错误/歧义、覆盖用户内容、来源路径失效、memory 索引缺失，或把推测写成事实。
+
+每次运行结束都报告：
+
+```text
+Mode: <bootstrap|create|update|sync|record_decision|audit>
+Target: <component or path>
+Created/updated: <files or none>
+Preserved: <files or none>
+Skipped/blocked: <item + reason or none>
+Unknowns: <items or none>
+Validation: <checks and result>
+Next action: <one concrete action>
+```
+
+## 禁止模式
+
+- 只看 diff hunk 就改文档，忽略完整 Nix 源文件、import 链或现有手册。
+- 为套用外部模板新增第二份来源、计划或 memory 体系。
+- 把源码无法证明的 Why 写成确定结论，或用 filler card 填充索引。
+- 未经确认移动/删除/覆盖用户文档，或用一次性脚本静默改完整 wiki。
+- 把 parse、dry-build 或文档检查说成系统已 switch 或运行时已验证。

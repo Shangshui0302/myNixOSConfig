@@ -38,7 +38,8 @@ home/
 local-deriv/              # 不在 nixpkgs 的本地包
 wiki/                     # 操作手册与来源映射
 memory/                   # 本地决策卡与硬件约束（不进 Git）
-.agents/skills/           # 项目通用 skills
+.agents/skills/           # 项目专用 skills
+~/.agents/skills/         # 用户级共享 skills
 ```
 
 ## 应用配置
