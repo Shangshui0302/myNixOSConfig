@@ -62,6 +62,9 @@ in
       cp ${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.svg \
         "$kvantum_theme_dir/MaterialAdw.svg"
     fi
+    # Nix store assets are read-only; Matugen replaces these files in place.
+    chmod u+rw "$kvantum_theme_dir/MaterialAdw.kvconfig" \
+      "$kvantum_theme_dir/MaterialAdw.svg"
   '';
 
   dconf.settings."org/gnome/desktop/interface".icon-theme = lib.mkForce "Papirus-Matugen";
