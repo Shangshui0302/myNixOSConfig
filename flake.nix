@@ -55,12 +55,15 @@
         wallpaper = ./assets/nixos_logo.png;
         shellLayout = "default"; # GNOME 原版实心通栏
       };
+      materialAdwTheme = import ./local-deriv/material-adw-kvantum.nix { inherit pkgs; };
     in
     {
       packages.${system} = {
         material-gnome-theme = materialGnomeTheme;
-        animeko = import ./local-deriv/animeko.nix { inherit pkgs; };
+        material-adw-kvantum = materialAdwTheme;
+        animeko = pkgs.callPackage ./local-deriv/animeko.nix { };
         anthropic-fonts = import ./local-deriv/anthropic-fonts.nix { inherit pkgs; };
+        cc-switch = import ./local-deriv/cc-switch.nix { inherit pkgs; };
         cliamp = import ./local-deriv/cliamp.nix { inherit pkgs; };
         scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
@@ -86,7 +89,9 @@
 
       nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs materialGnomeTheme; };
+        specialArgs = {
+          inherit inputs materialGnomeTheme materialAdwTheme;
+        };
         modules = [
           ./host/default.nix
           inputs.sops-nix.nixosModules.sops
@@ -97,7 +102,9 @@
               useUserPackages = true;
               backupFileExtension = "hm-backup";
               users.lishangshui = import ./home/home.nix;
-              extraSpecialArgs = { inherit inputs materialGnomeTheme; };
+              extraSpecialArgs = {
+                inherit inputs materialGnomeTheme materialAdwTheme;
+              };
             };
           }
         ];

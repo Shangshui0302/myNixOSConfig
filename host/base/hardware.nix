@@ -1,21 +1,6 @@
 { pkgs, ... }:
 
-let
-  kernelPackages = pkgs.linuxPackages.extend (
-    _final: prev: {
-      tuxedo-drivers = prev.tuxedo-drivers.overrideAttrs (old: {
-        patches = (old.patches or [ ]) ++ [ ./tuxedo-mechrevo.patch ];
-      });
-    }
-  );
-in
-
 {
-  boot.kernelPackages = kernelPackages;
-  boot.extraModulePackages = [ kernelPackages.acpi_call ];
-  boot.kernelModules = [ "acpi_call" ];
-  hardware.tuxedo-drivers.enable = true;
-
   boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 

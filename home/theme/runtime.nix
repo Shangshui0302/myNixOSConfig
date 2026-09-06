@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  materialAdwTheme,
   pkgs,
   ...
 }:
@@ -11,6 +12,86 @@ let
   defaultWallpaper = ../../assets/nixos_logo.png;
   fcitxMatugenTheme = inputs.fcitx5-matugen-theme.packages.${pkgs.stdenv.hostPlatform.system}.default;
   fcitxTemplateRoot = "${fcitxMatugenTheme}/share/matugen/fcitx5-matugen-theme";
+
+  # MaterialAdw's upstream config/SVG are data files, while Matugen needs a
+  # writable, recolored copy. Keep the source package immutable and derive
+  # templates by replacing only its palette literals with Matugen expressions.
+  materialAdwMatugenTemplates = pkgs.runCommand "material-adw-matugen-templates" { } ''
+    mkdir -p "$out"
+
+    ${pkgs.gnused}/bin/sed \
+      -e 's|#0F1416|__MATUGEN_SURFACE__|g' \
+      -e 's|#171C1E|__MATUGEN_SURFACE_LOW__|g' \
+      -e 's|#1B2022|__MATUGEN_SURFACE_CONTAINER__|g' \
+      -e 's|#252B2D|__MATUGEN_SURFACE_HIGH__|g' \
+      -e 's|#303638|__MATUGEN_OUTLINE_VARIANT__|g' \
+      -e 's|#84D2E7|__MATUGEN_PRIMARY__|g' \
+      -e 's|#BFC4EB|__MATUGEN_SECONDARY__|g' \
+      -e 's|#DDE1FF|__MATUGEN_TERTIARY_DIM__|g' \
+      -e 's|#DEE3E5|__MATUGEN_ON_SURFACE__|g' \
+      -e 's|#FFFFFF|__MATUGEN_ON_PRIMARY__|g' \
+      -e 's|#dfdfdf|__MATUGEN_ON_SURFACE__|g' \
+      -e 's|#ffffff|__MATUGEN_ON_SURFACE__|g' \
+      -e 's|=white|=__MATUGEN_ON_SURFACE__|g' \
+      -e 's|__MATUGEN_SURFACE__|{{colors.surface.default.hex}}|g' \
+      -e 's|__MATUGEN_SURFACE_LOW__|{{colors.surface_container_low.default.hex}}|g' \
+      -e 's|__MATUGEN_SURFACE_CONTAINER__|{{colors.surface_container.default.hex}}|g' \
+      -e 's|__MATUGEN_SURFACE_HIGH__|{{colors.surface_container_high.default.hex}}|g' \
+      -e 's|__MATUGEN_OUTLINE_VARIANT__|{{colors.outline_variant.default.hex}}|g' \
+      -e 's|__MATUGEN_PRIMARY__|{{colors.primary.default.hex}}|g' \
+      -e 's|__MATUGEN_SECONDARY__|{{colors.secondary.default.hex}}|g' \
+      -e 's|__MATUGEN_TERTIARY_DIM__|{{colors.tertiary_fixed_dim.default.hex}}|g' \
+      -e 's|__MATUGEN_ON_SURFACE__|{{colors.on_surface.default.hex}}|g' \
+      -e 's|__MATUGEN_ON_PRIMARY__|{{colors.on_primary.default.hex}}|g' \
+      "${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.kvconfig" \
+      > "$out/MaterialAdw.kvconfig"
+
+    ${pkgs.gnused}/bin/sed \
+      -e 's|#151B1E|__MATUGEN_SURFACE_LOWEST__|g' \
+      -e 's|#0F1416|__MATUGEN_SURFACE__|g' \
+      -e 's|#343A3C|__MATUGEN_SURFACE_LOWEST__|g' \
+      -e 's|#3F484B|__MATUGEN_SURFACE_CONTAINER_LOW__|g' \
+      -e 's|#84D2E7|__MATUGEN_PRIMARY__|g' \
+      -e 's|#B2CBD2|__MATUGEN_PRIMARY_CONTAINER__|g' \
+      -e 's|#BFC4EB|__MATUGEN_SECONDARY__|g' \
+      -e 's|#CEE7EF|__MATUGEN_SECONDARY_CONTAINER__|g' \
+      -e 's|#EFF0F1|__MATUGEN_SURFACE_BRIGHT__|g' \
+      -e 's|#eff0f1|__MATUGEN_SURFACE_BRIGHT__|g' \
+      -e 's|#FCFCFC|__MATUGEN_SURFACE_BRIGHT__|g' \
+      -e 's|#fcfcfc|__MATUGEN_SURFACE_BRIGHT__|g' \
+      -e 's|#DFDFDF|__MATUGEN_SURFACE_HIGH__|g' \
+      -e 's|#dfdfdf|__MATUGEN_ON_SURFACE_VARIANT__|g' \
+      -e 's|#C1C1C1|__MATUGEN_OUTLINE__|g' \
+      -e 's|#c1c1c1|__MATUGEN_OUTLINE__|g' \
+      -e 's|#989898|__MATUGEN_ON_SURFACE_VARIANT__|g' \
+      -e 's|#5a5a5a|__MATUGEN_ON_SURFACE_VARIANT__|g' \
+      -e 's|#646464|__MATUGEN_ON_SURFACE_VARIANT__|g' \
+      -e 's|#525252|__MATUGEN_OUTLINE__|g' \
+      -e 's|#666666|__MATUGEN_OUTLINE__|g' \
+      -e 's|#B6B6B6|__MATUGEN_OUTLINE__|g' \
+      -e 's|#b6b6b6|__MATUGEN_OUTLINE__|g' \
+      -e 's|#ACB1BC|__MATUGEN_ON_SURFACE_VARIANT__|g' \
+      -e 's|#acb1bc|__MATUGEN_ON_SURFACE_VARIANT__|g' \
+      -e 's|#FFB4AB|__MATUGEN_ERROR__|g' \
+      -e 's|#FFFFFF|__MATUGEN_ON_SURFACE__|g' \
+      -e 's|#ffffff|__MATUGEN_ON_SURFACE__|g' \
+      -e 's|#fff\b|__MATUGEN_ON_SURFACE__|g' \
+      -e 's|__MATUGEN_SURFACE_LOWEST__|{{colors.surface_container_lowest.default.hex}}|g' \
+      -e 's|__MATUGEN_SURFACE__|{{colors.surface.default.hex}}|g' \
+      -e 's|__MATUGEN_PRIMARY__|{{colors.primary.default.hex}}|g' \
+      -e 's|__MATUGEN_PRIMARY_CONTAINER__|{{colors.primary_container.default.hex}}|g' \
+      -e 's|__MATUGEN_SECONDARY__|{{colors.secondary.default.hex}}|g' \
+      -e 's|__MATUGEN_SECONDARY_CONTAINER__|{{colors.secondary_container.default.hex}}|g' \
+      -e 's|__MATUGEN_SURFACE_BRIGHT__|{{colors.surface_bright.default.hex}}|g' \
+      -e 's|__MATUGEN_SURFACE_HIGH__|{{colors.surface_container_high.default.hex}}|g' \
+      -e 's|__MATUGEN_OUTLINE__|{{colors.outline.default.hex}}|g' \
+      -e 's|__MATUGEN_ON_SURFACE_VARIANT__|{{colors.on_surface_variant.default.hex}}|g' \
+      -e 's|__MATUGEN_ERROR__|{{colors.error.default.hex}}|g' \
+      -e 's|__MATUGEN_SURFACE_CONTAINER_LOW__|{{colors.surface_container_low.default.hex}}|g' \
+      -e 's|__MATUGEN_ON_SURFACE__|{{colors.on_surface.default.hex}}|g' \
+      "${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.svg" \
+      > "$out/MaterialAdw.svg"
+  '';
 
   papirusFolderApply = pkgs.writeShellScript "papirus-folder-apply" ''
     set -eu
@@ -65,6 +146,22 @@ let
     [templates.qtct]
     input_path = '${./matugen/qtct-colors.conf.tpl}'
     output_path = '${homeDir}/.config/qt5ct/colors/matugen.conf'
+
+    [templates.qtct6]
+    input_path = '${./matugen/qtct-colors.conf.tpl}'
+    output_path = '${homeDir}/.config/qt6ct/colors/matugen.conf'
+
+    [templates.kvantum-config]
+    input_path = '${materialAdwMatugenTemplates}/MaterialAdw.kvconfig'
+    output_path = '${homeDir}/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig'
+
+    [templates.kvantum-svg]
+    input_path = '${materialAdwMatugenTemplates}/MaterialAdw.svg'
+    output_path = '${homeDir}/.config/Kvantum/MaterialAdw/MaterialAdw.svg'
+
+    [templates.kde-colors]
+    input_path = '${./matugen/material-adw-colors.colors.tpl}'
+    output_path = '${homeDir}/.local/share/color-schemes/MaterialAdwMatugen.colors'
 
     [templates.papirus-folders]
     input_path = '${./matugen/papirus-color.tpl}'
@@ -150,6 +247,9 @@ let
           wallpaper=${defaultWallpaper}
         fi
 
+        mkdir -p "$HOME/.config/qt5ct/colors" "$HOME/.config/qt6ct/colors" \
+          "$HOME/.config/Kvantum/MaterialAdw" "$HOME/.local/share/color-schemes"
+
         matugen_ok=0
         if ${pkgs.matugen}/bin/matugen image "$wallpaper" -m "$mode" -t scheme-content \
           --prefer=saturation -c ${matugenConfig} 2>/dev/null; then
@@ -166,6 +266,14 @@ let
             "主题切换失败" "$failure_message" 2>/dev/null || true
           exit 1
         fi
+
+        # Dolphin consumes KDE semantic colors separately from the Qt palette.
+        # Keep its mutable per-app selector pointed at the Matugen-generated file.
+        ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+          --file "$HOME/.config/dolphinrc" \
+          --group UiSettings \
+          --key ColorScheme \
+          MaterialAdwMatugen
 
         # GTK4 already has both palettes and follows Darkman's portal directly.
         # GTK3 has no color-scheme media query, so select its pre-rendered theme

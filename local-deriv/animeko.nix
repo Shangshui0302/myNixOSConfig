@@ -1,65 +1,299 @@
-{ pkgs }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  fetchpatch,
+  gradle_9,
+  autoPatchelfHook,
+  makeWrapper,
+  jetbrains, # Required by upstream due to JCEF dependency
+  fontconfig,
+  libxinerama,
+  libxrandr,
+  file,
+  gtk3,
+  glib,
+  cups,
+  lcms2,
+  alsa-lib,
+  libvlc,
+  libidn,
+  pulseaudio,
+  ffmpeg,
+  libva,
+  libdvbpsi,
+  libogg,
+  chromaprint,
+  protobuf_21,
+  libgcrypt,
+  libdvdnav,
+  libsecret,
+  aribb24,
+  libavc1394,
+  libmpcdec,
+  libvorbis,
+  libebml,
+  faad2,
+  libjpeg8,
+  libkate,
+  librsvg,
+  libxpm,
+  qt5,
+  libupnp,
+  aalib,
+  libcaca,
+  libmatroska,
+  libopenmpt-modplug,
+  libsidplayfp,
+  shine,
+  libarchive,
+  gnupg,
+  srt,
+  libshout,
+  ffmpeg_6,
+  libmpeg2,
+  libxcb-keysyms,
+  lirc,
+  lua5_2,
+  taglib,
+  libspatialaudio,
+  libmtp,
+  speexdsp,
+  libsamplerate,
+  sox,
+  libmad,
+  libnotify,
+  taglib_1,
+  zvbi,
+  libdc1394,
+  libcddb,
+  libbluray,
+  libdvdread,
+  libvncserver,
+  twolame,
+  samba,
+  libnfs,
+  flac,
+  writeShellScript,
+  nix-update,
+  libxml2,
+  boost,
+  thrift,
+  libGL,
+  libx11,
+  libxdamage,
+  nss,
+  nspr,
+}:
 let
+  thrift20 = thrift.overrideAttrs (old: {
+    version = "0.20.0";
+
+    src = fetchFromGitHub {
+      owner = "apache";
+      repo = "thrift";
+      tag = "v0.20.0";
+      hash = "sha256-cwFTcaNHq8/JJcQxWSelwAGOLvZHoMmjGV3HBumgcWo=";
+    };
+
+    cmakeFlags = (old.cmakeFlags or [ ]) ++ [
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.10"
+    ];
+
+    patches = (old.patches or [ ]) ++ [
+      # Fix build with gcc15
+      # https://github.com/apache/thrift/pull/3078
+      (fetchpatch {
+        name = "thrift-add-missing-cstdint-include-gcc15.patch";
+        url = "https://github.com/apache/thrift/commit/947ad66940cfbadd9b24ba31d892dfc1142dd330.patch";
+        hash = "sha256-pWcG6/BepUwc/K6cBs+6d74AWIhZ2/wXvCunb/KyB0s=";
+      })
+    ];
+  });
+
+in
+stdenv.mkDerivation (finalAttrs: {
   pname = "animeko";
   version = "6.1.0";
-  src = pkgs.fetchurl {
-    url = "https://github.com/open-ani/animeko/releases/download/v${version}/ani-${version}-linux-x86_64.appimage";
-    hash = "sha256-q+6rAdr0oIqxzXxNnGmZsXQaV32TrX4u8ouA6hIpaqc=";
+
+  src = fetchFromGitHub {
+    owner = "open-ani";
+    repo = "animeko";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-FRZ62WIo3dA1Bo3+ShQfT0osdaelZZZI2FKuU56w/Dg=";
+    fetchSubmodules = true;
   };
-  iconSrc = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/open-ani/animeko/v${version}/app/desktop/icons/a_1024x1024_rounded.ico";
-    hash = "sha256-VVce+BK2M2j6r3ag/7chcP5YLYKZtY+H0kIgz0mBrkQ=";
+
+  postPatch = ''
+    echo "kotlin.native.ignoreDisabledTargets=true" >> local.properties
+    sed -i "s/^version.name=.*/version.name=${finalAttrs.version}/" gradle.properties
+    sed -i "s/^package.version=.*/package.version=${finalAttrs.version}/" gradle.properties
+  '';
+
+  gradleBuildTask = "createReleaseDistributable";
+
+  gradleUpdateTask = finalAttrs.gradleBuildTask;
+
+  mitmCache = gradle_9.fetchDeps {
+    inherit (finalAttrs) pname;
+    pkg = finalAttrs.finalPackage;
+    # deps.json omits the dynamic api.github.com/rate_limit response.
+    data = ./deps.json;
+    silent = false;
+    useBwrap = false;
   };
-  icon =
-    pkgs.runCommand "${pname}-icon"
-      {
-        nativeBuildInputs = [ pkgs.imagemagick ];
-      }
-      ''
-        magick "${iconSrc}[6]" "png:$out"
-      '';
-  app = pkgs.appimageTools.wrapType2 {
-    inherit pname version src;
+
+  env = {
+    JAVA_HOME = jetbrains.jdk-21;
+    ANDROID_SDK_HOME = "$(pwd)";
   };
-in
-pkgs.stdenvNoCC.mkDerivation {
-  inherit pname version src;
-  dontUnpack = true;
+
+  gradleFlags = [
+    "-Dorg.gradle.java.home=${jetbrains.jdk-21}"
+  ];
 
   nativeBuildInputs = [
-    pkgs.copyDesktopItems
-    pkgs.makeWrapper
+    gradle_9
+    autoPatchelfHook
+    makeWrapper
   ];
 
-  desktopItems = [
-    (pkgs.makeDesktopItem {
-      name = pname;
-      desktopName = "Animeko";
-      comment = "集找番、追番、看番的一站式弹幕追番平台";
-      exec = pname;
-      icon = pname;
-      categories = [
-        "AudioVideo"
-        "Player"
-        "Video"
-      ];
-    })
+  buildInputs = [
+    fontconfig
+    libxinerama
+    libxrandr
+    file
+    shine
+    libmpeg2
+    gtk3
+    glib
+    cups
+    lcms2
+    alsa-lib
+    libidn
+    pulseaudio
+    ffmpeg
+    faad2
+    libjpeg8
+    libkate
+    librsvg
+    libxpm
+    qt5.qtsvg
+    qt5.qtbase
+    qt5.qtx11extras
+    libupnp
+    aalib
+    libcaca
+    libva
+    libdvbpsi
+    libogg
+    chromaprint
+    protobuf_21
+    libgcrypt
+    libsecret
+    aribb24
+    twolame
+    libmpcdec
+    libvorbis
+    libebml
+    libmatroska
+    libopenmpt-modplug
+    libavc1394
+    libmtp
+    libsidplayfp
+    libarchive
+    gnupg
+    srt
+    libshout
+    ffmpeg_6
+    libxcb-keysyms
+    lirc
+    lua5_2
+    taglib
+    libspatialaudio
+    speexdsp
+    libsamplerate
+    sox
+    libmad
+    libnotify
+    zvbi
+    libdc1394
+    libcddb
+    libbluray
+    libdvdread
+    libvncserver
+    samba
+    libnfs
+    taglib_1
+    libdvdnav
+    flac
+    libxml2
+    boost
+    thrift20
+    nss
+    nspr
+    libGL
+    libx11
+    libxdamage
   ];
+
+  patches = [
+    # Builtin updater will never work on NixOS, so we made a patch to disable updater
+    ./0001-no-update-checker.patch
+    # Backport open-ani/animeko#3359: force JCEF through XWayland on Wayland.
+    ./0002-jcef-wayland-ozone.patch
+    # Adapt v6.1.0 to the JCEF API exposed by the locked JetBrains JDK.
+    ./0003-jcef-api-compat.patch
+  ];
+
+  dontWrapQtApps = true;
+
+  doCheck = false;
 
   installPhase = ''
     runHook preInstall
-    makeWrapper ${app}/bin/${pname} "$out/bin/${pname}" \
+
+    cp -r app/desktop/build/compose/binaries/main-release/app/Ani $out
+    mv $out/bin/Ani $out/bin/Ani-unwrapped
+    cp $out/lib/app/Ani.cfg $out/lib/app/Ani-unwrapped.cfg
+    makeWrapper $out/bin/Ani-unwrapped $out/bin/Ani \
       --prefix JAVA_TOOL_OPTIONS " " "-Dsun.java2d.uiScale=2.0"
-    install -Dm644 ${icon} "$out/share/icons/hicolor/256x256/apps/${pname}.png"
+    chmod +x $out/lib/runtime/lib/jcef_helper
+    substituteInPlace app/desktop/appResources/linux-x64/animeko.desktop \
+      --replace-fail "icon" "animeko"
+    install -Dm644 app/desktop/appResources/linux-x64/animeko.desktop $out/share/applications/animeko.desktop
+    install -Dm644 app/desktop/appResources/linux-x64/icon.png $out/share/icons/hicolor/512x512/apps/animeko.png
+
     runHook postInstall
   '';
 
-  meta = with pkgs.lib; {
+  preFixup = ''
+    # Remove prebuilt vlc and use NixOS version
+    rm -r $out/lib/app/resources/lib
+    ln -sf ${libvlc}/lib $out/lib/app/resources/
+    # The bundled copies shadow NixOS GLib/PCRE2 and break JCEF symbol resolution.
+    rm -f $out/lib/app/native/libglib-2.0.so.0 $out/lib/app/native/libpcre2-8.so.0
+  '';
+
+  passthru.updateScript = writeShellScript "update-animeko" ''
+    ${lib.getExe nix-update} animeko
+    $(nix-build -A animeko.mitmCache.updateScript)
+  '';
+
+  meta = {
     description = "One-stop platform for finding, following and watching anime";
     homepage = "https://github.com/open-ani/animeko";
-    license = licenses.agpl3Plus;
-    mainProgram = pname;
-    platforms = [ "x86_64-linux" ];
-    sourceProvenance = with sourceTypes; [ binaryNativeCode ];
+    mainProgram = "Ani";
+    license = lib.licenses.agpl3Plus;
+    maintainers = with lib.maintainers; [
+      pokon548
+    ];
+    sourceProvenance = with lib.sourceTypes; [
+      fromSource
+      binaryBytecode
+    ];
+    platforms = [
+      "x86_64-linux"
+    ];
   };
-}
+})

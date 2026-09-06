@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-09-04
+updated: 2026-09-06
 ---
 
 # Nix 手工打包
@@ -57,7 +57,7 @@ $nix-packaging 打包 <软件名或上游 URL>
 
 ```text
 $nix-packaging 将 cliamp 更新到 2.1.0
-$nix-packaging 查明 animeko AppImage 的启动失败并修复打包
+$nix-packaging 将 animeko 从 AppImage 迁移到 v6.1.0 源码构建并修复 JCEF 启动
 ```
 
 skill 会先只读调查并提交方案。非小型改动需要回复“确认”或“进行实施”后才会写文件。
@@ -99,8 +99,8 @@ nix develop .#packaging
 
 ## Derivation 规范
 
-- 文件名使用 `local-deriv/<pname>.nix`，参数入口沿用 `{ pkgs }:`。
-- 消费者直接 `import`；单点修改使用 `overrideAttrs`，不为一个包创建 overlay。
+- 文件名使用 `local-deriv/<pname>.nix`；复杂源码包可沿用 nixpkgs 的 `callPackage` 参数集，简单包再使用 `{ pkgs, ... }:`。
+- 消费者优先使用 `pkgs.callPackage`；单点修改使用 `overrideAttrs`，不为一个包创建 overlay。
 - 使用 `pname`、`version`、固定 release/tag/commit 和 SRI `hash = "sha256-..."`。
 - URL、tag 与文件名里的版本优先引用 `${version}`。
 - 构建工具和 setup hooks 放 `nativeBuildInputs`；链接或运行库放 `buildInputs`。

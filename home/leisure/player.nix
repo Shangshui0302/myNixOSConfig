@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  animeko = import ../../local-deriv/animeko.nix { inherit pkgs; };
+  animeko = pkgs.callPackage ../../local-deriv/animeko.nix { };
   cliamp = import ../../local-deriv/cliamp.nix { inherit pkgs; };
 in
 {

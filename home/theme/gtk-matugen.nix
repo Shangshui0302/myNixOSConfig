@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  materialAdwTheme,
   pkgs,
   materialGnomeTheme,
   ...
@@ -10,11 +11,11 @@ let
   matugenThemeName = "Material-Gnome-Matugen";
   matugenDarkThemeName = "${matugenThemeName}-Dark";
   matugenThemeDir = "${config.home.homeDirectory}/.themes/${matugenThemeName}";
-  qtAppearance = {
-    color_scheme_path = "${config.home.homeDirectory}/.config/qt5ct/colors/matugen.conf";
+  qtAppearance = colorSchemePath: {
+    color_scheme_path = colorSchemePath;
     custom_palette = true;
     icon_theme = "Papirus-Matugen";
-    style = "Breeze";
+    style = "kvantum";
   };
 in
 {
@@ -33,14 +34,35 @@ in
     '')
   ];
 
-  # qtct 同时提供 Qt5 和 Qt6 平台插件；两者共用 matugen 生成的 QPalette。
+  # qtct 同时提供 Qt5 和 Qt6 平台插件；Kvantum 负责 MaterialAdw 的控件形状，
+  # Matugen 生成的 QPalette 负责语义色。
   qt = {
     enable = true;
     platformTheme.name = "qtct";
-    style.name = "breeze";
-    qt5ctSettings.Appearance = qtAppearance;
-    qt6ctSettings.Appearance = qtAppearance;
+    style.name = "kvantum";
+    qt5ctSettings.Appearance = qtAppearance "${config.home.homeDirectory}/.config/qt5ct/colors/matugen.conf";
+    qt6ctSettings.Appearance = qtAppearance "${config.home.homeDirectory}/.config/qt6ct/colors/matugen.conf";
+    kvantum = {
+      enable = true;
+      # 不使用 qt.kvantum.themes：Matugen 必须能写入用户目录中的动态副本。
+      settings.General.theme = "MaterialAdw";
+    };
   };
+
+  # MaterialAdw 的 SVG/kvconfig 由固定 Nix 包提供初始副本；theme-apply 后续将
+  # Matugen 生成的可写版本放回同一目录。只在缺失时复制，避免 HM 激活覆盖当前配色。
+  home.activation.setupKvantumMaterialAdw = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    kvantum_theme_dir="$HOME/.config/Kvantum/MaterialAdw"
+    mkdir -p "$kvantum_theme_dir"
+    if [ ! -e "$kvantum_theme_dir/MaterialAdw.kvconfig" ]; then
+      cp ${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.kvconfig \
+        "$kvantum_theme_dir/MaterialAdw.kvconfig"
+    fi
+    if [ ! -e "$kvantum_theme_dir/MaterialAdw.svg" ]; then
+      cp ${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.svg \
+        "$kvantum_theme_dir/MaterialAdw.svg"
+    fi
+  '';
 
   dconf.settings."org/gnome/desktop/interface".icon-theme = lib.mkForce "Papirus-Matugen";
 

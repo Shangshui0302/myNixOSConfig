@@ -3,12 +3,13 @@
 let
   llmAgents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
   codexDesktop = inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop;
+  ccSwitch = import ../../local-deriv/cc-switch.nix { inherit pkgs; };
 in
 {
   home.packages = with pkgs; [
     codex
     llmAgents.officecli
-    cc-switch
+    ccSwitch
     codexDesktop
     codebase-memory-mcp
   ];

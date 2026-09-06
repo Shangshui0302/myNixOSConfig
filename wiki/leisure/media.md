@@ -2,7 +2,7 @@
 title: 媒体播放
 category: 娱乐
 tags: [mpv, media, pipewire, animeko, ani-cli, kazumi, cliamp, go-musicfox, obs, loupe]
-updated: 2026-09-04
+updated: 2026-09-06
 ---
 
 # 媒体播放
@@ -18,7 +18,7 @@ P["player.nix<br/>mpv, loupe, go-musicfox, animeko, ani-cli, kazumi, cliamp"]
 B["browser.nix<br/>Firefox, Google Chrome"]
 end
 subgraph "本地派生"
-A["animeko.nix<br/>AppImage 封装"]
+A["animeko.nix<br/>Gradle 源码构建"]
 N["netease-cloud-music-web-player.nix<br/>Electron 包装"]
 C["cliamp.nix<br/>v2.0.1 Go 源码构建"]
 end
@@ -44,7 +44,7 @@ C --> |"ALSA + yt-dlp + ffmpeg-headless"| S
 | `loupe` | GNOME 图片查看器 |
 | `go-musicfox` | 终端网易云音乐播放器（附桌面入口 `foot -e musicfox`） |
 | `obs-studio` | 直播与本地录制 |
-| Animeko | 动漫播放器，`local-deriv/animeko.nix` 封装官方 v6.1.0 AppImage，并通过 JVM 参数匹配 GTK 的 2 倍 UI 缩放 |
+| Animeko | 动漫播放器，`local-deriv/animeko.nix` 从官方 v6.1.0 源码构建；包含 JCEF 的 Wayland/XWayland 与锁定 JCEF API 兼容补丁，并通过 JVM 参数匹配 GTK 的 2 倍 UI 缩放。启动器命令为 `Ani`，桌面入口名称为 Animeko |
 | `ani-cli` | 命令行动漫搜索与播放，默认调用 mpv；使用 `ani-cli` 启动 |
 | Kazumi | 图形化动漫聚合播放器，支持自定义规则、字幕与弹幕；由 nixpkgs 提供桌面入口 |
 | `cliamp` | 复古 Winamp 风格终端音乐播放器；本地派生固定 v2.0.1 源码构建，网易云播放依赖 `yt-dlp` 与 `ffmpeg-headless` |
@@ -111,6 +111,7 @@ cliamp completion bash | bash -n
 ## 故障排查
 
 - **无法播放/黑屏**：确认 amdgpu 驱动已加载；切换 mpv 渲染后端或禁用硬件解码对比。
+- **Animeko 启动后 JCEF 未初始化**：确认使用当前 `local-deriv/animeko.nix` 的源码包；该包已强制 Wayland 使用 XWayland，并移除会遮蔽系统 GLib/PCRE2 的捆绑库。查看 `~/.local/share/ani/logs/` 中是否出现 `JCEF is initialized`。
 - **无声或声音异常**：确认 PipeWire 正常运行并选对输出设备；检查音量/静音，必要时重启音频服务。
 - **流媒体无法播放**：确认浏览器已启用硬件加速与 DRM；检查网络与地区限制。
 - **ani-cli 找不到番剧或播放失败**：检查 AniDB/源站连通性；必要时直接运行 `ani-cli` 查看交互提示。

@@ -1,12 +1,14 @@
 { pkgs, ... }:
 
 {
-  # 主 DE 文件管理（nautilus/sushi 在 home/gnome.nix，GNOME 变体专属）。
+  # 文件管理器：主 DE 与 GNOME 共同提供 Nautilus/Sushi，另保留 Dolphin。
   home.packages = with pkgs; [
     ouch
     p7zip
     unzip
     file-roller
+    nautilus
+    sushi
     ffmpegthumbnailer
     tumbler
     kdePackages.dolphin
