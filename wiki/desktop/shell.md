@@ -2,7 +2,7 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-09-02
+updated: 2026-09-08
 ---
 
 # Shell 环境指南
@@ -33,6 +33,8 @@ updated: 2026-09-02
 | `grep` | `rg` | ripgrep 搜索 |
 | `find` | `fd` | fd 查找文件 |
 | `top` | `btop` | 系统监视器 |
+
+btop 默认使用 `matugen` 主题的深色变体。由于 Foot 背景固定为深色，Darkman 切换深浅色时 btop 不切换背景，只在壁纸变化后更新重点色并发送 `SIGUSR2`；静态 `blackgolden` 主题仍保留作备用。
 
 ## Starship 提示符
 

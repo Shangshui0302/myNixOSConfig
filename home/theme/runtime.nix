@@ -117,6 +117,9 @@ let
     dark = mkMatugenModeTemplates "dark";
   };
 
+  # btop runs in the dark Foot terminal, so it always consumes Matugen's dark palette.
+  btopDarkTemplate = mkMatugenModeTemplate "dark" "btop-theme" ./matugen/btop.theme.tpl;
+
   # Matugen writes here first.  The shell script copies a complete staging tree
   # into a content-addressed cache only after every template succeeded.
   matugenOutputRoot = "${homeDir}/.cache/wallpaper-colors/staging";
@@ -189,6 +192,10 @@ let
     [templates.niri-dark]
     input_path = '${matugenModeTemplates.dark.niri}'
     output_path = '${matugenOutputRoot}/dark/niri-colors.kdl'
+
+    [templates.btop-dark]
+    input_path = '${btopDarkTemplate}'
+    output_path = '${matugenOutputRoot}/dark/btop.theme'
 
     [templates.gtk3-light]
     input_path = '${../../local-deriv/material-gnome/gtk3-light.tpl}'
@@ -391,6 +398,7 @@ let
           dark/hyprland.lua
           light/niri-colors.kdl
           dark/niri-colors.kdl
+          dark/btop.theme
           dual/gtk3-light/colors.css
           dual/gtk3-dark/colors.css
           dual/gtk4/colors.css
@@ -575,6 +583,8 @@ let
           "$HOME/.cache/wallpaper-colors/hyprland.lua"
         copy_atomic "$cache_dir/$mode/niri-colors.kdl" \
           "$HOME/.config/niri/wallpaper-colors.kdl"
+        copy_atomic "$cache_dir/dark/btop.theme" \
+          "$HOME/.config/btop/themes/matugen.theme"
         copy_atomic "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
           "$HOME/.config/qt5ct/colors/matugen.conf"
         copy_atomic "$cache_dir/$mode/qt6ct/colors/matugen.conf" \
@@ -644,6 +654,11 @@ let
         if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
           ${pkgs.hyprland}/bin/hyprctl eval "$(cat "$HOME/.cache/wallpaper-colors/hyprland.lua")" 2>/dev/null || true
         fi
+
+        btop_start="$(now_ms)"
+        ${pkgs.procps}/bin/pkill -USR2 -x btop 2>/dev/null || true
+        btop_end="$(now_ms)"
+        log "stage=btop duration_ms=$((btop_end - btop_start)) mode=$mode"
 
         noctalia_start="$(now_ms)"
         ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode" 2>/dev/null || true

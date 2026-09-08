@@ -23,7 +23,7 @@
   programs.btop = {
     enable = true;
     settings = {
-      color_theme = "blackgolden";
+      color_theme = "matugen";
       theme_background = false;
       truecolor = true;
       force_tty = false;
