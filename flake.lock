@@ -141,11 +141,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788700786,
-        "narHash": "sha256-eN+4dzA0k07Xbtv9/1aF2Z2P/m/7HIv1YGjPc59roVI=",
+        "lastModified": 1788774520,
+        "narHash": "sha256-2mt+dFqLoJi/51JrjozlC2TEjltbz5eoV6tNGRP5AAA=",
         "owner": "Shangshui0302",
         "repo": "fcitx5-mellow-themes-matugen",
-        "rev": "5a984131c667b5fcb7976ecb6bc26914e1db4ae4",
+        "rev": "e08c61bdb28ca5a33bbbadcad0841402d5fa6bc5",
         "type": "github"
       },
       "original": {
