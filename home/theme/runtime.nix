@@ -157,16 +157,50 @@ let
       chmod -R u+w "$theme_dir"
     fi
 
-    PATH="${pkgs.gtk3}/bin:$PATH" ${pkgs.papirus-folders}/bin/papirus-folders \
+    papirus_identity="$(${pkgs.coreutils}/bin/basename "${pkgs.papirus-icon-theme}")"
+    papirus_cache_dir="$HOME/.cache/wallpaper-colors/papirus/v1/$papirus_identity/$color"
+    papirus_cache="$papirus_cache_dir/icon-theme.cache"
+    mkdir -p "$papirus_cache_dir"
+
+    # DISABLE_UPDATE_ICON_CACHE also skips papirus-folders' KDE cache cleanup.
+    # Keep that invalidation, but avoid its full GTK cache scan on every color.
+    ${pkgs.coreutils}/bin/rm -f \
+      "$HOME/.cache/icon-cache.kcache" \
+      "/var/tmp/kdecache-$USER/icon-cache.kcache" 2>/dev/null || true
+
+    PATH="${pkgs.gtk3}/bin:$PATH" DISABLE_UPDATE_ICON_CACHE=1 \
+      ${pkgs.papirus-folders}/bin/papirus-folders \
       -o -C "$color" -t "$theme_dir" >/dev/null 2>&1 || {
       echo "theme-apply: unable to set Papirus folder color '$color'" >&2
       exit 1
     }
+
+    if [ -s "$papirus_cache" ]; then
+      temporary="$(${pkgs.coreutils}/bin/mktemp "$theme_dir/.icon-theme.cache.XXXXXX")"
+      ${pkgs.coreutils}/bin/cp -p "$papirus_cache" "$temporary"
+      ${pkgs.coreutils}/bin/mv -f "$temporary" "$theme_dir/icon-theme.cache"
+      printf '%s\n' cache-hit
+      exit 0
+    fi
+
+    # A cache miss is intentionally the slow path.  Remove the previous
+    # color's index so a failed rebuild cannot be mistaken for a valid cache.
+    ${pkgs.coreutils}/bin/rm -f "$theme_dir/icon-theme.cache"
+    ${pkgs.gtk3}/bin/gtk-update-icon-cache -qf "$theme_dir" >/dev/null 2>&1 || true
+    if [ ! -s "$theme_dir/icon-theme.cache" ]; then
+      echo "theme-apply: unable to rebuild Papirus GTK icon cache" >&2
+      exit 1
+    fi
+
+    temporary="$(${pkgs.coreutils}/bin/mktemp "$papirus_cache_dir/.icon-theme.cache.XXXXXX")"
+    ${pkgs.coreutils}/bin/cp -p "$theme_dir/icon-theme.cache" "$temporary"
+    ${pkgs.coreutils}/bin/mv -f "$temporary" "$papirus_cache"
+    printf '%s\n' cache-rebuild
   '';
 
   # Matugen exposes `closest_color` to post hooks, not to ordinary templates.
-  # Record that resolved Papirus color during staging; the expensive icon-tree
-  # recolor is performed later only when the active color actually changes.
+  # Record that resolved Papirus color during staging; the folder-link update
+  # is performed later only when the active color actually changes.
   papirusFolderRecord = pkgs.writeShellScript "papirus-folder-record" ''
     set -eu
 
@@ -513,6 +547,9 @@ let
           }
           destination_dir="$(${pkgs.coreutils}/bin/dirname "$destination")"
           mkdir -p "$destination_dir"
+          if [ -f "$destination" ] && ${pkgs.diffutils}/bin/cmp -s "$source" "$destination"; then
+            return 0
+          fi
           temporary="$(${pkgs.coreutils}/bin/mktemp "$destination_dir/.theme-apply.XXXXXX")"
           ${pkgs.coreutils}/bin/cp -p "$source" "$temporary"
           ${pkgs.coreutils}/bin/mv -f "$temporary" "$destination"
@@ -525,6 +562,10 @@ let
           mkdir -p "$destination_dir"
           temporary="$(${pkgs.coreutils}/bin/mktemp "$destination_dir/.theme-apply.XXXXXX")"
           printf '%s\n' "$value" > "$temporary"
+          if [ -f "$destination" ] && ${pkgs.diffutils}/bin/cmp -s "$temporary" "$destination"; then
+            ${pkgs.coreutils}/bin/rm -f "$temporary"
+            return 0
+          fi
           ${pkgs.coreutils}/bin/mv -f "$temporary" "$destination"
         }
 
@@ -706,6 +747,27 @@ let
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
 
+        # Update quick, visible consumers before the potentially multi-second
+        # Papirus icon-tree work below.  Keep this serial under the global lock
+        # so no consumer observes a half-published palette.
+        noctalia_start="$(now_ms)"
+        ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode" 2>/dev/null || true
+        noctalia_end="$(now_ms)"
+        log "stage=noctalia duration_ms=$((noctalia_end - noctalia_start))"
+
+        if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+          ${pkgs.hyprland}/bin/hyprctl eval "$(cat "$HOME/.cache/wallpaper-colors/hyprland.lua")" 2>/dev/null || true
+        fi
+
+        btop_start="$(now_ms)"
+        if [ "$assets_changed" -eq 1 ]; then
+          ${pkgs.procps}/bin/pkill -USR2 -x btop 2>/dev/null || true
+          btop_end="$(now_ms)"
+          log "stage=btop duration_ms=$((btop_end - btop_start)) mode=$mode assets_changed=$assets_changed"
+        else
+          log "stage=btop status=skipped mode=$mode assets_changed=0"
+        fi
+
         # fcitx5-gtk's Wayland client reads Theme directly; keep the complete
         # user config but avoid restarting the daemon when only the mode changed.
         fcitx_dir="$HOME/.config/fcitx5/conf"
@@ -718,26 +780,13 @@ let
     UseDarkTheme=True
     Vertical Candidate List=True
     EOF
-        ${pkgs.coreutils}/bin/mv -f "$fcitx_tmp" "$fcitx_dir/classicui.conf"
-        trap - EXIT
-
-        papirus_target="$(cat "$cache_dir/$mode/papirus-folder-color")"
-        papirus_current=""
-        if [ -f "$applied_papirus" ]; then
-          papirus_current="$(cat "$applied_papirus")"
-        fi
-        if [ "$papirus_target" != "$papirus_current" ]; then
-          papirus_start="$(now_ms)"
-          if ${papirusFolderApply} "$papirus_target"; then
-            write_atomic "$applied_papirus" "$papirus_target"
-          else
-            log "stage=papirus status=failed color=$papirus_target"
-          fi
-          papirus_end="$(now_ms)"
-          log "stage=papirus duration_ms=$((papirus_end - papirus_start)) color=$papirus_target"
+        if [ ! -f "$fcitx_dir/classicui.conf" ] \
+          || ! ${pkgs.diffutils}/bin/cmp -s "$fcitx_tmp" "$fcitx_dir/classicui.conf"; then
+          ${pkgs.coreutils}/bin/mv -f "$fcitx_tmp" "$fcitx_dir/classicui.conf"
         else
-          log "stage=papirus cache-hit color=$papirus_target"
+          ${pkgs.coreutils}/bin/rm -f "$fcitx_tmp"
         fi
+        trap - EXIT
 
         fcitx_start="$(now_ms)"
         if [ "$assets_changed" -eq 1 ]; then
@@ -749,19 +798,24 @@ let
         fcitx_end="$(now_ms)"
         log "stage=fcitx duration_ms=$((fcitx_end - fcitx_start)) mode=$mode assets_changed=$assets_changed"
 
-        if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-          ${pkgs.hyprland}/bin/hyprctl eval "$(cat "$HOME/.cache/wallpaper-colors/hyprland.lua")" 2>/dev/null || true
+        papirus_target="$(cat "$cache_dir/$mode/papirus-folder-color")"
+        papirus_current=""
+        if [ -f "$applied_papirus" ]; then
+          papirus_current="$(cat "$applied_papirus")"
         fi
-
-        btop_start="$(now_ms)"
-        ${pkgs.procps}/bin/pkill -USR2 -x btop 2>/dev/null || true
-        btop_end="$(now_ms)"
-        log "stage=btop duration_ms=$((btop_end - btop_start)) mode=$mode"
-
-        noctalia_start="$(now_ms)"
-        ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode" 2>/dev/null || true
-        noctalia_end="$(now_ms)"
-        log "stage=noctalia duration_ms=$((noctalia_end - noctalia_start))"
+        if [ "$papirus_target" != "$papirus_current" ]; then
+          papirus_start="$(now_ms)"
+          papirus_cache_status="failed"
+          if papirus_cache_status="$(${papirusFolderApply} "$papirus_target")"; then
+            write_atomic "$applied_papirus" "$papirus_target"
+          else
+            log "stage=papirus status=failed color=$papirus_target"
+          fi
+          papirus_end="$(now_ms)"
+          log "stage=papirus duration_ms=$((papirus_end - papirus_start)) color=$papirus_target cache=$papirus_cache_status"
+        else
+          log "stage=papirus cache-hit color=$papirus_target"
+        fi
 
         write_atomic "$cache_index" "$cache_key"
         log "complete mode=$mode key=$cache_key assets_changed=$assets_changed"
