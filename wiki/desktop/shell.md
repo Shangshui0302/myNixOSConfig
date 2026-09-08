@@ -63,7 +63,8 @@ btop 默认使用 `matugen` 主题的深色变体。由于 Foot 背景固定为�
 
 ## Zellij
 
-终端多路复用器，Catppuccin Mocha 主题。
+终端多路复用器，使用运行时生成的 `matugen` 主题。主题文件位于
+`~/.config/zellij/themes/matugen.kdl`，由 Darkman 的主题分发链按当前模式更新；Zellij 会监视主题文件，已存在的会话通常无需重启即可刷新。
 
 ```bash
 zellij           # 启动
@@ -71,6 +72,14 @@ zellij attach    # 重新连接已有会话
 ```
 
 常用快捷键见 Zellij 内置帮助 (`Ctrl+g` → `?`)。
+
+如果主题没有刷新，先确认当前文件和 Darkman 状态：
+
+```bash
+darkman get
+zellij setup --check
+stat ~/.config/zellij/themes/matugen.kdl
+```
 
 ## Ghostty 保留快捷键
 

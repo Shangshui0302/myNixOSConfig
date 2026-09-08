@@ -52,7 +52,8 @@ in
       ''
             mkdir -p "$HOME/.local/bin" "$HOME/.config/waypaper" \
               "$HOME/.config/qt5ct/colors" "$HOME/.config/qt6ct/colors" \
-              "$HOME/.config/Kvantum/MaterialAdw" "$HOME/.local/share/color-schemes"
+              "$HOME/.config/Kvantum/MaterialAdw" "$HOME/.config/zellij/themes" \
+              "$HOME/.local/share/color-schemes"
             cp ${wallpaperThemeScript} "$HOME/.local/bin/wallpaper-theme"
             chmod 755 "$HOME/.local/bin/wallpaper-theme"
 
@@ -79,6 +80,7 @@ in
               || [ ! -f "$HOME/.config/btop/themes/matugen.theme" ] \
               || [ ! -f "$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml" ] \
               || [ ! -f "$HOME/.config/mpv/script-opts/modernz.conf" ] \
+              || [ ! -f "$HOME/.config/zellij/themes/matugen.kdl" ] \
               || { [ -d "$HOME/Documents/MyVault/.obsidian/snippets" ] \
                 && [ ! -f "$HOME/Documents/MyVault/.obsidian/snippets/matugen.css" ]; } \
               || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null \
