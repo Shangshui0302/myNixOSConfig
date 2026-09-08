@@ -109,6 +109,7 @@ let
     caelestia = mkMatugenModeTemplate mode "caelestia-scheme" ./matugen/caelestia-scheme.json.tpl;
     hyprland = mkMatugenModeTemplate mode "hyprland-colors" ./matugen/hyprland-colors.lua.tpl;
     niri = mkMatugenModeTemplate mode "niri-colors" ./matugen/niri-colors.kdl.tpl;
+    zellij = mkMatugenModeTemplate mode "zellij-theme" ./matugen/zellij-theme.kdl.tpl;
     qtct = mkMatugenModeTemplate mode "qtct-colors" ./matugen/qtct-colors.conf.tpl;
     kdeColors = mkMatugenModeTemplate mode "material-adw-colors" ./matugen/material-adw-colors.colors.tpl;
     papirus = mkMatugenModeTemplate mode "papirus-color" ./matugen/papirus-color.tpl;
@@ -207,6 +208,14 @@ let
     [templates.niri-dark]
     input_path = '${matugenModeTemplates.dark.niri}'
     output_path = '${matugenOutputRoot}/dark/niri-colors.kdl'
+
+    [templates.zellij-light]
+    input_path = '${matugenModeTemplates.light.zellij}'
+    output_path = '${matugenOutputRoot}/light/zellij/theme.kdl'
+
+    [templates.zellij-dark]
+    input_path = '${matugenModeTemplates.dark.zellij}'
+    output_path = '${matugenOutputRoot}/dark/zellij/theme.kdl'
 
     [templates.btop-dark]
     input_path = '${btopDarkTemplate}'
@@ -375,7 +384,7 @@ let
 
   # Keep the fast mode-only path safe across Matugen/template upgrades.  It can
   # validate this identity without reading or hashing the current wallpaper.
-  cacheIdentity = "theme-cache-v3|${pkgs.matugen}|${matugenConfig}|${toString inputs.fcitx5-matugen-theme}";
+  cacheIdentity = "theme-cache-v4|${pkgs.matugen}|${matugenConfig}|${toString inputs.fcitx5-matugen-theme}";
 
   themeApply = pkgs.writeShellScript "theme-apply" ''
         set -eu
@@ -437,6 +446,8 @@ let
           dark/hyprland.lua
           light/niri-colors.kdl
           dark/niri-colors.kdl
+          light/zellij/theme.kdl
+          dark/zellij/theme.kdl
           dark/btop.theme
           dark/yazi/flavor.toml
           light/vscode/vscode-colors
@@ -577,7 +588,7 @@ let
           ${pkgs.coreutils}/bin/rm -rf -- "$temporary_cache"
           mkdir -p "$temporary_cache"
           ${pkgs.coreutils}/bin/cp -a "$staging_dir/." "$temporary_cache/"
-          printf 'cache-version=3\ncache-identity=%s\nwallpaper-sha256=%s\n' \
+          printf 'cache-version=4\ncache-identity=%s\nwallpaper-sha256=%s\n' \
             "$cache_identity" "''${wallpaper_hash:-unknown}" \
             > "$temporary_cache/manifest"
           # validate_cache failed above; remove the stale destination before
@@ -654,6 +665,11 @@ let
           copy_atomic "$cache_dir/dark/yazi/flavor.toml" "$yazi_flavor"
           log "stage=yazi status=updated"
         fi
+        zellij_start="$(now_ms)"
+        copy_atomic "$cache_dir/$mode/zellij/theme.kdl" \
+          "$HOME/.config/zellij/themes/matugen.kdl"
+        zellij_end="$(now_ms)"
+        log "stage=zellij duration_ms=$((zellij_end - zellij_start)) mode=$mode"
         copy_atomic "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
           "$HOME/.config/qt5ct/colors/matugen.conf"
         copy_atomic "$cache_dir/$mode/qt6ct/colors/matugen.conf" \
