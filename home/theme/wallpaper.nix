@@ -74,6 +74,8 @@ in
               || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.svg" ] \
               || [ ! -f "$HOME/.local/share/color-schemes/MaterialAdwMatugen.colors" ] \
               || [ ! -f "$HOME/.config/btop/themes/matugen.theme" ] \
+              || { [ -d "$HOME/Documents/MyVault/.obsidian/snippets" ] \
+                && [ ! -f "$HOME/Documents/MyVault/.obsidian/snippets/matugen.css" ]; } \
               || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null \
               || [ ! -f "$HOME/.local/share/icons/Papirus-Matugen/index.theme" ]; then
               initial_wallpaper="$(${pkgs.waypaper}/bin/waypaper --list 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[0].wallpaper // empty' 2>/dev/null || true)"

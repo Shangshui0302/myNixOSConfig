@@ -10,6 +10,10 @@
 let
   homeDir = config.home.homeDirectory;
   defaultWallpaper = ../../assets/nixos_logo.png;
+  # The current vault is the only Obsidian consumer in this profile.  Keep its
+  # generated snippet user-owned so Obsidian can manage the surrounding vault.
+  obsidianVault = "${homeDir}/Documents/MyVault";
+  obsidianSnippet = "${obsidianVault}/.obsidian/snippets/matugen.css";
   # The upstream HM module owns the package and links selected templates here.
   fcitxTemplateRoot = "${homeDir}/.config/matugen/templates/fcitx5-matugen-theme";
 
@@ -119,6 +123,10 @@ let
 
   # btop runs in the dark Foot terminal, so it always consumes Matugen's dark palette.
   btopDarkTemplate = mkMatugenModeTemplate "dark" "btop-theme" ./matugen/btop.theme.tpl;
+  # Obsidian keeps one CSS snippet with native light/dark selectors.  Its
+  # surfaces and typography stay with Minimal/Claude for Minimal; only accent
+  # variables are distributed here.
+  obsidianAccentTemplate = ./matugen/obsidian-accent.css.tpl;
 
   # Matugen writes here first.  The shell script copies a complete staging tree
   # into a content-addressed cache only after every template succeeded.
@@ -196,6 +204,10 @@ let
     [templates.btop-dark]
     input_path = '${btopDarkTemplate}'
     output_path = '${matugenOutputRoot}/dark/btop.theme'
+
+    [templates.obsidian-accent]
+    input_path = '${obsidianAccentTemplate}'
+    output_path = '${matugenOutputRoot}/dual/obsidian/matugen.css'
 
     [templates.gtk3-light]
     input_path = '${../../local-deriv/material-gnome/gtk3-light.tpl}'
@@ -399,6 +411,7 @@ let
           light/niri-colors.kdl
           dark/niri-colors.kdl
           dark/btop.theme
+          dual/obsidian/matugen.css
           dual/gtk3-light/colors.css
           dual/gtk3-dark/colors.css
           dual/gtk4/colors.css
@@ -575,6 +588,17 @@ let
             "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg"
           copy_atomic "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
             "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"
+        fi
+
+        # Obsidian's vault is mutable user data.  Update only its generated
+        # snippet, and only when the wallpaper palette changed (or the snippet
+        # was removed); a mode-only toggle is handled by the CSS selectors.
+        obsidian_snippet_dir="${obsidianVault}/.obsidian/snippets"
+        if [ -d "$obsidian_snippet_dir" ] \
+          && { [ "$assets_changed" -eq 1 ] || [ ! -f "${obsidianSnippet}" ]; }; then
+          copy_atomic "$cache_dir/dual/obsidian/matugen.css" \
+            "${obsidianSnippet}"
+          log "stage=obsidian status=updated"
         fi
 
         copy_atomic "$cache_dir/$mode/caelestia/scheme.json" \
