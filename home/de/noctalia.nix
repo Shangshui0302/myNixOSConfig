@@ -605,6 +605,11 @@ in
     };
     Service = {
       ExecStart = "${config.programs.noctalia.package}/bin/noctalia";
+      # phone-operate invokes gdbus through /bin/sh; systemd's user service
+      # environment does not otherwise include the Nix glib utilities.
+      Environment = [
+        "PATH=${pkgs.glib}/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin:/run/wrappers/bin:/usr/bin:/bin"
+      ];
       Restart = "on-failure";
       RestartSec = 3;
       KillMode = "control-group";

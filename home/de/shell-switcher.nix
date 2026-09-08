@@ -60,7 +60,6 @@ in
 
   # fish 补全：NixOS 把 /etc/profiles 固化成 /etc/static 时只保留 bash-completion，
   # 丢 fish/zsh 的 vendor_completions.d。显式装到 ~/.config/fish/completions
-  # （fish_complete_path 第一项，与 howdy/hyprctl/hyprland 补全同模式）。
   xdg.configFile."fish/completions/shell-switcher.fish".source =
     "${shellSwitcher}/share/fish/vendor_completions.d/shell-switcher.fish";
 }
