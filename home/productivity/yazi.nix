@@ -184,12 +184,22 @@ in
     enableFishIntegration = true;
     shellWrapperName = "y";
 
-    initLua = ''require("starship"):setup()'';
+    initLua = ''
+      require("starship"):setup()
+      require("git"):setup { order = 1500 }
+    '';
 
     plugins = {
       smart-enter = pkgs.yaziPlugins.smart-enter;
       jump-to-char = pkgs.yaziPlugins.jump-to-char;
       starship = pkgs.yaziPlugins.starship;
+      ouch = pkgs.yaziPlugins.ouch;
+      smart-filter = pkgs.yaziPlugins.smart-filter;
+      git = pkgs.yaziPlugins.git;
+      vcs-files = pkgs.yaziPlugins.vcs-files;
+      toggle-pane = pkgs.yaziPlugins.toggle-pane;
+      piper = pkgs.yaziPlugins.piper;
+      rich-preview = pkgs.yaziPlugins.rich-preview;
     };
 
     flavors = {
@@ -199,22 +209,24 @@ in
     theme.flavor.dark = "myargonaut";
 
     settings = {
-      manager = {
+      mgr = {
         show_hidden = true;
         sort_by = "alphabetical";
         sort_dir_first = true;
         sort_sensitive = false;
         linemode = "none";
         show_symlink = true;
-        tab_width = 1;
         ratio = [ 2 3 4 ];
       };
       preview = { tab_size = 4; max_width = 1000; max_height = 1000; };
       opener = {
-        edit = [{ run = "${pkgs.neovim}/bin/nvim \$@"; block = true; for = "unix"; }];
-        play = [{ run = "${pkgs.mpv}/bin/mpv \$@"; block = false; for = "unix"; }];
+        edit = [{ run = "${pkgs.neovim}/bin/nvim %s"; block = true; for = "unix"; }];
+        play = [{ run = "${pkgs.mpv}/bin/mpv %s"; orphan = true; for = "unix"; }];
       };
       open.prepend_rules = [
+        { mime = "{audio,video}/*"; use = "play"; }
+        { url = "*.{mp4,mkv,webm,mov,avi,m4v,flv}"; use = "play"; }
+        { url = "*.{mp3,flac,wav,ogg,m4a,opus}"; use = "play"; }
         { url = "*.md"; use = "edit"; }
         { url = "*.nix"; use = "edit"; }
         { url = "*.txt"; use = "edit"; }
@@ -231,10 +243,27 @@ in
         { mime = "image/*"; run = "magick"; }
         { mime = "video/*"; run = "ffmpeg"; }
       ];
+      plugin.prepend_fetchers = [
+        { url = "*"; run = "git"; group = "git"; }
+        { url = "*/"; run = "git"; group = "git"; }
+      ];
+      plugin.prepend_previewers = [
+        { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"; run = "ouch"; }
+        { url = "*.md"; run = "rich-preview"; }
+        { url = "*.rst"; run = "rich-preview"; }
+        { url = "*.ipynb"; run = "rich-preview"; }
+        { url = "*.json"; run = "rich-preview"; }
+        { url = "*.csv"; run = "rich-preview"; }
+      ];
     };
 
     keymap = {
-      manager.prepend_keymap = [
+      mgr.prepend_keymap = [
+        { on = "<C-n>"; run = "shell -- dragon-drop -x -i -T %h"; desc = "Drag hovered file"; }
+        { on = "C"; run = "plugin ouch"; desc = "Compress with ouch"; }
+        { on = "F"; run = "plugin smart-filter"; desc = "Smart filter"; }
+        { on = [ "g" "c" ]; run = "plugin vcs-files"; desc = "Show Git file changes"; }
+        { on = "T"; run = "plugin toggle-pane min-preview"; desc = "Show or hide the preview pane"; }
         { on = "f"; run = "plugin jump-to-char"; desc = "Jump to char"; }
         { on = "l"; run = "plugin smart-enter"; desc = "Enter child / open file"; }
         { on = "<Enter>"; run = "plugin smart-enter"; desc = "Enter child / open file"; }

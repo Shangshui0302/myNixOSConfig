@@ -1,13 +1,13 @@
 ---
 title: Yazi 文件管理器
 category: 生产力
-tags: [yazi, file-manager, tui, ffmpeg]
-updated: 2026-09-02
+tags: [yazi, file-manager, tui, ffmpeg, plugins]
+updated: 2026-09-08
 ---
 
 # Yazi 文件管理器
 
-Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 个插件和自定义按键映射。
+Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、10 个插件和自定义按键映射。
 
 ## 基本操作
 
@@ -37,6 +37,11 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 | `f` | 跳转到字符 | jump-to-char 插件 |
 | `l` | 智能进入 | smart-enter 插件 |
 | `Enter` | 智能进入 | smart-enter 插件 |
+| `Ctrl + N` | 拖动当前文件 | dragon-drop |
+| `C` | 压缩当前文件 | ouch 插件 |
+| `F` | 智能过滤 | smart-filter 插件 |
+| `g` `c` | 查看 Git 文件变更 | vcs-files 插件 |
+| `T` | 显示/隐藏预览面板 | toggle-pane 插件 |
 
 **智能进入行为：**
 - 目录 → 进入目录
@@ -50,6 +55,8 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 
 `.md` `.nix` `.txt` `.rs` `.py` `.js` `.ts` `.json` `.toml` `.yaml` `.lua`
 
+音频和视频文件由 `mpv` 打开；编辑器和播放器使用当前文件路径参数，播放器以孤儿进程运行，避免阻塞 Yazi。
+
 ## 插件一览
 
 | 插件 | 功能 |
@@ -57,6 +64,13 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 | `smart-enter` | 智能进入（目录/文件/媒体自动选择打开方式） |
 | `jump-to-char` | 按 `f` + 字符快速跳转到文件名 |
 | `starship` | Starship 提示符集成 |
+| `ouch` | 在 Yazi 中压缩归档 |
+| `smart-filter` | 快速过滤当前目录 |
+| `git` | Git 状态与文件信息 |
+| `vcs-files` | 查看 Git 变更文件 |
+| `toggle-pane` | 切换预览面板 |
+| `piper` | 管道式预览扩展 |
+| `rich-preview` | Markdown、RST、JSON、CSV、IPYNB 等富预览 |
 
 ## 主题
 
@@ -73,6 +87,9 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 - **文本文件**：语法高亮预览
 - **图片**：缩略图预览（ImageMagick）
 - **视频**：缩略图预览（ffmpeg）
+- **压缩包**：通过 `ouch` 预览归档内容
+- **富文本**：通过 `rich-preview` 预览 Markdown、RST、JSON、CSV 和 IPYNB
+- **Git 文件**：通过 `git`/`vcs-files` 显示版本控制状态
 - **预览尺寸限制**：1000×1000 像素
 - **面板比例**：`[2, 3, 4]`（父目录：当前目录：预览）
 
@@ -81,6 +98,8 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 ## 故障排查
 
 - **视频没有缩略图**：确认 `command -v ffmpeg` 能找到可执行文件；修改包声明后由用户手动 rebuild。
+- **富预览不可用**：确认 `rich-preview` 及其 `rich-cli` 依赖已进入 Home Manager 环境。
+- **拖动文件没有反应**：确认 `command -v dragon-drop` 可用，并在文件上悬停后按 `Ctrl + N`。
 
 ## 文件图标
 
@@ -106,7 +125,7 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、3 
 | 显示隐藏文件 | 是 |
 | 排序方式 | 字母序，目录优先 |
 | 显示符号链接 | 是 |
-| 选项卡宽度 | 1 |
+| 插件 | 10 个（含预览、Git、压缩和面板控制） |
 | Shell 别名 | `y`（fish 集成） |
 
 ## 相关链接
