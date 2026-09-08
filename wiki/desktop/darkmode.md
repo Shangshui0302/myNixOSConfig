@@ -1,7 +1,7 @@
 ---
 title: 深色模式与动态配色
 category: desktop
-tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, obsidian, vscode]
+tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, obsidian, vscode]
 updated: 2026-09-08
 ---
 
@@ -17,6 +17,7 @@ darkman set/toggle
       ├─ 模式变化：从缓存激活 Qt/Kvantum、Dolphin、Caelestia、Hyprland/niri
       ├─ btop 固定使用深色主题并发送 SIGUSR2 热重载
       ├─ Yazi 固定使用深色底并更新 Matugen flavor
+      ├─ mpv ModernZ 固定使用深色 Material 3 OSC 配色
       ├─ Obsidian 重点色 snippet（壁纸变化才更新，模式变化由 CSS 选择器切换）
       ├─ VS Code Matugen Theme（从缓存发布当前模式色板并由扩展监听）
       ├─ dconf color-scheme + GTK3 当前主题名
@@ -62,6 +63,7 @@ journalctl --user -u darkman -b
 - **Dolphin/KDE**：Matugen 另外生成 `~/.local/share/color-schemes/MaterialAdwMatugen.colors`，并将 `~/.config/dolphinrc` 的 `[UiSettings] ColorScheme` 指向 `MaterialAdwMatugen`。这样文件视图、选中态等 KDE 语义色与 Kvantum 控件保持同一套 M3 色板。
 - **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景，只更新壁纸重点色后发送 `SIGUSR2` 热重载。
 - **Yazi**：`programs.yazi` 的 dark flavor 指向 `matugen-runtime`。由于 Foot 终端背景固定为深色，`theme-apply` 始终使用 Matugen 的深色语义色板，生成并复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`；浅色模式不改变 Yazi 背景。Yazi 26.9.1 虽支持 `app:theme`，但当前分发链不猜测外部实例 ID，运行中的实例需重新启动后读取新 flavor。
+- **mpv / ModernZ**：`home/leisure/player.nix` 关闭默认 OSC，安装 ModernZ Lua、Material 图标字体和中文 locale。Matugen 为 light/dark 各生成一份 ModernZ 配置，但 `theme-apply` 始终复制 dark 变体到 `~/.config/mpv/script-opts/modernz.conf`，把 `primary`、`surface_container`、`on_surface` 和 `outline_variant` 分别用于重点色、控件底色、文字/图标和边框；布局使用 ModernZ 的 `mini` 与 `small` 进度条。mpv 进程通常需要重新打开才能读取新配置。
 - **Obsidian**：Matugen 生成双模式 `matugen.css`，只覆盖 Minimal/Claude for Minimal 的重点色变量（背景、字体和布局仍由现有主题负责），并在壁纸重点色变化时复制到 `~/Documents/MyVault/.obsidian/snippets/matugen.css`。首次部署后在 Obsidian 设置 → 外观 → CSS 代码片段中重新加载并启用 `matugen`，同时保持主题模式为“跟随系统”；之后深浅色切换只改变 `body.theme-light`/`body.theme-dark`，不会再次运行 Matugen。
 - **VS Code**：账号同步的 `haikalllp.matugen-theme` 扩展监听 `~/.cache/matugen/vscode-colors` 和 `vscode-colors.json`。`theme-apply` 在壁纸缓存命中时也会复制当前模式的两个文件，因此 Darkman 深浅色切换不重新取色即可触发扩展更新；扩展自身负责生成可写的 `Matugen`/`Matugen Bordered` 主题文件。
 - **Foot**：继续由 Stylix 管理，不随壁纸变化。
@@ -71,7 +73,7 @@ journalctl --user -u darkman -b
 
 ## 壁纸缓存与快速切换
 
-`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、VS Code 深浅两套色板、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器和 Fcitx 产物。
+`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、VS Code 深浅两套色板、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器和 Fcitx 产物。
 
 普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，不再额外执行 `config-reload`。Papirus 文件夹颜色另有已应用颜色记录，目标颜色不变时跳过重着色。
 
@@ -96,6 +98,7 @@ stat ~/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css \
   ~/.config/qt6ct/colors/matugen.conf \
   ~/.config/btop/themes/matugen.theme \
   ~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml \
+  ~/.config/mpv/script-opts/modernz.conf \
   ~/.cache/matugen/vscode-colors \
   ~/.cache/matugen/vscode-colors.json \
   ~/Documents/MyVault/.obsidian/snippets/matugen.css \

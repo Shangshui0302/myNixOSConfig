@@ -3,6 +3,7 @@
 let
   animeko = pkgs.callPackage ../../local-deriv/animeko.nix { };
   cliamp = import ../../local-deriv/cliamp.nix { inherit pkgs; };
+  modernz = pkgs.callPackage ../../local-deriv/modernz.nix { };
 in
 {
   home.packages = with pkgs; [
@@ -16,6 +17,17 @@ in
     # animeko
     go-musicfox
   ];
+
+  xdg.configFile."mpv/mpv.conf".text = ''
+    osc=no
+    border=no
+    title-bar=no
+  '';
+
+  home.file.".config/mpv/scripts/modernz.lua".source = "${modernz}/share/mpv/scripts/modernz.lua";
+  home.file.".config/mpv/fonts/modernz-icons.ttf".source = "${modernz}/share/fonts/modernz-icons.ttf";
+  home.file.".config/mpv/script-opts/modernz-locale.json".source =
+    "${modernz}/share/mpv/script-opts/modernz-locale.json";
 
   xdg.desktopEntries.musicfox = {
     name = "go-musicfox";

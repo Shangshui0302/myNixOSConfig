@@ -1,8 +1,8 @@
 ---
 title: 媒体播放
 category: 娱乐
-tags: [mpv, media, pipewire, animeko, ani-cli, kazumi, cliamp, go-musicfox, obs, loupe]
-updated: 2026-09-06
+tags: [mpv, modernz, matugen, media, pipewire, animeko, ani-cli, kazumi, cliamp, go-musicfox, obs, loupe]
+updated: 2026-09-08
 ---
 
 # 媒体播放
@@ -14,13 +14,14 @@ updated: 2026-09-06
 ```mermaid
 graph TB
 subgraph "用户层"
-P["player.nix<br/>mpv, loupe, go-musicfox, animeko, ani-cli, kazumi, cliamp"]
+P["player.nix<br/>mpv + ModernZ, loupe, go-musicfox, animeko, ani-cli, kazumi, cliamp"]
 B["browser.nix<br/>Firefox, Google Chrome"]
 end
 subgraph "本地派生"
 A["animeko.nix<br/>Gradle 源码构建"]
 N["netease-cloud-music-web-player.nix<br/>Electron 包装"]
 C["cliamp.nix<br/>v2.0.1 Go 源码构建"]
+M["modernz.nix<br/>v0.3.3 数据/字体包"]
 end
 subgraph "系统服务"
 S["services.nix<br/>PipeWire(Pulse/ALSA/JACK), 蓝牙, gvfs"]
@@ -29,6 +30,7 @@ end
 P --> A
 P --> N
 P --> C
+P --> M
 B --> |"访问流媒体站点"| S
 P --> |"音视频解码/缩略图"| S
 A --> |"运行依赖"| H
@@ -40,7 +42,7 @@ C --> |"ALSA + yt-dlp + ffmpeg-headless"| S
 
 | 应用 | 用途 |
 | --- | --- |
-| `mpv` | 通用视频/音频播放器 |
+| `mpv` + ModernZ | 通用视频/音频播放器；ModernZ 提供 Material 风格 OSC 控件 |
 | `loupe` | GNOME 图片查看器 |
 | `go-musicfox` | 终端网易云音乐播放器（附桌面入口 `foot -e musicfox`） |
 | `obs-studio` | 直播与本地录制 |
@@ -95,11 +97,24 @@ cliamp completion bash | bash -n
 - 视频解码依赖 amdgpu 驱动与 VA-API。mpv 中可启用 `hwdec=auto` 走 GPU 硬件解码，遇黑屏/卡顿再回退软件解码对比测试。
 - 音效增强建议交由 PipeWire 插件（equalizer、spatializer）统一处理，关闭播放器内置音效以免冲突。
 
-## mpv 个性化（按需扩展）
+## mpv 个性化
 
-仓库只安装了 mpv 包，未提供 `mpv.conf`。如需精细控制，可在用户配置目录创建：
+`mpv` 使用 ModernZ 替换默认 OSC，配置由 Home Manager 写入；Lua、Material 图标字体和中文 locale 来自固定的 ModernZ release。
 
-- `~/.config/mpv/mpv.conf`：设置硬件解码、渲染后端、字幕字体与样式。
+Matugen 会把当前壁纸生成的 Material 3 语义色写入 `~/.config/mpv/script-opts/modernz.conf`；mpv 始终使用生成的深色变体，避免桌面浅色模式下视频控件文字与画面对比不足：
+
+- `primary`：播放进度、播放/暂停和悬停重点色。
+- `surface_container`：控件/缩略图面板底色。
+- `on_surface`：标题、时间和主要图标。
+- `outline_variant`：边框和未播放进度。
+- `layout=mini` + `seekbar_height=small`：最简控件布局与细进度条（ModernZ 上游没有 `minimal` 这个值）。
+
+深浅色切换仍由 Darkman 驱动，但 mpv 固定读取深色 ModernZ 配置；壁纸变化会更新其 Material 3 重点色。mpv 已运行实例通常需要重新打开才能读取新 OSC 配置。
+
+如需增加其他播放器选项，修改 `home/leisure/player.nix` 中的 `mpv.conf` 后手动 rebuild：
+
+- `~/.config/mpv/mpv.conf`：由 Home Manager 生成，当前关闭默认 OSC 并关闭原生边框。
+- `~/.config/mpv/script-opts/modernz.conf`：ModernZ 布局、按钮和颜色选项由主题链维护，不建议手动覆盖。
 - 字幕：与视频同名同目录放置即可自动加载，支持 SRT/ASS/SSA/VTT；多语言场景确保系统装有相应字体。
 - 播放列表与时间戳书签：通过配置文件或命令行设定循环/随机模式。
 
@@ -122,6 +137,7 @@ cliamp completion bash | bash -n
 
 ## 相关链接
 
+- [ModernZ](https://github.com/Samillion/ModernZ) — mpv OSC 上游项目
 - [游戏平台](gaming.md) — 同属娱乐模块，共用 PipeWire/amdgpu
 - [系统服务](../services.md) — PipeWire 音频栈与蓝牙
 - [故障排除总览](../troubleshooting.md)

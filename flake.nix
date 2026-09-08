@@ -64,6 +64,7 @@
         anthropic-fonts = import ./local-deriv/anthropic-fonts.nix { inherit pkgs; };
         cc-switch = import ./local-deriv/cc-switch.nix { inherit pkgs; };
         cliamp = import ./local-deriv/cliamp.nix { inherit pkgs; };
+        modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };
         scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
           inherit pkgs;

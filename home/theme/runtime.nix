@@ -109,6 +109,7 @@ let
     caelestia = mkMatugenModeTemplate mode "caelestia-scheme" ./matugen/caelestia-scheme.json.tpl;
     hyprland = mkMatugenModeTemplate mode "hyprland-colors" ./matugen/hyprland-colors.lua.tpl;
     niri = mkMatugenModeTemplate mode "niri-colors" ./matugen/niri-colors.kdl.tpl;
+    modernz = mkMatugenModeTemplate mode "modernz" ./matugen/modernz.conf.tpl;
     qtct = mkMatugenModeTemplate mode "qtct-colors" ./matugen/qtct-colors.conf.tpl;
     kdeColors = mkMatugenModeTemplate mode "material-adw-colors" ./matugen/material-adw-colors.colors.tpl;
     papirus = mkMatugenModeTemplate mode "papirus-color" ./matugen/papirus-color.tpl;
@@ -126,6 +127,8 @@ let
   # Yazi runs in the same dark Foot terminal and keeps a dark background while
   # its semantic accents follow the wallpaper palette.
   yaziDarkTemplate = mkMatugenModeTemplate "dark" "yazi-flavor" ./matugen/yazi-flavor.toml.tpl;
+  # mpv's video surface stays dark for readable OSC text; only its accents
+  # follow the wallpaper palette.
   # Matugen Theme watches these two files and regenerates its writable VS Code
   # theme files when the selected mode or wallpaper palette changes.
   vscodeColorsTemplate = mode: mkMatugenModeTemplate mode "vscode-colors" ./matugen/vscode-colors.tpl;
@@ -215,6 +218,14 @@ let
     [templates.yazi-dark]
     input_path = '${yaziDarkTemplate}'
     output_path = '${matugenOutputRoot}/dark/yazi/flavor.toml'
+
+    [templates.modernz-light]
+    input_path = '${matugenModeTemplates.light.modernz}'
+    output_path = '${matugenOutputRoot}/light/mpv/script-opts/modernz.conf'
+
+    [templates.modernz-dark]
+    input_path = '${matugenModeTemplates.dark.modernz}'
+    output_path = '${matugenOutputRoot}/dark/mpv/script-opts/modernz.conf'
 
     [templates.vscode-colors-light]
     input_path = '${vscodeColorsTemplate "light"}'
@@ -439,6 +450,8 @@ let
           dark/niri-colors.kdl
           dark/btop.theme
           dark/yazi/flavor.toml
+          light/mpv/script-opts/modernz.conf
+          dark/mpv/script-opts/modernz.conf
           light/vscode/vscode-colors
           dark/vscode/vscode-colors
           light/vscode/vscode-colors.json
@@ -654,6 +667,8 @@ let
           copy_atomic "$cache_dir/dark/yazi/flavor.toml" "$yazi_flavor"
           log "stage=yazi status=updated"
         fi
+        copy_atomic "$cache_dir/dark/mpv/script-opts/modernz.conf" \
+          "$HOME/.config/mpv/script-opts/modernz.conf"
         copy_atomic "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
           "$HOME/.config/qt5ct/colors/matugen.conf"
         copy_atomic "$cache_dir/$mode/qt6ct/colors/matugen.conf" \
