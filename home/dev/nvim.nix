@@ -22,6 +22,7 @@ let
       vimdoc
     ]))
     mason-nvim
+    nvim-lspconfig
     nvim-cmp
     cmp-nvim-lsp
     cmp-buffer

@@ -1,8 +1,8 @@
 ---
 title: 深色模式与动态配色
 category: desktop
-tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, obsidian, vscode]
-updated: 2026-09-08
+tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode]
+updated: 2026-09-09
 ---
 
 # 深色模式与动态配色
@@ -19,6 +19,7 @@ darkman set/toggle
       ├─ Yazi 固定使用深色底并更新 Matugen flavor
       ├─ mpv ModernZ 固定使用深色 Material 3 OSC 配色
       ├─ Zellij 更新当前模式的 Matugen KDL 主题并利用文件监视热加载
+      ├─ Neovim 发布当前模式的 Lua 调色板（重启或 :MatugenReload 生效）
       ├─ Obsidian 重点色 snippet（壁纸变化才更新，模式变化由 CSS 选择器切换）
       ├─ VS Code Matugen Theme（从缓存发布当前模式色板并由扩展监听）
       ├─ dconf color-scheme + GTK3 当前主题名
@@ -62,12 +63,13 @@ journalctl --user -u darkman -b
 - **Flatpak GTK 应用**：继续通过 `$HOME/.themes:ro` 和固定 `GTK_THEME=Material-Gnome-Matugen` 读取主题。GTK4 4.20 及以上可使用双配色媒体查询；GTK3 Flatpak 暂不动态切换到 `-Dark` 目录。
 - **Qt5/Qt6**：Home Manager 的 `qtct` 同时管理两代平台插件，控件样式统一为 Kvantum；`MaterialAdw` 的 `kvconfig`/SVG 由 Matugen 写入 `~/.config/Kvantum/MaterialAdw/`，两代 `qtct` 分别读取 `~/.config/qt5ct/colors/matugen.conf` 与 `~/.config/qt6ct/colors/matugen.conf`。Qt 应用通常只在启动时读取调色板，切壁纸后重新打开即可。
 - **Dolphin/KDE**：Matugen 另外生成 `~/.local/share/color-schemes/MaterialAdwMatugen.colors`，并将 `~/.config/dolphinrc` 的 `[UiSettings] ColorScheme` 指向 `MaterialAdwMatugen`。这样文件视图、选中态等 KDE 语义色与 Kvantum 控件保持同一套 M3 色板。
-- **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景，只更新壁纸重点色后发送 `SIGUSR2` 热重载。
+- **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景。每次 `theme-apply` 都发送 `SIGUSR2` 让运行中的 btop 重读文件，只有壁纸变化才会改变重点色。
 - **Yazi**：`programs.yazi` 的 dark flavor 指向 `matugen-runtime`。由于 Foot 终端背景固定为深色，`theme-apply` 始终使用 Matugen 的深色语义色板，生成并复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`；浅色模式不改变 Yazi 背景。Yazi 26.9.1 虽支持 `app:theme`，但当前分发链不猜测外部实例 ID，运行中的实例需重新启动后读取新 flavor。
 - **mpv / ModernZ**：`home/leisure/player.nix` 关闭默认 OSC，安装 ModernZ Lua、Material 图标字体和中文 locale。Matugen 为 light/dark 各生成一份 ModernZ 配置，但 `theme-apply` 始终复制 dark 变体到 `~/.config/mpv/script-opts/modernz.conf`，把 `primary`、`surface_container`、`on_surface` 和 `outline_variant` 分别用于重点色、控件底色、文字/图标和边框；布局使用 ModernZ 的 `mini` 与 `small` 进度条。mpv 进程通常需要重新打开才能读取新配置。
 - **Zellij**：`programs.zellij` 使用固定主题名 `matugen`；`theme-apply` 按当前 Darkman 模式，将缓存中的 `light/zellij/theme.kdl` 或 `dark/zellij/theme.kdl` 原子复制到 `~/.config/zellij/themes/matugen.kdl`。Zellij 0.45.1 支持从 `CONFIG_DIR/themes` 加载主题并监视主题文件，运行中的会话通常可以直接刷新；若实例未刷新，重新连接会话即可。这里不依赖终端上报的 CSI 2031 色彩状态，因为 Darkman 才是本机唯一模式源。
 - **Obsidian**：Matugen 生成双模式 `matugen.css`，只覆盖 Minimal/Claude for Minimal 的重点色变量（背景、字体和布局仍由现有主题负责），并在壁纸重点色变化时复制到 `~/Documents/MyVault/.obsidian/snippets/matugen.css`。首次部署后在 Obsidian 设置 → 外观 → CSS 代码片段中重新加载并启用 `matugen`，同时保持主题模式为“跟随系统”；之后深浅色切换只改变 `body.theme-light`/`body.theme-dark`，不会再次运行 Matugen。
 - **VS Code**：账号同步的 `haikalllp.matugen-theme` 扩展监听 `~/.cache/matugen/vscode-colors` 和 `vscode-colors.json`。`theme-apply` 在壁纸缓存命中时也会复制当前模式的两个文件，因此 Darkman 深浅色切换不重新取色即可触发扩展更新；扩展自身负责生成可写的 `Matugen`/`Matugen Bordered` 主题文件。
+- **Neovim**：`home/dev/nvim/init.lua` 读取 `~/.cache/matugen/nvim-colors.lua`，用它为 Snacks dashboard、状态栏和模式色提供重点色；`theme-apply` 按当前模式从壁纸缓存发布文件。壁纸或模式变化后重启 Neovim，或在运行中的实例执行 `:MatugenReload`。
 - **Foot**：继续由 Stylix 管理，不随壁纸变化。
 - **Fcitx5**：系统级 ClassicUI 配置是回退值；Home Manager 上游模块安装 `both-blur` 两套 Mellow 静态资源并管理 Matugen 模板，`theme-apply` 为用户目录生成两套完整 `theme.conf` 和 `highlight.svg`。完整配置避免用户层颜色片段遮蔽 profile 中的布局；壁纸素材变化时重启 Fcitx5，单纯模式切换优先使用 `fcitx5-remote --check -r`。
 
@@ -102,6 +104,7 @@ stat ~/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css \
   ~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml \
   ~/.config/mpv/script-opts/modernz.conf \
   ~/.config/zellij/themes/matugen.kdl \
+  ~/.cache/matugen/nvim-colors.lua \
   ~/.cache/matugen/vscode-colors \
   ~/.cache/matugen/vscode-colors.json \
   ~/Documents/MyVault/.obsidian/snippets/matugen.css \

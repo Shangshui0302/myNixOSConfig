@@ -187,6 +187,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
+-- nvim-lspconfig supplies the html/cssls definitions; Mason prepends its bin
+-- directory to PATH, so the installed language servers remain user-managed.
 vim.lsp.config("html", {})
 vim.lsp.config("cssls", {})
 vim.lsp.enable("html")
@@ -216,6 +218,21 @@ vim.opt.timeoutlen = 400
 vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
+
+-- Telescope
+vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files" })
+vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live Grep" })
+vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Buffers" })
+vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help Tags" })
+vim.keymap.set("n", "<leader>fw", "<cmd>Telescope grep_string<cr>", { desc = "Grep word" })
+vim.keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
+vim.keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", { desc = "Keymaps" })
+vim.keymap.set("n", "<leader>fc", "<cmd>Telescope commands<cr>", { desc = "Commands" })
+vim.keymap.set("n", "<leader>s/", "<cmd>Telescope current_buffer_fuzzy_find<cr>", { desc = "Find in buffer" })
+
+-- File tree
+vim.keymap.set("n", "<C-n>", "<cmd>NvimTreeToggle<cr>", { desc = "Toggle file tree" })
+vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", { desc = "Toggle file tree" })
 
 -- Buffer
 vim.keymap.set("n", "<leader>bd", "<cmd>bd<cr>", { desc = "Delete buffer" })

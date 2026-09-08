@@ -47,10 +47,10 @@ docs:
     sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix]
     memory:  [shell-switcher-generic]
   desktop/shell.md:
-    sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix]
+    sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
     memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
-    sources: [flake.nix, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/gtk-static.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/de/noctalia.nix, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, local-deriv/material-adw-kvantum.nix, home/theme/matugen/material-adw-colors.colors.tpl, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/obsidian-accent.css.tpl, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, local-deriv/material-gnome/recolor-shell.py]
+    sources: [flake.nix, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/gtk-static.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, local-deriv/material-adw-kvantum.nix, home/theme/matugen/material-adw-colors.colors.tpl, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/obsidian-accent.css.tpl, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, local-deriv/material-gnome/recolor-shell.py]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
     sources: [host/base/services.nix]
@@ -67,7 +67,7 @@ docs:
     memory:  []
 
   dev/nvim.md:
-    sources: [home/dev/nvim.nix]
+    sources: [home/dev/nvim.nix, home/dev/nvim/init.lua, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/nvim-colors.lua.tpl]
     memory:  []
   dev/vscode.md:
     sources: [home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl, local-deriv/cc-switch.nix]

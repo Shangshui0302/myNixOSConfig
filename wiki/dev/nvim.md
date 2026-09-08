@@ -2,7 +2,7 @@
 title: Neovim
 category: dev
 tags: [nvim, editor, lsp, snacks, lualine, telescope]
-updated: 2026-09-08
+updated: 2026-09-09
 ---
 
 # Neovim 使用指南
@@ -167,7 +167,9 @@ Neovim 是模态编辑器，有四种核心模式：
 
 ### 代码 LSP
 
-LSP 在打开 `.html` / `.css` / `.lua` 等文件时自动激活。
+LSP 在打开 `.html` / `.css` / `.lua` 等文件时自动激活。`nvim-lspconfig` 提供
+Neovim 0.11+ 的 `vim.lsp.config` 定义，`mason.nvim` 管理服务器可执行文件；当前启用
+`html` 和 `cssls`，Mason 会把自己的 `bin` 目录加入 Neovim 的 `PATH`。
 
 | 按键 | 功能 |
 |------|------|
@@ -302,9 +304,13 @@ formatters_by_ft = {
 
 ### mason.nvim — LSP 安装器 `⚙️`
 
-`:Mason` 打开面板，`i` 安装，`X` 卸载。你目前装了 `html`、`cssls`。需要新语言（如 Python 的 `pyright`）时自己装。
+`:Mason` 打开面板，`i` 安装，`X` 卸载。你目前装了 `html`、`cssls`。需要新语言（如 Python 的 `pyright`）时自己装；Mason 只负责服务器文件，不提供 Neovim 配置。
 
-LSP 服务器配置在 init.lua 的 `vim.lsp.config()` 部分，装完后要添加对应的 `vim.lsp.config` + `vim.lsp.enable`。
+### nvim-lspconfig — LSP 配置
+
+`nvim-lspconfig` 提供各服务器的默认 `cmd`、文件类型和根目录定义。当前配置在
+`init.lua` 中用 `vim.lsp.config("html", {})`、`vim.lsp.config("cssls", {})` 合并默认值，再用
+`vim.lsp.enable` 启用。安装新服务器后，确认它有对应的 lspconfig 定义，并在同一处添加配置与启用调用。
 
 ### gitsigns.nvim — Git 标记 `⚙️`
 

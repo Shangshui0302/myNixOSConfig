@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-09-06
+updated: 2026-09-09
 ---
 
 # Nix 手工打包
@@ -19,6 +19,7 @@ updated: 2026-09-06
 - [Derivation 规范](#derivation-规范)
 - [获取和更新哈希](#获取和更新哈希)
 - [验证](#验证)
+- [当前本地包](#当前本地包)
 - [更新已有包](#更新已有包)
 - [故障排查](#故障排查)
 
@@ -162,6 +163,25 @@ Codex 不自动应用配置。检查通过后由用户执行：
 ```bash
 cd ~/myNixOSConfig
 sudo nixos-rebuild switch --flake .
+```
+
+## 当前本地包
+
+### ModernZ (`local-deriv/modernz.nix`)
+
+ModernZ v0.3.3 是 mpv 的 OSC 界面，当前以 `stdenvNoCC` 数据包集成，不在构建阶段联网或编译：
+
+- 上游：固定 GitHub release `Samillion/ModernZ` `v0.3.3`，许可证为 LGPL-2.1-only。
+- flake 入口：`nix build path:.#modernz-mpv`。
+- 输出：`share/mpv/scripts/modernz.lua`、`share/mpv/script-opts/modernz-locale.json`、`share/fonts/modernz-icons.ttf` 和许可证文件。
+- 消费者：`home/leisure/player.nix` 将脚本、locale 和字体发布到 mpv 配置目录；Matugen 另行生成 ModernZ OSC 配置。
+
+验证包本身和系统集成时分别运行：
+
+```bash
+nix-instantiate --parse local-deriv/modernz.nix
+nix build path:.#modernz-mpv -L --no-link --print-out-paths
+nixos-rebuild dry-build --flake path:.
 ```
 
 ## 更新已有包
