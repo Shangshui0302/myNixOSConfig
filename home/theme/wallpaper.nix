@@ -73,6 +73,8 @@ in
               || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig" ] \
               || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.svg" ] \
               || [ ! -f "$HOME/.local/share/color-schemes/MaterialAdwMatugen.colors" ] \
+              || [ ! -f "$HOME/.cache/matugen/vscode-colors" ] \
+              || [ ! -f "$HOME/.cache/matugen/vscode-colors.json" ] \
               || [ ! -f "$HOME/.config/btop/themes/matugen.theme" ] \
               || { [ -d "$HOME/Documents/MyVault/.obsidian/snippets" ] \
                 && [ ! -f "$HOME/Documents/MyVault/.obsidian/snippets/matugen.css" ]; } \

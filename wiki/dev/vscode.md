@@ -1,8 +1,8 @@
 ---
 title: VS Code 集成
 category: 开发
-tags: [vscode, editor, home-manager, dev]
-updated: 2026-09-06
+tags: [vscode, editor, home-manager, dev, matugen, darkman]
+updated: 2026-09-08
 ---
 
 # VS Code 集成
@@ -26,6 +26,34 @@ updated: 2026-09-06
 - 配套的工具链在 `home/dev/tools.nix`（Node.js、Python、GCC、搜索工具等），VS Code 插件生态所需的运行时基本都在这里提供。
 - 容器化开发靠 `home/dev/containers.nix` 的 Distrobox 模板，配合 Remote 场景使用。
 - 桌面基础设施（GNOME Keyring、Fcitx5 输入法、字体）由 `host/base/desktop.nix` 提供，保障凭据存储、中文输入与显示。
+
+## Matugen 动态主题
+
+VS Code 扩展 `haikalllp.matugen-theme` 由 VS Code 账号同步管理，不由 Nix 安装。它提供 `Matugen` 和 `Matugen Bordered` 两个主题，并监听以下用户缓存文件：
+
+```text
+~/.cache/matugen/vscode-colors
+~/.cache/matugen/vscode-colors.json
+```
+
+现有 `theme-apply` 仍是唯一的 Matugen 调色入口：壁纸变化时生成并缓存深浅两套 VS Code 色板；Darkman 只切换模式时，从已有壁纸缓存复制对应模式的两个文件，不会再次分析壁纸。扩展检测到文件变化后在自身可写的扩展目录中原子更新主题文件。
+
+首次使用：
+
+1. 确认扩展已启用。
+2. 按 `Ctrl + K`、`Ctrl + T`，选择 `Matugen`（或 `Matugen Bordered`）。
+3. 保持扩展设置 `matugenTheme.autoUpdate = true`。
+
+检查分发链：
+
+```bash
+code --list-extensions --show-versions | rg '^haikalllp\.matugen-theme@'
+stat ~/.cache/matugen/vscode-colors ~/.cache/matugen/vscode-colors.json
+```
+
+如果主题没有刷新，先在 VS Code 命令面板运行 `Matugen Theme: Clear Cache`，再运行 `Matugen Theme: Update Theme`；随后检查 `View → Output → Matugen Theme`。若只切换 Darkman 模式，确认两个缓存文件的修改时间变化，然后等待扩展的文件监听完成。
+
+这套扩展生成的是完整 VS Code 工作台/语法主题，而不是只覆盖 accent。要保留其他主题的语法配色，应在 Matugen 模板层另做裁剪。
 
 ## 组件关系
 
@@ -98,5 +126,7 @@ VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI C
 ## 相关链接
 
 - [Neovim](nvim.md) — 另一套由 Nix 管理的编辑器环境
+- [深色模式与动态配色](../desktop/darkmode.md) — Darkman、Matugen 缓存与应用分发
+- [Matugen Theme](https://marketplace.visualstudio.com/items?itemName=haikalllp.matugen-theme) — 扩展说明
 - [wiki 首页](../README.md)
 - [ai-tools-source](../../memory/cards/ai-tools-source.md) — AI 工具来源与安全审查决策

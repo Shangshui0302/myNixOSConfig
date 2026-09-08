@@ -1,7 +1,7 @@
 ---
 title: 深色模式与动态配色
 category: desktop
-tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, obsidian]
+tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, obsidian, vscode]
 updated: 2026-09-08
 ---
 
@@ -17,6 +17,7 @@ darkman set/toggle
       ├─ 模式变化：从缓存激活 Qt/Kvantum、Dolphin、Caelestia、Hyprland/niri
       ├─ btop 固定使用深色主题并发送 SIGUSR2 热重载
       ├─ Obsidian 重点色 snippet（壁纸变化才更新，模式变化由 CSS 选择器切换）
+      ├─ VS Code Matugen Theme（从缓存发布当前模式色板并由扩展监听）
       ├─ dconf color-scheme + GTK3 当前主题名
       ├─ Fcitx5 深浅主题（壁纸变化才重启，模式变化优先 reload）
       └─ Noctalia 当前模式
@@ -60,6 +61,7 @@ journalctl --user -u darkman -b
 - **Dolphin/KDE**：Matugen 另外生成 `~/.local/share/color-schemes/MaterialAdwMatugen.colors`，并将 `~/.config/dolphinrc` 的 `[UiSettings] ColorScheme` 指向 `MaterialAdwMatugen`。这样文件视图、选中态等 KDE 语义色与 Kvantum 控件保持同一套 M3 色板。
 - **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景，只更新壁纸重点色后发送 `SIGUSR2` 热重载。
 - **Obsidian**：Matugen 生成双模式 `matugen.css`，只覆盖 Minimal/Claude for Minimal 的重点色变量（背景、字体和布局仍由现有主题负责），并在壁纸重点色变化时复制到 `~/Documents/MyVault/.obsidian/snippets/matugen.css`。首次部署后在 Obsidian 设置 → 外观 → CSS 代码片段中重新加载并启用 `matugen`，同时保持主题模式为“跟随系统”；之后深浅色切换只改变 `body.theme-light`/`body.theme-dark`，不会再次运行 Matugen。
+- **VS Code**：账号同步的 `haikalllp.matugen-theme` 扩展监听 `~/.cache/matugen/vscode-colors` 和 `vscode-colors.json`。`theme-apply` 在壁纸缓存命中时也会复制当前模式的两个文件，因此 Darkman 深浅色切换不重新取色即可触发扩展更新；扩展自身负责生成可写的 `Matugen`/`Matugen Bordered` 主题文件。
 - **Foot**：继续由 Stylix 管理，不随壁纸变化。
 - **Fcitx5**：系统级 ClassicUI 配置是回退值；Home Manager 上游模块安装 `both-blur` 两套 Mellow 静态资源并管理 Matugen 模板，`theme-apply` 为用户目录生成两套完整 `theme.conf` 和 `highlight.svg`。完整配置避免用户层颜色片段遮蔽 profile 中的布局；壁纸素材变化时重启 Fcitx5，单纯模式切换优先使用 `fcitx5-remote --check -r`。
 
@@ -67,7 +69,7 @@ journalctl --user -u darkman -b
 
 ## 壁纸缓存与快速切换
 
-`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 深色主题、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器和 Fcitx 产物。
+`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 深色主题、VS Code 深浅两套色板、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器和 Fcitx 产物。
 
 普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，不再额外执行 `config-reload`。Papirus 文件夹颜色另有已应用颜色记录，目标颜色不变时跳过重着色。
 
@@ -91,6 +93,8 @@ stat ~/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css \
   ~/.config/qt5ct/colors/matugen.conf \
   ~/.config/qt6ct/colors/matugen.conf \
   ~/.config/btop/themes/matugen.theme \
+  ~/.cache/matugen/vscode-colors \
+  ~/.cache/matugen/vscode-colors.json \
   ~/Documents/MyVault/.obsidian/snippets/matugen.css \
   ~/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig \
   ~/.config/Kvantum/MaterialAdw/MaterialAdw.svg \
@@ -132,6 +136,7 @@ journalctl --user -u darkman -b
 
 - [Hyprland](hyprland.md) — 壁纸切换与合成器边框
 - [Noctalia](noctalia.md) — 面板 palette
+- [VS Code](../dev/vscode.md) — Matugen Theme 扩展与缓存路径
 - [Fcitx5](fcitx5.md) — 候选窗深浅主题
 - [Darkman 主题状态决策卡](../../memory/cards/darkman-theme-authority.md)
 - [portal-gtk 故障决策卡](../../memory/cards/portal-gtk-dangling-symlink.md)

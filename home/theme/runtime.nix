@@ -123,6 +123,10 @@ let
 
   # btop runs in the dark Foot terminal, so it always consumes Matugen's dark palette.
   btopDarkTemplate = mkMatugenModeTemplate "dark" "btop-theme" ./matugen/btop.theme.tpl;
+  # Matugen Theme watches these two files and regenerates its writable VS Code
+  # theme files when the selected mode or wallpaper palette changes.
+  vscodeColorsTemplate = mode: mkMatugenModeTemplate mode "vscode-colors" ./matugen/vscode-colors.tpl;
+  vscodeColorsJsonTemplate = mode: mkMatugenModeTemplate mode "vscode-colors-json" ./matugen/vscode-colors.json.tpl;
   # Obsidian keeps one CSS snippet with native light/dark selectors.  Its
   # surfaces and typography stay with Minimal/Claude for Minimal; only accent
   # variables are distributed here.
@@ -204,6 +208,22 @@ let
     [templates.btop-dark]
     input_path = '${btopDarkTemplate}'
     output_path = '${matugenOutputRoot}/dark/btop.theme'
+
+    [templates.vscode-colors-light]
+    input_path = '${vscodeColorsTemplate "light"}'
+    output_path = '${matugenOutputRoot}/light/vscode/vscode-colors'
+
+    [templates.vscode-colors-dark]
+    input_path = '${vscodeColorsTemplate "dark"}'
+    output_path = '${matugenOutputRoot}/dark/vscode/vscode-colors'
+
+    [templates.vscode-colors-json-light]
+    input_path = '${vscodeColorsJsonTemplate "light"}'
+    output_path = '${matugenOutputRoot}/light/vscode/vscode-colors.json'
+
+    [templates.vscode-colors-json-dark]
+    input_path = '${vscodeColorsJsonTemplate "dark"}'
+    output_path = '${matugenOutputRoot}/dark/vscode/vscode-colors.json'
 
     [templates.obsidian-accent]
     input_path = '${obsidianAccentTemplate}'
@@ -411,6 +431,10 @@ let
           light/niri-colors.kdl
           dark/niri-colors.kdl
           dark/btop.theme
+          light/vscode/vscode-colors
+          dark/vscode/vscode-colors
+          light/vscode/vscode-colors.json
+          dark/vscode/vscode-colors.json
           dual/obsidian/matugen.css
           dual/gtk3-light/colors.css
           dual/gtk3-dark/colors.css
@@ -600,6 +624,14 @@ let
             "${obsidianSnippet}"
           log "stage=obsidian status=updated"
         fi
+
+        # Matugen Theme watches fixed paths under ~/.cache/matugen.  Publish the
+        # current mode on every apply so a Darkman-only toggle updates VS Code
+        # from the existing wallpaper cache without running Matugen again.
+        copy_atomic "$cache_dir/$mode/vscode/vscode-colors" \
+          "$HOME/.cache/matugen/vscode-colors"
+        copy_atomic "$cache_dir/$mode/vscode/vscode-colors.json" \
+          "$HOME/.cache/matugen/vscode-colors.json"
 
         copy_atomic "$cache_dir/$mode/caelestia/scheme.json" \
           "$HOME/.local/state/caelestia/scheme.json"
