@@ -1,24 +1,52 @@
 ---
 title: Neovim
 category: dev
-tags: [nvim, editor, lsp, lazy-nvim]
-updated: 2026-08-06
+tags: [nvim, editor, lsp, snacks, lualine, telescope]
+updated: 2026-09-08
 ---
 
 # Neovim 使用指南
 
 > **目录**
 > 1. [基本概念](#基本概念)
-> 2. [基础操作](#基础操作)
-> 3. [Leader 键菜单](#leader-键菜单)
-> 4. [插件详解](#插件详解)
-> 5. [哪些插件需要我配置？](#哪些插件需要我配置)
-> 6. [常用工作流](#常用工作流)
-> 7. [插件管理](#插件管理)
-> 8. [故障排查](#故障排查)
-> 9. [相关链接](#相关链接)
+> 2. [启动导航页](#启动导航页)
+> 3. [基础操作](#基础操作)
+> 4. [Leader 键菜单](#leader-键菜单)
+> 5. [插件详解](#插件详解)
+> 6. [哪些插件需要我配置？](#哪些插件需要我配置)
+> 7. [常用工作流](#常用工作流)
+> 8. [插件管理](#插件管理)
+> 9. [故障排查](#故障排查)
+> 10. [相关链接](#相关链接)
 
-本机 Neovim 配置基于 kickstart 风格 (`~/.config/nvim/init.lua`)，由 Nix 管理，启动时自动安装插件。
+本机 Neovim 配置基于 kickstart 风格 (`~/.config/nvim/init.lua`)，由 Home Manager 管理。插件随 Nix 配置安装，启动时不会联网克隆或更新插件。
+
+## 启动导航页
+
+直接运行 `nvim`（不带文件参数）会进入 Snacks dashboard：上方运行 `chafa`（最大 `64x28`，保持原图比例）显示壁纸色块，下方提供按黄金分割比例收窄并居中的常用入口菜单；菜单使用统一行距和粗体显示并隐藏光标块。启动页不显示额外标题或标语，也不会显示终端进程退出提示。打开具体文件时会直接进入编辑器，不显示启动页。
+
+| 按键 | 入口 | 作用 |
+|------|------|------|
+| `f` | Find file | 用 Telescope 查找文件 |
+| `e` | Browse files | 打开 nvim-tree 文件浏览器 |
+| `n` | New file | 创建空缓冲区并进入插入模式 |
+| `g` | Live grep | 在项目中全文搜索 |
+| `r` | Recent files | 打开最近使用的文件 |
+| `q` | Quit | 退出 Neovim |
+
+启动页的图片命令和按钮由 `home/dev/nvim/init.lua` 配置，`chafa` 由 `home/dev/nvim.nix` 提供；修改后需要通过 Nix 应用配置才会出现在 `~/.config/nvim/init.lua`。
+
+启动页和状态栏的强调色由 Matugen 生成的 `~/.cache/matugen/nvim-colors.lua` 提供：`primary` 用于图标和 Normal 状态，`secondary` 用于快捷键和 Insert 状态，`tertiary` 用于 Visual 状态，`error` 用于 Replace 状态。Tokyonight 仍负责语法高亮，透明背景继续交给 Foot。壁纸或深浅模式变化后，重启 Neovim，或在已打开的实例执行 `:MatugenReload` 读取当前调色板。
+
+### 与 Foot 的透明毛玻璃
+
+Neovim 本身只负责绘制透明背景，实际的半透明和模糊由 Foot 与窗口管理器提供：
+
+- 当前主题默认使用 `tokyonight-night`，编辑区、浮动窗口、文件树、Telescope 和 Snacks dashboard 的背景设为透明。
+- Foot 的暗色配置使用 `alpha = 0.8` 和 `blur = yes`，因此通过 `foot -e nvim` 启动时会沿用终端的毛玻璃背景。
+- 透明效果依赖 Foot 和 compositor；从不支持透明/模糊的终端启动时，Neovim 只会显示终端的普通背景。
+
+如果切换主题，`ColorScheme` 自动命令会再次应用透明背景；仍有不透明区域时先确认实际运行在 Foot 中。
 
 ## 基本概念
 
@@ -200,11 +228,19 @@ LSP 在打开 `.html` / `.css` / `.lua` 等文件时自动激活。
 | rose-pine | moon, dawn, main | 玫瑰暖色 |
 | kanagawa | wave, dragon, lotus | 浮世绘复古 |
 
-`<leader>tC` 打开 telescope 主题浏览器，**上下移动实时预览**，回车选中。
+`<leader>tC` 打开 telescope 主题浏览器，**上下移动实时预览**，回车选中。主题背景已设为透明，默认的 `tokyonight-night` 会显示 Foot 的毛玻璃背景。
+
+### snacks.nvim — 启动导航页
+
+Snacks dashboard 只在无文件参数启动时显示，上方用 `chafa` 将壁纸转换为彩色色块，下方提供按黄金分割比例收窄并居中的查找文件、浏览文件、新建文件、全文搜索、最近文件和退出六个入口；不显示额外标语。入口和操作见[启动导航页](#启动导航页)。
+
+### lualine.nvim — Starship 风格状态栏
+
+底部状态栏复用 Starship 的布局、配色语义和 Nerd Font 风格，但只保留 Neovim 能可靠判断的编辑上下文：模式、当前目录、Git 分支/改动、诊断、文件名、文件类型、Nix shell、时间和光标位置。颜色优先读取 Matugen 的 `nvim-colors.lua`，文件不存在时回退到固定 Starship 配色。OS、用户名/主机名、Python/Node/Rust/Docker 环境、命令耗时、电池和 shell 提示符仍留在 Starship 中。
 
 ### nvim-treesitter — 语法高亮
 
-精准的代码高亮和智能缩进。预装解析器覆盖 `lua`、`vim`、`html`、`css`、`markdown`、`bash`、`nix`，打开新类型时自动安装。
+精准的代码高亮和智能缩进。预装解析器覆盖 `lua`、`vim`、`vimdoc`、`html`、`css`、`markdown`、`bash`、`nix`；解析器列表由 Nix 管理，增加语言时修改 `home/dev/nvim.nix`。
 
 ### nvim-tree.lua — 文件树 `⚙️`
 
@@ -307,7 +343,9 @@ Treesitter 驱动的注释插件。`gcc` 注释/取消当前行，`gc` + 文本�
 | 必配 | LSP (`vim.lsp.config`) | 每增加一个需要代码提示的语言 |
 | 选配 | `telescope.nvim` | 想加更多搜索快捷键时 |
 | 选配 | `nvim-tree.lua` | 想改文件树行为时 |
-| 永不 | 其余 10 个插件 | 默认配置够用 |
+| 按需 | `snacks.nvim` | 想修改启动页图片、布局或入口时 |
+| 按需 | `lualine.nvim` | 想修改底部状态栏组件或配色时 |
+| 按需 | `home/dev/nvim.nix` | 新增、删除或固定插件及 Treesitter 解析器时 |
 
 ---
 
@@ -346,12 +384,26 @@ gd           → 跳到定义
 
 ## 插件管理
 
-| 命令 | 功能 |
+插件由 Home Manager 的 `programs.neovim.plugins` 管理，不使用 `lazy.nvim`，启动时也不会联网安装或更新插件。
+
+| 位置/命令 | 功能 |
 |------|------|
-| `:Lazy` | 打开插件面板，查看状态/更新 |
-| `:Lazy sync` | 安装/更新/清理插件 |
-| `:Lazy clean` | 删除不再使用的插件 |
-| `:Mason` | 管理 LSP 语言服务器 |
+| `home/dev/nvim.nix` | 声明插件、Treesitter 解析器和额外工具 |
+| `home/dev/nvim/init.lua` | 配置插件行为、启动页、快捷键和主题 |
+| `:Mason` | 管理 LSP 语言服务器（不负责 Neovim 插件） |
+
+修改插件声明或 Lua 配置后，在仓库目录先做结构检查：
+
+```bash
+nix-instantiate --parse home/dev/nvim.nix
+nixos-rebuild dry-build --flake .
+```
+
+确认无误后由用户手动应用：
+
+```bash
+sudo nixos-rebuild switch --flake .
+```
 
 ---
 
@@ -363,7 +415,7 @@ gd           → 跳到定义
 
 ### 插件报错
 
-`:Lazy` — 红色标记的插件需要 `:Lazy sync`。
+先运行上面的 `nixos-rebuild dry-build`，确认插件已在 `home/dev/nvim.nix` 声明并已应用对应 generation；不要使用已经移除的 `:Lazy sync`。
 
 ### 启动报错
 
@@ -373,7 +425,7 @@ nvim --headless -c 'qa!' 2>&1 | head -20
 
 ### 配置被覆盖
 
-Nix rebuild 重置 `~/.config/nvim/init.lua`。永久修改改 `~/myNixOSConfig/home/nvim/init.lua` 然后 rebuild。
+Nix rebuild 会重新生成 `~/.config/nvim/init.lua`。永久修改应编辑 `~/myNixOSConfig/home/dev/nvim/init.lua`，然后按[插件管理](#插件管理)中的流程检查并应用。
 
 ## 相关链接
 

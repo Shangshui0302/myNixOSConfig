@@ -75,6 +75,7 @@ in
               || [ ! -f "$HOME/.local/share/color-schemes/MaterialAdwMatugen.colors" ] \
               || [ ! -f "$HOME/.cache/matugen/vscode-colors" ] \
               || [ ! -f "$HOME/.cache/matugen/vscode-colors.json" ] \
+              || [ ! -f "$HOME/.cache/matugen/nvim-colors.lua" ] \
               || [ ! -f "$HOME/.config/btop/themes/matugen.theme" ] \
               || [ ! -f "$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml" ] \
               || { [ -d "$HOME/Documents/MyVault/.obsidian/snippets" ] \
