@@ -76,6 +76,7 @@ in
               || [ ! -f "$HOME/.cache/matugen/vscode-colors" ] \
               || [ ! -f "$HOME/.cache/matugen/vscode-colors.json" ] \
               || [ ! -f "$HOME/.config/btop/themes/matugen.theme" ] \
+              || [ ! -f "$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml" ] \
               || { [ -d "$HOME/Documents/MyVault/.obsidian/snippets" ] \
                 && [ ! -f "$HOME/Documents/MyVault/.obsidian/snippets/matugen.css" ]; } \
               || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null \

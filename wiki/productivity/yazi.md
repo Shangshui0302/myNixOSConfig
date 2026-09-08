@@ -74,13 +74,15 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、10
 
 ## 主题
 
-活动主题：**myargonaut**（暗色），基于 Argonaut 调色板的绿色主题。
+活动主题：**matugen-runtime**（暗色），基于当前壁纸的 Matugen Material 3 色板。
 
-当前只声明 `myargonaut`，其他主题未随仓库下载，避免维护无效的主题清单。
+Yazi 与 btop 一样保持深色底，因为 Foot 终端背景固定为深色；目录、重点、选中、边框、文件类型和错误颜色会随壁纸重点色更新。运行时 flavor 是用户可写文件，不会覆盖同目录下的 `myargonaut` 或 `noctalia`。
+
+`theme-apply` 将产物缓存到 `~/.cache/wallpaper-colors/cache/<key>/dark/yazi/flavor.toml`，再复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`。壁纸变化时重新取色，普通 Darkman 深浅切换复用缓存；当前运行实例若未热重载，重新打开 Yazi 即可读取新颜色。
 
 ### 切换主题
 
-编辑 `/home/lishangshui/myNixOSConfig/home/productivity/yazi.nix` 中的 `myargonaut` 配置，或显式添加其他主题后再 rebuild。
+静态回退主题仍在 `/home/lishangshui/myNixOSConfig/home/productivity/yazi.nix` 的 `myargonaut` 配置中；如需修改 Matugen 的颜色映射，编辑 `home/theme/matugen/yazi-flavor.toml.tpl` 后再由用户手动 rebuild。
 
 ## 预览功能
 
@@ -105,18 +107,18 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、10
 
 文件按类型显示不同颜色的 Nerd Font 图标：
 
-| 类型 | 图标颜色 | 示例 |
+| 类型 | 图标颜色（Matugen 角色） | 示例 |
 |------|----------|------|
-| 目录（悬停） | 绿色 | `` |
-| 目录（普通） | 绿色 | `` |
-| 可执行文件 | 绿色 | `` |
-| 图片 | 青色 | `󰉏` |
-| 视频/音频 | 黄色 | `` / `` |
-| 压缩包 | 粉色 | `󰛫` |
-| Nix 文件 | 亮绿 | `󰋗` |
-| Python | 黄色 | `` |
-| Rust | 红色 | `` |
-| JS/TS | 黄色/青色 | `` / `` |
+| 目录（悬停） | `primary` | `` |
+| 目录（普通） | `secondary` | `` |
+| 可执行文件 | `primary` | `` |
+| 图片 | `tertiary` | `󰉏` |
+| 视频/音频 | `tertiary_container` | `` / `` |
+| 压缩包 | `secondary_container` | `󰛫` |
+| Nix 文件 | `secondary` | `󰋗` |
+| Python | `tertiary` | `` |
+| Rust | `error` | `` |
+| JS/TS | `tertiary` / `secondary` | `` / `` |
 
 ## 设置概览
 

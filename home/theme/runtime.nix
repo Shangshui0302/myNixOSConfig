@@ -123,6 +123,9 @@ let
 
   # btop runs in the dark Foot terminal, so it always consumes Matugen's dark palette.
   btopDarkTemplate = mkMatugenModeTemplate "dark" "btop-theme" ./matugen/btop.theme.tpl;
+  # Yazi runs in the same dark Foot terminal and keeps a dark background while
+  # its semantic accents follow the wallpaper palette.
+  yaziDarkTemplate = mkMatugenModeTemplate "dark" "yazi-flavor" ./matugen/yazi-flavor.toml.tpl;
   # Matugen Theme watches these two files and regenerates its writable VS Code
   # theme files when the selected mode or wallpaper palette changes.
   vscodeColorsTemplate = mode: mkMatugenModeTemplate mode "vscode-colors" ./matugen/vscode-colors.tpl;
@@ -208,6 +211,10 @@ let
     [templates.btop-dark]
     input_path = '${btopDarkTemplate}'
     output_path = '${matugenOutputRoot}/dark/btop.theme'
+
+    [templates.yazi-dark]
+    input_path = '${yaziDarkTemplate}'
+    output_path = '${matugenOutputRoot}/dark/yazi/flavor.toml'
 
     [templates.vscode-colors-light]
     input_path = '${vscodeColorsTemplate "light"}'
@@ -431,6 +438,7 @@ let
           light/niri-colors.kdl
           dark/niri-colors.kdl
           dark/btop.theme
+          dark/yazi/flavor.toml
           light/vscode/vscode-colors
           dark/vscode/vscode-colors
           light/vscode/vscode-colors.json
@@ -641,6 +649,11 @@ let
           "$HOME/.config/niri/wallpaper-colors.kdl"
         copy_atomic "$cache_dir/dark/btop.theme" \
           "$HOME/.config/btop/themes/matugen.theme"
+        yazi_flavor="$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml"
+        if [ "$assets_changed" -eq 1 ] || [ ! -f "$yazi_flavor" ]; then
+          copy_atomic "$cache_dir/dark/yazi/flavor.toml" "$yazi_flavor"
+          log "stage=yazi status=updated"
+        fi
         copy_atomic "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
           "$HOME/.config/qt5ct/colors/matugen.conf"
         copy_atomic "$cache_dir/$mode/qt6ct/colors/matugen.conf" \

@@ -206,7 +206,9 @@ in
       inherit myargonaut;
     };
 
-    theme.flavor.dark = "myargonaut";
+    # theme-apply publishes a writable Matugen flavor here; myargonaut remains
+    # installed as a static fallback for recovery and offline startup.
+    theme.flavor.dark = "matugen-runtime";
 
     settings = {
       mgr = {
