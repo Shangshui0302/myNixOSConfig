@@ -56,7 +56,7 @@
     trustedInterfaces = [ "Meta" ];
     checkReversePath = "loose";
     allowedTCPPorts = [ 53317 ];
-    allowedUDPPorts = [ 53317 ];
+    allowedUDPPorts = [ 53317 37991 ];
   };
 
   environment.systemPackages = with pkgs; [
