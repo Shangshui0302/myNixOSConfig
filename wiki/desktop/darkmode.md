@@ -79,7 +79,7 @@ journalctl --user -u darkman -b
 
 `theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、Zellij 深浅两套主题、VS Code 深浅两套色板、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器和 Fcitx 产物。
 
-普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，并在 Papirus 重着色前优先更新 Noctalia、Hyprland 等可见消费者。`copy_atomic` 和 Fcitx 配置会先比较内容，避免模式切换无意义地重写相同文件；btop 仅在壁纸色板变化时发送刷新信号。Papirus 文件夹颜色记录已应用颜色，并按 Papirus 版本/颜色缓存 GTK `icon-theme.cache`：换色仍需首次生成该颜色的索引，之后只更新链接并恢复约 3 MB 的缓存；目标颜色不变时跳过整个 Papirus 阶段。Papirus 缓存位于 `~/.cache/wallpaper-colors/papirus/`，可安全删除，缺失时自动回退到完整重建。
+普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。显式换壁纸时，日志会记录 `cache=hit source=wallpaper` 或 `cache=miss`；回到已有壁纸不会重新取色。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，并在 Papirus 重着色前优先更新 Noctalia、Hyprland 等可见消费者。`copy_atomic` 和 Fcitx 配置会先比较内容，避免模式切换无意义地重写相同文件；btop 仅在壁纸色板变化时发送刷新信号。Papirus 文件夹颜色记录已应用颜色，并按 Papirus 版本/颜色缓存 GTK `icon-theme.cache`：换色仍需首次生成该颜色的索引，之后只更新链接并恢复约 3 MB 的缓存；目标颜色不变时跳过整个 Papirus 阶段。Papirus 缓存位于 `~/.cache/wallpaper-colors/papirus/`，可安全删除，缺失时自动回退到完整重建。
 
 缓存是可丢弃的运行时状态，不属于 Nix 声明；删除 `~/.cache/wallpaper-colors/cache/` 后下一次壁纸应用会自动重建。
 

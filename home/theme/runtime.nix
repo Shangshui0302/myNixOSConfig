@@ -613,6 +613,9 @@ let
             | ${pkgs.coreutils}/bin/sha256sum | ${pkgs.coreutils}/bin/cut -c 1-64)"
           cache_dir="$cache_store/$cache_key"
           log "wallpaper=$wallpaper key=$cache_key"
+          if validate_cache "$cache_dir"; then
+            log "cache=hit key=$cache_key source=wallpaper"
+          fi
         fi
 
         assets_changed=1
