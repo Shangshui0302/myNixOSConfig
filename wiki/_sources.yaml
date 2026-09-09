@@ -90,7 +90,7 @@ docs:
     memory:  [cliamp-nix-package]
 
   networking/mihomo.md:
-    sources: [host/base/network.nix]
+    sources: [host/base/network.nix, host/mihomo-config.yaml.in]
     memory:  [mihomo-tun-stack]
 
   security/index.md:

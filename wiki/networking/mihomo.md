@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-08-12
+updated: 2026-09-09
 ---
 
 # Mihomo 代理
@@ -32,8 +32,9 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 - 去广告（geosite:category-ads-all）
 - 国外网站代理兜底（geosite:geolocation-!cn）
 - 特定服务分流：
-  - **AI 与受限服务**（OpenAI, Claude, Meta, Google/Gemini, Apple, Microsoft, Antigravity 等）：强制路由至 `🇺🇸 美国极速`（url-test 测速组），规避对香港 IP 的封锁。
-  - **流媒体与常规服务**（Netflix, YouTube, Bilibili, Bahamut, GitHub, Telegram 等）：按区域或默认走选择节点。
+  - **AI 与受限服务**（OpenAI, Claude, Meta, Antigravity 等）：路由至 `🤖 AI/Dev`，可在 `🇺🇸 美国节点` 与 `🔰 选择节点` 间切换。
+  - **GitHub**：单独路由至 `🐙 GitHub` 选择组，避免与其他常规流量共用默认节点。
+  - **流媒体与常规服务**（Netflix, YouTube, Bilibili, Bahamut, Telegram 等）：按区域或默认走选择节点。
 
 **注**：`rule-providers` 采用了原生 `type: http` 并配置 `proxy: DIRECT`，下载规则集时直接使用物理网络，避免了 TUN 拦截导致的“鸡生蛋”死锁问题。
 

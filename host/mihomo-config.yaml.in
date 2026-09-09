@@ -269,7 +269,11 @@ proxy-groups:
       - ikuuu
     filter: "(?i)美国|US|United States|🇺🇸"
 
-  - name: "🇺🇸 AI/Dev"
+  - name: "🐙 GitHub"
+    type: select
+    use: [ikuuu]
+
+  - name: "🤖 AI/Dev"
     type: select
     proxies:
       - "🇺🇸 美国节点"
@@ -360,18 +364,18 @@ rules:
   - DOMAIN-SUFFIX,pubmed.ncbi.nlm.nih.gov,🎓 学术网站
 
   # AI
-  - DOMAIN-KEYWORD,openai,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,openai.com,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,chatgpt.com,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,oaistatic.com,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,oaiusercontent.com,🇺🇸 AI/Dev
-  - RULE-SET,geosite-openai,🇺🇸 AI/Dev
-  - DOMAIN-KEYWORD,antigravity,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,claude.ai,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,anthropic.com,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,meta.ai,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,perplexity.ai,🇺🇸 AI/Dev
-  - DOMAIN-SUFFIX,qoder.com,🇺🇸 AI/Dev
+  - DOMAIN-KEYWORD,openai,🤖 AI/Dev
+  - DOMAIN-SUFFIX,openai.com,🤖 AI/Dev
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI/Dev
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI/Dev
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI/Dev
+  - RULE-SET,geosite-openai,🤖 AI/Dev
+  - DOMAIN-KEYWORD,antigravity,🤖 AI/Dev
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI/Dev
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI/Dev
+  - DOMAIN-SUFFIX,meta.ai,🤖 AI/Dev
+  - DOMAIN-SUFFIX,perplexity.ai,🤖 AI/Dev
+  - DOMAIN-SUFFIX,qoder.com,🤖 AI/Dev
 
   # OneDrive：必须早于 Microsoft
   - DOMAIN-SUFFIX,onedrive.com,☁️ OneDrive
@@ -380,7 +384,7 @@ rules:
   - DOMAIN-SUFFIX,sharepoint.com,☁️ OneDrive
 
   # GitHub：必须早于 Microsoft
-  - RULE-SET,geosite-github,🔰 选择节点
+  - RULE-SET,geosite-github,🐙 GitHub
 
 
   # Steam 分流（MRS 兜底 + 静态域名双保险）
