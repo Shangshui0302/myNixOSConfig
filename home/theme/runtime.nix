@@ -549,6 +549,9 @@ let
             | ${pkgs.coreutils}/bin/sha256sum | ${pkgs.coreutils}/bin/cut -c 1-64)"
           cache_dir="$cache_store/$cache_key"
           log "wallpaper=$wallpaper key=$cache_key"
+          if validate_cache "$cache_dir"; then
+            log "cache=hit key=$cache_key source=wallpaper"
+          fi
         fi
 
         assets_changed=1
@@ -692,6 +695,14 @@ let
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
 
+        # Noctalia consumes the palette copied above through its file watcher,
+        # while this IPC applies the current mode. Keep it ahead of Papirus:
+        # papirus-folders can take several seconds to recolor the icon tree.
+        noctalia_start="$(now_ms)"
+        ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode" 2>/dev/null || true
+        noctalia_end="$(now_ms)"
+        log "stage=noctalia duration_ms=$((noctalia_end - noctalia_start))"
+
         # fcitx5-gtk's Wayland client reads Theme directly; keep the complete
         # user config but avoid restarting the daemon when only the mode changed.
         fcitx_dir="$HOME/.config/fcitx5/conf"
@@ -743,11 +754,6 @@ let
         ${pkgs.procps}/bin/pkill -USR2 -x btop 2>/dev/null || true
         btop_end="$(now_ms)"
         log "stage=btop duration_ms=$((btop_end - btop_start)) mode=$mode"
-
-        noctalia_start="$(now_ms)"
-        ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode" 2>/dev/null || true
-        noctalia_end="$(now_ms)"
-        log "stage=noctalia duration_ms=$((noctalia_end - noctalia_start))"
 
         write_atomic "$cache_index" "$cache_key"
         log "complete mode=$mode key=$cache_key assets_changed=$assets_changed"

@@ -75,7 +75,7 @@ journalctl --user -u darkman -b
 
 `theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、VS Code 深浅两套色板、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器和 Fcitx 产物。
 
-普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，不再额外执行 `config-reload`。Papirus 文件夹颜色另有已应用颜色记录，目标颜色不变时跳过重着色。
+普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。显式换壁纸时，日志会记录 `cache=hit source=wallpaper` 或 `cache=miss`；回到已有壁纸不会重新取色。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；`theme-mode-set` 已提前到 Papirus 重着色之前，避免图标树重染色阻塞面板重点色刷新。Papirus 文件夹颜色另有已应用颜色记录，目标颜色不变时跳过重着色。
 
 缓存是可丢弃的运行时状态，不属于 Nix 声明；删除 `~/.cache/wallpaper-colors/cache/` 后下一次壁纸应用会自动重建。
 
@@ -125,7 +125,7 @@ awk '/^\[UiSettings\]/{in_ui=1; next} /^\[/{in_ui=0} in_ui && /^ColorScheme=/{pr
 # btop 应使用当前 Matugen 主题
 rg -n '^theme\[' ~/.config/btop/themes/matugen.theme
 
-# 查看缓存命中、Matugen、Papirus、Fcitx 与 Noctalia 各阶段耗时
+# 查看缓存命中/未命中、Matugen、Papirus、Fcitx 与 Noctalia 各阶段耗时
 journalctl --user -u darkman -b -o cat | rg 'theme-apply: (cache|stage|complete)'
 ```
 
