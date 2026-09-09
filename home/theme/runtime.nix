@@ -766,6 +766,16 @@ let
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
 
+        # xdg-desktop-portal-gtk keeps GTK file chooser state in its long-lived
+        # process; reload it after publishing a new wallpaper palette so
+        # VS Code/Codex do not retain the previous GTK colors.
+        if [ "$assets_changed" -eq 1 ]; then
+          portal_start="$(now_ms)"
+          ${pkgs.systemd}/bin/systemctl --user try-restart xdg-desktop-portal-gtk.service 2>/dev/null || true
+          portal_end="$(now_ms)"
+          log "stage=portal-gtk duration_ms=$((portal_end - portal_start))"
+        fi
+
         # Update quick, visible consumers before the potentially multi-second
         # Papirus icon-tree work below.  Keep this serial under the global lock
         # so no consumer observes a half-published palette.

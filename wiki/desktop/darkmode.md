@@ -59,7 +59,7 @@ journalctl --user -u darkman -b
 ## GTK 与 Qt
 
 - **GTK4**：`Material-Gnome-Matugen/gtk-4.0/colors.css` 始终同时包含浅色和深色变量，用 `@media (prefers-color-scheme: dark)` 选择。GTK4 收到 portal 模式事件时不再依赖 Matugen 写文件的先后顺序，因此不会读取上一轮颜色而反向。
-- **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`。
+- **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`；壁纸色板变化后还会重启 `xdg-desktop-portal-gtk`，避免 VS Code/Codex 复用长驻文件选择器进程中的旧 CSS，普通深浅切换不重启。
 - **Flatpak GTK 应用**：继续通过 `$HOME/.themes:ro` 和固定 `GTK_THEME=Material-Gnome-Matugen` 读取主题。GTK4 4.20 及以上可使用双配色媒体查询；GTK3 Flatpak 暂不动态切换到 `-Dark` 目录。
 - **Qt5/Qt6**：Home Manager 的 `qtct` 同时管理两代平台插件，控件样式统一为 Kvantum；`MaterialAdw` 的 `kvconfig`/SVG 由 Matugen 写入 `~/.config/Kvantum/MaterialAdw/`，两代 `qtct` 分别读取 `~/.config/qt5ct/colors/matugen.conf` 与 `~/.config/qt6ct/colors/matugen.conf`。Qt 应用通常只在启动时读取调色板，切壁纸后重新打开即可。
 - **Dolphin/KDE**：Matugen 另外生成 `~/.local/share/color-schemes/MaterialAdwMatugen.colors`，并将 `~/.config/dolphinrc` 的 `[UiSettings] ColorScheme` 指向 `MaterialAdwMatugen`。这样文件视图、选中态等 KDE 语义色与 Kvantum 控件保持同一套 M3 色板。
