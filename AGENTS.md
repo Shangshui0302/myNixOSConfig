@@ -20,17 +20,6 @@
 - secrets 只放 `/persist/secrets/` 或 sops 加密文件，不进 git。
 - 不修改网络/TUN、内核、AMD 背光、硬件、sudo 规则和 secrets，除非用户明确要求。
 
-## Agent 协作
-
-- 对跨多个文件或目录、需要独立调查/验证、代码审查、实验监控等非小型任务，默认主动使用 subagent；用户不必显式要求。
-- 所有手动创建的 worktree 统一放在 `~/.codex/worktrees/<仓库名>/<任务 slug>/`；禁止再使用仓库同级目录、`/tmp` 或其他分散路径。Codex 应用托管的 worktree 若无法指定位置，不要另建第二份，直接报告实际路径。
-- 优先用 multiagent 并行处理互不依赖的只读探索、方案比较、测试和审查；存在数据依赖、写同一文件或可能冲突时改为串行。
-- 主 agent 负责理解目标、拆分任务、限定权限、合并结果和最终验证；subagent 只处理边界明确的子任务，并返回证据、修改文件和检查结果。
-- 派发任务时说明目标、输入、文件范围、禁止事项和交付格式；禁止多个 agent 同时修改同一文件。
-- 子任务完成后必须审阅输出和 diff，运行最小相关检查，不能盲目采纳 subagent 的结论或修改。
-- 单行、单文件且明确的小改动直接处理，避免为此启动 agent。
-- 所有 agent 都必须遵守本文件的 Nix、secret、Git、破坏性操作和“不自动 rebuild”规则；需要 root 或外部权限时只返回命令，由用户执行。
-
 ## 包分类硬规则
 
 - 按主要用途单一归类：系统集成放 `host/`，共享环境放 `home/env/`，生产力放 `home/productivity/`，开发放 `home/dev/`，娱乐放 `home/leisure/`，DE 专属内容放对应的 `host/de/`、`host/gnome/` 或 `home/de/`、`home/gnome.nix`。
