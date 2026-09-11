@@ -556,6 +556,7 @@ in
       hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("desktop-shell-action launcher"))
       hl.bind("SUPER + K", hl.dsp.exec_cmd("desktop-shell-action control"))
       hl.bind("SUPER + comma", hl.dsp.exec_cmd("desktop-shell-action settings"))
+      hl.bind("SUPER + SHIFT + slash", hl.dsp.exec_cmd("noctalia msg panel-toggle kenn/keybind-cheatsheet:cheatsheet"))
       hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("darkman toggle"))
       -- ScrollOverview: compositor-level overview, independent of desktop shell.
       hl.bind("SUPER + TAB", function()

@@ -1,8 +1,8 @@
 ---
 title: 图像与视频工具
 category: 生产力
-tags: [gthumb, gimp, ffmpeg, kdenlive, glaxnimate, blender, image-editing, video-editing]
-updated: 2026-09-02
+tags: [gthumb, gimp, ffmpeg, kdenlive, glaxnimate, blender, ocr, screen-recording, image-editing, video-editing]
+updated: 2026-09-10
 ---
 
 # 图像与视频工具
@@ -20,6 +20,8 @@ updated: 2026-09-02
 | Glaxnimate | 矢量动画 | 标注、图形转场和简单的 2D 动效 |
 | Blender | 3D 与合成 | 3D 场景、摄像机跟踪和复杂合成 |
 | Loupe | 图片查看器 | 快速打开和浏览图片，不承担完整编辑职责 |
+
+Noctalia Screen Toolkit 的功能依赖也归此模块：Hyprpicker 取色、ZBar 扫码、Tesseract OCR、Translate Shell 翻译和 wl-screenrec 录屏。Tesseract 只安装 `eng`、`chi_sim`、`jpn`、`kor`、`rus`，避免引入约 1 GiB 的全语言数据。
 
 如果只是把图片裁成指定尺寸，优先用 gThumb：打开图片后进入编辑、裁剪或调整尺寸，保存时选择覆盖或另存为即可，不需要手工处理选区和画布。Loupe 仍归媒体查看工具，配置在 `home/leisure/player.nix`。
 
@@ -58,7 +60,7 @@ Linux rice 演示建议使用 `OBS → Kdenlive → Glaxnimate`：OBS 录制桌�
 
 | 配置 | 位置 |
 |------|------|
-| gThumb、GIMP、FFmpeg、Kdenlive、Glaxnimate、Blender | `home/productivity/graphics.nix` |
+| gThumb、GIMP、FFmpeg、Kdenlive、Glaxnimate、Blender、Screen Toolkit 图像依赖 | `home/productivity/graphics.nix` |
 | Loupe | `home/leisure/player.nix` |
 | Yazi 文件管理器 | `home/productivity/yazi.nix` |
 | 文件管理器缩略图 | `home/productivity/files.nix` |

@@ -199,7 +199,7 @@
           Mod+Ctrl+F { expand-column-to-available-width; }
 
           // 显示快捷键覆盖
-          Mod+Shift+Slash { show-hotkey-overlay; }
+          Mod+Shift+Slash { spawn-sh "noctalia msg panel-toggle kenn/keybind-cheatsheet:cheatsheet"; }
       }
 
       // stylix 配色注入（替代 Noctalia 模板）：focus-ring 颜色壁纸取色，与 foot 同源

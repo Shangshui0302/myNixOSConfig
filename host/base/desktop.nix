@@ -13,6 +13,10 @@ in
   # GNOME Keyring — 为 Electron/VS Code 类应用提供加密凭据存储
   services.gnome.gnome-keyring.enable = true;
 
+  # 主桌面的手机互联；原生模块同时安装 KDE Connect 并开放发现所需端口。
+  # GNOME 变体已有 GSConnect，避免同时运行两个 KDE Connect 协议实现。
+  programs.kdeconnect.enable = !gnome;
+
   environment.variables = {
     QT_IM_MODULE = "fcitx";
     XMODIFIERS = "@im=fcitx";

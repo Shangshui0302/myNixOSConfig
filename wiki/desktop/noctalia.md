@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-09-09
+updated: 2026-09-10
 ---
 
 # Noctalia Shell 使用指南
@@ -60,6 +60,7 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 | `Super + Space` | 应用启动器 |
 | `Super + K` | 控制中心 |
 | `Super + ,` | 设置面板 |
+| `Super + ?` | Keybind Cheatsheet（Hyprland / niri） |
 | `Super + Tab` | Hyprland 的 ScrollOverview；niri 使用原生 `toggle-overview`，不经过 Noctalia |
 
 Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下角热角保留为自定义 ScrollOverview 命令。
@@ -103,6 +104,13 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 | Color Scheme Creator | 配色方案生成器 |
 
 **卡片区域：** Profile、Shortcuts、Audio、Brightness、Network、Weather、Media/Sysmon
+
+## 插件依赖与设置
+
+- **Screen Toolkit**：截图、OCR、二维码、录屏和翻译工具由 `home/productivity/graphics.nix` 提供；OCR 启用中、英、日、韩、俄五种模型，录屏后端使用 `wl-screenrec`。
+- **Phone Operate**：`adb`、scrcpy、SSHFS 由 `home/productivity/phone.nix` 提供；主桌面的 KDE Connect 与发现端口由 `host/base/desktop.nix` 管理，GNOME 变体继续使用 GSConnect。
+- **Obsidian**：Vault 指向 `~/Documents/MyVault`，日记目录与现有 Daily Notes 配置统一为 `05_Personal/Diary`。
+- **Translator**：默认翻译目标为中文；Google 模式没有本地命令依赖。
 
 ## Dock
 

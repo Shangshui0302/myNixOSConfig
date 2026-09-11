@@ -5,6 +5,7 @@
     ./comms.nix
     ./files.nix
     ./graphics.nix
+    ./phone.nix
     ./yazi.nix
   ];
 }

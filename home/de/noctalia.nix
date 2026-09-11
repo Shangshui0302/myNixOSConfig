@@ -300,6 +300,20 @@ in
         "alexmnrs/github-activity" = {
           calendar_placement = "floating";
         };
+        "alexander/screen-toolkit" = {
+          "screenshot-path" = "${config.home.homeDirectory}/Pictures/Screenshots";
+          "video-path" = "${config.home.homeDirectory}/Videos";
+          "selected-ocr-lang" = "eng+chi_sim+jpn+kor+rus";
+          "panel-mode" = "standard";
+        };
+        "davemhammer/obsidian" = {
+          vault_path = "${config.home.homeDirectory}/Documents/MyVault";
+          daily_folder = "05_Personal/Diary";
+          daily_format = "%Y-%m-%d";
+        };
+        "icefish/phone-operate" = {
+          language = "zh-Hans";
+        };
         "noctalia/translator" = {
           target_lang = "zh";
         };
