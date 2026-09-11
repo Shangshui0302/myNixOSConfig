@@ -55,7 +55,7 @@
     enable = true;
     trustedInterfaces = [ "Meta" ];
     checkReversePath = "loose";
-    allowedTCPPorts = [ 53317 ];
+    allowedTCPPorts = [ 53317 8787 22 8788];
     allowedUDPPorts = [ 53317 37991 ];
   };
 
