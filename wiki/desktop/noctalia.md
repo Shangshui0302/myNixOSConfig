@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-09-10
+updated: 2026-09-11
 ---
 
 # Noctalia Shell 使用指南
@@ -33,22 +33,17 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 | 区域 | Widget | 说明 |
 |------|--------|------|
-| 左 | 启动器 (🚀) | 点击打开应用启动器 |
-| 左 | 时钟 | `HH:mm ddd, MMM dd` 格式 |
-| 左 | 系统监视器 | CPU 使用率/温度/核心数 + 内存使用，紧凑模式 |
-| 中 | 工作区 | 数字索引标签，圆点指示占用状态，滚轮切换 |
+| 左 | 启动器、时钟 | 启动器打开应用；时钟显示 `HH:mm ddd, MMM dd` |
+| 左 | 系统组 | CPU 监视器与上传/下载速率 |
+| 中 | GitHub Activity、Git Companion | GitHub 活动与待处理事项 |
+| 中 | 工作区、Obsidian、Nix Monitor | 工作区状态、Vault 状态与更新状态 |
 | 右 | 媒体 / 音频可视化 | 播放时显示进度和可视化效果 |
-| 右 | 网络指示器 | 上传/下载速率 |
-| 右 | 电池 | 简洁图形模式，无电池时隐藏 |
-| 右 | 音量 | 悬停展开调整，中键打开 pavucontrol |
-| 右 | 亮度 | 悬停展开调整 |
-| 右 | 隐私指示器 | 麦克风/摄像头使用状态 |
-| 右 | HVE | Hyprland 可视化编辑器（主题热加载） |
-| 右 | 通知历史 | 未读计数标记 |
+| 右 | 音量、亮度、网络 | 悬停展开或打开对应控制中心面板 |
+| 右 | 剪贴板、Screen Toolkit、通知、Mihomo | 常用面板与状态入口 |
+| 右 | 隐私、Phone Operate、电池/会话 | 设备状态和会话菜单 |
 | 右 | 系统托盘 | 固定 Chrome 图标，抽屉收纳其余 |
-| 右 | 控制中心 | Noctalia 图标，点击打开 |
 
-顶栏：不透明度 93%，胶囊背景，comfortable 密度，始终可见。
+顶栏：透明外层、0.8 胶囊不透明度，始终保留胶囊布局。
 
 > **维护**：2026-08-13 清理 `noctalia config validate` 的 4 个 warning（`home/de/noctalia.nix`）：bongocat 宠物插件、launcher session 搜索因新版不再识别已移除；网络指示器字段更新为新版（`visualization/show_value/show_glyph`）。现有功能（上传/下载速率等）保持不变。
 
@@ -76,7 +71,8 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 - **打开方式**：`Super + Space` 或点击顶栏 🚀 图标
 - **剪贴板历史**：已启用，支持文本和图片，自动预览
-- **固定应用**：Nemo、Google Chrome、Obsidian、QQ
+- **固定应用**：Nautilus（启动器）；Dock 固定 Nautilus、Codex Desktop、Google Chrome
+- **启动器提供者**：Emoji、Session、Windows 均启用
 - **排序**：按使用频率排序
 - **视图模式**：列表，显示分类
 - **终端命令**：foot
@@ -113,8 +109,8 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 ## Dock
 
-- **位置**：底部，自动隐藏
-- **固定应用**：QQ
+- **位置**：底部；关闭强制自动隐藏，启用智能自动隐藏
+- **固定应用**：Nautilus、Codex Desktop、Google Chrome
 - **启动器图标**：使用发行版 Logo
 - **分组**：同一应用窗口合并，圆点指示器，点击列表切换
 - **行为**：仅显示当前屏幕的应用
@@ -145,7 +141,7 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 | 项目 | 设置 |
 |------|------|
-| 位置 | 右上角 |
+| 位置 | 右下角 |
 | 密度 | 紧凑 |
 | 低/普通/紧急 | 3s / 8s / 15s |
 | 媒体切换提示 | 启用 |

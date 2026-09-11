@@ -33,14 +33,19 @@ in
           capsule = true;
           capsule_opacity = 0.8;
           center = [
+            ("activity_2")
+            ("widget_4")
             ("workspaces")
+            ("status_3")
+            ("nix_monitor_2")
           ];
           end = [
             ("group:g5")
             ("group:g6")
             ("tray")
             ("group:g2")
-            ("privacy")
+            ("group:g4")
+            ("status_4")
             ("group:g1")
           ];
           font_weight = 400;
@@ -55,7 +60,6 @@ in
           start = [
             ("launcher")
             ("clock")
-            ("sysmon")
             ("group:g3")
           ];
           thickness = 42;
@@ -67,6 +71,9 @@ in
           };
           capsule_group = [
             ({
+              accordion = false;
+              accordion_direction = "end";
+              enabled = true;
               fill = "surface_variant";
               id = "g1";
               members = [
@@ -77,20 +84,28 @@ in
               padding = 6.0;
             })
             ({
+              accordion = false;
+              accordion_direction = "end";
+              enabled = true;
               fill = "surface_variant";
               id = "g2";
               members = [
                 ("clipboard")
+                ("widget_5")
                 ("notifications")
-                ("control-center")
+                ("widget_6")
               ];
               opacity = 0.80000001192092896;
               padding = 6.0;
             })
             ({
+              accordion = false;
+              accordion_direction = "end";
+              enabled = true;
               fill = "surface_variant";
               id = "g3";
               members = [
+                ("sysmon")
                 ("network_tx")
                 ("network_rx")
               ];
@@ -98,6 +113,9 @@ in
               padding = 6.0;
             })
             ({
+              accordion = false;
+              accordion_direction = "end";
+              enabled = true;
               fill = "surface_variant";
               id = "g5";
               members = [
@@ -108,12 +126,27 @@ in
               padding = 6.0;
             })
             ({
+              accordion = false;
+              accordion_direction = "end";
+              enabled = true;
               fill = "surface_variant";
               id = "g6";
               members = [
                 ("volume")
                 ("brightness")
                 ("network")
+              ];
+              opacity = 0.80000001192092896;
+              padding = 6.0;
+            })
+            ({
+              accordion = false;
+              accordion_direction = "end";
+              enabled = true;
+              fill = "surface_variant";
+              id = "g4";
+              members = [
+                ("privacy")
               ];
               opacity = 0.80000001192092896;
               padding = 6.0;
@@ -260,6 +293,8 @@ in
             cx = 960.0;
             cy = 1014.0;
             output = "eDP-1";
+            placement_height = 1200.0;
+            placement_width = 1920.0;
             rotation = 0.0;
             type = "login_box";
             settings = {
@@ -299,6 +334,10 @@ in
         "alexmnrs/github-activity" = {
           calendar_placement = "floating";
         };
+        "avivbintangaringga/nix-monitor" = {
+          panel_placement = "floating";
+          update_command = "nix flake update --flake ${config.home.homeDirectory}/myNixOSConfig/";
+        };
         "alexander/screen-toolkit" = {
           "screenshot-path" = "${config.home.homeDirectory}/Pictures/Screenshots";
           "video-path" = "${config.home.homeDirectory}/Videos";
@@ -321,24 +360,32 @@ in
         enabled = [
           ("noctalia/kaomoji")
           ("noctalia/translator")
-          ("alexmnrs/github-activity")
-          ("felipeartur/ai-usagebar")
-          ("dragged/cider")
-          ("nocode-96/cmd-runner")
-          ("weinguyen/shell-command")
-          ("tphilippot/git_companion")
-          ("davemhammer/obsidian")
-          ("mdj2812/mihomo-control")
-          ("alexander/screen-toolkit")
-          ("tmelik/system-monitor")
-          ("kenn/keybind-cheatsheet")
           ("icefish/phone-operate")
-          ("notfinaldev/web-search")
+          ("kenn/keybind-cheatsheet")
+          ("mdj2812/mihomo-control")
           ("avivbintangaringga/nix-monitor")
+          ("davemhammer/obsidian")
+          ("alexmnrs/github-activity")
+          ("tphilippot/git_companion")
+          ("alexander/screen-toolkit")
+          ("weinguyen/shell-command")
+          ("notfinaldev/web-search")
+        ];
+        source = [
+          ({
+            kind = "git";
+            location = "https://github.com/noctalia-dev/official-plugins";
+            name = "official";
+          })
+          ({
+            kind = "git";
+            location = "https://github.com/noctalia-dev/community-plugins";
+            name = "community";
+          })
         ];
       };
       shell = {
-        app_icon_color = "error";
+        app_icon_color = "primary";
         avatar_path = "${config.home.homeDirectory}/Pictures/ProfiePictures/yamadaRyou_glassesHeadsphone.jpg";
         clipboard_auto_paste = "auto";
         clipboard_enabled = true;
@@ -359,6 +406,21 @@ in
         };
         launcher = {
           app_grid = true;
+          pinned = [
+            ("org.gnome.Nautilus")
+          ];
+          show_app_actions = true;
+          providers = {
+            emoji = {
+              global = true;
+            };
+            session = {
+              global = true;
+            };
+            windows = {
+              global = true;
+            };
+          };
         };
         greeter_sync = {
           auto_sync = true;
@@ -379,6 +441,10 @@ in
         screen_corners = {
           enabled = true;
           size = 10;
+        };
+        screenshot = {
+          confirm_region = true;
+          directory = "${config.home.homeDirectory}/Pictures/Screenshots/2026-06";
         };
         shadow = {
           direction = "down";
@@ -424,6 +490,12 @@ in
         unit = "metric";
       };
       widget = {
+        activity = {
+          type = "alexmnrs/github-activity:activity";
+        };
+        activity_2 = {
+          type = "alexmnrs/github-activity:activity";
+        };
         audio_visualizer = {
           bands = 128;
           centered = false;
@@ -450,6 +522,9 @@ in
         };
         launcher = {
           glyph = "brand-snowflake";
+        };
+        keybinds = {
+          type = "kenn/keybind-cheatsheet:keybinds";
         };
         media = {
           hide_album_art = false;
@@ -478,11 +553,33 @@ in
           show_glyph = true;
           glyph = "square-rounded-chevrons-up-filled";
         };
+        nix-monitor = {
+          type = "avivbintangaringga/nix-monitor:nix-monitor";
+        };
+        nix_monitor_2 = {
+          checking_color = "tertiary";
+          show_text = false;
+          type = "avivbintangaringga/nix-monitor:nix-monitor";
+          up_to_date_color = "primary";
+          update_available_color = "error";
+        };
         notifications = {
           hide_when_no_unread = false;
         };
         privacy = {
           hide_inactive = false;
+        };
+        status = {
+          type = "davemhammer/obsidian:status";
+        };
+        status_2 = {
+          type = "icefish/phone-operate:status";
+        };
+        status_3 = {
+          type = "davemhammer/obsidian:status";
+        };
+        status_4 = {
+          type = "icefish/phone-operate:status";
         };
         sysmon = {
           visualization = "gauge";
@@ -497,9 +594,32 @@ in
         volume = {
           show_label = true;
         };
+        widget = {
+          type = "tphilippot/git_companion:widget";
+        };
+        widget_2 = {
+          type = "mdj2812/mihomo-control:widget";
+        };
+        widget_3 = {
+          type = "alexander/screen-toolkit:widget";
+        };
+        widget_4 = {
+          type = "tphilippot/git_companion:widget";
+        };
+        widget_5 = {
+          type = "alexander/screen-toolkit:widget";
+        };
+        widget_6 = {
+          icon_color_mode = "custom";
+          label_content = "none";
+          type = "mdj2812/mihomo-control:widget";
+        };
         workspaces = {
+          anchor = true;
           label_source = "id";
           labels_only_when_occupied = true;
+          show_all_outputs = true;
+          show_labels = false;
         };
       };
     };
