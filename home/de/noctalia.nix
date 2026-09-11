@@ -81,7 +81,6 @@ in
               id = "g2";
               members = [
                 ("clipboard")
-                ("screenshot")
                 ("notifications")
                 ("control-center")
               ];
@@ -380,10 +379,6 @@ in
         screen_corners = {
           enabled = true;
           size = 10;
-        };
-        screenshot = {
-          confirm_region = true;
-          directory = "${config.home.homeDirectory}/Pictures/Screenshots/2026-06";
         };
         shadow = {
           direction = "down";
