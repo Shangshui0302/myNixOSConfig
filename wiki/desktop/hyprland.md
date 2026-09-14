@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-09-06
+updated: 2026-09-14
 ---
 
 # Hyprland 使用指南
@@ -76,6 +76,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 | `Shift + Print` | 区域截图（Swappy 编辑后保存 + 复制） |
 
 截图保存在 `~/Pictures/Screenshots/YYYY-MM/` 目录下。
+手动启动 Swappy 时默认保存到 `~/Pictures/`；使用 `swappy -f 图片` 打开图片时，保存目录跟随原图；通过区域截图快捷键启动时，保存目录跟随截图脚本，使用当月子目录。
 
 ### 窗口管理
 

@@ -33,6 +33,52 @@ let
       hash = "sha256-BQjuQplkQFA30/7evDxmEAvr2ArIG09JffEBQhuzo80=";
     };
   });
+  swappyWithOriginalDirectory =
+    let
+      swappyWrapper = pkgs.writeShellScriptBin "swappy" ''
+        set -e
+
+        input=""
+        need_file=false
+        for arg in "$@"; do
+          if [ "$need_file" = true ]; then
+            input="$arg"
+            need_file=false
+            continue
+          fi
+          case "$arg" in
+            -f|--file) need_file=true ;;
+            -f=*|--file=*) input="''${arg#*=}" ;;
+          esac
+        done
+
+        if [ -z "$input" ] || [ "$input" = "-" ]; then
+          exec ${pkgs.swappy}/bin/swappy "$@"
+        fi
+
+        config_home="''${XDG_CONFIG_HOME:-$HOME/.config}"
+        input_dir=$(${pkgs.coreutils}/bin/dirname -- "$input")
+        input_dir=$(${pkgs.coreutils}/bin/realpath -- "$input_dir")
+        swappy_config_home=$(${pkgs.coreutils}/bin/mktemp -d)
+        trap '${pkgs.coreutils}/bin/rm -rf "$swappy_config_home"' EXIT
+        shopt -s dotglob nullglob
+        for entry in "$config_home"/*; do
+          [ "''${entry##*/}" = swappy ] || ${pkgs.coreutils}/bin/ln -s "$entry" "$swappy_config_home/"
+        done
+        shopt -u dotglob nullglob
+        mkdir -p "$swappy_config_home/swappy"
+        ${pkgs.gnused}/bin/sed "s|^save_dir=.*|save_dir=$input_dir|" "$config_home/swappy/config" > "$swappy_config_home/swappy/config"
+        XDG_CONFIG_HOME="$swappy_config_home" ${pkgs.swappy}/bin/swappy "$@"
+      '';
+    in
+    pkgs.symlinkJoin {
+      name = "swappy-with-original-directory";
+      paths = [ pkgs.swappy ];
+      postBuild = ''
+        rm "$out/bin/swappy"
+        ln -s ${swappyWrapper}/bin/swappy "$out/bin/swappy"
+      '';
+    };
   touchpadToggle = pkgs.writeShellScriptBin "toggle-touchpad" ''
     set -eu
 
@@ -55,12 +101,17 @@ let
   '';
 in
 {
+  xdg.configFile."swappy/config".text = ''
+    [Default]
+    save_dir=$HOME/Pictures
+  '';
+
   home.packages = with pkgs; [
     grim
     slurp
     wl-clipboard
     grimblast
-    swappy
+    swappyWithOriginalDirectory
     wdisplays
     touchpadToggle
     (pkgs.writeShellScriptBin "screenshot" ''
@@ -69,9 +120,18 @@ in
       case "$1" in
         area)
           tmp=$(mktemp /tmp/screenshot-XXXXXX.png)
-          trap "rm -f $tmp" EXIT
+          swappy_config_home=$(mktemp -d)
+          trap 'rm -f "$tmp"; rm -rf "$swappy_config_home"' EXIT
+          config_home="''${XDG_CONFIG_HOME:-$HOME/.config}"
+          shopt -s dotglob nullglob
+          for entry in "$config_home"/*; do
+            [ "''${entry##*/}" = swappy ] || ln -s "$entry" "$swappy_config_home/"
+          done
+          shopt -u dotglob nullglob
+          mkdir -p "$swappy_config_home/swappy"
+          sed "s|^save_dir=.*|save_dir=$dir|" "$config_home/swappy/config" > "$swappy_config_home/swappy/config"
           ${pkgs.grimblast}/bin/grimblast save area "$tmp" || exit 1
-          ${pkgs.swappy}/bin/swappy -f "$tmp"
+          XDG_CONFIG_HOME="$swappy_config_home" ${pkgs.swappy}/bin/swappy -f "$tmp"
           file="$dir/$(date +%Y-%m-%d-%H%M%S).png"
           cp "$tmp" "$file"
           ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
