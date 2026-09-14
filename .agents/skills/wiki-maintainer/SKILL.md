@@ -12,10 +12,9 @@ description: >
 IRON LAW: 先确定仓库根目录、当前 worktree 和来源事实，再写入；不覆盖用户内容、不伪造 Why、
 不维护第二份来源映射。
 
-此 skill 是通用 docs-first wiki workflow 在 `~/myNixOSConfig` 的 NixOS 适配层。外部 project-wiki 的
-核心原则是“先识别模式、先读后写、增量同步、明确未知项和交接结果”；本仓库继续使用已有的
-`wiki/_sources.yaml`、`memory/INDEX.md` 和分类目录，不引入平行的 `wiki/Sources.md`、`wiki/log.md` 或
-plans 体系。
+本 skill 面向 `~/myNixOSConfig` 的 NixOS 项目知识库维护，按模式组织任务，先读后写、增量同步，并明确未知项和交接结果。
+本仓库继续使用已有的 `wiki/_sources.yaml`、`memory/INDEX.md` 和分类目录，不引入平行的
+`wiki/Sources.md`、`wiki/log.md` 或 plans 体系。
 
 ## 模式路由与上下文门禁
 
@@ -31,12 +30,12 @@ plans 体系。
 
 写入前必须完成：
 
-- [ ] 确认当前根目录为 `~/myNixOSConfig`，读取 `AGENTS.md`、`README.md` 和相关现状。
+- [ ] 确认当前根目录和 worktree；只读目标文档及其相关来源。仅初始化知识库时读取全局入口，且仍遵守适用的 `AGENTS.md` 规则；已在上下文中加载的入口不必重复读取。首次需要确定文风时读一个样例。
 - [ ] 运行 `git status --short`；保留 staged、unstaged、untracked 和用户 authored 文档。
 - [ ] 明确目标文件和证据来源；目标、来源或已有文档冲突时标记 `blocked`，先询问。
-- [ ] 非小型创建、广泛审查、移动、重命名、删除或 memory 写入先展示范围并等待确认。
+- [ ] 在用户已授权范围内，连续完成可逆编辑、相关检查和必要修复。目标未定或跨越明确权限边界时再询问；部署、破坏性操作和提交仍须遵守各自确认边界。已存在的授权适用于 wiki 非小型写入和广泛审查，不重复索取。
 
-“继续/恢复”只做定位：先读当前分支、worktree、计划/文档状态，再询问是创建计划、修订计划还是开始实施。
+“继续/恢复”沿用本会话已授权的目标与范围；只有存在多个未决方向时才询问用户选择。
 
 ## 知识库结构
 
@@ -152,8 +151,8 @@ wiki 文档以现有手册为基础，结合当前 Nix 配置和 memory 决策�
 
 ### 1. 信息收集
 
-- **先读 nix 配置**：完整读取对应的 nix 文件，理解所有配置项
-- **再读已有文档**：至少读 `wiki/desktop/hyprland.md` 作为风格参考，读 `AGENTS.md` 了解系统上下文
+- **先读相关来源**：完整读取目标组件对应的 nix 文件，理解相关配置项
+- **再读已有文档**：只读目标文档及相关现状；首次需要风格参考时读一个样例，不固定要求读取 `wiki/desktop/hyprland.md` 或 `AGENTS.md`
 - 如果用户未指定要文档化哪个组件，先扫描 `host/` 和 `home/` 中所有 nix 文件，对比 `wiki/` 目录，找出"有配置但无文档"的组件
 
 ### 2. 确定内容结构

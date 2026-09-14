@@ -105,8 +105,10 @@ Only run dry-build when the change involves:
 - Moved/renamed files
 - Changed flake.nix inputs or outputs
 
+在已核实的任务 worktree 根目录运行 dry-build；新文件未进入 Git 时使用 `path:.`：
+
 ```bash
-cd ~/myNixOSConfig && sudo nixos-rebuild dry-build --flake . 2>&1
+nixos-rebuild dry-build --flake path:.
 ```
 
 Skip this step for: config value tweaks, adding/removing a package from an existing

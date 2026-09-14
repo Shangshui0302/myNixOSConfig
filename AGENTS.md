@@ -15,7 +15,7 @@
 - 系统集成、硬件、网络、启动、字体和服务放 `host/`。
 - 用户配置、桌面应用和工具放 `home/`；能由 Home Manager 管理的用户配置优先放 HM。
 - 自定义且不在 nixpkgs 的包放 `local-deriv/`，直接 import；不要为单点包创建 overlay。
-- 新增、升级、修复或审查 `local-deriv/` 包时必须使用用户级 `$nix-packaging` skill；面向上游 Nixpkgs 的包维护与 PR 使用 `$nixpkgs-maintainer`；NixOS、Home Manager、服务、部署和恢复任务使用 `$nixos-ecosystem`。共享 skills 安装在 `~/.agents/skills/`，`.agents/skills/` 只保留本项目专用 skills。每次先核对锁定 nixpkgs 接口与当前官方文档，再完成上游取证、方案确认、修改和验证。
+- 新增、升级、修复或审查 `local-deriv/` 包时必须使用用户级 `$nix-packaging` skill；面向上游 Nixpkgs 的包维护与 PR 使用 `$nixpkgs-maintainer`；NixOS、Home Manager、服务、部署和恢复任务使用 `$nixos-ecosystem`。共享 skills 安装在 `~/.agents/skills/`，`.agents/skills/` 只保留本项目专用 skills。以锁定 revision 的源码作为接口依据；遇到新接口、版本更新或兼容性疑点时再核对当前官方文档。同一 revision 的有效证据可复用。完成上游取证、方案说明、修改和验证；已有授权不重复确认，目标未定或越过明确权限边界时再询问。
 - `hardware-configuration.nix` 自动生成，除非用户明确要求不要手改。
 - secrets 只放 `/persist/secrets/` 或 sops 加密文件，不进 git。
 - 不修改网络/TUN、内核、AMD 背光、硬件、sudo 规则和 secrets，除非用户明确要求。
@@ -55,14 +55,15 @@ memory/                   # 为什么这么配；本地知识库，不进 Git
 
 ## 验证与应用
 
-修改带自校验的配置时，先用包自带工具校验，再写入 Nix：
+配置只能通过 Nix 修改。可先修改 Nix，再构建或生成本次候选配置并用包自带工具校验；也可先校验临时候选配置，再将修改写入 Nix。不要直接编辑活动 dotfile。活动配置的运行时检查单独进行；只有用户明确授权运行时应用后，才重载 Hyprland：
 
 ```bash
-niri validate -c ~/.config/niri/config.kdl
-hyprland --verify-config
+niri validate -c <候选配置文件>
 ```
 
-对于运行中的 Hyprland，会话重载后再检查活动配置（应无输出）：
+Hyprland 候选配置应使用该版本实际支持的配置路径参数和校验方式；活动会话的 Hyprland 可用 `hyprctl configerrors` 检查。
+
+用户明确授权运行时应用后，对运行中的 Hyprland 会话重载并检查活动配置（应无输出）：
 
 ```bash
 hyprctl reload
