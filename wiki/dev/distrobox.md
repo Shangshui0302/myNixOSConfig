@@ -116,7 +116,9 @@ Home Manager 在每个 `~/distrobox/<name>` 中维护以下入口：
 - `.config/blesh/init.sh` 指向主机 ble.sh 配置；
 - `.config/nvim/init.lua` 使用 `home/dev/nvim/init.lua`；
 - `.local/bin/nvim` 指向 `programs.neovim.finalPackage`，复用主机的 Nix 插件闭包；
-- `.local/bin/starship` 指向 Nix 提供的 Starship。
+- `.local/bin/starship` 指向 Nix 提供的 Starship；
+- `.local/bin/xdg-open` 通过 `host-spawn` 调用宿主默认应用，并固定使用宿主 Home
+  作为工作目录，避免容器中的 `/run/host/...` 路径导致启动失败。
 
 因此容器重建不会依赖旧容器可写层中的配置。Neovim 必须通过容器 home 的
 `.local/bin/nvim` 启动；Fish 的 Distrobox PATH 规则会确保它优先于 `/usr/bin/nvim`。
@@ -158,6 +160,7 @@ podman run --rm alpine:latest wget -qO- https://archlinux.org
 | `distrobox list` 为空 | 未创建容器 | 先构建镜像，再运行 `distrobox assemble create` |
 | manifest 引用的镜像不存在 | 尚未构建 Nix 管理的镜像 | `distrobox-images build <name>` |
 | 进入容器报错 | 容器未启动 | `podman start <container_name>` |
+| 容器内网页链接无法打开 | `host-spawn` 继承了宿主不存在的 `/run/host/...` 当前目录 | 确认使用 Home Manager 管理的 `~/.local/bin/xdg-open` |
 | 容器内无网络 | podman 网络异常 | `podman system reset --force` 后重建 |
 | assemble 未找到命令 | distrobox 未安装 | rebuild 确认 `host/base/containers.nix` 已生效 |
 

@@ -13,6 +13,12 @@ let
     text = builtins.readFile ./container-images/manage.sh;
   };
 
+  # host-spawn 会原样继承容器当前目录；/run/host/... 在宿主上并不存在。
+  distroboxXdgOpen = pkgs.writeShellScript "distrobox-xdg-open" ''
+    host_home="''${DISTROBOX_HOST_HOME:-$HOME}"
+    exec host-spawn -cwd "$host_home" --no-pty xdg-open "$@"
+  '';
+
   containerHomeFiles = lib.listToAttrs (lib.concatMap (name:
     let
       containerHome = "distrobox/${name}";
@@ -65,6 +71,13 @@ let
         name = "${containerHome}/.local/bin/starship";
         value = {
           source = "${pkgs.starship}/bin/starship";
+          force = true;
+        };
+      }
+      {
+        name = "${containerHome}/.local/bin/xdg-open";
+        value = {
+          source = distroboxXdgOpen;
           force = true;
         };
       }
