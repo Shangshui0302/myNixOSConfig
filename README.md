@@ -14,7 +14,7 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 | 面板 | Noctalia，可切换 Caelestia |
 | 深浅模式 | Darkman 状态/portal + Matugen 运行时配色 |
 | 输入法 | fcitx5 + Rime |
-| 网络 | mihomo TUN + nftables |
+| 网络 | mihomo TUN + nftables + Avahi mDNS 主机发现 |
 | 配置方式 | NixOS + Home Manager，禁止手改生成配置 |
 
 ## 目录

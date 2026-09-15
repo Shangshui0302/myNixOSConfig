@@ -1,8 +1,8 @@
 ---
 title: 系统服务
 category: 顶层
-tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, howdy, polkit]
-updated: 2026-08-19
+tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, avahi, mdns, howdy, polkit]
+updated: 2026-09-15
 ---
 
 # 系统服务
@@ -45,8 +45,10 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 
 ## 网络与代理
 
-`host/base/network.nix` 定义主机名、NetworkManager 与 OpenSSH（开启密码认证便于远程登录）。核心是 Mihomo TUN 代理：
+`host/base/network.nix` 定义主机名、NetworkManager、Avahi mDNS 与 OpenSSH（开启密码认证便于远程登录）。核心是 Mihomo TUN 代理：
 
+- `services.avahi` 广播 `MechRevo-NixOS.local` 及本机地址，局域网内的 SSH 客户端可以使用主机名而不是 DHCP 地址。
+- `services.avahi.nssmdns4` 让本机程序解析 IPv4 `.local` 名称；防火墙由模块自动放行 mDNS UDP 5353。
 - `services.mihomo` 以 `tunMode` 运行，WebUI 使用 `zashboard`。
 - `systemd.services.mihomo` 通过 `after`/`wants` 依赖 `sops-install-secrets.service`，确保加密的环境变量（订阅链接等）就绪后再启动。
 - `preStart` 用 `envsubst` 将 `mihomo-config.yaml.in` 渲染到 `/run/mihomo/config.yaml`，敏感信息不入库。
@@ -94,6 +96,7 @@ nmcli device status               # 网络连接状态
 
 - **网络不通/代理异常**：检查 NetworkManager 连接与 nftables 放行；确认 mihomo 已启动、TUN 接口绑定成功；验证 sops-nix 是否成功注入环境变量。
 - **无法远程登录**：确认 OpenSSH 启用且防火墙放行。
+- **主机名无法解析**：确认 `avahi-daemon` 处于 active，使用 `avahi-resolve -4 -n MechRevo-NixOS.local` 或 `getent ahostsv4 MechRevo-NixOS.local` 检查；客户端与本机必须在允许 mDNS 的同一局域网内。
 - **打印失败**：确认 CUPS 运行，检查驱动与队列。
 - **蓝牙不可用**：确认蓝牙启用且 `powerOnBoot`，检查设备节点与权限。
 - **电源管理异常**：检查 `power-profiles-daemon` 与 `upower` 状态与日志。

@@ -7,7 +7,7 @@
 - 主机：MechRevo-NixOS，AMD Ryzen 7 8845HS，Radeon 780M，2560x1600。
 - 主 DE：Hyprland（UWSM）+ niri（原生 `niri-session`），均由 greetd/tuigreet TTY 会话启动。
 - GNOME：`host/gnome/`（系统层）+ `home/gnome.nix`（HM 入口）独立变体，不能依赖主 DE 配置。
-- Shell：fish + bash/ble.sh；终端：Foot；输入法：fcitx5；代理：mihomo TUN。
+- Shell：fish + bash/ble.sh；终端：Foot；输入法：fcitx5；代理：mihomo TUN；局域网主机发现：Avahi mDNS。
 - 主桌面深浅模式：Darkman 是唯一状态源，Matugen 负责运行时取色与模板渲染。
 
 ## 配置边界
