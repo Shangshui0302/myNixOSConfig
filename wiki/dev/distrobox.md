@@ -2,7 +2,7 @@
 title: Distrobox
 category: dev
 tags: [distrobox, podman, containers]
-updated: 2026-08-12
+updated: 2026-09-15
 ---
 
 # Distrobox
@@ -12,13 +12,17 @@ Distrobox 用 Podman 创建和管理 Linux 发行版容器，每个容器与主�
 ## 架构
 
 ```
-podman (system) → distrobox assemble → 容器 (arch / ubuntu)
-                                    → distrobox create / enter → 临时容器
+Nix / Home Manager → Containerfile → Podman 镜像
+                   → assemble manifest → Distrobox 容器 (arch / fedora / ubuntu)
+                                          └→ ~/distrobox/<name> 持久化 home
 ```
 
 - **引擎**：Podman（rootless，DNS 已开启）
 - **网络**：Mihomo TUN 全局代理 + Docker Hub 镜像加速（`docker.1ms.run`）
-- **配置管理**：`~/.config/distrobox/distrobox.ini` 由 Nix 管理
+- **配置管理**：manifest、Containerfile 和 `distrobox-images` 命令由 Nix 管理
+- **镜像状态**：Podman 保存构建结果，Home Manager activation 不自动联网构建
+- **用户状态**：项目和容器 home 保存在 `~/distrobox/<name>`，独立于容器生命周期
+- **用户配置**：Bash、ble.sh、Fish、Starship 和 Neovim 入口由 Home Manager 同步到三个 container home
 
 ## 预配置容器
 
@@ -26,16 +30,28 @@ podman (system) → distrobox assemble → 容器 (arch / ubuntu)
 
 | 容器名 | 镜像 | 用途 |
 |--------|------|------|
-| `arch` | quay.io/toolbx/arch-toolbox:latest | Arch Linux，预装 sudo + 用户配置 |
-| `ubuntu` | docker.io/library/ubuntu:latest | Ubuntu 开发/测试环境 |
+| `arch` | localhost/distrobox-arch:managed | Arch Linux 综合开发环境 |
+| `fedora` | localhost/distrobox-fedora:managed | Fedora 嵌入式及通用开发环境 |
+| `ubuntu` | localhost/distrobox-ubuntu:managed | Ubuntu 开发/测试环境 |
 
 ### 创建预配置容器
 
+先应用 Home Manager 配置，再按需构建镜像：
+
 ```bash
-distrobox-assemble create
+distrobox-images build arch
+distrobox-images build fedora
+distrobox-images build ubuntu
 ```
 
-首次使用需等镜像下载。后续 rebuild 不会自动重建容器，定义不变则无需重复执行。
+构建不会替换现有容器。先查看 assemble 计划：
+
+```bash
+distrobox-images plan arch
+```
+
+确认需要迁移时，再显式执行 `distrobox assemble create --replace --name arch`。
+替换前应停止目标容器并确认 `~/distrobox/arch` 中的持久数据可用。
 
 ## 常用操作
 
@@ -81,8 +97,29 @@ distrobox enter <name> -- distrobox-export --bin /usr/bin/<binary>
 | 文件 | 用途 |
 |------|------|
 | `host/base/containers.nix` | Podman 服务、distrobox 包、镜像加速 |
-| `home/dev/containers.nix` | assemble manifest (arch + ubuntu 定义) |
+| `home/dev/containers.nix` | 镜像管理命令和 assemble manifest |
+| `home/dev/container-images/*.Containerfile` | 三个发行版的基础镜像与软件包清单 |
+| `home/dev/container-images/manage.sh` | 构建、预览和状态检查实现 |
 | `~/.config/distrobox/distrobox.ini` | Nix 生成的容器清单 |
+| `~/.config/distrobox/images/` | Nix 部署的只读镜像配方 |
+
+Containerfile 是镜像的声明式来源；Podman image、容器可写层和包管理数据库都是可变运行状态。
+更新软件版本时修改配方并重新构建，不能把容器内手工升级当作可重建来源。
+三份配方都锁定 Toolbx 基础镜像 digest；发行版仓库中的软件包版本仍随仓库更新，
+所以当前目标是可审查、可重建的功能环境，而不是逐字节相同的镜像。
+
+### Shell 与 Neovim 配置
+
+Home Manager 在每个 `~/distrobox/<name>` 中维护以下入口：
+
+- `.bashrc`、`.config/fish`、`.config/starship.toml` 指向主机当前 Home Manager 配置；
+- `.config/blesh/init.sh` 指向主机 ble.sh 配置；
+- `.config/nvim/init.lua` 使用 `home/dev/nvim/init.lua`；
+- `.local/bin/nvim` 指向 `programs.neovim.finalPackage`，复用主机的 Nix 插件闭包；
+- `.local/bin/starship` 指向 Nix 提供的 Starship。
+
+因此容器重建不会依赖旧容器可写层中的配置。Neovim 必须通过容器 home 的
+`.local/bin/nvim` 启动；Fish 的 Distrobox PATH 规则会确保它优先于 `/usr/bin/nvim`。
 
 ### 镜像加速
 
@@ -118,7 +155,8 @@ podman run --rm alpine:latest wget -qO- https://archlinux.org
 | 问题 | 可能原因 | 解决 |
 |------|----------|------|
 | 拉镜像失败 | 代理未运行 | `systemctl status mihomo` |
-| `distrobox list` 为空 | 未创建容器 | `distrobox-assemble create` |
+| `distrobox list` 为空 | 未创建容器 | 先构建镜像，再运行 `distrobox assemble create` |
+| manifest 引用的镜像不存在 | 尚未构建 Nix 管理的镜像 | `distrobox-images build <name>` |
 | 进入容器报错 | 容器未启动 | `podman start <container_name>` |
 | 容器内无网络 | podman 网络异常 | `podman system reset --force` 后重建 |
 | assemble 未找到命令 | distrobox 未安装 | rebuild 确认 `host/base/containers.nix` 已生效 |
