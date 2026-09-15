@@ -4,6 +4,17 @@
   networking.hostName = "MechRevo-NixOS";
   networking.networkmanager.enable = true;
 
+  # Advertise this host on the LAN so peer SSH configs can use
+  # MechRevo-NixOS.local instead of a DHCP-dependent address.
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    publish = {
+      enable = true;
+      addresses = true;
+    };
+  };
+
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = true;
