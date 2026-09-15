@@ -1,6 +1,7 @@
 { pkgs, ... }:
 
 let
+  animeko = pkgs.callPackage ../../local-deriv/animeko.nix { };
   modernz = pkgs.callPackage ../../local-deriv/modernz.nix { };
 in
 {
@@ -11,6 +12,7 @@ in
     kazumi
     obs-studio
     (import ../../local-deriv/netease-cloud-music-web-player.nix { inherit pkgs; })
+    animeko
     go-musicfox
   ];
 
