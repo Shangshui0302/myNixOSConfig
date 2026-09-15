@@ -76,7 +76,7 @@ docs:
     sources: [flake.nix, local-deriv/animeko.nix, local-deriv/anthropic-fonts.nix, local-deriv/cc-switch.nix, local-deriv/cliamp.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/material-adw-kvantum.nix, local-deriv/material-gnome-theme.nix, local-deriv/modernz.nix, local-deriv/netease-cloud-music-web-player.nix]
     memory:  [nix-package-runtime-freshness]
   dev/distrobox.md:
-    sources: [home/dev/containers.nix, host/base/containers.nix]
+    sources: [home/dev/containers.nix, home/dev/container-images/arch.Containerfile, home/dev/container-images/fedora.Containerfile, home/dev/container-images/ubuntu.Containerfile, home/dev/container-images/manage.sh, home/dev/nvim.nix, home/dev/nvim/init.lua, home/env/shell/programs.nix, host/base/containers.nix]
     memory:  []
   dev/bottles-offline-workaround.md:
     sources: []

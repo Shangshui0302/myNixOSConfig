@@ -241,7 +241,8 @@
     interactiveShellInit = ''
       # 针对 Distrobox 容器的特殊处理：优先使用容器内部安装的软件
       if set -q DISTROBOX_ENTERED
-        set -x PATH /usr/local/bin /usr/bin /bin $PATH
+        # ~/.local/bin 中的 HM 管理包装器（如 nvim）优先于容器发行版包。
+        set -x PATH $HOME/.local/bin /usr/local/bin /usr/bin /bin $PATH
       end
 
       # distrobox-export 导出的 CLI 工具（宿主机直接调用容器内命令）
