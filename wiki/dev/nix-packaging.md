@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-09-09
+updated: 2026-09-15
 ---
 
 # Nix 手工打包
@@ -57,7 +57,7 @@ $nix-packaging 打包 <软件名或上游 URL>
 更新或修复已有包时说明目标：
 
 ```text
-$nix-packaging 将 cliamp 更新到 2.1.0
+$nix-packaging 将 modernz-mpv 更新到 0.4.0
 $nix-packaging 将 animeko 从 AppImage 迁移到 v6.1.0 源码构建并修复 JCEF 启动
 ```
 

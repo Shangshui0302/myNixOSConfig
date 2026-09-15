@@ -2,7 +2,7 @@
 title: Wiki 首页
 category: 顶层
 tags: [index, moc]
-updated: 2026-09-04
+updated: 2026-09-15
 ---
 
 # Wiki — NixOS 配置操作手册
@@ -62,7 +62,7 @@ updated: 2026-09-04
 | 文档 | 内容 |
 |------|------|
 | [游戏平台](leisure/gaming.md) | Steam、MangoHud、32-bit 图形库、Flatpak 游戏 |
-| [媒体播放](leisure/media.md) | mpv、网易云、OBS、loupe、animeko、ani-cli、Kazumi、cliamp |
+| [媒体播放](leisure/media.md) | mpv、网易云、OBS、loupe、ani-cli、Kazumi |
 
 ## 网络与代理 `networking/`
 

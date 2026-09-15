@@ -1,8 +1,6 @@
 { pkgs, ... }:
 
 let
-  animeko = pkgs.callPackage ../../local-deriv/animeko.nix { };
-  cliamp = import ../../local-deriv/cliamp.nix { inherit pkgs; };
   modernz = pkgs.callPackage ../../local-deriv/modernz.nix { };
 in
 {
@@ -11,10 +9,8 @@ in
     mpv
     ani-cli
     kazumi
-    cliamp
     obs-studio
     (import ../../local-deriv/netease-cloud-music-web-player.nix { inherit pkgs; })
-    animeko
     go-musicfox
   ];
 
@@ -42,11 +38,4 @@ in
       "Player"
     ];
   };
-
-  # 补全（跟随消费者）：fish + bash。
-  xdg.configFile."fish/completions/cliamp.fish".source =
-    "${cliamp}/share/fish/vendor_completions.d/cliamp.fish";
-
-  xdg.dataFile."bash-completion/completions/cliamp".source =
-    "${cliamp}/share/bash-completion/completions/cliamp";
 }
