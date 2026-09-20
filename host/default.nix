@@ -7,7 +7,6 @@
 }:
 {
   # main（Hyprland/niri DE）：共享 base + 桌面会话集成。
-  # sops-nix / home-manager 模块在 flake.nix modules 中引入。
   imports = [
     ./base/default.nix
     ./de/sessions.nix
