@@ -4,7 +4,6 @@ category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
 updated: 2026-09-15
 ---
-
 # Nix 手工打包
 
 本仓库用 `local-deriv/` 维护尚未进入 nixpkgs、需要固定版本或需要本机集成的包。以后新增、升级、修复或审查这些包，必须调用 `$nix-packaging` skill；不要直接凭经验写 derivation。
@@ -74,27 +73,27 @@ nix develop .#packaging
 
 其中包含：
 
-| 工具 | 用途 |
-| --- | --- |
-| `nix-init` | 生成可供人工修正的初始 derivation |
-| `nurl` | 根据 URL 生成 fetcher 与哈希 |
-| `nix-update` | 辅助更新版本和依赖哈希 |
-| `nixfmt`、`statix`、`deadnix` | 格式化与静态检查 |
-| `readelf`、`patchelf`、`file` | 诊断预编译 ELF |
+| 工具                                   | 用途                                    |
+| -------------------------------------- | --------------------------------------- |
+| `nix-init`                           | 生成可供人工修正的初始 derivation       |
+| `nurl`                               | 根据 URL 生成 fetcher 与哈希            |
+| `nix-update`                         | 辅助更新版本和依赖哈希                  |
+| `nixfmt`、`statix`、`deadnix`    | 格式化与静态检查                        |
+| `readelf`、`patchelf`、`file`    | 诊断预编译 ELF                          |
 | `desktop-file-validate`、`fc-scan` | 分别校验 GUI desktop entry 与字体元数据 |
 
 这些工具是加速器，不是真相源。生成结果必须对照上游和当前 nixpkgs 手工复核。
 
 ## 选择打包方式
 
-| 上游形态 | 首选方式 | 典型检查 |
-| --- | --- | --- |
-| 标准源码项目 | 对应语言 builder 或 `stdenv.mkDerivation` | 上游构建命令、测试、安装路径 |
-| 预编译 ELF | `autoPatchelfHook` + 最小 wrapper | ELF interpreter、NEEDED、运行时命令 |
-| AppImage | `appimageTools.wrapType1/2` | 内置库、desktop、icon、真实可执行名 |
-| Electron/ASAR | nixpkgs Electron 或 Node builder | desktop、icon、Wayland 和 keyring 参数 |
-| 字体/主题/数据 | `stdenvNoCC.mkDerivation` | 标准输出目录与文件权限 |
-| Hyprland 插件 | `hyprlandPlugins.mkHyprlandPlugin` | 当前 Hyprland ABI 与 `.so` 路径 |
+| 上游形态       | 首选方式                                   | 典型检查                               |
+| -------------- | ------------------------------------------ | -------------------------------------- |
+| 标准源码项目   | 对应语言 builder 或`stdenv.mkDerivation` | 上游构建命令、测试、安装路径           |
+| 预编译 ELF     | `autoPatchelfHook` + 最小 wrapper        | ELF interpreter、NEEDED、运行时命令    |
+| AppImage       | `appimageTools.wrapType1/2`              | 内置库、desktop、icon、真实可执行名    |
+| Electron/ASAR  | nixpkgs Electron 或 Node builder           | desktop、icon、Wayland 和 keyring 参数 |
+| 字体/主题/数据 | `stdenvNoCC.mkDerivation`                | 标准输出目录与文件权限                 |
+| Hyprland 插件  | `hyprlandPlugins.mkHyprlandPlugin`       | 当前 Hyprland ABI 与`.so` 路径       |
 
 源码能够合理构建时优先源码。AppImage 和预编译二进制用于源码不可用或维护成本明显过高的情况，不是默认捷径。
 

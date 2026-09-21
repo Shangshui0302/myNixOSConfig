@@ -60,7 +60,6 @@
       packages.${system} = {
         material-gnome-theme = materialGnomeTheme;
         material-adw-kvantum = materialAdwTheme;
-        animeko = pkgs.callPackage ./local-deriv/animeko.nix { };
         anthropic-fonts = import ./local-deriv/anthropic-fonts.nix { inherit pkgs; };
         cc-switch = import ./local-deriv/cc-switch.nix { inherit pkgs; };
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };
