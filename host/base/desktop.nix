@@ -40,6 +40,19 @@ in
   # - 核心 addons（rime/chinese-addons/configtool/qt）+ kimpanel 两 DE 都要
   # - Hyprland 专属：fcitx5-gtk 桥 + 主题 addons + classicui 候选窗
   #   （GNOME Wayland 走 text-input-v3 + kimpanel 扩展绘制候选窗，不用 classicui）
+  # 修复 fcitx5.1.22 svg渲染性能问题，等上游包更新后删除
+  nixpkgs.overlays = [
+  (final: prev: {
+    fcitx5 = prev.fcitx5.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [
+        (prev.fetchpatch {
+          url = "https://github.com/fcitx/fcitx5/commit/d6552a5b52b4ff75cae3fb6dc949ef379171b2b9.patch";
+          hash = "sha256-osBaEk+I8gixvFk8p5HEzY3QgO2dgvjHKljUacDbO0o=";
+        })
+      ];
+    });
+  })
+];
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
