@@ -692,15 +692,52 @@ let
             "$HOME/.themes/Material-Gnome-Matugen-Dark/gtk-3.0/colors.css"
           copy_atomic "$cache_dir/dual/gtk4/colors.css" \
             "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css"
-          copy_atomic "$cache_dir/light/fcitx5/mellow-matugen/highlight.svg" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen/highlight.svg"
-          copy_atomic "$cache_dir/light/fcitx5/mellow-matugen/theme.conf" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen/theme.conf"
-          copy_atomic "$cache_dir/dark/fcitx5/mellow-matugen-dark/highlight.svg" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg"
-          copy_atomic "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"
         fi
+
+        # Fcitx5's theme.conf and highlight.svg are copied on every apply.  The
+        # highlight.svg is used by the tray icon and the candidate window; it
+        # must be updated even on a mode-only toggle.  The theme.conf is used by
+        # fcitx5-gtk and fcitx5-qt; it must be updated even on a mode-only toggle.  The tray icon and candidate window
+        # are not updated until fcitx5 is restarted, so restart it only when the files change or when fc
+        fcitx_start="$(now_ms)"
+
+        if ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/light/fcitx5/mellow-matugen/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/highlight.svg" \
+          || ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/light/fcitx5/mellow-matugen/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/theme.conf" \
+          || ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg" \
+          || ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"; then
+
+          copy_atomic \
+            "$cache_dir/light/fcitx5/mellow-matugen/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/highlight.svg"
+          copy_atomic \
+            "$cache_dir/light/fcitx5/mellow-matugen/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/theme.conf"
+          copy_atomic \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg"
+          copy_atomic \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"
+
+          ${pkgs.systemd}/bin/systemctl --user restart \
+            app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
+            || ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null \
+            || true
+        elif ! ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null; then
+          ${pkgs.systemd}/bin/systemctl --user restart \
+            app-org.fcitx.Fcitx5@autostart.service 2>/dev/null || true
+        fi
+
+        fcitx_end="$(now_ms)"
+        log "stage=fcitx duration_ms=$((fcitx_end - fcitx_start)) mode=$mode"
 
         # Obsidian's vault is mutable user data.  Update only its generated
         # snippet, and only when the wallpaper palette changed (or the snippet
@@ -889,6 +926,26 @@ in
       mkdir -p "$darkman_cache_dir"
       printf '%s' dark > "$darkman_mode_file"
       chmod 600 "$darkman_mode_file"
+    fi
+  '';
+
+  # Home Manager activation may refresh writable runtime assets (notably
+  # Fcitx5 themes) from their immutable packages. Reconcile them with the
+  # current Matugen cache after all links/runtime copies have been installed.
+  home.activation.applyRuntimeTheme =
+  lib.hm.dag.entryAfter [
+    "writeBoundary"
+    "linkGeneration"
+    "installFcitx5MatugenRuntimeThemes"
+  ] ''
+    if [ -n "''${XDG_RUNTIME_DIR:-}" ] && [ -x "$HOME/.local/bin/theme-apply" ]; then
+      mode="$(${pkgs.darkman}/bin/darkman get 2>/dev/null || true)"
+
+      if [ "$mode" != "dark" ] && [ "$mode" != "light" ]; then
+        mode="$(cat "$HOME/.cache/darkman/mode.txt" 2>/dev/null || printf '%s' dark)"
+      fi
+
+      "$HOME/.local/bin/theme-apply" "$mode"
     fi
   '';
 

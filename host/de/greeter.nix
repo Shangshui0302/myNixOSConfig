@@ -94,7 +94,7 @@
     username = true
 
     # 记住上次选择的会话。关闭，避免覆盖按用户保存的会话。
-    session = false
+    # session = false
 
     # 按用户分别记住会话。已有配置：开启。
     user_session = true
