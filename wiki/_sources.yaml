@@ -83,8 +83,8 @@ docs:
     memory:  []
 
   leisure/gaming.md:
-    sources: [host/base/gaming.nix, host/base/hardware.nix, host/base/services.nix, host/base/virtualization.nix, home/dev/containers.nix, home/leisure/player.nix]
-    memory:  []
+    sources: [host/base/gaming.nix, host/base/hardware.nix, host/base/services.nix, host/base/virtualization.nix, home/dev/containers.nix, home/leisure/gaming.nix, home/leisure/player.nix]
+    memory:  [wine-frontends-nixpkgs-fhs]
   leisure/media.md:
     sources: [home/leisure/player.nix, local-deriv/modernz.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/modernz.conf.tpl, local-deriv/netease-cloud-music-web-player.nix, home/leisure/browser.nix, home/leisure/default.nix]
     memory:  []
@@ -104,8 +104,8 @@ docs:
     memory:  []
 
   services.md:
-    sources: [host/base/services.nix, host/base/network.nix, host/base/users.nix, home/env/onedrive.nix]
-    memory:  [mihomo-tun-stack]
+    sources: [host/base/services.nix, host/base/tlp.nix, host/base/network.nix, host/base/users.nix, home/env/onedrive.nix, home/env/power-actions.nix]
+    memory:  [mihomo-tun-stack, tlp-power-profiles, power-profile-session-actions]
   deployment.md:
     sources: [flake.nix, host/base/boot.nix, host/base/sops.nix]
     memory:  [flake-unstable-strategy, docs-sync-automation]

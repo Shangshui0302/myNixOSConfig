@@ -19,6 +19,9 @@ let
     wl-paste = pkgs.wl-clipboard;
     ya = pkgs.yazi;
     darkman = pkgs.darkman;
+    tlp = pkgs.tlp;
+    tlp-stat = pkgs.tlp;
+    tlpctl = pkgs.tlp-pd;
   };
 in
 {
@@ -180,12 +183,15 @@ in
     complete -c tunelp -s q -l print-irq -x -a 'off on'
     complete -c tunelp -l help -l version
 
-    complete -c powerprofilesctl -s h -l help
-    complete -c powerprofilesctl -n '__fish_use_subcommand' -a \
-      'list list-holds list-actions get set configure-action configure-battery-aware \
-      query-battery-aware launch version'
-    complete -c powerprofilesctl -n '__fish_seen_subcommand_from set' -a \
-      'performance balanced power-saver'
+    # power-actions：统一的手动电源入口（实现见 home/env/power-actions.nix）
+    complete -c power-actions -f
+    complete -c power-actions -s h -l help -d '显示帮助'
+    complete -c power-actions -n '__fish_use_subcommand' -a status -d 'TLP 档位/电量策略 band/AC 电量/特效/darkman/单元/state'
+    complete -c power-actions -n '__fish_use_subcommand' -a mode -d '看或设置 TLP 档位'
+    complete -c power-actions -n '__fish_use_subcommand' -a apply -d '按当前档位强制对齐会话层'
+    complete -c power-actions -n '__fish_use_subcommand' -a revert -d '恢复特效与用户单元（darkman 不动）'
+    complete -c power-actions -n '__fish_use_subcommand' -a run -d '定时器入口：先跑电量策略，再对齐会话层'
+    complete -c power-actions -n '__fish_seen_subcommand_from mode' -a 'power-saver balanced performance' -d 'TLP 档位'
 
     function __fish_bash_missing_storagectl_json
       command storagectl --json=help 2>/dev/null

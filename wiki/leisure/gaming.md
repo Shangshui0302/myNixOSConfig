@@ -98,7 +98,7 @@ A --> H["home/leisure/player.nix<br/>OBS"]
 - **Lutris 提示 `libattr.so.1: version 'ATTR_1.3' not found`**：Lutris 自带 runtime 与系统库冲突，`Preferences → Global Options` 勾上 `Disable Lutris Runtime` 后重装游戏。
 - **Bottles 下载 runner / 依赖失败**：组件索引托管在 `proxy.usebottles.com`，经代理可能连不通；给 mihomo 加 `DOMAIN-SUFFIX,usebottles.com,DIRECT` 再重试（历史方案见 [Bottles 离线韧性改造](../dev/bottles-offline-workaround.md)）。
 - **Bottles 首次启动提示「不支持非沙箱环境」**：上游只保证 Flatpak 版，nixpkgs 版已用 `removeWarningPopup` 去掉该弹窗，功能不受影响。
-- **想要「只在游戏时提性能」**：本配置不用 gamemode，改用 power-profiles-daemon——单次提频写 `powerprofilesctl launch -p performance -- %command%`（Steam 启动项、Lutris 的 prelaunch 都能填），进程退出后自动释放。自动档位与核显 DPM 联动见 [系统服务](../services.md#电源与存储维护)。Wine 的 fsync 不受影响；esync 所需的文件描述符上限实测会话已是 `524288/524288`，无需再调 `pam` 限制。
+- **想要「只在游戏时提性能」**：本配置不用 gamemode，且**不使用 TLP 的 profile hold**（`tlpctl launch -p ...`），所以没有「进程退出自动释放」，需要手动切档：游戏前用 `power-actions mode performance`（等价 `tlpctl set performance`）切到性能档，结束后 `power-actions mode balanced`（或 `tlpctl set balanced`）切回。自动档位与核显 DPM 联动见 [系统服务](../services.md#电源与存储维护)。Wine 的 fsync 不受影响；esync 所需的文件描述符上限实测会话已是 `524288/524288`，无需再调 `pam` 限制。
 
 ## 相关链接
 

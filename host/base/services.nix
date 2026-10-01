@@ -27,7 +27,9 @@
   };
   services.printing.enable = true;
 
-  services.power-profiles-daemon.enable = true;
+  # 三档（power-saver / balanced / performance）电源管理已改由 TLP 接管：
+  # 档位映射与开关在 host/base/tlp.nix（powerTlp.*），ppd 的启用/关闭也归它管
+  # （TLP 提供 ppd 兼容的 D-Bus 接口，两者不能同时开）。
   services.upower.enable = true;
 
   services.fstrim.enable = true;

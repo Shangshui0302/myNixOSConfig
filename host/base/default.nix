@@ -18,6 +18,7 @@
     ./services.nix
     ./desktop.nix
     ./gaming.nix
+    ./tlp.nix
     ./virtualization.nix
     ./containers.nix
     ./sops.nix

@@ -82,7 +82,7 @@ Desktop-->>User : 呈现桌面环境
 `host/base/services.nix` 与 `host/base/network.nix` 提供运行时能力：
 
 - **音频**：PipeWire（PulseAudio 兼容 + ALSA + JACK）。
-- **外设与电源**：蓝牙开机自动上电、打印、`power-profiles-daemon` + upower、GVFS 文件虚拟化。
+- **外设与电源**：蓝牙开机自动上电、打印、`services.tlp` + `services.tlp.pd`（ppd 显式关闭）+ upower、GVFS 文件虚拟化。
 - **认证**：Howdy 人脸识别集成到 `sudo`/`su`/`login`/`greetd` 的 PAM 链。
 - **存储**：`fstrim` 定时维持 SSD 性能；inotify 上限提升以适配 IDE/日志监控。
 - **网络**：NetworkManager、OpenSSH、Mihomo（TUN 模式）、nftables 防火墙与内核转发。

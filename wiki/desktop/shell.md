@@ -116,7 +116,7 @@ Ghostty 配置：`Catppuccin Mocha` 深色主题，字号 14，滚动限制 1000
 - `noctalia`：主命令静态补全，`msg` 子命令从当前 CLI 帮助动态读取
 - `darkman`：使用包自带的 Fish 补全
 - `nix`、`nixos-rebuild`、`nh`、`codex`、`eza`、`flatpak`、`hyprpm`、`niri`、`nixos-firewall-tool`、`podman-remote`、`rclone`、`starship`、`tree-sitter`、`wl-copy`、`wl-paste`、`ya`：直接链接包内 Fish 补全，与 Bash 补全保持同源
-- `lxc-*`、旧 `nix-*`、`nixos-container`、`npm`、`sops`、`copilot`、`fdformat`、`newgrp`、`pg`、`raw`、`tunelp`、`powerprofilesctl`、`storagectl`、`systemd-*`、`virsh`、`virt-admin`、`swapoff`：在 `fish/conf.d/bash-missing-completions.fish` 手写或调用 CLI 的动态补全，覆盖 Bash 对照清单中没有包内 Fish 文件的命令
+- `lxc-*`、旧 `nix-*`、`nixos-container`、`npm`、`sops`、`copilot`、`fdformat`、`newgrp`、`pg`、`raw`、`tunelp`、`storagectl`、`systemd-*`、`virsh`、`virt-admin`、`swapoff`：在 `fish/conf.d/bash-missing-completions.fish` 手写或调用 CLI 的动态补全，覆盖 Bash 对照清单中没有包内 Fish 文件的命令
 - `systemd`、`libvirt`、`lxc` 等系统包同时由 NixOS 的 Fish completion generator 从 manpage 生成补全；conf.d 中的手写项用于保持 Bash 清单中的旧命令和动态参数
 - `hyprctl`：根据当前 Hyprland 的 `hyprctl --help` 生成命令列表，避免上游生成文件的错位描述
 - `hyprland`、`podman`、`howdy`、`shell-switcher`：同样放在用户补全目录
