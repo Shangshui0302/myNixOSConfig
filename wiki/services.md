@@ -175,11 +175,12 @@ TLP 源码 `func.d/10-tlp-func-cpu` 的判断是 `[ -n "$maxfreq" ] && [ "$maxfr
 | 进入 `power-saver` | 离开 `power-saver` |
 | --- | --- |
 | `darkman set dark`（已经是 dark 就不动） | **什么都不做**——交给 darkman 自己的日出/日落调度；手动切回用 `Super+Shift+D` |
-| 按当前值关闭模糊、阴影、动画（`decoration:blur:enabled`、`decoration:shadow:enabled`、`animations:enabled`），并把窗口透明 `decoration:active_opacity` / `inactive_opacity` → `1.0` | 按进入时保存的**原值**恢复（本机原值 0.88 / 0.82，来自 `home/de/hyprland.nix`） |
+| 关闭阴影与动画（`decoration:shadow:enabled`、`animations:enabled`）、把窗口透明 `decoration:active_opacity` / `inactive_opacity` → `1.0`；模糊**不关**，改成便宜参数（`decoration:blur:size` → `5`、`decoration:blur:passes` → `2`） | 按进入时保存的**原值**恢复（本机透明 `0.88` / `0.82`、模糊 `15` / `4`，来自 `home/de/hyprland.nix`） |
 | 暂停 `pauseUserUnits`（默认 `onedrive`）里本来就 active 的单元 | 启动之前停掉的单元 |
 
 - 只在**档位变化**时动手（state 文件记上次档位）：`darkman set` 会触发 theme-apply（Matugen 重渲染 + 重启 fcitx5），不能每 30s 跑。
 - 关/开特效与透明走 `hyprctl eval 'hl.config({…})'`：0.56 的 Lua 解析器下旧的 `hyprctl keyword` **不生效但退出码仍是 0**，所以脚本按输出是否为 `ok` 判定成败；读值仍用 `hyprctl -j getoption`（bool 型是 `"bool": true`，int 型是 `"int": N`，float 型是 `"float": 0.88`，要按类型解析）。
+- **省电档为什么不关模糊、而是调便宜**：`foot`（`alpha=0.8`）、Noctalia 的 bar/panel、fcitx5 候选窗都是**应用自己画的半透明**，把 `decoration:blur:enabled` 关掉后它们就直接透出桌面（观感像"变透明"），比留着模糊更难看。成本模型（源码 `blurFramebufferWithDamage`）：强度 ≈ `size × 2^passes`，开销 ≈ `2 × passes` 次全分辨率 draw（**与 `size` 几乎无关**），硬上限 `size ≤ 40`、`passes ≤ 8`（超了会被 clamp）。本机原值 `15 / 4`（半径 240、8 次 draw）→ 省电档 `5 / 2`（半径 20、4 次 draw，模糊开销减半）。想更"挡"先加 `size`（几乎免费），不够再加 `passes`。
 - 排障顺序：`power-actions status` → `journalctl --user -u power-profile-actions -n 20` → `power-actions revert`。
 - niri 会话没有 `hyprctl` 运行时接口，特效那部分自然空操作；GNOME 变体下 darkman/Hyprland 都不在跑，只剩 onedrive 暂停。
 
