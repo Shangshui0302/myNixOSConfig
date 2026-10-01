@@ -44,10 +44,7 @@
     { nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "anthropic-fonts" ];
-      };
+      pkgs = import nixpkgs { inherit system; };
       # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
       materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
         inherit pkgs;
@@ -60,8 +57,6 @@
       packages.${system} = {
         material-gnome-theme = materialGnomeTheme;
         material-adw-kvantum = materialAdwTheme;
-        anthropic-fonts = import ./local-deriv/anthropic-fonts.nix { inherit pkgs; };
-        cc-switch = import ./local-deriv/cc-switch.nix { inherit pkgs; };
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };
         scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {

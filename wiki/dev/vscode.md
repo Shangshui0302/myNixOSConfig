@@ -112,9 +112,7 @@ VS-->>Dev : 展示结果
 
 VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI CLI 工具集中在 `home/dev/ai.nix`，走统一来源与安全审查流程，见反链的 memory 卡；扩展本身在 VS Code 商店安装，与 Nix 管理的 CLI 工具互不冲突。
 
-当前 ai.nix 管理的工具：`codex`、`codex-desktop`、`cc-switch`（API 路由，按需手动启动），以及 Google Antigravity CLI 与 Antigravity 2.0 Agents 桌面端。Antigravity CLI 在终端用 `agy` 启动；Agents 界面在应用菜单选择 Antigravity，或运行 `antigravity`。这两个包来自锁定的 nixpkgs，未安装 `antigravity-ide`。首次使用时按应用提示完成登录。
-
-`cc-switch` 通过 `local-deriv/cc-switch.nix` 复用 nixpkgs 构建器固定上游 v3.20.1；独立构建入口是 `nix build path:.#cc-switch`。升级时更新上游 tag 与 source、pnpm、Cargo vendor hashes，再执行 parse、build、flake check 和 `nixos-rebuild dry-build`，最后由用户手动 switch。
+当前 ai.nix 管理的工具：`codex`、`codex-desktop`，以及 Google Antigravity CLI 与 Antigravity 2.0 Agents 桌面端。Antigravity CLI 在终端用 `agy` 启动；Agents 界面在应用菜单选择 Antigravity，或运行 `antigravity`。这两个包来自锁定的 nixpkgs，未安装 `antigravity-ide`。首次使用时按应用提示完成登录。
 
 ## 故障排查
 

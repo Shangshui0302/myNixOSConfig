@@ -24,7 +24,7 @@ in
     server.enable = true;
     settings = {
       main = {
-        font = "Anthropic Mono Variable:size=12, Source Han Sans SC:size=12";
+        font = "Iosevka Nerd Font:size=12, Source Han Sans SC:size=12";
         shell = "${pkgs.fish}/bin/fish";
         pad = "10x10 center";
         selection-target = "both";

@@ -21,7 +21,6 @@ updated: 2026-09-04
 flake.nix              # Entry point only — no inline package definitions
 local-deriv/
   *.nix                # Custom packages and font derivations
-  anthropic-fonts.nix  # Anthropic fonts
 home/
   home.nix base.nix gnome.nix
   theme/ de/ env/ dev/ productivity/ leisure/  # Purpose-based subdirectories

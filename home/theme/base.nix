@@ -12,7 +12,7 @@ let
     out="$HOME/.local/share/fonts/MS"
     rm -rf "$out"
     mkdir -p "$out"
-    find /persist/Fonts/ -type f \( -name "*.ttf" -o -name "*.ttc" \) -exec cp -L {} "$out/" \;
+    find /persist/Fonts/ -type f \( -iname "*.ttf" -o -iname "*.ttc" \) -exec cp -L {} "$out/" \;
     chmod 644 "$out"/*
     ${pkgs.fontconfig}/bin/fc-cache -f "$out" >/dev/null 2>&1 || true
   '';
@@ -82,9 +82,8 @@ in
     </fontconfig>
   '';
 
-  # Default font families — Anthropic fonts for Latin, Source Han Serif for CJK.
-  # Anthropic Mono Variable for terminal/code.
-  # Times New Roman covers Latin glyphs; Source Han Serif covers CJK.
+  # Default font families — Inter（UI 拉丁）、Source Serif 4（阅读拉丁）、Iosevka（终端/代码）。
+  # 中文回退两栈都用 Source Han + Noto CJK；等宽中文由 Sarasa Mono SC 提供。
   xdg.configFile."fontconfig/conf.d/30-default-fonts.conf".text = ''
     <?xml version="1.0"?>
     <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -93,9 +92,8 @@ in
       <match target="pattern">
         <test name="family"><string>sans-serif</string></test>
         <edit name="family" mode="prepend" binding="strong">
-          <string>Anthropic Sans Web Text</string>
-          <string>Source Han Serif</string>
-          <string>Noto Sans CJK SC</string>
+          <string>Inter</string>
+          <string>Source Han Sans</string>
           <string>Noto Sans CJK SC</string>
         </edit>
       </match>
@@ -104,7 +102,7 @@ in
       <match target="pattern">
         <test name="family"><string>serif</string></test>
         <edit name="family" mode="prepend" binding="strong">
-          <string>Anthropic Serif Web Text</string>
+          <string>Source Serif 4</string>
           <string>Source Han Serif</string>
           <string>Noto Serif CJK SC</string>
         </edit>
@@ -114,7 +112,7 @@ in
       <match target="pattern">
         <test name="family"><string>monospace</string></test>
         <edit name="family" mode="prepend" binding="strong">
-          <string>Anthropic Mono Variable</string>
+          <string>Iosevka Nerd Font</string>
           <string>JetBrainsMono Nerd Font</string>
           <string>Sarasa Mono SC</string>
           <string>Noto Sans CJK SC</string>

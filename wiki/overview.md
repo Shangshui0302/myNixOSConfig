@@ -59,7 +59,7 @@ C --> I["local-deriv/"]
 - **Mihomo（TUN 模式）**：系统级代理，结合 nftables/firewall 与 systemd 编排，提供稳定网络访问。
 - **SOPS + age**：敏感信息加密与注入，密钥与环境变量安全落地。
 - **游戏与虚拟化**：Steam、Flatpak、libvirtd，满足娱乐与 Windows 兼容需求。
-- **AI 开发工具链**：Codex CLI、Codex Desktop、`cc-switch`（API 路由）与 Google Antigravity CLI / Agents 由 Home Manager 管理。
+- **AI 开发工具链**：Codex CLI、Codex Desktop 与 Google Antigravity CLI / Agents 由 Home Manager 管理。
 
 配置要点从对应的 nix 模块提取，详见 `home/de/foot.nix`、`host/base/network.nix`、`host/base/gaming.nix`、`host/base/sops.nix`。
 

@@ -12,6 +12,15 @@ let
   '';
 in
 {
+  # noctalia-shell 的 HM 模块用 `disabledModules = [ "programs/noctalia.nix" ]` 屏蔽
+  # 上游同名模块；home-manager 已把该模块改成目录形态，而 disabledModules 只按精确
+  # 路径匹配，屏蔽失效后两处都声明 `programs.noctalia`，eval 报 "already declared"。
+  # 这里按目录形态补一次屏蔽，上游修正后可删除。
+  # 详见 memory/cards/noctalia-home-manager-module-collision.md
+  disabledModules = [
+    "${inputs.home-manager}/modules/programs/noctalia"
+  ];
+
   imports = [
     inputs.noctalia.homeModules.default
   ];
@@ -391,7 +400,7 @@ in
         clipboard_enabled = true;
         corner_radius_scale = 0.80000001192092896;
         date_format = "%A, %x";
-        font_family = "Anthropic Serif Web Text";
+        font_family = "Source Serif 4";
         launch_apps_as_systemd_services = true;
         password_style = "random";
         polkit_agent = true;
