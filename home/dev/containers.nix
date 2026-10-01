@@ -32,6 +32,16 @@ let
           force = true;
         };
       }
+      # 容器里的 ssh / git / dsh-ssh 插件都按 $HOME/.ssh 找 config、known_hosts 和私钥；
+      # 不链到宿主 home 的话 OpenSSH 会自己建一个空目录，导致 Host key verification
+      # failed / no such identity（而私钥其实躺在宿主 home 里）。
+      {
+        name = "${containerHome}/.ssh";
+        value = {
+          source = hostLink ".ssh";
+          force = true;
+        };
+      }
       {
         name = "${containerHome}/.config/fish";
         value = {

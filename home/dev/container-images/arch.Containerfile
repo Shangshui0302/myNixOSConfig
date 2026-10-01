@@ -14,6 +14,16 @@ RUN pacman -Syu --noconfirm && \
     printf 'builder ALL=(ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/90-image-builder && \
     chmod 0440 /etc/sudoers.d/90-image-builder
 
+# distrobox/Arch 基础镜像装了 nss-mdns，但 nsswitch.conf 不引用它，所以容器里解析不了
+# 局域网 .local 主机名（症状：容器内 ssh/git/dsh-ssh 报 getaddrinfo ENOTFOUND xxx.local）。
+# mdns4_minimal 必须排在 resolve/dns 之前，否则 .local 查询会先被判成 NOTFOUND 而终止。
+# 末尾两条 grep 是断言：基础镜像若换掉这行，构建会直接失败而不是静默失效。
+RUN sed -i -E \
+      's|^hosts:.*|hosts: mymachines mdns4_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns|' \
+      /etc/nsswitch.conf && \
+    grep -qE '^hosts:.*mdns4_minimal' /etc/nsswitch.conf && \
+    grep -n '^hosts:' /etc/nsswitch.conf
+
 USER builder
 WORKDIR /tmp
 

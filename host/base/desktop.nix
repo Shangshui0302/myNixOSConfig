@@ -31,10 +31,35 @@ in
     GDK_BACKEND = "wayland";
   };
 
+  # ── 无障碍（AT-SPI）+ Wayland 键盘注入 ────────────────────────────────────
+  # DSH 的 computer-use（cua-driver 原生后端）靠 AT-SPI 读界面元素树；没有
+  # org.a11y.Bus 时 health_report 的 ax_capability 会失败，只剩"整屏截图+坐标
+  # 点击"。三件事必须齐：
+  #   1) 模块：拉起 a11y 总线的 systemd 用户服务
+  #   2) 模块的 services.dbus.packages：把 org.a11y.Bus 的激活服务文件注册进会话总线
+  #   3) pathsToLink：下文把 /share/dbus-1 并进已有的 pathsToLink 行
+  # wtype：Wayland 虚拟键盘注入器。cua-driver 自带键盘走 libei / portal
+  # RemoteDesktop，而 xdg-desktop-portal-hyprland 未实现该接口（实测 20s 超时），
+  # 故桌面键盘注入由 wtype 承担。已实测：wtype 打字 + Enter 提交，在健康的
+  # fcitx5 输入上下文里可完整写入应用（含空格/数字/符号）。
+  # 注意：系统 profile 在 distrobox 容器内不可见（/run/current-system 不存在），
+  # 容器侧需按 /nix/store/*-wtype-*/bin/wtype 动态取用。
+  services.gnome.at-spi2-core.enable = true;
+  # 官方模块只做 systemd.packages（把单元链接进 /etc/systemd/user），并不启用它，
+  # 单元状态是 "linked-runtime; preset: ignored" / inactive。而
+  # org.a11y.Bus.service 是 SystemdService=at-spi-dbus-bus.service 的惰性激活，
+  # dbus-broker 的用户实例不会替我们把它拉起来 —— 实测 D-Bus 激活拿不到名字，
+  # 必须 systemctl --user start 才起。故显式加入 default.target（与同目录
+  # gcr-ssh-agent.nix 的做法一致）。
+  systemd.user.services.at-spi-dbus-bus.wantedBy = [ "default.target" ];
+  environment.systemPackages = with pkgs; [ wtype ];
+
   services.xserver.enable = true;
   services.xserver.xkb.layout = "us";
 
-  environment.pathsToLink = [ "/share/fcitx5" ];
+  # /share/dbus-1：AT-SPI 的 org.a11y.Bus 激活服务文件（默认 pathsToLink 白名单
+  # 不含它，缺了则会话总线激活不了 a11y 总线 → cua-driver 的 ax_capability 失败）。
+  environment.pathsToLink = [ "/share/fcitx5" "/share/dbus-1" ];
 
   # Fcitx5（两 DE 共享核心，差异用 option 表达）：
   # - 核心 addons（rime/chinese-addons/configtool/qt）+ kimpanel 两 DE 都要

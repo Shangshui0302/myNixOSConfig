@@ -9,6 +9,7 @@ in
     codex
     ccSwitch
     codexDesktop
-    codebase-memory-mcp
+    antigravity-cli
+    antigravity-hub
   ];
 }

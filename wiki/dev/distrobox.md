@@ -2,7 +2,7 @@
 title: Distrobox
 category: dev
 tags: [distrobox, podman, containers]
-updated: 2026-09-15
+updated: 2026-09-29
 ---
 
 # Distrobox
@@ -118,10 +118,26 @@ Home Manager 在每个 `~/distrobox/<name>` 中维护以下入口：
 - `.local/bin/nvim` 指向 `programs.neovim.finalPackage`，复用主机的 Nix 插件闭包；
 - `.local/bin/starship` 指向 Nix 提供的 Starship；
 - `.local/bin/xdg-open` 通过 `host-spawn` 调用宿主默认应用，并固定使用宿主 Home
-  作为工作目录，避免容器中的 `/run/host/...` 路径导致启动失败。
+  作为工作目录，避免容器中的 `/run/host/...` 路径导致启动失败；
+- `.ssh` 指向宿主 `~/.ssh`，让容器里的 `ssh`、`git` 和 DSH 的 dsh-ssh 插件复用宿主的
+  SSH 配置、`known_hosts` 与私钥。私钥带 passphrase，实际由宿主会话的 gcr ssh-agent
+  解锁；dsh-ssh 的主机条目因此使用 agent 认证而不是直读私钥。
 
 因此容器重建不会依赖旧容器可写层中的配置。Neovim 必须通过容器 home 的
 `.local/bin/nvim` 启动；Fish 的 Distrobox PATH 规则会确保它优先于 `/usr/bin/nvim`。
+
+### 容器内 DNS 与 `.local` 解析
+
+`arch.Containerfile` 除了安装 `nss-mdns`，还把 `mdns4_minimal` 写进容器
+`/etc/nsswitch.conf` 的 `hosts:` 链。默认的 Arch nsswitch 不引用该模块，装了也解析
+不了局域网 `.local` 主机名：容器里 `ssh`/`git` 会报 `getaddrinfo ENOTFOUND xxx.local`。
+`mdns4_minimal` 必须排在 `resolve`/`dns` 之前，否则 `.local` 查询会先被判成 NOTFOUND
+而终止；`[NOTFOUND=return]` 则避免为解析不了的 `.local` 再跑一遍 DNS。
+
+这项设置属于镜像内容，现有容器的可写层不会自动跟上：改配方后需
+`distrobox-images build arch`，再 `distrobox assemble create --replace --name arch`。
+解析不存在的 `.local` 会等约 5 秒 mDNS 超时（宿主 NixOS 同样如此），属预期行为。
+fedora/ubuntu 配方尚未接入同样的 mDNS 接线。
 
 ### 镜像加速
 
