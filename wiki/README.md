@@ -61,7 +61,7 @@ updated: 2026-09-15
 
 | 文档 | 内容 |
 |------|------|
-| [游戏平台](leisure/gaming.md) | Steam、MangoHud、32-bit 图形库、Flatpak 游戏 |
+| [游戏平台](leisure/gaming.md) | Steam、Lutris/Bottles、MangoHud、32-bit 图形库、Windows 虚拟机 |
 | [媒体播放](leisure/media.md) | mpv、网易云、OBS、loupe、ani-cli、Kazumi |
 
 ## 网络与代理 `networking/`
