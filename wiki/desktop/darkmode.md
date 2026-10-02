@@ -1,8 +1,8 @@
 ---
 title: 深色模式与动态配色
 category: desktop
-tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode]
-updated: 2026-09-09
+tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode, strata]
+updated: 2026-10-02
 ---
 
 # 深色模式与动态配色
@@ -66,6 +66,7 @@ journalctl --user -u darkman -b
 - **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景。每次 `theme-apply` 都发送 `SIGUSR2` 让运行中的 btop 重读文件，只有壁纸变化才会改变重点色。
 - **Yazi**：`programs.yazi` 的 dark flavor 指向 `matugen-runtime`。由于 Foot 终端背景固定为深色，`theme-apply` 始终使用 Matugen 的深色语义色板，生成并复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`；浅色模式不改变 Yazi 背景。Yazi 26.9.1 虽支持 `app:theme`，但当前分发链不猜测外部实例 ID，运行中的实例需重新启动后读取新 flavor。
 - **mpv / ModernZ**：`home/leisure/player.nix` 关闭默认 OSC，安装 ModernZ Lua、Material 图标字体和中文 locale。Matugen 为 light/dark 各生成一份 ModernZ 配置，但 `theme-apply` 始终复制 dark 变体到 `~/.config/mpv/script-opts/modernz.conf`，把 `primary`、`surface_container`、`on_surface` 和 `outline_variant` 分别用于重点色、控件底色、文字/图标和边框；布局使用 ModernZ 的 `mini` 与 `small` 进度条。mpv 进程通常需要重新打开才能读取新配置。
+- **Strata**：本地源码构建的 GTK4 文件管理器（见 [文件管理器与归档工具](../productivity/files.md)）。它用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、零处引用系统 GTK/Adwaita 命名色，所以系统 GTK 主题决定不了它的配色。Matugen 通过 `home/theme/matugen/strata-theme.toml.tpl` 生成 `~/.config/strata/themes/matugen.toml`（文件名 stem 即主题 id），`theme-apply` 每次按当前模式复制 light 或 dark 变体，并把 `~/.config/strata/settings.toml` 的顶层 `theme`/`mode` 断言为 `matugen`/`theme`（文件不存在时创建最小文件；该文件由 Strata 全量重写，做法与 Dolphin 的 ColorScheme 相同）。Strata 只在启动时扫描主题目录、不监听文件变化，所以换壁纸或深浅切换后需要重开 Strata；语法高亮色不写进模板，由 Strata 自己从 accent/text 推导（本机 scheme-content + saturation 常把 secondary/tertiary 收敛到 primary，显式写反而更差）。
 - **Zellij**：`programs.zellij` 使用固定主题名 `matugen`；`theme-apply` 按当前 Darkman 模式，将缓存中的 `light/zellij/theme.kdl` 或 `dark/zellij/theme.kdl` 原子复制到 `~/.config/zellij/themes/matugen.kdl`。Zellij 0.45.1 支持从 `CONFIG_DIR/themes` 加载主题并监视主题文件，运行中的会话通常可以直接刷新；若实例未刷新，重新连接会话即可。这里不依赖终端上报的 CSI 2031 色彩状态，因为 Darkman 才是本机唯一模式源。
 - **Obsidian**：Matugen 生成双模式 `matugen.css`，只覆盖 Minimal/Claude for Minimal 的重点色变量（背景、字体和布局仍由现有主题负责），并在壁纸重点色变化时复制到 `~/Documents/MyVault/.obsidian/snippets/matugen.css`。首次部署后在 Obsidian 设置 → 外观 → CSS 代码片段中重新加载并启用 `matugen`，同时保持主题模式为“跟随系统”；之后深浅色切换只改变 `body.theme-light`/`body.theme-dark`，不会再次运行 Matugen。
 - **VS Code**：账号同步的 `haikalllp.matugen-theme` 扩展监听 `~/.cache/matugen/vscode-colors` 和 `vscode-colors.json`。`theme-apply` 在壁纸缓存命中时也会复制当前模式的两个文件，因此 Darkman 深浅色切换不重新取色即可触发扩展更新；扩展自身负责生成可写的 `Matugen`/`Matugen Bordered` 主题文件。
@@ -77,7 +78,7 @@ journalctl --user -u darkman -b
 
 ## 壁纸缓存与快速切换
 
-`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、Zellij 深浅两套主题、VS Code 深浅两套色板、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器和 Fcitx 产物。
+`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、Zellij 深浅两套主题、VS Code 深浅两套色板、Obsidian 双模式重点色 snippet，以及 light/dark 两套 Qt、Kvantum、KDE、合成器、Fcitx 和 Strata 产物。
 
 普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。显式换壁纸时，日志会记录 `cache=hit source=wallpaper` 或 `cache=miss`；回到已有壁纸不会重新取色。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，并在 Papirus 重着色前优先更新 Noctalia、Hyprland 等可见消费者。`copy_atomic` 和 Fcitx 配置会先比较内容，避免模式切换无意义地重写相同文件；btop 仅在壁纸色板变化时发送刷新信号。Papirus 文件夹颜色记录已应用颜色，并按 Papirus 版本/颜色缓存 GTK `icon-theme.cache`：换色仍需首次生成该颜色的索引，之后只更新链接并恢复约 3 MB 的缓存；目标颜色不变时跳过整个 Papirus 阶段。Papirus 缓存位于 `~/.cache/wallpaper-colors/papirus/`，可安全删除，缺失时自动回退到完整重建。
 
@@ -104,6 +105,7 @@ stat ~/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css \
   ~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml \
   ~/.config/mpv/script-opts/modernz.conf \
   ~/.config/zellij/themes/matugen.kdl \
+  ~/.config/strata/themes/matugen.toml \
   ~/.cache/matugen/nvim-colors.lua \
   ~/.cache/matugen/vscode-colors \
   ~/.cache/matugen/vscode-colors.json \
@@ -134,6 +136,10 @@ rg -n '^theme\[' ~/.config/btop/themes/matugen.theme
 # Zellij 应加载当前 Matugen 主题
 zellij setup --check
 rg -n '^\s*matugen\s*\{' ~/.config/zellij/themes/matugen.kdl
+
+# Strata 应选中 Matugen 生成的主题（id = 文件名 stem），且主题文件是裸表
+rg -n '^theme = ' ~/.config/strata/settings.toml
+rg -n '^name = |^accent = ' ~/.config/strata/themes/matugen.toml
 
 # 查看缓存命中、Matugen、Papirus（含 icon-theme.cache）、Fcitx 与 Noctalia 各阶段耗时
 journalctl --user -u darkman -b -o cat | rg 'theme-apply: (cache|stage|complete)'

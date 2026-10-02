@@ -116,6 +116,10 @@ let
     papirus = mkMatugenModeTemplate mode "papirus-color" ./matugen/papirus-color.tpl;
     kvantumConfig = mkMatugenModeTemplate mode "material-adw-kvconfig" "${materialAdwMatugenTemplates}/MaterialAdw.kvconfig";
     kvantumSvg = mkMatugenModeTemplate mode "material-adw-svg" "${materialAdwMatugenTemplates}/MaterialAdw.svg";
+    # Strata has no dark/light variant inside one theme file, so light and dark
+    # are rendered as separate files of the same id; theme-apply publishes the
+    # current mode's file.  It reloads themes only at startup.
+    strata = mkMatugenModeTemplate mode "strata-theme" ./matugen/strata-theme.toml.tpl;
   };
 
   matugenModeTemplates = {
@@ -263,6 +267,14 @@ let
     [templates.yazi-dark]
     input_path = '${yaziDarkTemplate}'
     output_path = '${matugenOutputRoot}/dark/yazi/flavor.toml'
+
+    [templates.strata-light]
+    input_path = '${matugenModeTemplates.light.strata}'
+    output_path = '${matugenOutputRoot}/light/strata/themes/matugen.toml'
+
+    [templates.strata-dark]
+    input_path = '${matugenModeTemplates.dark.strata}'
+    output_path = '${matugenOutputRoot}/dark/strata/themes/matugen.toml'
 
     [templates.modernz-light]
     input_path = '${matugenModeTemplates.light.modernz}'
@@ -505,6 +517,8 @@ let
           dark/zellij/theme.kdl
           dark/btop.theme
           dark/yazi/flavor.toml
+          light/strata/themes/matugen.toml
+          dark/strata/themes/matugen.toml
           light/mpv/script-opts/modernz.conf
           dark/mpv/script-opts/modernz.conf
           light/vscode/vscode-colors
@@ -772,6 +786,52 @@ let
         if [ "$assets_changed" -eq 1 ] || [ ! -f "$yazi_flavor" ]; then
           copy_atomic "$cache_dir/dark/yazi/flavor.toml" "$yazi_flavor"
           log "stage=yazi status=updated"
+        fi
+        # Strata scans ~/.config/strata/themes/*.toml only at startup (no watcher),
+        # uses the file stem as the theme id, and owns settings.toml: it rewrites the
+        # whole file on any preference change.  Republish the current mode's theme and
+        # assert the two top-level keys, the same way Dolphin's ColorScheme is forced
+        # below.  The keys are rebuilt instead of patched in place: they are written
+        # before any table, duplicates and a missing trailing newline cannot survive,
+        # and the file is only replaced when the content actually differs.  The whole
+        # assertion runs in a subshell so that a failure there cannot abort the rest of
+        # theme-apply (mpv/Qt/Kvantum/Dolphin/gsettings/Papirus run after this point).
+        copy_atomic "$cache_dir/$mode/strata/themes/matugen.toml" \
+          "$HOME/.config/strata/themes/matugen.toml"
+        strata_settings="$HOME/.config/strata/settings.toml"
+        if ! (
+          # Commands here are in an if-condition, so errexit is not inherited; every
+          # step that matters therefore fails explicitly through `exit 1`.
+          temporary="$(${pkgs.coreutils}/bin/mktemp "$HOME/.config/strata/.settings.toml.XXXXXX")" || exit 1
+          trap '${pkgs.coreutils}/bin/rm -f "$temporary"' EXIT
+          if [ -f "$strata_settings" ] && [ ! -r "$strata_settings" ]; then
+            # Rebuilding from an unreadable file would drop the user's settings.
+            exit 1
+          fi
+          {
+            printf '%s\n' 'theme = "matugen"'
+            printf '%s\n' 'mode = "theme"'
+            if [ -f "$strata_settings" ]; then
+              # Only top-level keys are dropped; table-nested ones stay untouched.
+              ${pkgs.gawk}/bin/awk '
+                /^\[/ { table = 1 }
+                !table && /^theme[ \t]*=[ \t]*/ { next }
+                !table && /^mode[ \t]*=[ \t]*/ { next }
+                { print }
+              ' "$strata_settings" || exit 1
+            fi
+          } > "$temporary" || exit 1
+          if [ -f "$strata_settings" ] \
+            && ${pkgs.diffutils}/bin/cmp -s "$temporary" "$strata_settings"; then
+            exit 0
+          fi
+          if [ -f "$strata_settings" ]; then
+            ${pkgs.coreutils}/bin/chmod --reference="$strata_settings" "$temporary" 2>/dev/null || true
+          fi
+          ${pkgs.coreutils}/bin/mv -f "$temporary" "$strata_settings" || exit 1
+          log "stage=strata status=theme-selected"
+        ); then
+          log "stage=strata status=settings-assert-failed"
         fi
         copy_atomic "$cache_dir/dark/mpv/script-opts/modernz.conf" \
           "$HOME/.config/mpv/script-opts/modernz.conf"

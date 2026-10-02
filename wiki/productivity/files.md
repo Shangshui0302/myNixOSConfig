@@ -1,8 +1,8 @@
 ---
 title: 文件管理器与归档工具
 category: 生产力
-tags: [nautilus, dolphin, strata, file-manager, archive]
-updated: 2026-09-30
+tags: [nautilus, dolphin, strata, file-manager, archive, matugen]
+updated: 2026-10-02
 ---
 
 # 文件管理器与归档工具
@@ -50,6 +50,19 @@ strata --version             # 打印版本
 ### 更新方式
 
 包装里带 `share/strata/install-source.toml`，声明该二进制由包管理器安装。因此 Settings → Updates 会显示「Installed by Nix as strata.」，并拒绝用应用内自更新覆盖 store 里的二进制；升级走 `flake.lock` 或修改 `local-deriv/strata.nix` 的 `version` 后由用户手动 rebuild。
+
+### 主题与配色（Matugen）
+
+Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、不引用系统 GTK/Adwaita 命名色，所以界面配色由它的主题文件决定，系统 GTK 主题只能影响少数未被覆盖的控件（tooltip、progressbar 等）。本仓库把壁纸取色接进来：
+
+- **生成**：`home/theme/matugen/strata-theme.toml.tpl` → `~/.config/strata/themes/matugen.toml`。Strata 的自定义主题是**平铺单文件**（不是每个主题一个目录），**文件名 stem 就是主题 id**；文件是裸表，只有 `name` 与颜色键，缺必需键会被静默忽略。
+- **选中**：`~/.config/strata/settings.toml` 的顶层 `theme = "matugen"` 与 `mode = "theme"`。该文件由 Strata 自己全量重写（任意偏好变更都重写整个文件），不能用 Home Manager 声明；`theme-apply` 每次都会重建这两个键——文件不存在时创建只含这两行的最小文件，存在时只替换这两个顶层键、其余内容与权限保持不变，做法与 Dolphin 强制 ColorScheme 一致。`~/.config/strata/themes/matugen.toml` 这个文件名归 `theme-apply` 所有，自建主题请用别的文件名。
+- **深浅**：主题文件本身不分深浅，`theme-apply` 按 Darkman 当前模式把 light 或 dark 渲染结果复制到同一个 id。
+- **生效时机**：Strata 只在启动时扫描主题目录、不监听文件变化，所以**换壁纸或切深浅之后要重开 Strata** 才会读到新配色；平时打开都是最新的。
+- **换回内置主题**：Settings → Appearance → THEME LIBRARY 里选一个即可；下一次 `theme-apply`（换壁纸、切模式或 rebuild 激活）会把 `theme` 键断言回 `matugen`。
+- 语法高亮色不写进模板：Strata 会从 `accent`/`text` 推导，而本机 Matugen 用 `scheme-content` + saturation 时 `secondary`/`tertiary` 常与 `primary` 收敛成同色，显式写反而更差。
+
+配色链路、缓存与排查见 [深色模式与动态配色](../desktop/darkmode.md)。
 
 ### NixOS 沙箱适配
 
