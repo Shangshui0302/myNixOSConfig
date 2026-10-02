@@ -1,0 +1,45 @@
+--- a/src/sandbox.rs	2026-09-30 11:37:59.792686610 +0000
++++ b/src/sandbox.rs	2026-09-30 11:37:59.795686557 +0000
+@@ -453,7 +453,8 @@
+         "--clearenv",
+         "--setenv",
+         "PATH",
+-        "/usr/bin",
++        // NixOS: 沙箱里的工具（ffmpeg/ffmpegthumbnailer/unsquashfs/prlimit 等）来自 store。
++        option_env!("STRATA_SANDBOX_PATH").unwrap_or("/usr/bin"),
+         "--setenv",
+         "HOME",
+         "/nonexistent",
+@@ -472,7 +473,7 @@
+         "/app",
+         "--dir",
+         "/etc",
+-        "--ro-bind",
++        "--ro-bind-try",
+         "/usr",
+         "/usr",
+         "--ro-bind-try",
+@@ -493,7 +494,14 @@
+         "--ro-bind-try",
+         "/etc/ImageMagick-6",
+         "/etc/ImageMagick-6",
++        // NixOS: 帮助进程的解释器与库都在 /nix/store 里，沙箱必须能看到它。
++        "--ro-bind-try",
++        "/nix/store",
++        "/nix/store",
+     ]);
++    if let Some(plugins) = option_env!("STRATA_SANDBOX_GST_PLUGIN_PATH") {
++        command.args(["--setenv", "GST_PLUGIN_SYSTEM_PATH_1_0", plugins]);
++    }
+     if matches!(
+         operation,
+         ParseOperation::ThumbnailVideo
+@@ -547,7 +555,7 @@
+     command.arg("--");
+     if !operation.is_media() {
+         command
+-            .arg("/usr/bin/prlimit")
++            .arg(option_env!("STRATA_SANDBOX_PRLIMIT").unwrap_or("/usr/bin/prlimit"))
+             .arg(format!("--as={ADDRESS_SPACE_LIMIT_BYTES}"))
+             .arg("--cpu=10")
+             .arg(format!(

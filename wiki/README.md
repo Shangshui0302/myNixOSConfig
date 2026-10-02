@@ -2,7 +2,7 @@
 title: Wiki 首页
 category: 顶层
 tags: [index, moc]
-updated: 2026-09-15
+updated: 2026-09-30
 ---
 
 # Wiki — NixOS 配置操作手册
@@ -45,6 +45,7 @@ updated: 2026-09-15
 |------|------|
 | [办公软件套件](productivity/office.md) | LibreOffice、OnlyOffice、Obsidian、Markdown 编辑器 |
 | [图像与视频工具](productivity/graphics.md) | gThumb、GIMP、Kdenlive、Glaxnimate、Blender |
+| [文件管理器与归档工具](productivity/files.md) | Nautilus、Dolphin、Strata、归档与缩略图工具 |
 | [Yazi 文件管理器](productivity/yazi.md) | 文件管理器：按键、插件、主题 |
 
 ## 开发与工具 `dev/`

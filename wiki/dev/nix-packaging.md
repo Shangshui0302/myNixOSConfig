@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-09-15
+updated: 2026-09-30
 ---
 # Nix 手工打包
 
@@ -183,6 +183,47 @@ nix build path:.#modernz-mpv -L --no-link --print-out-paths
 nixos-rebuild dry-build --flake path:.
 ```
 
+### Strata (`local-deriv/strata.nix`)
+
+Strata v0.20.1 是键盘优先的 GTK4 文件管理器（上游 `lgse/strata`，MIT）。上游只发布预编译 tarball（AUR 走 `strata-bin`），这里从源码构建：
+
+- 源码：固定 tag `v0.20.1`，`src` 用 `fetchFromGitHub`；`Cargo.lock` 的 373 个 crate 全部来自 crates.io，用 `rustPlatform.fetchCargoVendor` 一次锁定。
+- flake 入口：`nix build path:.#strata`；消费者 `home/productivity/files.nix`。
+- 输出：`bin/strata`（wrapGAppsHook4 包装：`PATH` 含上游 `install.sh` 的 REQUIRED_PACKAGES、`GST_PLUGIN_SYSTEM_PATH_1_0` 指向 GStreamer 插件、`GDK_PIXBUF_MODULE_FILE` 指向 pixbuf loader）、desktop entry、hicolor 图标、`share/licenses/strata/`，以及声明包管理器归属的 `share/strata/install-source.toml`（据此禁用应用内自更新）。
+- 与上游依赖清单的两处偏差：`ffmpeg` → `ffmpeg-headless`（应用只调用命令行 ffmpeg/ffprobe）、不带 `gst-plugins-bad`（上游 REQUIRED_PACKAGES 不含它）。裁剪前后闭包 1168 MiB → 1060 MiB。
+- `doCheck = false`：上游 `scripts/check.sh` 的 GUI 用例需要显示服务器（上游另用 Xvfb 跑 `test-headless.py`），Nix 构建沙箱里没有。
+
+**NixOS 沙箱适配（本地补丁）**：预览与缩略图在 bubblewrap 里渲染，而上游 `src/sandbox.rs` 的 `runtime_command()` 写死 FHS 布局——`--ro-bind /usr /usr`、`--setenv PATH /usr/bin`、`/usr/bin/prlimit`，且不 bind `/nix/store`。未打补丁时复刻上游参数实测：
+
+```text
+prlimit: failed to execute /app/strata: No such file or directory
+bwrap: execvp /app/strata: No such file or directory
+# 追加 --ro-bind /nix/store /nix/store 后恢复正常输出：strata 0.20.1
+```
+
+原因是 helper 的 ELF 解释器与库都在 `/nix/store` 里，而不是缺依赖。`local-deriv/strata-nixos-sandbox.patch` 因此只改参数构造，不动命名空间/`clearenv`/Landlock/seccomp 边界：
+
+| 改动 | 说明 |
+| --- | --- |
+| `--ro-bind-try /nix/store` | 让 helper 的解释器与库可见（只读） |
+| 沙箱内 `PATH` / `prlimit` | 由编译期 `option_env!` 换成 store 路径，来源是 derivation 的 `STRATA_SANDBOX_PATH`、`STRATA_SANDBOX_PRLIMIT` |
+| `GST_PLUGIN_SYSTEM_PATH_1_0` | 由 `STRATA_SANDBOX_GST_PLUGIN_PATH` 注入，媒体解码需要 |
+| `--ro-bind /usr` → `--ro-bind-try /usr` | NixOS 上 `/usr` 可能只有 `env`，工具不再依赖它 |
+
+补丁用 `option_env!` + `unwrap_or`，缺编译期变量时退回上游的 `/usr/bin` 行为，便于对照。沙箱内的 PATH 与包装脚本一致（`lib.makeBinPath runtimeTools`）。
+
+`bwrap` 本身由 `trusted_command::resolve` 从固定系统目录（`/run/current-system/sw/bin` 等）查找、不读 `PATH`，所以 `host/base/services.nix` 把 `pkgs.bubblewrap` 放进 `environment.systemPackages`；这是补丁之外唯一必需的集成项。
+
+已验证：用打完补丁的参数构造复刻调用真实 helper，图片缩略图输出 `256x144` PNG、视频缩略图输出 `128x96` PNG。GUI 内的实际预览、媒体播放（`preview-media`）与 GVfs 访问仍须 switch 后人工验证。
+
+验证（构建与集成）：
+
+```bash
+nix-instantiate --parse local-deriv/strata.nix
+nix build path:.#strata -L --no-link --print-out-paths
+nixos-rebuild dry-build --flake path:.#MechRevo-NixOS   # 容器内要显式指定主机名
+```
+
 ## 更新已有包
 
 升级前重新检查 changelog、许可证、构建系统、lockfile 和 release artifact。`nix-update` 可辅助修改，但完成后仍须人工审查 diff、重新构建、检查产物并运行 smoke test。
@@ -216,6 +257,7 @@ nix why-depends path:.#<pname> <依赖 store path>
 
 - [约束与惯例](../constraints.md) — overlay、override、direct import 与验证边界
 - [部署与维护](../deployment.md) — dry-build、switch 和回滚
+- [文件管理器与归档工具](../productivity/files.md) — Strata 的用法、已知限制与回退
 - [nix.dev：打包现有软件](https://nix.dev/tutorials/packaging-existing-software.html)
 - [Nixpkgs Standard Environment](https://nixos.org/manual/nixpkgs/stable/#chap-stdenv)
 - [Nixpkgs package tests](https://github.com/NixOS/nixpkgs/blob/master/pkgs/README.md#package-tests)

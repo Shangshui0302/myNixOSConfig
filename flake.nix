@@ -62,6 +62,7 @@
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
           inherit pkgs;
         };
+        strata = import ./local-deriv/strata.nix { inherit pkgs; };
       };
 
       devShells.${system}.packaging = pkgs.mkShellNoCC {
