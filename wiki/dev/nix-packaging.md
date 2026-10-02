@@ -216,7 +216,7 @@ bwrap: execvp /app/strata: No such file or directory
 
 已验证：用打完补丁的参数构造复刻调用真实 helper，图片缩略图输出 `256x144` PNG、视频缩略图输出 `128x96` PNG。GUI 内的实际预览、媒体播放（`preview-media`）与 GVfs 访问仍须 switch 后人工验证。
 
-**主题对比度补丁**：`local-deriv/strata-sidebar-toggle-checked.patch` 只往 `src/style.css` 里加一条规则。标题栏的侧栏开关是 `ToggleButton`（默认 `active`），而上游只写了 `:hover`/`:active`/`.active` 的样式、漏了 `:checked`；缺样式时 GTK 用**系统主题**的强调色填充背景，而 `headerbar .sidebar-toggle` 仍把图标留在 `@theme_accent`——Matugen 的 M3 `primary` 很浅，两者几乎同色，图标就"溶"进背景（用户最初报的就是这个）。补丁照上游自己的 checked 写法（同 `.preview-header-action:checked`）补上 `background: alpha(@theme_accent, 0.22); color: @theme_accent;`，与相邻的 hover/active 一脉相承。
+**曾试过但无效的补丁（已回退）**：标题栏侧栏开关的选中态会渲染成一个浅色圆盘、图标看不见。给 `src/style.css` 补 `.sidebar-toggle:checked` 规则没有任何效果——原因是 `~/.config/gtk-4.0/gtk.css` 指向运行时 Material-Gnome 主题的 `gtk.css`，GTK 按 **USER 优先级（800）**加载它，高于应用的 APPLICATION（600）；该主题的 `button:checked/:active { border-radius: 999px; background-color: var(--primary); color: var(--on_primary) }` 因此压过应用样式，而 Strata 的标题栏图标是**按 accent 预渲染的纹理**（`assets::primary_icon_color()`）、不吃 CSS `color`，M3 的 `primary` 又很浅，于是图标溶进填充色。实测（在宿主上跑部署版 + 在运行时主题 CSS 里注入探针）：`.sidebar-toggle`、`.sidebar-toggle:checked`、`button:checked`、`headerbar button` 加 `!important` 都改不动那块填充，只有万能选择器 `headerbar *` 的背景能盖住它。所以这条要么走主题侧（改 `local-deriv/material-gnome` 的 checked 填充，桌面全局生效），要么走上游（让该图标用能随状态翻转的颜色）；应用侧 CSS 无解。
 
 验证（构建与集成）：
 
