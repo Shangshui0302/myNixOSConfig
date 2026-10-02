@@ -790,12 +790,14 @@ let
         # Strata scans ~/.config/strata/themes/*.toml only at startup (no watcher),
         # uses the file stem as the theme id, and owns settings.toml: it rewrites the
         # whole file on any preference change.  Republish the current mode's theme and
-        # assert the two top-level keys, the same way Dolphin's ColorScheme is forced
-        # below.  The keys are rebuilt instead of patched in place: they are written
-        # before any table, duplicates and a missing trailing newline cannot survive,
-        # and the file is only replaced when the content actually differs.  The whole
-        # assertion runs in a subshell so that a failure there cannot abort the rest of
-        # theme-apply (mpv/Qt/Kvantum/Dolphin/gsettings/Papirus run after this point).
+        # rewrite the two top-level keys, the same way Dolphin's ColorScheme is forced
+        # below.  The keys are rebuilt instead of patched in place, so a missing
+        # trailing newline or duplicate top-level keys cannot survive; file shapes this
+        # rewrite cannot handle safely (BOM, indented/quoted keys, indented table
+        # headers, multi-line strings) are refused instead of mangled, and the file is
+        # only replaced when the content actually differs.  The whole block runs in a
+        # subshell so that a failure there cannot abort the rest of theme-apply
+        # (mpv/Qt/Kvantum/Dolphin/gsettings/Papirus run after this point).
         copy_atomic "$cache_dir/$mode/strata/themes/matugen.toml" \
           "$HOME/.config/strata/themes/matugen.toml"
         strata_settings="$HOME/.config/strata/settings.toml"
@@ -813,7 +815,18 @@ let
             printf '%s\n' 'mode = "theme"'
             if [ -f "$strata_settings" ]; then
               # Only top-level keys are dropped; table-nested ones stay untouched.
-              ${pkgs.gawk}/bin/awk '
+              # Shapes this rewrite cannot judge safely (BOM, indented or quoted keys,
+              # indented table headers, multi-line strings) are refused: awk exits 3,
+              # the `|| exit 1` below keeps the original file untouched.
+              ${pkgs.gawk}/bin/awk -v sq="'" '
+                NR == 1 && index($0, "\357\273\277") == 1 { unsupported = 1 }
+                /^[ \t]+\[/ { unsupported = 1 }
+                /^[ \t]+"?theme"?[ \t]*=/ { unsupported = 1 }
+                /^[ \t]+"?mode"?[ \t]*=/ { unsupported = 1 }
+                index($0, "\"\"\"") == 1 { unsupported = 1 }
+                index($0, sq sq sq) == 1 { unsupported = 1 }
+                /^["\x27](theme|mode)["\x27][ \t]*=/ { unsupported = 1 }
+                unsupported { exit 3 }
                 /^\[/ { table = 1 }
                 !table && /^theme[ \t]*=[ \t]*/ { next }
                 !table && /^mode[ \t]*=[ \t]*/ { next }

@@ -56,7 +56,7 @@ strata --version             # 打印版本
 Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、不引用系统 GTK/Adwaita 命名色，所以界面配色由它的主题文件决定，系统 GTK 主题只能影响少数未被覆盖的控件（tooltip、progressbar 等）。本仓库把壁纸取色接进来：
 
 - **生成**：`home/theme/matugen/strata-theme.toml.tpl` → `~/.config/strata/themes/matugen.toml`。Strata 的自定义主题是**平铺单文件**（不是每个主题一个目录），**文件名 stem 就是主题 id**；文件是裸表，只有 `name` 与颜色键，缺必需键会被静默忽略。
-- **选中**：`~/.config/strata/settings.toml` 的顶层 `theme = "matugen"` 与 `mode = "theme"`。该文件由 Strata 自己全量重写（任意偏好变更都重写整个文件），不能用 Home Manager 声明；`theme-apply` 每次都会重建这两个键——文件不存在时创建只含这两行的最小文件，存在时只替换这两个顶层键、其余内容与权限保持不变，做法与 Dolphin 强制 ColorScheme 一致。`~/.config/strata/themes/matugen.toml` 这个文件名归 `theme-apply` 所有，自建主题请用别的文件名。
+- **选中**：`~/.config/strata/settings.toml` 的顶层 `theme = "matugen"` 与 `mode = "theme"`。该文件由 Strata 自己全量重写（任意偏好变更都重写整个文件），不能用 Home Manager 声明；`theme-apply` 每次把它重写成这两个固定值——文件不存在时创建只含这两行的最小文件，存在时只替换这两个顶层键（其余内容与权限保留；内容已一致就不写、也不记日志）。遇到它无法安全改写的畸形文件（BOM、缩进或带引号的键、缩进表头、多行字符串）会放弃改写并记 `stage=strata status=settings-assert-failed`，不会把文件改坏。由此有两条要记住：在 Settings → Appearance 里换成别的主题，下次 `theme-apply`（换壁纸、切模式或 rebuild）会把它改回 `matugen`；如果主题文件本身校验不过（缺必需键），Strata 会静默退回内置 `azure-glow`，而 `theme-apply` 不会有任何提示。`~/.config/strata/themes/matugen.toml` 这个文件名归 `theme-apply` 所有（自建主题请换名；`themes/` 下其它 `*.toml` 不受影响）。
 - **深浅**：主题文件本身不分深浅，`theme-apply` 按 Darkman 当前模式把 light 或 dark 渲染结果复制到同一个 id。
 - **生效时机**：Strata 只在启动时扫描主题目录、不监听文件变化，所以**换壁纸或切深浅之后要重开 Strata** 才会读到新配色；平时打开都是最新的。
 - **换回内置主题**：Settings → Appearance → THEME LIBRARY 里选一个即可；下一次 `theme-apply`（换壁纸、切模式或 rebuild 激活）会把 `theme` 键断言回 `matugen`。
