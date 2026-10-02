@@ -216,6 +216,8 @@ bwrap: execvp /app/strata: No such file or directory
 
 已验证：用打完补丁的参数构造复刻调用真实 helper，图片缩略图输出 `256x144` PNG、视频缩略图输出 `128x96` PNG。GUI 内的实际预览、媒体播放（`preview-media`）与 GVfs 访问仍须 switch 后人工验证。
 
+**主题对比度补丁**：`local-deriv/strata-sidebar-toggle-checked.patch` 只往 `src/style.css` 里加一条规则。标题栏的侧栏开关是 `ToggleButton`（默认 `active`），而上游只写了 `:hover`/`:active`/`.active` 的样式、漏了 `:checked`；缺样式时 GTK 用**系统主题**的强调色填充背景，而 `headerbar .sidebar-toggle` 仍把图标留在 `@theme_accent`——Matugen 的 M3 `primary` 很浅，两者几乎同色，图标就"溶"进背景（用户最初报的就是这个）。补丁照上游自己的 checked 写法（同 `.preview-header-action:checked`）补上 `background: alpha(@theme_accent, 0.22); color: @theme_accent;`，与相邻的 hover/active 一脉相承。
+
 验证（构建与集成）：
 
 ```bash

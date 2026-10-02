@@ -61,6 +61,7 @@ Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、
 - **生效时机**：Strata 只在启动时扫描主题目录、不监听文件变化，所以**换壁纸或切深浅之后要重开 Strata** 才会读到新配色；平时打开都是最新的。
 - **换回内置主题**：Settings → Appearance → THEME LIBRARY 里选一个即可；下一次 `theme-apply`（换壁纸、切模式或 rebuild 激活）会把 `theme` 键断言回 `matugen`。
 - 语法高亮色不写进模板：Strata 会从 `accent`/`text` 推导，而本机 Matugen 用 `scheme-content` + saturation 时 `secondary`/`tertiary` 常与 `primary` 收敛成同色，显式写反而更差。
+- **标题栏开关的对比度**：侧栏开关是 `ToggleButton`，上游漏了它的 `:checked` 态样式，于是该状态由系统 GTK 主题填充强调色、而图标仍是 `@theme_accent`——M3 的浅色 `primary` 下两者几乎同色，图标会看不见。`local-deriv/strata-sidebar-toggle-checked.patch` 按上游自己的 checked 写法给该状态补了 0.22 alpha 的 accent 底色。
 
 配色链路、缓存与排查见 [深色模式与动态配色](../desktop/darkmode.md)。
 

@@ -56,9 +56,15 @@ pkgs.rustPlatform.buildRustPackage (finalAttrs: {
     hash = "sha256-XA6rV+BRj1XG3LlGBBVMUXjnhR1E5FUoL4oT78XazmA=";
   };
 
-  # NixOS 适配补丁：只改 src/sandbox.rs 里构造 bubblewrap 参数的地方，
-  # 不动沙箱的命名空间/clearenv/Landlock/seccomp 边界。
-  patches = [ ./strata-nixos-sandbox.patch ];
+  # NixOS 适配补丁：
+  #   - strata-nixos-sandbox.patch：只改 src/sandbox.rs 里构造 bubblewrap 参数的地方，
+  #     不动沙箱的命名空间/clearenv/Landlock/seccomp 边界；
+  #   - strata-sidebar-toggle-checked.patch：给标题栏侧栏开关补上 :checked 态样式，
+  #     否则该状态由系统 GTK 主题填充、而图标仍取 @theme_accent，浅色 M3 强调色下不可见。
+  patches = [
+    ./strata-nixos-sandbox.patch
+    ./strata-sidebar-toggle-checked.patch
+  ];
 
   # build.rs 通过 glib-build-tools 把 data/strata.gresource.xml 编译成 GResource。
   nativeBuildInputs = with pkgs; [
