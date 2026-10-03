@@ -735,6 +735,12 @@ in
   # Noctalia 由 systemd 拉起（而非 compositor autostart）——统一 shell 生命周期管理，
   # 为 shell-switcher 切换做准备。hyprland.lua / niri.kdl 的 autostart 行已移除。
   # KillMode=control-group：切换时整个 cgroup（含 QML 子进程）被干净终止。
+  #
+  # 不设 Install.WantedBy：graphical-session.target 同时 Wants 本服务与
+  # shell-switcher-boot.service 时两者会并行拉起，而 shell-switcher 只会停"它自己启动的"
+  # 那个 shell，于是 Noctalia 留下来与 Caelestia 并存（uwsm 会话下实测到的双 shell）。
+  # 现在唯一入口是 shell-switcher-boot → shell-switcher boot，按 current 标记决定拉哪个；
+  # shell-switcher 的 default 仍是 noctalia，所以无标记时依旧回到 Noctalia（兜底不变）。
   systemd.user.services.noctalia = {
     Unit = {
       Description = "Noctalia shell";
@@ -755,9 +761,7 @@ in
       # —— 否则 `systemctl --user --failed` 会长期挂着一条假故障。
       SuccessExitStatus = [ 143 ];
     };
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
-    };
+    # 故意不设 Install.WantedBy：改由 shell-switcher-boot.service 决定拉起哪个 shell。
   };
 
   # 补全（跟随消费者）：fish + bash。
