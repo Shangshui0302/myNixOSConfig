@@ -133,4 +133,18 @@ in
   };
 
   services.libinput.enable = true;
+
+  # 屏幕录制：gpu-screen-recorder 的 KMS helper 需要 cap_sys_admin 才能读 DRM。
+  # 它的启动路径写死成 pkexec（二进制里就是 "pkexec" + 下面这条 setcap 提示），而 NixOS 的
+  # setuid pkexec 仍会走 polkit 认证 —— 在 Hyprland 会话里会卡在 "waiting for server to
+  # connect" 直到超时。所以直接按上游提示给 wrapper 加 cap_sys_admin+ep：helper 自带特权，
+  # 不需要 pkexec、不需要认证。setuid 保留作为兜底。
+  security.polkit.enablePkexecWrapper = true;
+  security.wrappers."gsr-kms-server" = {
+    source = "${pkgs.gpu-screen-recorder}/bin/gsr-kms-server";
+    owner = "root";
+    group = "root";
+    # setuid 与 capabilities 互斥（wrapper 构建期校验），cap_sys_admin 这条路径不需要 setuid。
+    capabilities = "cap_sys_admin+ep";
+  };
 }

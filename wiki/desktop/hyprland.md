@@ -89,6 +89,17 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 截图保存在 `~/Pictures/Screenshots/YYYY-MM/` 目录下。
 手动启动 Swappy 时默认保存到 `~/Pictures/`；使用 `swappy -f 图片` 打开图片时，保存目录跟随原图；通过区域截图快捷键启动时，保存目录跟随截图脚本，使用当月子目录。
 
+### 录屏
+
+`caelestia record`（`caelestia record -s` 带声音、`-r` 区域、`-p` 暂停/继续）输出到 `~/Videos/Recordings/recording_<时间戳>.mp4`。
+
+后端是 `gpu-screen-recorder`，它的 KMS helper 需要 `cap_sys_admin`。**它的启动路径写死调用 `pkexec`**，而 NixOS 的 pkexec 默认不 setuid（`security.polkit.enablePkexecWrapper` 默认关），且 setuid pkexec 仍要走 polkit 认证——在会话里表现为 `kms server died or never started` 或卡在 `waiting for server to connect`。因此 `host/base/desktop.nix` 里：
+
+- `security.wrappers."gsr-kms-server"` 给 helper 加 `cap_sys_admin+ep`（helper 自带特权，不需要 pkexec、不需要认证）
+- `security.polkit.enablePkexecWrapper = true` 作为兜底（两者不能同时 `setuid`，属于 wrapper 构建期互斥校验）
+
+排查命令：`getcap /run/wrappers/bin/gsr-kms-server`、直接跑 `gpu-screen-recorder -w <monitor> -f <fps> -o /tmp/t.mp4` 看 gsr 日志。
+
 ### 窗口管理
 
 | 按键 | 功能 |
