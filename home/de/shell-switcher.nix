@@ -131,6 +131,40 @@ in
     service = "caelestia.service"
   '';
 
+  # 从启动器直接切换桌面 shell，不必开终端敲命令。
+  # 两条 entry 都只是 `shell-switcher set <name>` 的壳：真正的启停编排放切换器，
+  # 它内部是 stop-all → await → start，所以从 launcher 点也只会留下一个 shell。
+  # 原理：shell-switcher 靠 HYPRLAND_INSTANCE_SIGNATURE / NIRI_SOCKET 做会话防呆，
+  # 这两个变量在 systemd 用户环境里（uwsm 写完），launcher 子进程能继承，故无需包装脚本。
+  xdg.desktopEntries = {
+    "shell-noctalia" = {
+      name = "Noctalia Shell";
+      genericName = "Desktop Shell";
+      comment = "切换到 Noctalia 桌面 shell";
+      exec = "${shellSwitcher}/bin/shell-switcher set noctalia";
+      # noctalia 的图标在它自己的包内、没进 profile，所以按绝对路径引用。
+      icon = "${config.programs.noctalia.package}/share/icons/hicolor/scalable/apps/noctalia.svg";
+      categories = [ "Settings" "Utility" ];
+      terminal = false;
+    };
+    "shell-caelestia" = {
+      name = "Caelestia Shell";
+      genericName = "Desktop Shell";
+      comment = "切换到 Caelestia 桌面 shell";
+      exec = "${shellSwitcher}/bin/shell-switcher set caelestia";
+      icon = "caelestia";
+      categories = [ "Settings" "Utility" ];
+      terminal = false;
+    };
+  };
+
+  # Caelestia 的图标只作为 asset 放在 shell 包内，没有装进 hicolor 主题，
+  # 所以 launcher 里会显示占位图。这里把它的 logo 装成名为 caelestia 的图标
+  # （~/.local/share/icons 也在 XDG_DATA_DIRS 的图标搜索路径里）；
+  # Noctalia 的包自带 share/icons/hicolor/.../noctalia.svg，无需处理。
+  xdg.dataFile."icons/hicolor/scalable/apps/caelestia.svg".source =
+    "${config.programs.caelestia.package}/share/caelestia-shell/assets/logo.svg";
+
   # fish 补全：NixOS 把 /etc/profiles 固化成 /etc/static 时只保留 bash-completion，
   # 丢 fish/zsh 的 vendor_completions.d。显式装到 ~/.config/fish/completions
   xdg.configFile."fish/completions/shell-switcher.fish".source =

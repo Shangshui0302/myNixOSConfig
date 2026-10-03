@@ -34,6 +34,19 @@ shell-switcher boot               # 读 current 标记启动对应 shell（shell
 
 切换后新 shell 立即接管顶栏；旧 shell 进程被整个 cgroup 终止。
 
+## 从启动器切换（desktop entries）
+
+`home/de/shell-switcher.nix` 用 `xdg.desktopEntries` 声明两条 entry，方便直接在 launcher 里点：
+
+| 条目名 | Exec |
+|---|---|
+| `Noctalia Shell` | `shell-switcher set noctalia` |
+| `Caelestia Shell` | `shell-switcher set caelestia` |
+
+- `xdg.desktopEntries` 是通过 **`home.packages`（hiPrio）** 装进 profile 的 `share/applications`，**不是**写 `~/.local/share/applications`——排查时别找错目录。
+- 不需要包装脚本：`set` 靠 `HYPRLAND_INSTANCE_SIGNATURE` / `NIRI_SOCKET` 做会话防呆，这两个变量由 uwsm 写进 systemd 用户环境（`systemctl --user show-environment` 可见），launcher 子进程能继承。
+- 图标：Noctalia 的图标在它自己的包内、没进 profile，所以按绝对路径引用；Caelestia 只有 `share/caelestia-shell/assets/logo.svg` 资产，故用 `xdg.dataFile` 装成 `~/.local/share/icons/hicolor/scalable/apps/caelestia.svg`（`~/.local/share/icons` 在 XDG 图标搜索路径内），entry 里写裸名 `caelestia`。
+
 ## 切换机制（`set <name>` 内部流程）
 
 1. **检测 compositor**：非 Hyprland/niri 会话直接拒绝（防呆）。
