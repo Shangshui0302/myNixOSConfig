@@ -92,6 +92,32 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
+  # 登录 / rebuild 后的 shell 恢复：唯一入口是 `shell-switcher boot`，它读
+  # ~/.config/shell-switcher/current 标记拉起上次选的 shell（无标记则用 config.toml 的 default）。
+  # 两个触发点都走这里，不直接拉某个 shell：
+  #   - 登录：本服务随 graphical-session.target 起。Noctalia 自己的 WantedBy 保持在
+  #     graphical-session.target 作为"外壳兜底"，本服务后跑并 stop-all → start 目标，
+  #     所以两壳同时起的竞争窗口会被收敛成单 shell（代价是可能有短暂闪烁）。
+  #   - rebuild：switch 会重启 graphical-session.target，本服务随之重跑，于是不再需要手工
+  #     `shell-switcher set caelestia`；HM 激活器只清理自己命名空间下的文件，
+  #     ~/.config/shell-switcher 不在其中，标记得以保留。
+  systemd.user.services.shell-switcher-boot = {
+    Unit = {
+      Description = "Restore last selected desktop shell (shell-switcher boot)";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${shellSwitcher}/bin/shell-switcher boot";
+      # boot 失败（无标记 / 切换失败）会自行回退 default shell，这里再兜一层重试。
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   xdg.configFile."shell-switcher/config.toml".text = ''
     # 默认 shell：boot 无标记 / 切换失败回退时使用
     default = "noctalia"

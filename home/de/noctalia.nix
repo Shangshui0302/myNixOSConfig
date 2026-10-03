@@ -751,6 +751,9 @@ in
       Restart = "on-failure";
       RestartSec = 3;
       KillMode = "control-group";
+      # shell-switcher 切走时用 SIGTERM 停本服务（退出码 143），systemd 不该记成 failed
+      # —— 否则 `systemctl --user --failed` 会长期挂着一条假故障。
+      SuccessExitStatus = [ 143 ];
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];

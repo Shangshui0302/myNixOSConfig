@@ -87,8 +87,10 @@ Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无�
 
 ## 启动流程
 
-- **默认**：Noctalia 由 `WantedBy=graphical-session.target` 自动拉起，无需切换器介入。
-- **重启后恢复上次切换**：`shell-switcher boot` 读 `current` 标记启动对应 shell（用于 compositor autostart / shell-starter 场景）。注意 `current` 标记不是声明式管理的，rebuild 不重置。
+- **默认**：Noctalia 由 `WantedBy=graphical-session.target` 自动拉起，作为"外壳兜底"。
+- **恢复上次选择**：`shell-switcher-boot.service`（`home/de/shell-switcher.nix`）同样挂 `graphical-session.target`，执行 `shell-switcher boot` 读 `~/.config/shell-switcher/current` 标记，stop-all 后启动上次选的 shell，因此登录后不会再无条件回到 Noctalia。
+- **rebuild 后同样收敛**：`nixos-rebuild switch` 会重启 `graphical-session.target`，上述服务随之重跑，所以不再需要手工 `shell-switcher set <name>`。标记文件 `~/.config/shell-switcher/current` 不是声明式管理的，HM 激活器只清理自己命名空间下的文件，标记得以保留（要重置就删掉它，缺省回退 `config.toml` 的 `default`）。
+- Noctalia 的 unit 带 `SuccessExitStatus=143`：切换时被 SIGTERM 停掉（退出码 143）不该被 systemd 记成 failed。
 
 ## 防呆与故障排查
 
