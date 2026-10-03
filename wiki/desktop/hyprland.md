@@ -55,6 +55,9 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 > `Super` = Win/Command 键
 
+**所有 91 条 `hl.bind` 都带 `{ description = "..." }`**：Noctalia 的键位速查面板读 `hyprctl binds` 的 `description` 字段，缺了就只有键位、没有功能说明。新增绑定时要保持这个习惯（`hl.bind(键, 动作, { description = "说明" })`；函数型写 `end, { description = "..." })`；已有 options 就合并进去，例如 `{ mouse = true, description = "..." }`）。
+自检：`hyprctl -j binds | jq '[.[] | select(.description)] | length'` 应等于绑定总数。
+
 ### 启动应用
 
 | 按键 | 功能 |
