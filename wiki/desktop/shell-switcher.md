@@ -40,8 +40,10 @@ shell-switcher boot               # 读 current 标记启动对应 shell（shell
 
 | 条目名 | Exec |
 |---|---|
-| `Noctalia Shell` | `shell-switcher set noctalia` |
-| `Caelestia Shell` | `shell-switcher set caelestia` |
+| `Noctalia Shell` | `systemd-run --user --scope --collect -- shell-switcher set noctalia` |
+| `Caelestia Shell` | `systemd-run --user --scope --collect -- shell-switcher set caelestia` |
+
+**为什么必须套 `systemd-run --scope`**：launcher 是由 shell 自己的 service 派生的进程，属于 `set` 要停掉的那个 cgroup；而 `set` 在 stop 阶段**阻塞等待**所有 shell 变 inactive。不套壳时该进程会被 `KillMode=control-group` 的 SIGTERM 连带杀掉，只完成"停"、没走到"启"，结果是新旧两个 shell 全 inactive、marker 不变（journal 里表现为 `Stopped Caelestia Shell Service` 之后没有任何 noctalia 启动记录）。套进独立 scope 后进程移出该 cgroup，停旧 shell 不再影响它。
 
 - `xdg.desktopEntries` 是通过 **`home.packages`（hiPrio）** 装进 profile 的 `share/applications`，**不是**写 `~/.local/share/applications`——排查时别找错目录。
 - 不需要包装脚本：`set` 靠 `HYPRLAND_INSTANCE_SIGNATURE` / `NIRI_SOCKET` 做会话防呆，这两个变量由 uwsm 写进 systemd 用户环境（`systemctl --user show-environment` 可见），launcher 子进程能继承。

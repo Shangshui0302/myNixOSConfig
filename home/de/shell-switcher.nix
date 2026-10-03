@@ -132,8 +132,15 @@ in
   '';
 
   # 从启动器直接切换桌面 shell，不必开终端敲命令。
-  # 两条 entry 都只是 `shell-switcher set <name>` 的壳：真正的启停编排放切换器，
+  # 每条 entry 都是 `shell-switcher set <name>` 的壳：启停编排放切换器，
   # 它内部是 stop-all → await → start，所以从 launcher 点也只会留下一个 shell。
+  #
+  # 必须用 `systemd-run --user --scope` 包一层：launcher 由 shell 自己的 service 派生，
+  # 是 `set` 要停掉的那个 cgroup 的成员，而 `set` 在 stop 阶段会阻塞等待——
+  # 直接跑会被 SIGTERM 连带杀掉，结果只停不启（实测：Caelestia 侧点 Noctalia 后两个都 inactive）。
+  # 包进独立 scope 后进程移出该 cgroup，停旧 shell 不影响它继续 start 目标。
+  # 实测：scope 内进程在 host service 被 stop 后仍存活并跑完。
+  #
   # 原理：shell-switcher 靠 HYPRLAND_INSTANCE_SIGNATURE / NIRI_SOCKET 做会话防呆，
   # 这两个变量在 systemd 用户环境里（uwsm 写完），launcher 子进程能继承，故无需包装脚本。
   xdg.desktopEntries = {
@@ -141,7 +148,7 @@ in
       name = "Noctalia Shell";
       genericName = "Desktop Shell";
       comment = "切换到 Noctalia 桌面 shell";
-      exec = "${shellSwitcher}/bin/shell-switcher set noctalia";
+      exec = "systemd-run --user --scope --collect -- ${shellSwitcher}/bin/shell-switcher set noctalia";
       # noctalia 的图标在它自己的包内、没进 profile，所以按绝对路径引用。
       icon = "${config.programs.noctalia.package}/share/icons/hicolor/scalable/apps/noctalia.svg";
       categories = [ "Settings" "Utility" ];
@@ -151,7 +158,7 @@ in
       name = "Caelestia Shell";
       genericName = "Desktop Shell";
       comment = "切换到 Caelestia 桌面 shell";
-      exec = "${shellSwitcher}/bin/shell-switcher set caelestia";
+      exec = "systemd-run --user --scope --collect -- ${shellSwitcher}/bin/shell-switcher set caelestia";
       icon = "caelestia";
       categories = [ "Settings" "Utility" ];
       terminal = false;
