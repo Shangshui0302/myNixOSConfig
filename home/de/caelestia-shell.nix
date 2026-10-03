@@ -239,6 +239,12 @@ in
   xdg.configFile."caelestia/shell.json".force = true;
   xdg.configFile."caelestia/cli.json".force = true;
 
+  # fish 补全：cli 包自带 share/fish/vendor_completions.d/caelestia.fish，但 NixOS 把
+  # /etc/profiles 固化成 /etc/static 时只保留 bash-completion，丢 fish 的 vendor_completions.d
+  # （与 shell-switcher / noctalia 补全同一原因）。显式装到 ~/.config/fish/completions。
+  xdg.configFile."fish/completions/caelestia.fish".source =
+    "${config.programs.caelestia.cli.package}/share/fish/vendor_completions.d/caelestia.fish";
+
   # caelestia service 不自动拉起（wantedBy 置空），由 shell-switcher 手动启停，
   # 避免与 Noctalia 同时激活（DBus 冲突）。
   systemd.user.services.caelestia = {
