@@ -28,7 +28,7 @@ Hyprland ↔ niri 切换：注销当前 compositor 回到 greetd → 选择另�
 要点：
 - **显示器**：`output "eDP-1" { scale 1.5 }`（2K 屏，与 Hyprland 一致）
 - **输入**：xkb `us` + `caps:escape`，触摸板 `natural-scroll`
-- **圆角**：全局 `geometry-corner-radius 10` + `clip-to-geometry true`，focus-ring 跟随圆角
+- **圆角**：全局 `geometry-corner-radius 15` + `clip-to-geometry true`，focus-ring 跟随圆角（与 Hyprland `decoration.rounding = 15` 一致，都对 Caelestia 屏幕边框内圆角 25−10）
 - **无 CSD**：`prefer-no-csd`，foot 等去掉标题栏，用 focus-ring 标焦点
 - **Noctalia**：由 Home Manager 声明的 user service 随图形会话启动；不在 niri 配置中重复 `spawn-at-startup`
 

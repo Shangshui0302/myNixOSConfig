@@ -63,11 +63,11 @@
       // 由 systemd user service 拉起（graphical-session.target），此处不再 spawn。
 
       // ===== Window rules =====
-      // 全局窗口圆角（与 Hyprland rounding=10 一致）。
+      // 全局窗口圆角（与 Hyprland rounding=15 一致，二者都对齐 caelestia 屏幕边框内圆角 25-10=15）。
       // geometry-corner-radius 让 focus-ring/border 跟随圆角，
       // clip-to-geometry 让窗口内容本身也切圆角。
       window-rule {
-          geometry-corner-radius 10
+          geometry-corner-radius 15
           clip-to-geometry true
       }
 

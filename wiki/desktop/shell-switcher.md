@@ -73,11 +73,17 @@ Hyprland 的 shell 相关快捷键统一调用 `desktop-shell-action`，它按�
 - `Super + Space`：打开启动器
 - `Super + K`：打开控制中心（Caelestia 的 utilities drawer）
 - `Super + ,`：打开设置（Caelestia 的 Nexus）
-- `Super + C`：Noctalia 剪贴板面板；Caelestia 打开 Clipse
+- `Super + C`：剪贴板历史 —— Noctalia 面板；Caelestia 用 `caelestia clipboard`（`cliphist` + `fuzzel`）
+- `Super + Shift + C`：删除剪贴板条目 —— Noctalia `clipboard-clear`；Caelestia `caelestia clipboard -d`
+- `Super + Shift + L`：锁屏 —— Noctalia `session lock`；Caelestia `shell lock lock`
+- `Super + Shift + Print`：区域截图并复制 —— Noctalia `screenshot-region`；Caelestia AreaPicker
+- 媒体键（`XF86AudioPlay/Next/Prev/Stop`）：Noctalia `media <action>`；Caelestia `shell mpris <fn>`
 - `Super + Tab`：Hyprland 使用 ScrollOverview；niri 使用原生 `toggle-overview`
 - 亮度键：两套 shell 都按 5% 步进
 
-Clipse 由 Home Manager 独立运行，和 shell 切换无关；壁纸仍统一交给 waypaper + Matugen 管线。
+Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无响应）：`dashboard`、`sidebar`、`session`、`showall`、`record`。
+
+剪贴板历史由 Home Manager 的 `cliphist.service` 常驻采集（`wl-paste --watch cliphist store`），和 shell 切换无关——两个 shell 共用同一个历史库。壁纸仍统一交给 waypaper + Matugen 管线。
 
 ## 启动流程
 

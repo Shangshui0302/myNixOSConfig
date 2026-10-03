@@ -242,7 +242,10 @@ in
         };
 
         decoration = {
-          rounding = 10;
+          # 与 caelestia 屏幕边框的「内圆角」对齐：边框 rounding=25、thickness=10，
+          # 内圆角 = 25 - 10 = 15（见 caelestia Config/borderconfig.hpp 默认值，
+          # 本机 shell.json 未覆盖 border 节点，故运行时即此默认值）。
+          rounding = 15;
           rounding_power = 2;
           active_opacity = 0.88;
           inactive_opacity = 0.82;
@@ -604,6 +607,16 @@ in
         hl.plugin.scrolloverview.overview("toggle all")
       end)
 
+      -- Caelestia 独有入口 —— 走 desktop-shell-action 分发到 shell IPC。
+      -- 注：不用 caelestia 注册的 Hyprland 全局快捷键（hl.dsp.global("caelestia:xxx")），
+      -- 实测这条派发在当前 Hyprland 构建下按了没反应；IPC 路径与配置其余部分一致且可用。
+      -- 这些动作只在 caelestia 运行时有效（Noctalia 会话下按键无响应，符合预期）；
+      -- 两个 shell 都能做的动作同样走分发器，只是分发器里有 noctalia 分支。
+      hl.bind("SUPER + D", hl.dsp.exec_cmd("desktop-shell-action dashboard"))
+      hl.bind("SUPER + A", hl.dsp.exec_cmd("desktop-shell-action sidebar"))
+      hl.bind("SUPER + L", hl.dsp.exec_cmd("desktop-shell-action session"))
+      hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd("desktop-shell-action showall"))
+
       -- Launch
       hl.bind("SUPER + W", hl.dsp.exec_cmd("foot"))
       hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"))
@@ -611,6 +624,9 @@ in
       hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus"))
       hl.bind("SUPER + B", hl.dsp.exec_cmd("google-chrome"))
       hl.bind("SUPER + C", hl.dsp.exec_cmd("desktop-shell-action clipboard"))
+      hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("desktop-shell-action clipboard-delete"))
+      hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd("desktop-shell-action lock"))
+      hl.bind("SUPER + SHIFT + PRINT", hl.dsp.exec_cmd("desktop-shell-action screenshot"))
       hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"))
       hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
       hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("desktop-shell-action launcher"))
@@ -713,6 +729,12 @@ in
       hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"), { repeating = true })
       hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
       hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
+      -- 媒体播放键：两个 shell 都有实现，走分发器
+      hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("desktop-shell-action media-playpause"))
+      hl.bind("XF86AudioPause", hl.dsp.exec_cmd("desktop-shell-action media-playpause"))
+      hl.bind("XF86AudioNext", hl.dsp.exec_cmd("desktop-shell-action media-next"))
+      hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("desktop-shell-action media-prev"))
+      hl.bind("XF86AudioStop", hl.dsp.exec_cmd("desktop-shell-action media-stop"))
       hl.bind("XF86TouchpadToggle", hl.dsp.exec_cmd("toggle-touchpad"))
       hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("desktop-shell-action brightness-up"), { repeating = true })
       hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("desktop-shell-action brightness-down"), { repeating = true })

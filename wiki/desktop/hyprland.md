@@ -61,12 +61,22 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 |------|------|
 | `Super + W` | 终端 (foot) |
 | `Super + E` | 文件管理器 (Nautilus) |
-| `Super + C` | 剪贴板（Noctalia 面板 / Caelestia 的 Clipse） |
+| `Super + C` | 剪贴板历史（Noctalia 面板 / Caelestia 用 `cliphist`+`fuzzel`） |
+| `Super + Shift + C` | 删除剪贴板条目（Noctalia 清空历史 / Caelestia `cliphist delete`） |
 | `Super + Space` | 应用启动器（Noctalia / Caelestia） |
 | `Super + K` | 控制中心（Noctalia / Caelestia utilities） |
 | `Super + ,` | 设置面板（Noctalia / Caelestia Nexus） |
+| `Super + D` | dashboard（仅 Caelestia；Noctalia 下无响应） |
+| `Super + A` | 侧栏（仅 Caelestia；Noctalia 下无响应） |
+| `Super + L` | 会话菜单（仅 Caelestia；Noctalia 下无响应） |
+| `Super + Shift + W` | 面板总开关：dashboard + OSD（仅 Caelestia） |
+| `Super + Shift + L` | 锁屏（Noctalia session lock / Caelestia 自带锁屏） |
 | `Super + Tab` | ScrollOverview 工作区总览 |
 | `Super + Shift + D` | Darkman 切换深浅模式 |
+
+窗角半径由 `decoration.rounding = 15` 决定，对齐 Caelestia 屏幕边框的内圆角（`border.rounding 25 − border.thickness 10`）；niri 侧同值。
+
+**注**：Caelestia 向 Hyprland 注册了 22 条全局快捷键（`caelestia:launcher`、`caelestia:showall` 等），但 `hl.dsp.global("caelestia:xxx")` 这条派发在当前构建下按了没反应，因此本配置的按键统一走 `desktop-shell-action` → shell IPC，不使用 global 派发。
 
 ### 截图
 
@@ -74,6 +84,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 |------|------|
 | `Print` | 全屏截图（自动保存 + 复制到剪贴板） |
 | `Shift + Print` | 区域截图（Swappy 编辑后保存 + 复制） |
+| `Super + Shift + Print` | 区域截图并复制（Noctalia `screenshot-region` / Caelestia AreaPicker，不进 Swappy） |
 
 截图保存在 `~/Pictures/Screenshots/YYYY-MM/` 目录下。
 手动启动 Swappy 时默认保存到 `~/Pictures/`；使用 `swappy -f 图片` 打开图片时，保存目录跟随原图；通过区域截图快捷键启动时，保存目录跟随截图脚本，使用当月子目录。

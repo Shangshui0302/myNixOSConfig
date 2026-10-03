@@ -1,16 +1,18 @@
 { config, lib, pkgs, inputs, ... }:
 
 let
-  # Caelestia 自动保存 shell.json；HM 的默认链接指向 Nix store，只能在服务启动前
-  # 解引用成普通文件。下一次 HM 激活仍会重新生成声明式源文件。
+  # Caelestia 自动保存 shell.json（CLI 也会改写 cli.json）；HM 的默认链接指向 Nix store，
+  # 只能在服务启动前解引用成普通文件。下一次 HM 激活仍会重新生成声明式源文件。
   prepareCaelestiaConfig = pkgs.writeShellScript "caelestia-prepare-config" ''
-    config_path=${lib.escapeShellArg "${config.xdg.configHome}/caelestia/shell.json"}
-    if [ -L "$config_path" ]; then
-      tmp="$config_path.next"
-      ${pkgs.coreutils}/bin/cp --dereference "$config_path" "$tmp"
-      ${pkgs.coreutils}/bin/chmod 0644 "$tmp"
-      ${pkgs.coreutils}/bin/mv -f "$tmp" "$config_path"
-    fi
+    for name in shell.json cli.json; do
+      config_path=${lib.escapeShellArg "${config.xdg.configHome}/caelestia"}/"$name"
+      if [ -L "$config_path" ]; then
+        tmp="$config_path.next"
+        ${pkgs.coreutils}/bin/cp --dereference "$config_path" "$tmp"
+        ${pkgs.coreutils}/bin/chmod 0644 "$tmp"
+        ${pkgs.coreutils}/bin/mv -f "$tmp" "$config_path"
+      fi
+    done
   '';
 in
 {
@@ -25,6 +27,30 @@ in
     enable = true;
     # Hyprland 的共享快捷键通过 caelestia CLI 调用 shell IPC。
     cli.enable = true;
+
+    # CLI 的 theme 管线：缺键即 true（utils/theme.py 的 check()），而条目存在即覆盖，
+    # 所以必须显式写 false 才关得掉。它写入的目标全是 Matugen 的地盘（终端序列、
+    # ~/.config/hypr/scheme/current.lua、GTK css、qt6ct/qtengine 配色、Discord 皮肤），
+    # 且 apply_colours() 不看当前跑的是哪个 shell —— 在 Noctalia 会话下点一下
+    # launcher 的 >scheme 就会改写全局配色，所以这里全关，颜色权威只留 Matugen。
+    cli.settings.theme = {
+      enableTerm = false;
+      enableHypr = false;
+      enableDiscord = false;
+      enableSpicetify = false;
+      enablePandora = false;
+      enableFuzzel = false;
+      enableBtop = false;
+      enableNvtop = false;
+      enableHtop = false;
+      enableGtk = false;
+      enableQt = false;
+      enableWarp = false;
+      enableChromium = false;
+      enableZed = false;
+      enableCava = false;
+    };
+
     settings = {
       # Caelestia 原生毛玻璃：透明层由 shell 绘制，抽屉会同步启用 Hyprland blur。
       appearance.transparency = {
@@ -130,6 +156,22 @@ in
           dangerous = false;
         }
         {
+          name = "Clipboard";
+          icon = "content_paste";
+          description = "Browse clipboard history";
+          command = [ "caelestia" "clipboard" ];
+          enabled = true;
+          dangerous = false;
+        }
+        {
+          name = "Clipboard delete";
+          icon = "delete";
+          description = "Delete an entry from clipboard history";
+          command = [ "caelestia" "clipboard" "-d" ];
+          enabled = true;
+          dangerous = false;
+        }
+        {
           name = "Shutdown";
           icon = "power_settings_new";
           description = "Shutdown the system";
@@ -192,9 +234,10 @@ in
     };
   };
 
-  # shell.json 已纳入 Nix 声明；Caelestia 运行时会把它解引用成可写文件，
+  # shell.json / cli.json 已纳入 Nix 声明；Caelestia 运行时会把它解引用成可写文件，
   # 下次 HM 激活直接覆盖该文件，不再生成会反复冲突的备份。
   xdg.configFile."caelestia/shell.json".force = true;
+  xdg.configFile."caelestia/cli.json".force = true;
 
   # caelestia service 不自动拉起（wantedBy 置空），由 shell-switcher 手动启停，
   # 避免与 Noctalia 同时激活（DBus 冲突）。
