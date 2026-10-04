@@ -2,6 +2,9 @@
   description = "MechRevo-NixOS configuration";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Temporary consumer of the tested package in nixpkgs PR #570118.
+    # Use pkgs.strata and remove this input once our official channel includes it.
+    strata-nixpkgs.url = "github:Shangshui0302/nixpkgs/e7095c7d23897f76fbdae73a819d8c79fd9e68d4";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -62,7 +65,7 @@
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
           inherit pkgs;
         };
-        strata = import ./local-deriv/strata.nix { inherit pkgs; };
+        strata = inputs.strata-nixpkgs.legacyPackages.${system}.strata;
       };
 
       devShells.${system}.packaging = pkgs.mkShellNoCC {

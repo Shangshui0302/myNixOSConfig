@@ -14,7 +14,7 @@
 
 - 系统集成、硬件、网络、启动、字体和服务放 `host/`。
 - 用户配置、桌面应用和工具放 `home/`；能由 Home Manager 管理的用户配置优先放 HM。
-- 自定义且不在 nixpkgs 的包放 `local-deriv/`，直接 import；不要为单点包创建 overlay。
+- 长期本地包放 `local-deriv/`，直接 import；不要为单点包创建 overlay。准备投稿的包在 `~/Projects/nixpkgs-maintain` 的 nixpkgs 任务 worktree 中维护唯一包定义，本仓库只消费已验证的固定提交，个人主题和配置留在 `home/`。临时 input 只取目标包，官方频道可用后移除。
 - 新增、升级、修复或审查 `local-deriv/` 包时必须使用用户级 `$nix-packaging` skill；面向上游 Nixpkgs 的包维护与 PR 使用 `$nixpkgs-maintainer`；NixOS、Home Manager、服务、部署和恢复任务使用 `$nixos-ecosystem`。共享 skills 安装在 `~/.agents/skills/`，`.agents/skills/` 只保留本项目专用 skills。以锁定 revision 的源码作为接口依据；遇到新接口、版本更新或兼容性疑点时再核对当前官方文档。同一 revision 的有效证据可复用。完成上游取证、方案说明、修改和验证；已有授权不重复确认，目标未定或越过明确权限边界时再询问。
 - `hardware-configuration.nix` 自动生成，除非用户明确要求不要手改。
 - secrets 只放 `/persist/secrets/` 或 sops 加密文件，不进 git。
@@ -98,7 +98,7 @@ sudo nixos-rebuild switch --flake .
 
 ## Git 与文档
 
-- 破坏启动、显示或网络的改动在 `codex/` feature 分支完成；不要在 `main` 做实验。
+- 任务分支按用途命名为 `feature/<slug>`、`fix/<slug>`、`docs/<slug>` 等；禁止使用 `codex/`、`claude/`、`agent/` 前缀。涉及启动、显示或网络的实验使用独立任务 worktree；不要在 `main` 做实验。
 - 保留用户已有脏改动，不使用 destructive reset/checkout 覆盖它们。
 - 修改 Nix、移动模块或删除功能后，同步 README、wiki 来源清单和必要的 memory 卡。
 - 提交前使用 `project-commit` skill；会话收尾使用 `session-wrapup` skill。

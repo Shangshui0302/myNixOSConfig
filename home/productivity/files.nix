@@ -1,24 +1,29 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  inputs,
+  osConfig,
+  ...
+}:
 
 let
-  # nixpkgs 尚无 Strata，从本地包引入；构建入口 nix build path:.#strata。
-  strata = import ../../local-deriv/strata.nix { inherit pkgs; };
+  strata = inputs.strata-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.strata;
 in
 {
-  # 文件管理器：主 DE 与 GNOME 共同提供 Nautilus/Sushi，另保留 Dolphin 与 Strata。
-  home.packages = with pkgs; [
-    ouch
-    rich-cli
-    p7zip
-    unzip
-    file-roller
-    nautilus
-    sushi
-    ffmpegthumbnailer
-    tumbler
-    dragon-drop
-    kdePackages.dolphin
-    strata
-  ];
-
+  # 主 DE 与 GNOME 共用 Nautilus/Sushi/Dolphin；Strata 仅在主 DE 提供。
+  home.packages =
+    with pkgs;
+    [
+      ouch
+      rich-cli
+      p7zip
+      unzip
+      file-roller
+      nautilus
+      sushi
+      ffmpegthumbnailer
+      tumbler
+      dragon-drop
+      kdePackages.dolphin
+    ]
+    ++ pkgs.lib.optionals (!osConfig.services.desktopManager.gnome.enable) [ strata ];
 }

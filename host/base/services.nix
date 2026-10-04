@@ -57,9 +57,7 @@
 
   services.gvfs.enable = true;
 
-  # bubblewrap 供 Strata（local-deriv/strata.nix）的预览沙箱使用：它按固定系统目录
-  # （/run/current-system/sw/bin 等）解析 bwrap、不读 PATH，所以必须进系统 profile。
-  environment.systemPackages = with pkgs; [ ntfs3g bubblewrap ];
+  environment.systemPackages = with pkgs; [ ntfs3g ];
 
   boot.kernel.sysctl."fs.inotify.max_user_watches" = 524288;
 }

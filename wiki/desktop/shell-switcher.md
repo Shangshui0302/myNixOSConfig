@@ -2,7 +2,7 @@
 title: 桌面 Shell 切换
 category: desktop
 tags: [shell-switcher, shell, noctalia, caelestia, systemd]
-updated: 2026-09-05
+updated: 2026-10-04
 ---
 
 # 桌面 Shell 切换指南
@@ -118,6 +118,7 @@ Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无�
 | 切换后双顶栏 / 通知异常 | 某 shell 未被 stop。`systemctl --user status noctalia caelestia` 查，手动 `systemctl --user stop <卡住的>` |
 | 切换失败自动回退 noctalia | `systemctl --user status <目标>` 看日志（`journalctl --user -u <service> -e`） |
 | Caelestia 报 `failed to write config` | 执行一次 HM/NixOS rebuild，再用 `shell-switcher set noctalia`、`shell-switcher set caelestia` 重启目标 service；无需手动删除备份文件，若仍失败检查 `systemctl --user status caelestia` 和 `journalctl --user -u caelestia -e` |
+| fish 补全出现 `KeyError: 'variant'` 或查找 `schemes/matugen` 失败 | Matugen 生成的 `~/.local/state/caelestia/scheme.json` 必须含 CLI 支持的 `name=dynamic`、`flavour=default`、`variant=content` 和当前深浅 `mode`。应用修正后的 Nix 配置，再运行 `~/.local/bin/theme-apply "$(darkman get)"` 重新生成；用 `caelestia scheme list -f`、`caelestia scheme list -m` 检查 |
 | 想清理 current 标记 | 删 `~/.config/shell-switcher/current`（默认仍走 Noctalia 自动起） |
 
 ## 相关链接

@@ -1,7 +1,8 @@
 {
-  "name": "matugen",
-  "flavour": "dark",
-  "mode": "dark",
+  "name": "dynamic",
+  "flavour": "default",
+  "mode": "__MATUGEN_MODE__",
+  "variant": "content",
   "colours": {
     "primary": "{{colors.primary.default.hex_stripped}}",
     "onPrimary": "{{colors.on_primary.default.hex_stripped}}",

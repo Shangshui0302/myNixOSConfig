@@ -2,12 +2,21 @@
 title: 文件管理器与归档工具
 category: 生产力
 tags: [nautilus, dolphin, strata, file-manager, archive, matugen]
-updated: 2026-10-02
+updated: 2026-10-04
 ---
 
 # 文件管理器与归档工具
 
-`home/productivity/files.nix` 提供三个图形文件管理器和一组归档/压缩工具。三个管理器同时保留，不互相接管默认目录关联。
+`home/productivity/files.nix` 提供三个图形文件管理器和一组归档/压缩工具。主 DE 保留三个管理器，不声明 Strata 桌面集成；GNOME 使用 Nautilus。
+
+## 目录
+
+- [文件管理器](#文件管理器)
+- [Strata](#strata)
+- [桌面集成](#桌面集成)
+- [普通偏好](#普通偏好)
+- [归档与压缩工具](#归档与压缩工具)
+- [故障排查](#故障排查)
 
 ## 文件管理器
 
@@ -15,17 +24,13 @@ updated: 2026-10-02
 |------|------|------|
 | Nautilus + Sushi | 应用菜单 / `nautilus` | 主 DE 与 GNOME 变体共用，Sushi 提供空格快速预览 |
 | Dolphin | 应用菜单 / `dolphin` | KDE 文件管理器及其依赖 |
-| Strata | 应用菜单 / `strata` | 键盘优先的 GTK4 文件管理器，本地包（源码构建） |
+| Strata | 应用菜单 / `strata` | 主 DE 专用的 GTK4 文件管理器，来自固定提交的 nixpkgs fork |
 
-本仓库没有声明 `inode/directory` 的默认关联（`xdg.mimeApps` 只在 `home/dev/nvim.nix` 里为文本类型设置），三个管理器都不会自动成为默认目录处理程序；需要时手动指定：
-
-```bash
-xdg-mime default io.github.lgse.Strata.desktop inode/directory
-```
+主 DE 安装 Strata、Nautilus 和 Dolphin，不通过 Strata 专用模块设置默认目录程序。GNOME 变体不安装 Strata，使用自带 Nautilus。默认程序选择由桌面配置负责。
 
 ## Strata
 
-Strata 来自上游 `lgse/strata` v0.20.1，nixpkgs 没有，因此在 `local-deriv/strata.nix` 里从源码构建，打包细节见 [Nix 手工打包](../dev/nix-packaging.md)。
+Strata v0.21.0 通过临时 `strata-nixpkgs` flake input 获取，固定到 fork 的已验证提交 `e7095c7d23897f76fbdae73a819d8c79fd9e68d4`（[nixpkgs PR #570118](https://github.com/NixOS/nixpkgs/pull/570118)）。本仓库只消费该包；包定义和补丁在 nixpkgs 任务分支维护，不在 `local-deriv/` 保存副本。
 
 ```bash
 strata                       # 打开家目录
@@ -49,7 +54,25 @@ strata --version             # 打印版本
 
 ### 更新方式
 
-包装里带 `share/strata/install-source.toml`，声明该二进制由包管理器安装。因此 Settings → Updates 会显示「Installed by Nix as strata.」，并拒绝用应用内自更新覆盖 store 里的二进制；升级走 `flake.lock` 或修改 `local-deriv/strata.nix` 的 `version` 后由用户手动 rebuild。
+包装里带 `share/strata/install-source.toml`，声明该二进制由包管理器安装。因此 Settings → Updates 会显示「Installed by Nix as strata.」，并拒绝用应用内自更新覆盖 store 里的二进制；升级先在维护工作区完成打包和验证，再更新 `flake.nix` 中的固定提交与对应锁项，由用户手动 rebuild。系统自己的 `nixpkgs` input 不随该包改变；官方频道包含 Strata 后改用 `pkgs.strata`，移除临时 input。
+
+### 桌面集成
+
+本仓库只安装 Strata，不声明它的 FileChooser portal、默认目录 MIME 关联或 FileManager1 服务，也不提供 Strata 专用 HM 模块。安装包不会自动接管桌面入口；需要这些能力的用户可自行通过 NixOS/HM 原生选项配置。
+
+应用自带的 setup 功能仍保留。其作用是在用户目录中生成集成配置；使用声明式配置时应在 Nix 中管理对应文件，避免再用应用按钮修改同一配置。
+
+撤销此前的 HM 集成声明并应用配置后，原来的 HM 管理标记、portal 文件和 FileManager1 服务链接会被移除，MIME 配置不再声明 Strata 为默认目录程序。此前由应用 setup 生成的非 HM 文件不在本次撤销范围中。
+
+旧版本的 `The Strata executable path must not be writable by other users` 来自对 sticky `/nix/store` 组写权限的误判。投稿包中的 `desktop.patch` 只对 root 所有、带 sticky bit、无 world-write 的 `/nix/store` 放行组写权限，仍检查其他祖先、包目录及可执行文件；同时修正包装程序路径与服务状态判断。补丁不包含 HM 私有标记或界面限制。
+
+### 普通偏好
+
+视图、排序、侧栏、点击行为和预览等偏好直接在 Strata 设置界面调整，由应用保存到 `~/.config/strata/settings.toml`。不提供 `programs.strata.settings` 或额外的 HM 覆盖文件。
+
+撤销旧的 HM 偏好覆盖并应用配置后，Home Manager 会移除原来的覆盖文件链接；已有可写的 `settings.toml` 保留。重启 Strata 后使用其中的手动偏好。主题仍由本地 Matugen 链维护，详见下节。
+
+`settings.toml` 由 Strata 全量重写，且拒绝替换符号链接，因此不要直接将它声明为 HM 只读文件。历史、缓存和会话状态也留给应用维护。
 
 ### 主题与配色（Matugen）
 
@@ -67,17 +90,13 @@ Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、
 
 ### NixOS 沙箱适配
 
-Strata 把原生格式解析（图片、PDF、视频缩略图、压缩包、XLSX/DOCX、Mermaid/Math 渲染）放进 bubblewrap 沙箱，而沙箱参数在上游 `src/sandbox.rs` 里写死了 FHS 布局：只 bind `/usr`、`/lib`、`/lib64`、`/etc/fonts`，把沙箱内 `PATH` 设为 `/usr/bin`，并用 `/usr/bin/prlimit` 限制资源。纯文本/代码/Markdown 在主进程内解析，本来就不受影响。
+独立包负责原生格式解析所需的 bubblewrap、Nix store 可见性、沙箱内工具路径、GStreamer 插件以及可信 helper 搜索路径。主机不再需要为 Strata 额外安装系统级 `bubblewrap`；桌面集成配置与 Matugen 主题仍由消费者决定。
 
-NixOS 上这些前提不成立（`/usr/bin` 里只有 `env`，且沙箱看不到 `/nix/store`，helper 的 ELF 解释器无法 exec），因此本包带一个本地补丁 `local-deriv/strata-nixos-sandbox.patch`：追加只读 `/nix/store`、把沙箱内 `PATH`/`prlimit` 换成 store 路径、注入 GStreamer 插件目录，并把 `/usr` 改为可缺省 bind。打包细节见 [Nix 手工打包](../dev/nix-packaging.md)。
-
-另需系统 profile 提供 `bwrap`：`trusted_command::resolve` 只查固定系统目录（`/run/current-system/sw/bin` 等）、不读 `PATH`，所以 [host/base/services.nix](../../host/base/services.nix) 把 `pkgs.bubblewrap` 放进了 `environment.systemPackages`。
-
-升级 Strata 时要重新核对这个补丁；如果 patch 阶段冲突，构建会直接失败而不是静默退回。GUI 内的实际预览、媒体播放与 GVfs 访问以 switch 后的实测为准。
+这些补丁与完整构建、上游测试和预览验证记录在 `~/Projects/nixpkgs-maintain/development/strata/`。升级先在 nixpkgs 任务 worktree 中集中修改和验证；未改变的 derivation 可复用既有构建证据。系统 dry-build 只验证集成，实际 GUI、媒体播放与 GVfs 访问仍以用户应用后的实测为准。
 
 ### 回退
 
-从 `home/productivity/files.nix` 移除 `home.packages` 里的 `strata`（以及文件顶部的 `let` 绑定），然后由用户手动 rebuild：
+在 `home/productivity/files.nix` 移除 Strata 的条件包声明，然后由用户手动 rebuild；原有手动 `settings.toml` 留在原处：
 
 ```bash
 cd ~/myNixOSConfig
@@ -98,13 +117,13 @@ sudo nixos-rebuild switch --flake .
 
 ## 故障排查
 
-- **Strata 预览报 `Unable to start the preview sandbox`**：系统 profile 里没有 `bwrap`（见上文，`host/base/services.nix` 负责提供）。
-- **Strata 缩略图/PDF/压缩包预览空白**：先确认该版本的 `local-deriv/strata-nixos-sandbox.patch` 仍然生效（升级 Strata 后 patch 冲突会让构建直接失败，不会静默退回）；不要试图用 wrapper 的 `PATH` 修——沙箱内 `PATH` 由补丁注入的 store 路径决定。
+- **Strata 预览报 `Unable to start the preview sandbox`**：先确认实际运行的是固定 input 中的 0.21.0 包；该包自带可信 `bwrap` 搜索路径，再检查用户命名空间权限与应用日志。
+- **Strata 缩略图/PDF/压缩包预览空白**：在 nixpkgs 任务 worktree 核对沙箱补丁及对应验证记录；沙箱内工具和 GStreamer 插件路径由包提供。
 - **应用菜单里没有 Strata 图标**：图标与 desktop entry 在 store 里，重新登录一次让桌面缓存刷新。
 - **Yazi 没有缩略图**：见 [Yazi 文件管理器](yazi.md) 的排查节。
 
 ## 相关链接
 
-- [Nix 手工打包](../dev/nix-packaging.md) — `local-deriv/strata.nix` 的构建与验证流程
+- [Nix 手工打包](../dev/nix-packaging.md) — 本地打包与投稿包消费的边界
 - [Yazi 文件管理器](yazi.md) — 终端文件管理器
 - [wiki 首页](../README.md)

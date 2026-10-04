@@ -102,10 +102,14 @@ let
   # runtime cache can be populated by a single image analysis.
   mkMatugenModeTemplate = mode: name: source:
     pkgs.runCommand "${name}-${mode}-matugen-template" { } ''
-      ${pkgs.gnused}/bin/sed 's/\.default\./.${mode}./g' ${source} > "$out"
+      ${pkgs.gnused}/bin/sed \
+        -e 's/\.default\./.${mode}./g' \
+        -e 's/__MATUGEN_MODE__/${mode}/g' ${source} > "$out"
     '';
 
   mkMatugenModeTemplates = mode: {
+    # CLI requires a known name/flavour and variant; dynamic/default accepts
+    # external colours, with content matching our Matugen scheme-content.
     caelestia = mkMatugenModeTemplate mode "caelestia-scheme" ./matugen/caelestia-scheme.json.tpl;
     hyprland = mkMatugenModeTemplate mode "hyprland-colors" ./matugen/hyprland-colors.lua.tpl;
     niri = mkMatugenModeTemplate mode "niri-colors" ./matugen/niri-colors.kdl.tpl;

@@ -44,7 +44,7 @@ docs:
     sources: [home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/productivity/graphics.nix, home/productivity/phone.nix, host/base/desktop.nix, home/theme/runtime.nix, host/de/greeter.nix]
     memory:  [darkman-theme-authority, stylix-color-hub, matugen-wallpaper-theming]
   desktop/shell-switcher.md:
-    sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix]
+    sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix, home/theme/runtime.nix, home/theme/matugen/caelestia-scheme.json.tpl]
     memory:  [shell-switcher-generic]
   desktop/shell.md:
     sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
@@ -63,7 +63,7 @@ docs:
     sources: [home/productivity/graphics.nix]
     memory:  []
   productivity/files.md:
-    sources: [home/productivity/files.nix, local-deriv/strata.nix, host/base/services.nix, home/theme/runtime.nix, home/theme/matugen/strata-theme.toml.tpl]
+    sources: [flake.nix, home/productivity/files.nix, host/base/services.nix, home/theme/runtime.nix, home/theme/matugen/strata-theme.toml.tpl]
     memory:  [strata-preview-sandbox-nixos, strata-matugen-theme]
   productivity/yazi.md:
     sources: [home/productivity/yazi.nix, home/productivity/graphics.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/yazi-flavor.toml.tpl]
@@ -76,7 +76,7 @@ docs:
     sources: [home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl]
     memory:  [ai-tools-source]
   dev/nix-packaging.md:
-    sources: [flake.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/material-adw-kvantum.nix, local-deriv/material-gnome-theme.nix, local-deriv/modernz.nix, local-deriv/netease-cloud-music-web-player.nix, local-deriv/strata.nix, local-deriv/strata-nixos-sandbox.patch]
+    sources: [flake.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/material-adw-kvantum.nix, local-deriv/material-gnome-theme.nix, local-deriv/modernz.nix, local-deriv/netease-cloud-music-web-player.nix]
     memory:  [nix-package-runtime-freshness]
   dev/distrobox.md:
     sources: [home/dev/containers.nix, home/dev/container-images/arch.Containerfile, home/dev/container-images/fedora.Containerfile, home/dev/container-images/ubuntu.Containerfile, home/dev/container-images/manage.sh, home/dev/nvim.nix, home/dev/nvim/init.lua, home/env/shell/programs.nix, host/base/containers.nix]

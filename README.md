@@ -34,7 +34,7 @@ home/
 ├── gnome.nix             # GNOME 变体 HM 入口（base + theme/gtk-static）
 ├── env/                  # Shell、系统工具、OneDrive
 ├── dev/                  # 编辑器、AI、开发工具、容器
-├── productivity/         # 办公、通讯、文件管理、图像工具、Yazi
+├── productivity/         # 办公、通讯、文件管理（主 DE 保留 Strata）、图像工具、Yazi
 └── leisure/              # 浏览器、影音、游戏
 local-deriv/              # 不在 nixpkgs 的本地包
 wiki/                     # 操作手册与来源映射
@@ -70,4 +70,5 @@ nixos-rebuild dry-build --flake .
 - 系统级配置放 `host/`，用户级配置优先放 `home/`。
 - `hardware-configuration.nix` 自动生成，不手动大改。
 - secrets 放 `/persist/secrets/` 或 sops 加密文件，不进 git。
-- 网络、内核、硬件和启动相关改动使用 `codex/` feature 分支。
+- 任务分支使用 `feature/`、`fix/`、`docs/` 等用途前缀，禁止工具名称前缀。
+- 投稿包在 `~/Projects/nixpkgs-maintain` 开发，本仓库通过固定提交消费已验证版本。Strata 暂用独立 `strata-nixpkgs` input；个人 Matugen 链保留在 `home/theme/`，官方频道可用后移除临时 input。

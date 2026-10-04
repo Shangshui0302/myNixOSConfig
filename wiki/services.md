@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-10-02
+updated: 2026-10-04
 ---
 
 # 系统服务
@@ -65,7 +65,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 - `hardware.bluetooth` 启用且 `powerOnBoot`，开机自动上电。
 - `services.printing`（CUPS）提供系统级打印。
 - `services.gvfs` 启用虚拟文件系统，配合 `ntfs3g` 挂载 NTFS。
-- `environment.systemPackages` 含 `ntfs3g` 与 `bubblewrap`：后者供 Strata 的预览沙箱使用（它按固定系统目录解析 `bwrap`，不读 `PATH`，见 [文件管理器与归档工具](productivity/files.md)）。
+- `environment.systemPackages` 提供 `ntfs3g`。Strata 的 `bubblewrap` 和工具搜索路径由独立包提供，不再要求系统额外安装。
 - `services.flatpak.enable` 提供用户级 Flatpak 的系统运行时；具体应用仍按主要用途放在对应的 Home Manager 模块。
 
 ## 电源与存储维护

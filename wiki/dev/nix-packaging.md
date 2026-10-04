@@ -2,11 +2,11 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-09-30
+updated: 2026-10-04
 ---
 # Nix 手工打包
 
-本仓库用 `local-deriv/` 维护尚未进入 nixpkgs、需要固定版本或需要本机集成的包。以后新增、升级、修复或审查这些包，必须调用 `$nix-packaging` skill；不要直接凭经验写 derivation。
+本仓库用 `local-deriv/` 维护长期保留在本地的包。准备向 nixpkgs 投稿的包转入独立维护工作区，系统只消费已验证的固定提交；以后新增、升级、修复或审查这些包，必须调用 `$nix-packaging` skill；不要直接凭经验写 derivation。
 
 ## 目录
 
@@ -19,6 +19,7 @@ updated: 2026-09-30
 - [获取和更新哈希](#获取和更新哈希)
 - [验证](#验证)
 - [当前本地包](#当前本地包)
+- [已投稿包：Strata](#已投稿包strata)
 - [更新已有包](#更新已有包)
 - [故障排查](#故障排查)
 
@@ -183,47 +184,23 @@ nix build path:.#modernz-mpv -L --no-link --print-out-paths
 nixos-rebuild dry-build --flake path:.
 ```
 
-### Strata (`local-deriv/strata.nix`)
+## 已投稿包：Strata
 
-Strata v0.20.1 是键盘优先的 GTK4 文件管理器（上游 `lgse/strata`，MIT）。上游只发布预编译 tarball（AUR 走 `strata-bin`），这里从源码构建：
+Strata v0.21.0 的包定义和六个补丁统一在 `~/Projects/nixpkgs-maintain/nixpkgs` 的 `feature/strata` 分支维护（`pkgs/by-name/st/strata/`），继续修改时创建该分支的任务 worktree。贡献规范、任务入口和验证记录在外层维护仓库中；本仓库不保存第二份 derivation。
 
-- 源码：固定 tag `v0.20.1`，`src` 用 `fetchFromGitHub`；`Cargo.lock` 的 373 个 crate 全部来自 crates.io，用 `rustPlatform.fetchCargoVendor` 一次锁定。
-- flake 入口：`nix build path:.#strata`；消费者 `home/productivity/files.nix`。
-- 输出：`bin/strata`（wrapGAppsHook4 包装：`PATH` 含上游 `install.sh` 的 REQUIRED_PACKAGES、`GST_PLUGIN_SYSTEM_PATH_1_0` 指向 GStreamer 插件、`GDK_PIXBUF_MODULE_FILE` 指向 pixbuf loader）、desktop entry、hicolor 图标、`share/licenses/strata/`，以及声明包管理器归属的 `share/strata/install-source.toml`（据此禁用应用内自更新）。
-- 与上游依赖清单的两处偏差：`ffmpeg` → `ffmpeg-headless`（应用只调用命令行 ffmpeg/ffprobe）、不带 `gst-plugins-bad`（上游 REQUIRED_PACKAGES 不含它）。裁剪前后闭包 1168 MiB → 1060 MiB。
-- `doCheck = false`：上游 `scripts/check.sh` 的 GUI 用例需要显示服务器（上游另用 Xvfb 跑 `test-headless.py`），Nix 构建沙箱里没有。
+`flake.nix` 的临时 `strata-nixpkgs` input 固定到已构建并通过测试的提交 `e7095c7d23897f76fbdae73a819d8c79fd9e68d4`，只获取 `legacyPackages.x86_64-linux.strata`，保留独立包集的完整依赖版本。不要将系统 `nixpkgs` 改为 fork，也不要用系统包集重新 `callPackage` 该定义后宣称复用了原构建。
 
-**NixOS 沙箱适配（本地补丁）**：预览与缩略图在 bubblewrap 里渲染，而上游 `src/sandbox.rs` 的 `runtime_command()` 写死 FHS 布局——`--ro-bind /usr /usr`、`--setenv PATH /usr/bin`、`/usr/bin/prlimit`，且不 bind `/nix/store`。未打补丁时复刻上游参数实测：
+- 入口仍为 `nix build path:.#strata`；`home/productivity/files.nix` 只在主 DE 安装它，GNOME 不安装。
+- 普通偏好由应用维护可写的 `settings.toml`；Matugen 模板和 `theme-apply` 留在本地消费者，包没有本机路径或主题依赖。
+- 包自带可信 helper、bubblewrap 与沙箱工具路径，不要求系统额外安装 `bubblewrap`。
+- [PR #570118](https://github.com/NixOS/nixpkgs/pull/570118) 被合并且当前官方频道包含该包后，消费者改为 `pkgs.strata`，删除 `strata-nixpkgs` input 和锁项。
 
-```text
-prlimit: failed to execute /app/strata: No such file or directory
-bwrap: execvp /app/strata: No such file or directory
-# 追加 --ro-bind /nix/store /nix/store 后恢复正常输出：strata 0.20.1
-```
-
-原因是 helper 的 ELF 解释器与库都在 `/nix/store` 里，而不是缺依赖。`local-deriv/strata-nixos-sandbox.patch` 因此只改参数构造，不动命名空间/`clearenv`/Landlock/seccomp 边界：
-
-| 改动 | 说明 |
-| --- | --- |
-| `--ro-bind-try /nix/store` | 让 helper 的解释器与库可见（只读） |
-| 沙箱内 `PATH` / `prlimit` | 由编译期 `option_env!` 换成 store 路径，来源是 derivation 的 `STRATA_SANDBOX_PATH`、`STRATA_SANDBOX_PRLIMIT` |
-| `GST_PLUGIN_SYSTEM_PATH_1_0` | 由 `STRATA_SANDBOX_GST_PLUGIN_PATH` 注入，媒体解码需要 |
-| `--ro-bind /usr` → `--ro-bind-try /usr` | NixOS 上 `/usr` 可能只有 `env`，工具不再依赖它 |
-
-补丁用 `option_env!` + `unwrap_or`，缺编译期变量时退回上游的 `/usr/bin` 行为，便于对照。沙箱内的 PATH 与包装脚本一致（`lib.makeBinPath runtimeTools`）。
-
-`bwrap` 本身由 `trusted_command::resolve` 从固定系统目录（`/run/current-system/sw/bin` 等）查找、不读 `PATH`，所以 `host/base/services.nix` 把 `pkgs.bubblewrap` 放进 `environment.systemPackages`；这是补丁之外唯一必需的集成项。
-
-已验证：用打完补丁的参数构造复刻调用真实 helper，图片缩略图输出 `256x144` PNG、视频缩略图输出 `128x96` PNG。GUI 内的实际预览、媒体播放（`preview-media`）与 GVfs 访问仍须 switch 后人工验证。
-
-**曾试过但无效的补丁（已回退）**：标题栏侧栏开关的选中态会渲染成一个浅色圆盘、图标看不见。给 `src/style.css` 补 `.sidebar-toggle:checked` 规则没有任何效果——原因是 `~/.config/gtk-4.0/gtk.css` 指向运行时 Material-Gnome 主题的 `gtk.css`，GTK 按 **USER 优先级（800）**加载它，高于应用的 APPLICATION（600）；该主题的 `button:checked/:active { border-radius: 999px; background-color: var(--primary); color: var(--on_primary) }` 因此压过应用样式，而 Strata 的标题栏图标是**按 accent 预渲染的纹理**（`assets::primary_icon_color()`）、不吃 CSS `color`，M3 的 `primary` 又很浅，于是图标溶进填充色。实测（在宿主上跑部署版 + 在运行时主题 CSS 里注入探针）：`.sidebar-toggle`、`.sidebar-toggle:checked`、`button:checked`、`headerbar button` 加 `!important` 都改不动那块填充，只有万能选择器 `headerbar *` 的背景能盖住它。所以这条要么走主题侧（改 `local-deriv/material-gnome` 的 checked 填充，桌面全局生效），要么走上游（让该图标用能随状态翻转的颜色）；应用侧 CSS 无解。
-
-验证（构建与集成）：
+升级流程：在 nixpkgs 任务 worktree 中修改 → 先做快速检查与适用的 vet → 集中修复后执行一次最终构建、测试和 smoke → 记录提交、架构与 derivation → 更新消费者固定提交 → 系统 dry-build → 用户手动 switch。相同 derivation 的有效构建证据可复用，dry-build 不代表已应用。
 
 ```bash
-nix-instantiate --parse local-deriv/strata.nix
-nix build path:.#strata -L --no-link --print-out-paths
-nixos-rebuild dry-build --flake path:.#MechRevo-NixOS   # 容器内要显式指定主机名
+nix eval --raw path:.#strata.drvPath
+nix build path:.#strata --no-link --print-out-paths
+nixos-rebuild dry-build --flake path:.#MechRevo-NixOS
 ```
 
 ## 更新已有包

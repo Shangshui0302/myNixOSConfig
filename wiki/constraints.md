@@ -2,7 +2,7 @@
 title: 约束与惯例
 category: 顶层
 tags: [constraints, conventions, nix]
-updated: 2026-09-04
+updated: 2026-10-04
 ---
 
 # NixOS Config — 约束与惯例
@@ -43,7 +43,7 @@ assets/                # Binary assets (wallpapers, tarballs, etc.)
 - The package has no reverse dependencies that need the change
 
 **Use `local-deriv/*.nix` + direct import when:**
-- Defining a brand-new package not in nixpkgs
+- Defining a long-term local package not in nixpkgs; packages being contributed upstream live in the nixpkgs task worktree and are consumed from a tested fixed input
 - Pattern: `(import ../local-deriv/foo.nix { inherit pkgs; })`
 - If the derivation needs a local `assets/` path, pass `src` as a parameter:
   ```nix
