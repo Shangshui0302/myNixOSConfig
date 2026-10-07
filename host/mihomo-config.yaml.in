@@ -212,6 +212,15 @@ rule-providers:
     interval: 86400
     proxy: DIRECT
 
+  geosite-slack:
+    type: http
+    behavior: domain
+    path: ./ruleset/geosite-slack.mrs
+    url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/slack.mrs"
+    format: mrs
+    interval: 86400
+    proxy: DIRECT
+
   geosite-microsoft:
     type: http
     behavior: domain
@@ -376,6 +385,9 @@ rules:
   - DOMAIN-SUFFIX,meta.ai,🤖 AI/Dev
   - DOMAIN-SUFFIX,perplexity.ai,🤖 AI/Dev
   - DOMAIN-SUFFIX,qoder.com,🤖 AI/Dev
+
+  # Slack：使用美国节点，优先于通用国外规则
+  - RULE-SET,geosite-slack,🇺🇸 美国节点
 
   # OneDrive：必须早于 Microsoft
   - DOMAIN-SUFFIX,onedrive.com,☁️ OneDrive
