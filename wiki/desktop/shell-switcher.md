@@ -2,7 +2,7 @@
 title: 桌面 Shell 切换
 category: desktop
 tags: [shell-switcher, shell, noctalia, caelestia, systemd]
-updated: 2026-10-04
+updated: 2026-10-07
 ---
 
 # 桌面 Shell 切换指南
@@ -17,10 +17,10 @@ updated: 2026-10-04
 
 | Shell | 定义文件 | 默认启动 | 说明 |
 |-------|----------|----------|------|
-| **noctalia** | `home/de/noctalia.nix` | ✅ 自动 | 默认 shell，`WantedBy=graphical-session.target` 由 systemd 拉起 |
+| **noctalia** | `home/de/noctalia.nix` | 默认选择 | 由 `shell-switcher-boot.service` 拉起，也是启动失败时的回退 |
 | **caelestia** | `home/de/caelestia-shell.nix` | ❌ | caelestia-dots，依赖面大（强制 quickshell-git 外部源） |
 
-非默认 shell 的 service `wantedBy` 均置空，**只由切换器启停**，避免与 Noctalia 同时激活。
+两个 shell 的 service `WantedBy` 均置空，**只由统一启动入口与切换器启停**，避免同时激活。
 
 ## 常用操作
 
@@ -29,7 +29,7 @@ shell-switcher list               # 列出可用 shell（来自 config.toml）
 shell-switcher current            # 显示当前 active 的 shell（无则 none）
 shell-switcher set caelestia      # 切到 caelestia
 shell-switcher set noctalia       # 切回 Noctalia
-shell-switcher boot               # 读 current 标记启动对应 shell（shell-starter 入口）
+shell-switcher boot               # 仅尝试启动保存的 shell；登录服务另有失败回退
 ```
 
 切换后新 shell 立即接管顶栏；旧 shell 进程被整个 cgroup 终止。
@@ -68,7 +68,7 @@ default = "noctalia"    # 默认 shell
 
 [[shell]]
 name = "noctalia"
-service = "noctalia.service"    # 唯一自动起的
+service = "noctalia.service"    # 由统一入口启动
 
 [[shell]]
 name = "caelestia"
@@ -104,7 +104,8 @@ Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无�
 
 - **唯一入口**：`shell-switcher-boot.service`（`home/de/shell-switcher.nix`）挂 `graphical-session.target`，执行 `shell-switcher boot` 读 `~/.config/shell-switcher/current` 标记，启动上次选的 shell。两个 shell 的 unit **都不再设 `Install.WantedBy`**（Noctalia 已移除，Caelestia 本来就是空的），所以谁是 active 完全由这个入口决定。
   - 为什么不能让 Noctalia 自己挂 `graphical-session.target`：uwsm 会话下该 target 会**并行**拉起所有 `WantedBy` 单元，而 shell-switcher 只停"它自己启动的"那个 shell，于是 Noctalia 会留下来与 Caelestia 并存（实测到的双 shell）。去掉自动拉起后不再有竞争窗口。
-  - 无标记时回退 `config.toml` 的 `default`（= noctalia），**兜底不变**。
+  - 无标记时使用 `config.toml` 的 `default`（= noctalia）。
+  - 保存的 shell 启动失败时，服务包装器执行 `shell-switcher set noctalia`，清理其他 shell 并将 current 标记改为 Noctalia；默认 shell 也失败时才重试服务。直接运行裸 `shell-switcher boot` 没有这层回退。
 - **rebuild 后同样收敛**：`nixos-rebuild switch` 会重启 `graphical-session.target`，上述服务随之重跑，所以不需要手工 `shell-switcher set <name>`。标记文件 `~/.config/shell-switcher/current` 不是声明式管理的，HM 激活器只清理自己命名空间下的文件，标记得以保留（要重置就删掉它）。
 - Noctalia 的 unit 带 `SuccessExitStatus=143`：切换时被 SIGTERM 停掉（退出码 143）不该被 systemd 记成 failed。
 - 注意该服务 `RemainAfterExit=yes`：处于 active(exited) 时 `systemctl --user start` 是 no-op，手工重测要用 `restart`。
@@ -119,7 +120,7 @@ Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无�
 | 切换失败自动回退 noctalia | `systemctl --user status <目标>` 看日志（`journalctl --user -u <service> -e`） |
 | Caelestia 报 `failed to write config` | 执行一次 HM/NixOS rebuild，再用 `shell-switcher set noctalia`、`shell-switcher set caelestia` 重启目标 service；无需手动删除备份文件，若仍失败检查 `systemctl --user status caelestia` 和 `journalctl --user -u caelestia -e` |
 | fish 补全出现 `KeyError: 'variant'` 或查找 `schemes/matugen` 失败 | Matugen 生成的 `~/.local/state/caelestia/scheme.json` 必须含 CLI 支持的 `name=dynamic`、`flavour=default`、`variant=content` 和当前深浅 `mode`。应用修正后的 Nix 配置，再运行 `~/.local/bin/theme-apply "$(darkman get)"` 重新生成；用 `caelestia scheme list -f`、`caelestia scheme list -m` 检查 |
-| 想清理 current 标记 | 删 `~/.config/shell-switcher/current`（默认仍走 Noctalia 自动起） |
+| 想清理 current 标记 | 删 `~/.config/shell-switcher/current`（下次统一启动入口默认选择 Noctalia） |
 
 ## 相关链接
 

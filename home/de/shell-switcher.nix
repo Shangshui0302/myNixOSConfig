@@ -5,6 +5,16 @@ let
   # 剪贴板历史：caelestia 的 `caelestia clipboard` 就是 cliphist + fuzzel 的封装
   # （cli 自带这两个依赖，此处补的是系统 PATH 与常驻 store watcher）。
   clipboardStore = "${pkgs.wl-clipboard}/bin/wl-paste --watch ${lib.getExe pkgs.cliphist} store";
+  # The locked switcher's boot command does not fall back after a failed start.
+  # Use set for recovery so it stops other shells and records the default choice.
+  shellSwitcherBoot = pkgs.writeShellScript "shell-switcher-boot" ''
+    if ${shellSwitcher}/bin/shell-switcher boot; then
+      exit 0
+    fi
+    echo "shell-switcher boot failed; falling back to Noctalia" >&2
+    exec ${shellSwitcher}/bin/shell-switcher set noctalia
+  '';
+
   desktopShellAction = pkgs.writeShellApplication {
     name = "desktop-shell-action";
     runtimeInputs = [
@@ -67,8 +77,8 @@ let
 in
 {
   # shell-switcher：安装二进制 + 运行时配置（声明可由 switcher 切换的 shell：name → systemd user service）。
-  # 各 shell 的 service 由各自模块定义：noctalia（home/de/noctalia.nix，WantedBy 自动起）、
-  # caelestia（wantedBy 空，由 switcher 启停）。
+  # 各 shell 的 service 由各自模块定义，均不自行 WantedBy 自动起；
+  # shell-switcher-boot 统一恢复选择，失败时回退 Noctalia。
   # `shell-switcher set <name>` 切换；默认 Noctalia。
   #
   # 剪贴板历史：改用 caelestia 自带路径（cliphist + fuzzel），替掉原来的 Clipse。
@@ -92,15 +102,8 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # 登录 / rebuild 后的 shell 恢复：唯一入口是 `shell-switcher boot`，它读
-  # ~/.config/shell-switcher/current 标记拉起上次选的 shell（无标记则用 config.toml 的 default）。
-  # 两个触发点都走这里，不直接拉某个 shell：
-  #   - 登录：本服务随 graphical-session.target 起。Noctalia 自己的 WantedBy 保持在
-  #     graphical-session.target 作为"外壳兜底"，本服务后跑并 stop-all → start 目标，
-  #     所以两壳同时起的竞争窗口会被收敛成单 shell（代价是可能有短暂闪烁）。
-  #   - rebuild：switch 会重启 graphical-session.target，本服务随之重跑，于是不再需要手工
-  #     `shell-switcher set caelestia`；HM 激活器只清理自己命名空间下的文件，
-  #     ~/.config/shell-switcher 不在其中，标记得以保留。
+  # 登录 / rebuild 后统一恢复 current 标记中的 shell（无标记使用默认 Noctalia）。
+  # 两个 shell 都不自行启动；恢复失败通过 set noctalia 清理其他 shell 并更新标记。
   systemd.user.services.shell-switcher-boot = {
     Unit = {
       Description = "Restore last selected desktop shell (shell-switcher boot)";
@@ -110,8 +113,9 @@ in
     Service = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${shellSwitcher}/bin/shell-switcher boot";
-      # boot 失败（无标记 / 切换失败）会自行回退 default shell，这里再兜一层重试。
+      ExecStart = toString shellSwitcherBoot;
+      Environment = "PATH=${lib.makeBinPath [ pkgs.systemd ]}";
+      # 连默认 Noctalia 都启动失败时，再由 systemd 重试。
       Restart = "on-failure";
       RestartSec = 5;
     };
@@ -119,7 +123,7 @@ in
   };
 
   xdg.configFile."shell-switcher/config.toml".text = ''
-    # 默认 shell：boot 无标记 / 切换失败回退时使用
+    # 默认 shell：boot 无标记时使用；启动包装器也以 Noctalia 作为失败回退
     default = "noctalia"
 
     [[shell]]
