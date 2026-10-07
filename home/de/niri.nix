@@ -118,9 +118,9 @@
           // Niri 原生工作区总览（不经过 Noctalia）
           Mod+Tab   { toggle-overview; }
 
-          // ---- 截图（复用 Hyprland 的 screenshot 脚本）----
-          Print       { spawn-sh "screenshot screen"; }
-          Shift+Print { spawn-sh "screenshot area"; }
+          // ---- niri 原生截图：保存到 screenshot-path 并复制到剪贴板 ----
+          Print       { screenshot-screen; }
+          Shift+Print { screenshot; }
 
           // ---- 媒体 / 亮度 ----
           XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 2%+"; }

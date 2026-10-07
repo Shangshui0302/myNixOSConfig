@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-09-05
+updated: 2026-10-07
 ---
 
 # Niri 使用指南
@@ -49,8 +49,10 @@ Hyprland ↔ niri 切换：注销当前 compositor 回到 greetd → 选择另�
 | Mod+R / Ctrl+Shift+R | 循环预设列宽 / 窗口高度 |
 | Mod+Ctrl+F | 扩展列到可用宽度 |
 | Mod+BracketLeft/Right | consume/expel 窗口出入列 |
-| Print / Shift+Print | 截图（复用 hyprland 脚本） |
+| Print / Shift+Print | 截取当前屏幕 / 打开 niri 原生区域截图界面 |
 | XF86 音量/亮度 | PipeWire / Noctalia |
+
+截图保存到 `~/Pictures/Screenshots/`，并复制到剪贴板；区域截图使用 niri 自带选择界面。
 
 ## 配色（stylix 底色 + matugen 动态）
 
