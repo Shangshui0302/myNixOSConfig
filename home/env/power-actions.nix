@@ -56,6 +56,7 @@ let
     runtimeInputs = with pkgs; [
       systemd # systemctl --user
       coreutils
+      util-linux # flock：串行化 run/mode/apply/revert 与 status
       hyprland # hyprctl（锁定 nixpkgs 的 0.56.2，与运行中的合成器同版本）
       darkman
       tlp-pd # tlpctl：tlp-pd 的 D-Bus 客户端，普通用户即可读写档位
@@ -76,7 +77,16 @@ let
       state_dir="$runtime_dir/power-actions"
       state_file="$state_dir/state"
       band_file="$state_dir/band"
+      lock_file="$state_dir/lock"
       mkdir -p "$state_dir"
+
+      # 一个进程持有整条命令的独占锁：policy、profile、state 与会话动作必须作为
+      # 一个整体串行化，status 也因此读取一致快照。--close 让 flock 监督进程
+      # 持锁到命令结束，同时避免 hyprctl/systemctl 等子进程意外继承锁。
+      if [ "''${1:-}" != "--locked" ]; then
+        exec flock --exclusive --close "$lock_file" "$0" --locked "$@"
+      fi
+      shift
 
       profiles="performance balanced power-saver"
 

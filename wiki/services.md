@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-10-04
+updated: 2026-10-07
 ---
 
 # 系统服务
@@ -129,6 +129,7 @@ TLP 源码 `func.d/10-tlp-func-cpu` 的判断是 `[ -n "$maxfreq" ] && [ "$maxfr
 
 - **只自动在 balanced ↔ power-saver 之间切，永不自动进 performance**；性能档只由人手动开。
 - **边沿触发**：只在「跨过阈值」那一刻动手，用户在同一区间里手动选的档位不会被下一轮顶掉；不处理 TLP profile hold。
+- `run`、`mode`、`apply`、`revert` 共用一个运行时独占锁，避免定时策略与手动操作交错覆盖档位、band 或恢复记录；`status` 也持同一把锁读取一致快照。
 - 实机日志样例：`电量策略: 插电 100% >= 60%，档位 -> balanced`。
 - **会话锁屏时策略切档会失败**（polkit 要求 active 会话）：脚本不推进 band 游标，解锁后下一轮（30s 内）自动重试，无需手动补救。
 
