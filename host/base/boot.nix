@@ -4,7 +4,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  systemd.settings.Manager.DefaultsTimeoutStopSec = 15;
+  systemd.settings.Manager.DefaultTimeoutStopSec = 15;
 
   # /boot options intentionally override hardware-configuration.nix
   # (fmask/dmask 0077 vs auto-generated 0022) for stricter EFI permissions.
