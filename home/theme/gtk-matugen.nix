@@ -72,6 +72,13 @@ in
   # GTK4 在一个可写主题里常驻双 palette；GTK3 使用两个稳定主题目录。
   # GNOME 变体不 import 本文件，用 gtk-static.nix 保持固定深色。
   home.activation.setupMatugenGtkTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    (
+    # Share theme-apply's lock for the entire snapshot and directory replacement.
+    cache_root="$HOME/.cache/wallpaper-colors"
+    mkdir -p "$cache_root"
+    exec 9>"$cache_root/.lock"
+    ${pkgs.util-linux}/bin/flock 9
+
     matugen_theme_dir="${config.home.homeDirectory}/.themes/${matugenThemeName}"
     matugen_theme_next="${config.home.homeDirectory}/.themes/.${matugenThemeName}.next"
     matugen_dark_theme_dir="${config.home.homeDirectory}/.themes/${matugenDarkThemeName}"
@@ -97,6 +104,7 @@ in
     mv "$matugen_theme_next" "$matugen_theme_dir"
     mv "$matugen_dark_theme_next" "$matugen_dark_theme_dir"
     chmod -R u+w "$matugen_theme_dir" "$matugen_dark_theme_dir"
+    )
   '';
 
   home.file.".config/gtk-4.0/gtk.css".source = lib.mkForce (

@@ -704,13 +704,16 @@ let
         if [ "$assets_changed" -eq 1 ]; then
           copy_atomic "$cache_dir/dual/noctalia/palettes/matugen.json" \
             "$HOME/.config/noctalia/palettes/matugen.json"
-          copy_atomic "$cache_dir/dual/gtk3-light/colors.css" \
-            "$HOME/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css"
-          copy_atomic "$cache_dir/dual/gtk3-dark/colors.css" \
-            "$HOME/.themes/Material-Gnome-Matugen-Dark/gtk-3.0/colors.css"
-          copy_atomic "$cache_dir/dual/gtk4/colors.css" \
-            "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css"
         fi
+
+        # Reconcile GTK even on a mode-only apply: HM may have refreshed its
+        # writable theme directories. copy_atomic skips unchanged contents.
+        copy_atomic "$cache_dir/dual/gtk3-light/colors.css" \
+          "$HOME/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css"
+        copy_atomic "$cache_dir/dual/gtk3-dark/colors.css" \
+          "$HOME/.themes/Material-Gnome-Matugen-Dark/gtk-3.0/colors.css"
+        copy_atomic "$cache_dir/dual/gtk4/colors.css" \
+          "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css"
 
         # Fcitx5's theme.conf and highlight.svg are copied on every apply.  The
         # highlight.svg is used by the tray icon and the candidate window; it
@@ -1014,6 +1017,9 @@ in
     "writeBoundary"
     "linkGeneration"
     "installFcitx5MatugenRuntimeThemes"
+    "setupMatugenGtkTheme"
+    "setupKvantumMaterialAdw"
+    "setupDarkmanMode"
   ] ''
     if [ -n "''${XDG_RUNTIME_DIR:-}" ] && [ -x "$HOME/.local/bin/theme-apply" ]; then
       mode="$(${pkgs.darkman}/bin/darkman get 2>/dev/null || true)"
