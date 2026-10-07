@@ -19,7 +19,7 @@ docs:
     memory:  [flake-unstable-strategy]
 
   architecture/index.md:
-    sources: [flake.nix, host/default.nix, home/base.nix, home/home.nix, home/theme, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
+    sources: [flake.nix, host/default.nix, host/base/default.nix, host/de/sessions.nix, host/de/greeter.nix, host/gnome/default.nix, home/base.nix, home/home.nix, home/gnome.nix, home/theme, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
     memory:  [flake-unstable-strategy, desktop-environment-host-hm-boundary]
   architecture/flake.md:
     sources: [flake.nix, host/base/nix.nix]

@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-10-04
+updated: 2026-10-07
 ---
 
 # Flake 配置管理
@@ -27,7 +27,7 @@ updated: 2026-10-04
 - `nixpkgs`：跟踪 `nixos-unstable` 频道，作为基础包集与 NixOS 模块来源。
 - `strata-nixpkgs`：临时固定 fork 提交，只消费其中的 Strata，包集与系统隔离；官方频道可用后移除。
 - `home-manager`：用户环境管理框架。
-- `noctalia` / `noctalia-greeter`：桌面壳与登录界面模块。
+- `noctalia`：桌面壳模块；主桌面登录器由本地 `host/de/greeter.nix` 配置 greetd/tuigreet。
 - `sops-nix`：机密管理与注入。
 - `nix-flatpak`：Flatpak 集成。
 - `codex-desktop-linux`：Codex Desktop 的桌面发行来源。
@@ -74,7 +74,7 @@ ExtraArgs --> End(["生成系统配置"])
 graph LR
 Root["flake.nix"] --> Lock["flake.lock<br/>依赖锁定"]
 Root --> Host["host/default.nix"]
-Root --> Home["home/base.nix"]
+Root --> Home["home/home.nix<br/>GNOME: home/gnome.nix"]
 Host --> SOPS["host/base/sops.nix"]
 Home --> HM["home-manager 模块"]
 Root --> Ext["外部依赖<br/>nixpkgs/home-manager/noctalia/sops-nix"]
@@ -91,12 +91,12 @@ participant Flake as "flake.nix"
 participant HM as "Home Manager"
 participant SOPS as "sops-nix"
 participant Host as "host/default.nix"
-participant Home as "home/base.nix"
+participant Home as "home/home.nix"
 User->>Flake : 调用 nixos-rebuild --flake
 Flake->>Flake : 解析 inputs (nixpkgs, home-manager, noctalia, sops-nix...)
 Flake->>Host : 加载系统模块集合
 Host-->>SOPS : 启用并配置机密注入
-Host-->>HM : 启用 Home Manager 并绑定用户
+Flake->>HM : 启用 Home Manager 并绑定用户
 HM->>Home : 加载用户模块集合
 Home-->>HM : 返回用户环境配置
 Flake-->>User : 生成可重现的系统与用户配置

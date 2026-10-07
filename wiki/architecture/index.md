@@ -2,7 +2,7 @@
 title: 系统架构总览
 category: 架构
 tags: [architecture, flake, host, home-manager, modules]
-updated: 2026-08-13
+updated: 2026-10-07
 ---
 
 # 系统架构总览
@@ -26,60 +26,68 @@ updated: 2026-08-13
 整体架构以 Flake 为中心，组织两大层次：
 
 - 顶层 `flake.nix` 通过 `nixpkgs.lib.nixosSystem` 创建系统配置，并注入 `specialArgs`（`inputs`），供各模块访问外部依赖。
-- `host/default.nix` 作为系统配置聚合点，导入硬件抽象与功能子模块，形成「基础设施 + 能力」的清晰分层。
-- `home/base.nix` 通过 Home Manager 将用户配置注入系统，按领域拆分（`env`/`dev`/`productivity`/`leisure`）。
+- `host/default.nix` 组合共享系统入口 `host/base/default.nix` 与主桌面的 `host/de/` 会话、登录器配置；GNOME 使用独立入口 `host/gnome/default.nix`。
+- 主桌面用户入口是 `home/home.nix`，组合共享 `home/base.nix`、主题与桌面模块；GNOME 入口 `home/gnome.nix` 组合共享基础与静态 GTK 主题。共享基础按 `env`/`dev`/`productivity`/`leisure` 拆分。
 - 外部输入以 NixOS / Home Manager 模块形式被直接导入，避免硬编码路径，提升可移植性。
 
 ```mermaid
 graph TB
-subgraph "Flake 层"
 F["flake.nix<br/>inputs/outputs"]
-end
 subgraph "主机层 (host)"
 H1["host/default.nix"]
-H2["hardware-configuration.nix"]
-H3["boot.nix / services.nix / network.nix"]
-H4["desktop.nix / greeter.nix / gnome.nix / sops.nix"]
+HB["host/base/default.nix"]
+HC["hardware-configuration.nix<br/>host/base/boot、services、network、desktop、sops 等"]
+HD["host/de/sessions.nix<br/>host/de/greeter.nix"]
+HG["host/gnome/default.nix<br/>独立 GNOME 变体"]
 end
 subgraph "用户层 (home)"
-U1["home/base.nix"]
-U2["env/ dev/ productivity/ leisure/"]
+U1["home/home.nix<br/>主桌面入口"]
+UB["home/base.nix<br/>共享用户基础"]
+UC["home/env、dev、productivity、leisure"]
+UD["home/theme 动态主题<br/>home/de 桌面模块"]
+UG["home/gnome.nix<br/>静态 GTK 主题"]
 end
 F --> H1
-H1 --> H2
-H1 --> H3
-H1 --> H4
+H1 --> HB
+HB --> HC
+H1 --> HD
+H1 -. specialisation .-> HG
+HG --> HB
 F --> U1
-U1 --> U2
+U1 --> UB
+UB --> UC
+U1 --> UD
+HG --> UG
+UG --> UB
 ```
 
 ## 模块导入机制
 
-从 `flake.nix` 到 `host/default.nix` 再到子模块，是一条清晰的线性加载链：
+系统与用户配置分别按入口组合共享基础和桌面专属模块：
 
 - `flake.nix` 通过 `nixosSystem` 指定 `system`、`specialArgs`（`inherit inputs`），并将 `host/default.nix` 与外部模块（`sops-nix`、`home-manager`）加入 `modules` 列表。
-- `host/default.nix` 用 `imports` 依次导入硬件、引导、服务、网络、桌面、登录器、游戏、容器、SOPS 等子模块。
-- `home/base.nix` 同样通过 `imports` 汇总用户配置，并设置用户名、家目录、`stateVersion` 等元信息。
+- `host/default.nix` 直接导入 `host/base/default.nix`、`host/de/sessions.nix` 和 `host/de/greeter.nix`；硬件、引导、服务、网络、容器、SOPS 等共享模块由 `host/base/default.nix` 汇总。
+- Home Manager 主入口 `home/home.nix` 导入 `home/base.nix`、主题与桌面模块；`home/base.nix` 汇总共享用户配置，并设置用户名、家目录、`stateVersion` 等元信息。
 
 ```mermaid
 sequenceDiagram
 participant FL as "flake.nix"
-participant HM as "Home Manager"
 participant HD as "host/default.nix"
-participant HW as "hardware-configuration.nix"
-participant SV as "services.nix"
-participant NW as "network.nix"
-participant DS as "desktop.nix"
-participant GR as "greeter.nix"
-participant SP as "sops.nix"
-FL->>HD : 导入 host/default.nix
-HD->>HW : 导入硬件抽象
-HD->>SV : 导入系统服务
-HD->>NW : 导入网络配置
-HD->>DS : 导入桌面环境
-HD->>GR : 导入登录管理器
-HD->>SP : 导入机密管理
-FL->>HM : 注入 home-manager.users.<user> = import ./home/base.nix
+participant HB as "host/base/default.nix"
+participant BC as "共享系统子模块"
+participant DE as "host/de/sessions、greeter"
+participant HM as "Home Manager"
+participant HH as "home/home.nix"
+participant UB as "home/base.nix"
+participant UD as "home/theme、home/de"
+FL->>HD : 导入主桌面系统入口
+HD->>HB : 导入共享系统入口
+HB->>BC : 导入硬件、引导、服务、网络等
+HD->>DE : 导入主桌面会话与登录器
+FL->>HM : 绑定用户入口 home/home.nix
+HM->>HH : 加载主桌面用户配置
+HH->>UB : 导入共享用户基础
+HH->>UD : 导入主题与桌面模块
 ```
 
 导入均为单向，未发现显式循环依赖。`host/default.nix` 高内聚地聚合子系统模块，降低了 `flake.nix` 的复杂度。
@@ -104,7 +112,7 @@ FL --> NC["noctalia"]
 FL --> SN["sops-nix"]
 FL --> NF["nix-flatpak"]
 FL --> NP["nixpkgs"]
-HM --> HOME["home/base.nix"]
+HM --> HOME["home/home.nix<br/>GNOME: home/gnome.nix"]
 SN --> HOST["host/base/sops.nix"]
 NC --> HM
 NP --> HOST
