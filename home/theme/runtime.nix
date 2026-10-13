@@ -860,6 +860,13 @@ let
           "$HOME/.config/zellij/themes/matugen.kdl"
         zellij_end="$(now_ms)"
         log "stage=zellij duration_ms=$((zellij_end - zellij_start)) mode=$mode"
+        qt_palette_changed=0
+        if ! ${pkgs.diffutils}/bin/cmp -s "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
+          "$HOME/.config/qt5ct/colors/matugen.conf" || \
+          ! ${pkgs.diffutils}/bin/cmp -s "$cache_dir/$mode/qt6ct/colors/matugen.conf" \
+            "$HOME/.config/qt6ct/colors/matugen.conf"; then
+          qt_palette_changed=1
+        fi
         copy_atomic "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
           "$HOME/.config/qt5ct/colors/matugen.conf"
         copy_atomic "$cache_dir/$mode/qt6ct/colors/matugen.conf" \
@@ -868,6 +875,12 @@ let
           "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig"
         copy_atomic "$cache_dir/$mode/Kvantum/MaterialAdw/MaterialAdw.svg" \
           "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.svg"
+        # qtct watches its config directory, not the nested colors/ directory.
+        # Notify after both palettes and Kvantum assets are published so long-lived
+        # QApplication consumers (including hyprpolkitagent) update without restart.
+        if [ "$qt_palette_changed" -eq 1 ]; then
+          ${pkgs.coreutils}/bin/touch "$HOME/.config/qt5ct" "$HOME/.config/qt6ct"
+        fi
         copy_atomic "$cache_dir/$mode/color-schemes/MaterialAdwMatugen.colors" \
           "$HOME/.local/share/color-schemes/MaterialAdwMatugen.colors"
         copy_atomic "$cache_dir/$mode/papirus-folder-color" \

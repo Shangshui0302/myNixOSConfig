@@ -324,6 +324,17 @@ in
 
       window_rule = [
         {
+          name = "hyprpolkitagent-dialog";
+          # Qt 6 derives an empty app_id from Nix's hidden wrapped executable.
+          # Its Wayland title falls back to the agent's explicit application name.
+          match.title = "^Hyprland Polkit Agent$";
+          float = true;
+          center = true;
+          rounding = 15;
+          animation = "popin 87%";
+          opacity = "0.96 override 0.96 override";
+        }
+        {
           name = "clipse-float";
           match = {
             class = "^clipse$";

@@ -2,7 +2,7 @@
 title: 深色模式与动态配色
 category: desktop
 tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode, strata]
-updated: 2026-10-07
+updated: 2026-10-13
 ---
 
 # 深色模式与动态配色
@@ -61,7 +61,8 @@ journalctl --user -u darkman -b
 - **GTK4**：`Material-Gnome-Matugen/gtk-4.0/colors.css` 始终同时包含浅色和深色变量，用 `@media (prefers-color-scheme: dark)` 选择。GTK4 收到 portal 模式事件时不再依赖 Matugen 写文件的先后顺序，因此不会读取上一轮颜色而反向。
 - **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`；壁纸色板变化后还会重启 `xdg-desktop-portal-gtk`，避免 VS Code/Codex 复用长驻文件选择器进程中的旧 CSS，普通深浅切换不重启。
 - **Flatpak GTK 应用**：继续通过 `$HOME/.themes:ro` 和固定 `GTK_THEME=Material-Gnome-Matugen` 读取主题。GTK4 4.20 及以上可使用双配色媒体查询；GTK3 Flatpak 暂不动态切换到 `-Dark` 目录。
-- **Qt5/Qt6**：Home Manager 的 `qtct` 同时管理两代平台插件，控件样式统一为 Kvantum；`MaterialAdw` 的 `kvconfig`/SVG 由 Matugen 写入 `~/.config/Kvantum/MaterialAdw/`，两代 `qtct` 分别读取 `~/.config/qt5ct/colors/matugen.conf` 与 `~/.config/qt6ct/colors/matugen.conf`。Qt 应用通常只在启动时读取调色板，切壁纸后重新打开即可。
+- **Qt5/Qt6**：Home Manager 的 `qtct` 同时管理两代平台插件，默认控件样式为 Kvantum；`MaterialAdw` 的 `kvconfig`/SVG 由 Matugen 写入 `~/.config/Kvantum/MaterialAdw/`，两代 `qtct` 分别读取 `~/.config/qt5ct/colors/matugen.conf` 与 `~/.config/qt6ct/colors/matugen.conf`。模板按 QPalette 顺序输出 22 个颜色角色（包含 NoRole 占位）；Qt5 读取前 21 个。色板变化后，`theme-apply` 通知 qtct 监听的配置根目录，约 3 秒后触发重读；具体应用能否热更新仍取决于其样式。
+- **认证窗口**：`hyprpolkitagent` 服务单独使用 `QT_STYLE_OVERRIDE=Fusion`，避免 Kvantum 保留启动时色板；Qt Quick 控件仍使用上游 `org.hyprland.style`。隔离测试已确认，同一个进程能跟随深浅模式与壁纸换色，无需为换色重启认证服务。配置已应用，活动 Qt5/Qt6 色板各组均为 22 色，代理进程的主题设置也已核对；实际弹窗换色仍待人工验收。
 - **Dolphin/KDE**：Matugen 另外生成 `~/.local/share/color-schemes/MaterialAdwMatugen.colors`，并将 `~/.config/dolphinrc` 的 `[UiSettings] ColorScheme` 指向 `MaterialAdwMatugen`。这样文件视图、选中态等 KDE 语义色与 Kvantum 控件保持同一套 M3 色板。
 - **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景。每次 `theme-apply` 都发送 `SIGUSR2` 让运行中的 btop 重读文件，只有壁纸变化才会改变重点色。
 - **Yazi**：`programs.yazi` 的 dark flavor 指向 `matugen-runtime`。由于 Foot 终端背景固定为深色，`theme-apply` 始终使用 Matugen 的深色语义色板，生成并复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`；浅色模式不改变 Yazi 背景。Yazi 26.9.1 虽支持 `app:theme`，但当前分发链不猜测外部实例 ID，运行中的实例需重新启动后读取新 flavor。

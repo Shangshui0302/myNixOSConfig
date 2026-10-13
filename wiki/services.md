@@ -2,12 +2,12 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-10-07
+updated: 2026-10-13
 ---
 
 # 系统服务
 
-主机侧 systemd 服务总览：网络与代理、音频、蓝牙、打印、电源管理、生物识别与权限。系统级配置集中在 `host/base/services.nix` 与 `host/base/network.nix`，由 `host/default.nix` 汇总导入。
+systemd 服务总览：网络与代理、音频、蓝牙、打印、电源管理、生物识别与权限。系统级配置集中在 `host/base/services.nix` 与 `host/base/network.nix`，会话级 polkit agent 由 `home/de/polkit.nix` 管理。
 
 ## 目录
 
@@ -203,8 +203,14 @@ TLP 日志里那句 `Setting battery charge thresholds...done.` 是通用输出�
 ## 权限与安全
 
 - `security.polkit` 启用并添加规则，允许 `wheel` 组用户应用 Noctalia 外观（`org.noctalia.greeter.apply-appearance`）。
+- 图形程序请求管理员授权时，由主桌面会话中的 `hyprpolkitagent` 显示认证窗口；它属于 `graphical-session.target`，Noctalia 与 Caelestia 切换时继续由同一个会话服务提供提示。Noctalia 自带的 polkit agent 已关闭，避免重复弹窗。
+- polkit-1 的 PAM 服务在主桌面变体接入 Howdy：人脸识别成功可直接授权，识别失败时继续显示密码认证。此设置不改变 GNOME specialisation 的 PAM 链，也不等同于 sudo 的认证规则。认证窗口使用 Qt 6 的 qt6ct 平台主题，并由 Matugen 提供配色。
 - `security.rtkit` 启用，提升实时音频任务优先级。
 - 普通用户的 sudo 白名单在 `host/base/users.nix`，仅放行必要的 rebuild 与文本处理命令，遵循最小权限。
+
+配置已于 2026-10-13 构建并应用到第 697 代；已核验 hyprpolkitagent 正常运行、Noctalia 内置代理关闭、活动 PAM 的 Howdy 为 sufficient。真实交互仍需人工回归：注销并重新登录，再检查会话中只有一个 polkit agent；分别测试 Noctalia 与 Caelestia 切换后发起 GUI 授权、人脸识别失败后的密码回退、正确/错误密码、取消授权，以及深浅主题变化。认证窗口中的密码应由用户亲自输入；不要把真实认证或密码输入作为自动化检查。
+
+当前已通过 Nix 解析、flake 结构检查、完整系统构建、dry-activate 与 switch；应用后系统和用户服务均无失败单元。隔离 libpam 测试使用模拟的人脸/密码结果，确认人脸失败后正确密码可通过、两者失败则拒绝；这不等于摄像头或真实密码认证已经验收。当前 polkit 管理员身份来自 `wheel` 组，通常提示输入 `lishangshui` 的用户密码，具体以窗口显示的认证身份为准。
 
 ## 常用命令
 
@@ -224,11 +230,13 @@ nmcli device status               # 网络连接状态
 - **蓝牙不可用**：确认蓝牙启用且 `powerOnBoot`，检查设备节点与权限。
 - **电源管理异常**：`tlp-stat -s` 看模式与电源、`tlp-stat -c` 看有效配置，`systemctl status tlp` 看服务；`upower` 只管电池状态。
 - **Howdy 无法识别**：确认视频设备路径、PAM 集成与摄像头可用性。
+- **GUI 授权没有认证窗口**：确认当前图形会话中 `hyprpolkitagent` 正在运行，并检查 PAM 的 `polkit-1` 服务；shell 切换不应停止该会话服务。
 
 ## 相关链接
 
 - [Mihomo 代理](networking/mihomo.md) — TUN 代理与 nftables 详解
 - [PAM 认证](security/pam.md) — Howdy 与 PAM 集成
+- [Hyprland](desktop/hyprland.md) — GUI polkit 认证窗口的外观
 - [部署与维护](deployment.md) — 服务生命周期与 rebuild
 - [故障排除总览](troubleshooting.md)
 - memory：[mihomo-tun-stack](../memory/cards/mihomo-tun-stack.md)

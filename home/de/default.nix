@@ -9,6 +9,7 @@
     ./caelestia-shell.nix
     ./niri.nix
     ./shell-switcher.nix
+    ./polkit.nix
   ];
 
   home.sessionVariables = {

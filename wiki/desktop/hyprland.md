@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-09-14
+updated: 2026-10-13
 ---
 
 # Hyprland 使用指南
@@ -26,6 +26,12 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 **配色（stylix）**：`home/theme/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Iosevka Nerd Font:size=12`（原为 Anthropic Mono Variable，随 anthropic-fonts 卸载一并更换；stylix 接入时曾被误删、字号退回默认，已恢复）。
 
 **壁纸动态取色**：壁纸由 waypaper + awww 管理；切壁纸时 post_command 触发 Matugen（`-t scheme-content`）一次生成 Caelestia、Noctalia、Hyprland/niri、GTK 和 Qt 的配色。Noctalia palette 写完后会 `config-reload`；Hyprland 边框由 `hyprctl eval` 运行时下发，niri include 自动重读；Material-Gnome 的主桌面副本直接更新 `colors.css`，GTK 应用随即刷新；Qt5/Qt6 共用 qtct 调色板，新启动的 Qt 应用读取最新颜色。Foot 仍由 Stylix 管理，不随壁纸改变。
+
+### 图形授权窗口
+
+需要管理员授权的图形操作由 `hyprpolkitagent` 提示。认证窗口作为浮动窗口居中显示，并使用 Hyprland 窗口圆角、缩放与淡入淡出动画。agent 随图形会话常驻，切换 Noctalia / Caelestia 时不随 Shell 停止；认证由 PAM 处理，人脸失败后应回退到密码提示。服务单独使用 qt6ct 与 Fusion 提供可刷新的 Matugen 色板，Qt Quick 控件保留上游 Hyprland 样式，详见[动态配色](darkmode.md#gtk-与-qt)。配置已应用，活动 Hyprland 的配置错误检查为空；实际弹窗动画与认证交互仍需人工验收，见[系统服务](../services.md#权限与安全)。
+
+窗口规则精确匹配标题 `Hyprland Polkit Agent`。锁定的 Qt 6.11.2 会从 Nix 包隐藏可执行文件名推导出空 app_id，不能用猜测的 class 匹配；上游显式设置的应用名则会成为 Wayland 标题。升级 agent 或 Qt 后应重新核对。新增规则与现有动画曲线已通过 Hyprland 0.56.2 的独立配置校验；完整配置在该校验模式下缺少插件注册项，因此此结果不代表整个桌面的运行验证。
 
 ## 基本概念
 

@@ -60,6 +60,7 @@ nixos-rebuild dry-build --flake .
 ## 常用入口
 
 - [Wiki 首页](wiki/README.md)：按组件查找使用和排障说明。
+- [GUI 权限授权](wiki/services.md#权限与安全)：polkit agent、Howdy 人脸认证与密码回退。
 - [Wiki 来源清单](wiki/_sources.yaml)：Nix 模块与文档的映射。
 - [Memory 索引](memory/INDEX.md)：查询非显而易见的配置决策。
 - [项目约束](wiki/constraints.md)：包管理、变体、secrets 和验证规则。

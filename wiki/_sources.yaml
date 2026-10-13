@@ -29,7 +29,7 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve, greetd-tuigreet-tty]
 
   desktop/hyprland.md:
-    sources: [home/de/hyprland.nix, local-deriv/hyprland-scroll-overview.nix, home/de/default.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/stylix.nix, home/theme/gtk-matugen.nix, host/base/boot.nix]
+    sources: [home/de/hyprland.nix, home/de/polkit.nix, host/de/sessions.nix, local-deriv/hyprland-scroll-overview.nix, home/de/default.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/stylix.nix, home/theme/gtk-matugen.nix, host/base/boot.nix, home/theme/runtime.nix, home/theme/matugen/qtct-colors.conf.tpl]
     memory:  [hyprland-056-blur-amd, hyprland-scrolloverview-plugin, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, stylix-color-hub, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
     sources: [home/de/niri.nix, host/de/sessions.nix, host/de/greeter.nix]
@@ -50,7 +50,7 @@ docs:
     sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
     memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
-    sources: [flake.nix, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/gtk-static.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, local-deriv/material-adw-kvantum.nix, home/theme/matugen/material-adw-colors.colors.tpl, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/obsidian-accent.css.tpl, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, local-deriv/material-gnome/recolor-shell.py]
+    sources: [flake.nix, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/gtk-static.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, local-deriv/material-adw-kvantum.nix, home/theme/matugen/material-adw-colors.colors.tpl, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/obsidian-accent.css.tpl, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, local-deriv/material-gnome/recolor-shell.py, home/de/polkit.nix, home/theme/matugen/qtct-colors.conf.tpl]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
     sources: [host/base/services.nix]
@@ -103,11 +103,11 @@ docs:
     sources: [host/base/sops.nix]
     memory:  [mihomo-tun-stack]
   security/pam.md:
-    sources: [host/base/services.nix, host/base/users.nix]
+    sources: [host/base/services.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix]
     memory:  []
 
   services.md:
-    sources: [host/base/services.nix, host/base/tlp.nix, host/base/network.nix, host/base/users.nix, home/env/onedrive.nix, home/env/power-actions.nix]
+    sources: [host/base/services.nix, host/base/tlp.nix, host/base/network.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/env/onedrive.nix, home/env/power-actions.nix, home/theme/gtk-matugen.nix, home/theme/runtime.nix]
     memory:  [mihomo-tun-stack, tlp-power-profiles, power-profile-session-actions]
   deployment.md:
     sources: [flake.nix, host/base/boot.nix, host/base/sops.nix]
