@@ -8,5 +8,6 @@
     typora
     zettlr
     kdePackages.ghostwriter
+    z-library-desktop
   ];
 }

@@ -1,8 +1,8 @@
 ---
 title: 办公软件套件
 category: 生产力
-tags: [office, libreoffice, onlyoffice, fonts, cjk]
-updated: 2026-08-18
+tags: [office, libreoffice, onlyoffice, fonts, cjk, z-library]
+updated: 2026-10-18
 ---
 
 # 办公软件套件
@@ -16,8 +16,19 @@ updated: 2026-08-18
 - **LibreOffice Fresh** — 文档 / 表格 / 演示，全能主力
 - **OnlyOffice Desktop Editors** — 对 MS Office 格式（docx/xlsx/pptx）兼容度高
 - **笔记 / Markdown**：Obsidian、Typora、Zettlr、Ghostwriter
+- **电子书 / 资料检索**：Z-Library 桌面客户端（Nixpkgs 包 `z-library-desktop`）
 
 默认打开方式（MIME 关联）在模块里以注释形式预置。若想把 Office 格式统一默认用 OnlyOffice 打开，取消 `xdg.mimeApps` 那段注释并 rebuild 即可。
+
+## Z-Library 桌面客户端
+
+应用配置后，在应用启动器搜索 **Z-Library**，或在终端运行：
+
+```bash
+Z-Library
+```
+
+主桌面与 GNOME 变体共用这份应用列表。客户端版本跟随仓库锁定的 Nixpkgs，桌面入口由软件包提供。
 
 ## 分层结构
 
@@ -86,6 +97,7 @@ libreoffice --headless --convert-to pdf --outdir out/ *.docx
 | 打印失败 / PDF 乱码 | 确认 CUPS 已启用、打印机已添加；检查中文字体回退链 |
 | Office 内输入法不可用 | 确认 Fcitx5 环境变量已设，GTK/Qt 输入模块启用 |
 | 首次部署找不到字体 | 重新 rebuild，让 activation 复制字体并刷新缓存 |
+| 找不到 Z-Library 或命令不存在 | 确认已手动应用包含本次改动的 NixOS 配置 |
 
 ## 相关链接
 
