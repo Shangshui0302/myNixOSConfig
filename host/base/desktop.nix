@@ -12,6 +12,11 @@ in
   # GNOME Keyring — 为 Electron/VS Code 类应用提供加密凭据存储
   services.gnome.gnome-keyring.enable = true;
 
+  # 目录默认值与各变体已安装的文件管理器一致；保留用户层可写的其他 MIME 关联。
+  # 不启用 HM 的整份 mimeapps.list 管理，避免顺带激活已有的文本默认值。
+  xdg.mime.defaultApplications."inode/directory" =
+    if gnome then "org.gnome.Nautilus.desktop" else "io.github.lgse.Strata.desktop";
+
   # 主桌面的手机互联；原生模块同时安装 KDE Connect 并开放发现所需端口。
   # GNOME 变体已有 GSConnect，避免同时运行两个 KDE Connect 协议实现。
   programs.kdeconnect.enable = !gnome;

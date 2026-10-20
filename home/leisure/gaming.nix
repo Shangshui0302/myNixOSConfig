@@ -6,12 +6,27 @@
 # Wine/Proton runner 都在 FHS 沙箱里执行，所以既不需要 `steam-run` 再包一层，也不依赖
 # programs.nix-ld（host/base/compat.nix 那个是裸二进制的兜底）。32 位依赖来自
 # host/base/hardware.nix 的 hardware.graphics.enable32Bit。
+let
+  # 两个前端都会调用宿主默认程序。FHS 默认隐藏 /etc/xdg；映射整个目录，
+  # 同时保留通用、桌面专属 MIME 关联及其优先级，避免回退到 code.desktop。
+  buildFHSEnvWithDesktop =
+    args:
+    pkgs.buildFHSEnv (
+      args
+      // {
+        extraBwrapArgs = (args.extraBwrapArgs or [ ]) ++ [
+          "--ro-bind-try /etc/xdg /etc/xdg"
+        ];
+      }
+    );
+in
 {
   # 用 HM 原生模块而不是 home.packages 里的裸包：它默认关掉 lutris 的 steamSupport
   # （否则 FHS env 里会再塞一整份 Steam），并把 wine/proton 以只读链接挂进
   # ~/.local/share/lutris/runners，让 nixpkgs 的 Proton-GE 取代 Lutris 自行下载的 runner。
   programs.lutris = {
     enable = true;
+    package = pkgs.lutris.override { buildFHSEnv = buildFHSEnvWithDesktop; };
 
     # 必须与系统 programs.steam 用同一个 store path，否则两份 Steam 实例互相冲突。
     steamPackage = osConfig.programs.steam.package;
@@ -40,7 +55,10 @@
   home.packages = with pkgs; [
     # Bottles 上游只支持 Flatpak；nixpkgs 保留了「非沙箱环境」的警告弹窗，
     # removeWarningPopup 打补丁去掉（nixpkgs#384555），功能不受影响。
-    (bottles.override { removeWarningPopup = true; })
+    (bottles.override {
+      removeWarningPopup = true;
+      buildFHSEnv = buildFHSEnvWithDesktop;
+    })
 
     # 宿主层单独给一份 MangoHud：Lutris / Bottles 各自的 env 里已有，Steam 走
     # `mangohud %command%` 时需要用户 PATH 上这一份。

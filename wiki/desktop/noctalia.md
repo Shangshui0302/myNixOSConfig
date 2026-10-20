@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-09-11
+updated: 2026-10-19
 ---
 
 # Noctalia Shell 使用指南
@@ -71,7 +71,7 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 - **打开方式**：`Super + Space` 或点击顶栏 🚀 图标
 - **剪贴板历史**：已启用，支持文本和图片，自动预览
-- **固定应用**：Nautilus（启动器）；Dock 固定 Nautilus、Codex Desktop、Google Chrome
+- **固定应用**：Strata（启动器）；Dock 固定 Strata、Codex Desktop、Google Chrome
 - **启动器提供者**：Emoji、Session、Windows 均启用
 - **排序**：按使用频率排序
 - **视图模式**：列表，显示分类
@@ -110,7 +110,7 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 ## Dock
 
 - **位置**：底部；关闭强制自动隐藏，启用智能自动隐藏
-- **固定应用**：Nautilus、Codex Desktop、Google Chrome
+- **固定应用**：Strata、Codex Desktop、Google Chrome
 - **启动器图标**：使用发行版 Logo
 - **分组**：同一应用窗口合并，圆点指示器，点击列表切换
 - **行为**：仅显示当前屏幕的应用

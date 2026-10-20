@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-10-13
+updated: 2026-10-19
 ---
 
 # Hyprland 使用指南
@@ -69,7 +69,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 | 按键 | 功能 |
 |------|------|
 | `Super + W` | 终端 (foot) |
-| `Super + E` | 文件管理器 (Nautilus) |
+| `Super + E` | 文件管理器 (Strata) |
 | `Super + C` | 剪贴板历史（Noctalia 面板 / Caelestia 用 `cliphist`+`fuzzel`） |
 | `Super + Shift + C` | 删除剪贴板条目（Noctalia 清空历史 / Caelestia `cliphist delete`） |
 | `Super + Space` | 应用启动器（Noctalia / Caelestia） |

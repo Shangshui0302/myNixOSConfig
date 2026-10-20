@@ -112,7 +112,7 @@ in
       # 与 Noctalia 保持相同的常用应用和空闲策略。
       general.apps = {
         terminal = [ "foot" ];
-        explorer = [ "nautilus" ];
+        explorer = [ "strata" ];
       };
       general.idle = {
         lockBeforeSleep = true;

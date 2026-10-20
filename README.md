@@ -11,6 +11,7 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 | 变体 | GNOME specialisation，独立 GDM 会话 |
 | Shell | fish、bash/ble.sh、Starship、zellij |
 | 终端 | Foot，由 Home Manager 管理 |
+| 文件夹默认打开 | 主桌面 Strata；GNOME 变体 Nautilus |
 | AI 工具 | Codex 与 Antigravity CLI、Antigravity 2.0 Agents 界面 |
 | 面板 | Noctalia，可切换 Caelestia |
 | 深浅模式 | Darkman 状态/portal + Matugen 运行时配色 |

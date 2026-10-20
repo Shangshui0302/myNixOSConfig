@@ -634,7 +634,7 @@ in
       hl.bind("SUPER + W", hl.dsp.exec_cmd("foot"), { description = "终端 foot" })
       hl.bind("PRINT", hl.dsp.exec_cmd("screenshot screen"), { description = "全屏截图" })
       hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("screenshot area"), { description = "区域截图（Swappy 编辑）" })
-      hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus"), { description = "文件管理器 Nautilus" })
+      hl.bind("SUPER + E", hl.dsp.exec_cmd("strata"), { description = "文件管理器 Strata" })
       hl.bind("SUPER + B", hl.dsp.exec_cmd("google-chrome"), { description = "浏览器 Chrome" })
       hl.bind("SUPER + C", hl.dsp.exec_cmd("desktop-shell-action clipboard"), { description = "剪贴板历史" })
       hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("desktop-shell-action clipboard-delete"), { description = "删除剪贴板条目" })

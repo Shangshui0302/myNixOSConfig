@@ -103,7 +103,7 @@
       binds {
           // ---- 启动应用（对应 Hyprland）----
           Mod+W  hotkey-overlay-title="Open a Terminal: foot" { spawn "foot"; }
-          Mod+E  { spawn "nautilus"; }
+          Mod+E  { spawn "strata"; }
           Mod+B  { spawn "google-chrome"; }
           Mod+N  { spawn-sh "foot -e nvim"; }
           Mod+O  { spawn "obsidian"; }

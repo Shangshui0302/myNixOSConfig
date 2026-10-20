@@ -216,7 +216,7 @@ in
         magnification_scale = 1.2000000029802322;
         margin_edge = 10;
         pinned = [
-          ("org.gnome.Nautilus")
+          ("io.github.lgse.Strata")
           ("codex-desktop")
           ("google-chrome")
         ];
@@ -417,7 +417,7 @@ in
         launcher = {
           app_grid = true;
           pinned = [
-            ("org.gnome.Nautilus")
+            ("io.github.lgse.Strata")
           ];
           show_app_actions = true;
           providers = {

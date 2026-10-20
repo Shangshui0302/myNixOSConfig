@@ -2,7 +2,7 @@
 title: 游戏平台
 category: 娱乐
 tags: [steam, proton, gaming, amdgpu, libvirtd, flatpak, mangohud, lutris, bottles, wine]
-updated: 2026-09-30
+updated: 2026-10-20
 ---
 
 # 游戏平台
@@ -73,6 +73,7 @@ A --> H["home/leisure/player.nix<br/>OBS"]
 
 - **Lutris**：右上角 `+` 添加游戏；`Preferences → Runners` 里选 runner。Wine 版本列表里能看到 nixpkgs 打包的 Proton-GE（按小写目录名列出，含 32 位），也可以用列表里的下载按钮取上游 GE 版本。
 - **Bottles**：首次启动按向导新建 bottle，会从 GitHub 取 Soda runner 与 DXVK/vkd3d 组件。
+- Lutris/Bottles 的「打开文件夹」沿用系统默认文件管理器（主 DE 为 Strata，GNOME 为 Nautilus）。两者的 FHS 包装只读映射系统的 `/etc/xdg`，同时支持通用与桌面专属的 MIME 默认关联；用户自己的默认程序选择仍优先。
 - 两者都提供 MangoHud / Gamescope 开关；Lutris 侧需要的可执行文件由 `programs.lutris.extraPackages` 放进沙箱。GameMode 的守护进程默认未启用（见故障排查）。
 
 | 事项 | 路径 |
@@ -98,6 +99,7 @@ A --> H["home/leisure/player.nix<br/>OBS"]
 - **Lutris 提示 `libattr.so.1: version 'ATTR_1.3' not found`**：Lutris 自带 runtime 与系统库冲突，`Preferences → Global Options` 勾上 `Disable Lutris Runtime` 后重装游戏。
 - **Bottles 下载 runner / 依赖失败**：组件索引托管在 `proxy.usebottles.com`，经代理可能连不通；给 mihomo 加 `DOMAIN-SUFFIX,usebottles.com,DIRECT` 再重试（历史方案见 [Bottles 离线韧性改造](../dev/bottles-offline-workaround.md)）。
 - **Bottles 首次启动提示「不支持非沙箱环境」**：上游只保证 Flatpak 版，nixpkgs 版已用 `removeWarningPopup` 去掉该弹窗，功能不受影响。
+- **Lutris/Bottles 打开文件夹却启动 VS Code**：即使宿主的 `gio mime inode/directory` 已指向 Strata，旧 FHS 包装也可能因看不到 `/etc/xdg` 中的关联文件而回退到 VS Code。本配置已为两者补只读映射；手动 rebuild 后完全退出并重新启动相应应用，再测试原来的打开文件夹入口。仅在宿主查询默认关联不足以验证该问题；如自己设置过用户级目录关联，它仍会覆盖系统默认值。
 - **想要「只在游戏时提性能」**：本配置不用 gamemode，且**不使用 TLP 的 profile hold**（`tlpctl launch -p ...`），所以没有「进程退出自动释放」，需要手动切档：游戏前用 `power-actions mode performance`（等价 `tlpctl set performance`）切到性能档，结束后 `power-actions mode balanced`（或 `tlpctl set balanced`）切回。自动档位与核显 DPM 联动见 [系统服务](../services.md#电源与存储维护)。Wine 的 fsync 不受影响；esync 所需的文件描述符上限实测会话已是 `524288/524288`，无需再调 `pam` 限制。
 
 ## 相关链接

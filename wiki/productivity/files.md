@@ -7,7 +7,7 @@ updated: 2026-10-20
 
 # 文件管理器与归档工具
 
-`home/productivity/files.nix` 提供三个图形文件管理器和一组归档/压缩工具。主 DE 保留三个管理器，不声明 Strata 桌面集成；GNOME 使用 Nautilus。
+`home/productivity/files.nix` 提供三个图形文件管理器和一组归档/压缩工具。主 DE 默认使用 Strata，GNOME 变体默认使用 Nautilus。
 
 ## 目录
 
@@ -26,7 +26,21 @@ updated: 2026-10-20
 | Dolphin | 应用菜单 / `dolphin` | KDE 文件管理器及其依赖 |
 | Strata | 应用菜单 / `strata` | 主 DE 专用的 GTK4 文件管理器，来自固定提交的 nixpkgs fork |
 
-主 DE 安装 Strata、Nautilus 和 Dolphin，不通过 Strata 专用模块设置默认目录程序。GNOME 变体不安装 Strata，使用自带 Nautilus。默认程序选择由桌面配置负责。
+主 DE 安装 Strata、Nautilus 和 Dolphin，默认使用 Strata；GNOME 变体不安装 Strata，继续使用 Nautilus。其他文件管理器仍可从应用菜单手动启动。
+
+### 文件夹默认打开方式
+
+使用系统默认打开方式的「打开文件夹」由目录 MIME 类型 `inode/directory` 选择默认程序。`host/base/desktop.nix` 使用 NixOS 原生 `xdg.mime.defaultApplications`，主 DE 设为 `io.github.lgse.Strata.desktop`，GNOME 变体设为 `org.gnome.Nautilus.desktop`；应用配置后生成 `/etc/xdg/mimeapps.list`。用户的 `~/.config/mimeapps.list` 保持可写，其他文件类型的默认程序沿用现状；已有用户级目录关联会优先于系统默认值。
+
+应用配置后检查：
+
+```bash
+xdg-mime query default inode/directory
+gio mime inode/directory
+xdg-open ~/Documents
+```
+
+主 DE 前两项应显示 `io.github.lgse.Strata.desktop`，第三项应打开 Strata；GNOME 变体对应 Nautilus。部分应用的「在文件管理器中显示」会走独立的 `org.freedesktop.FileManager1` D-Bus 接口，主 DE 的用户级服务由 Home Manager 链接到 Strata 包提供的模板。MIME 查询正确只能证明默认关联，仍需在原应用中验证实际打开行为。
 
 ## Strata
 
@@ -58,11 +72,11 @@ strata --version             # 打印版本
 
 ### 桌面集成
 
-本仓库只安装 Strata，不声明它的 FileChooser portal、默认目录 MIME 关联或 FileManager1 服务，也不提供 Strata 专用 HM 模块。安装包不会自动接管桌面入口；需要这些能力的用户可自行通过 NixOS/HM 原生选项配置。
+主 DE 的文件夹默认打开、`Super + E`、Noctalia 启动器与 Dock 固定入口，以及 Caelestia 文件管理器入口均使用 Strata。GNOME 变体继续使用 Nautilus。
 
-应用自带的 setup 功能仍保留。其作用是在用户目录中生成集成配置；使用声明式配置时应在 Nix 中管理对应文件，避免再用应用按钮修改同一配置。
+`home/productivity/files.nix` 使用 `xdg.dataFile` 管理 `~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service`，直接引用 Strata 包中带绝对路径的模板，使「在文件管理器中显示」也能激活 Strata。若当前会话已有其他程序占用该 D-Bus 名称，重新登录后再验证。
 
-撤销此前的 HM 集成声明并应用配置后，原来的 HM 管理标记、portal 文件和 FileManager1 服务链接会被移除，MIME 配置不再声明 Strata 为默认目录程序。此前由应用 setup 生成的非 HM 文件不在本次撤销范围中。
+FileChooser portal（打开/保存文件对话框）继续沿用桌面现有配置。应用自带的 setup 功能仍保留，但不要用它改写上述已由 Nix 管理的目录默认关联和 FileManager1 服务。
 
 旧版本的 `The Strata executable path must not be writable by other users` 来自对 sticky `/nix/store` 组写权限的误判。投稿包中的 `desktop.patch` 只对 root 所有、带 sticky bit、无 world-write 的 `/nix/store` 放行组写权限，仍检查其他祖先、包目录及可执行文件；同时修正包装程序路径与服务状态判断。补丁不包含 HM 私有标记或界面限制。
 
@@ -96,7 +110,7 @@ Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、
 
 ### 回退
 
-在 `home/productivity/files.nix` 移除 Strata 的条件包声明，然后由用户手动 rebuild；原有手动 `settings.toml` 留在原处：
+要恢复 Nautilus，先把 `host/base/desktop.nix` 的主 DE 目录默认值改回 `org.gnome.Nautilus.desktop`，移除 `home/productivity/files.nix` 的 FileManager1 服务声明，并把主 DE 快捷键与面板入口改回 Nautilus。若同时卸载 Strata，再移除它的条件包声明；原有手动 `settings.toml` 留在原处。最后由用户手动应用：
 
 ```bash
 cd ~/myNixOSConfig
@@ -117,6 +131,10 @@ sudo nixos-rebuild switch --flake .
 
 ## 故障排查
 
+- **应用打开文件夹却启动 VS Code**：先确认已应用配置，再查询 `xdg-mime query default inode/directory`；若仍不正确，检查 `~/.config/mimeapps.list` 或桌面专属 `*-mimeapps.list` 中是否有优先级更高的目录关联。
+- **宿主默认值正确，Lutris/Bottles 仍打开 VS Code**：两者的 FHS 环境默认看不到系统的 `/etc/xdg`。`home/leisure/gaming.nix` 已补上整个目录的只读映射，兼容通用和桌面专属关联，同时保留用户关联的优先级；手动 rebuild 后完全退出并重新启动相应应用，再测试原入口。详见[游戏平台](../leisure/gaming.md#故障排查)。
+- **默认关联是 Strata，但「在文件管理器中显示」仍打开别的程序**：该入口可能使用 FileManager1；确认上述用户级服务链接存在，重新登录释放旧服务的 D-Bus 名称后，再在原应用中测试。
+- **Nautilus 打开很慢**：分别尝试 `xdg-open ~/Documents` 和 `nautilus ~/Documents`，区分默认关联调用与 Nautilus 自身启动；「在文件管理器中显示」还需检查 FileManager1 激活。用 `journalctl --user -b --grep='Nautilus|nautilus|FileManager1|portal'` 查看是否有激活超时，不能仅凭 MIME 默认值正确就认定延迟已解决。
 - **Strata 预览报 `Unable to start the preview sandbox`**：先确认实际运行的是固定 input 中的 1.0.0 包；该包自带可信 `bwrap` 搜索路径，再检查用户命名空间权限与应用日志。
 - **Strata 缩略图/PDF/压缩包预览空白**：在 nixpkgs 任务 worktree 核对沙箱补丁及对应验证记录；沙箱内工具和 GStreamer 插件路径由包提供。
 - **应用菜单里没有 Strata 图标**：图标与 desktop entry 在 store 里，重新登录一次让桌面缓存刷新。
@@ -124,6 +142,7 @@ sudo nixos-rebuild switch --flake .
 
 ## 相关链接
 
+- [XDG 默认应用规范](https://specifications.freedesktop.org/mime-apps/latest/default.html) — MIME 默认关联的选择规则
 - [Nix 手工打包](../dev/nix-packaging.md) — 本地打包与投稿包消费的边界
 - [Yazi 文件管理器](yazi.md) — 终端文件管理器
 - [wiki 首页](../README.md)

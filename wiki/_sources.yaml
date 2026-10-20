@@ -63,7 +63,7 @@ docs:
     sources: [home/productivity/graphics.nix]
     memory:  []
   productivity/files.md:
-    sources: [flake.nix, home/productivity/files.nix, host/base/services.nix, home/theme/runtime.nix, home/theme/matugen/strata-theme.toml.tpl]
+    sources: [flake.nix, flake.lock, home/productivity/files.nix, home/leisure/gaming.nix, home/de/hyprland.nix, home/de/niri.nix, home/de/noctalia.nix, home/de/caelestia-shell.nix, host/base/desktop.nix, host/base/services.nix, home/theme/runtime.nix, home/theme/matugen/strata-theme.toml.tpl]
     memory:  [strata-preview-sandbox-nixos, strata-matugen-theme]
   productivity/yazi.md:
     sources: [home/productivity/yazi.nix, home/productivity/graphics.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/yazi-flavor.toml.tpl]
