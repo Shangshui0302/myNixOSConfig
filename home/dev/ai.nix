@@ -6,6 +6,8 @@ let
   opencli = pkgs.callPackage ../../local-deriv/opencli.nix { };
 in
 {
+  imports = [ ./orca.nix ];
+
   home.packages = with pkgs; [
     codex
     codexDesktop

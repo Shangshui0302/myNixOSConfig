@@ -2,6 +2,10 @@
   description = "MechRevo-NixOS configuration";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix/295f98938356672896aee4e7827ad7e9405c7d1e";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Temporary consumer of the tested package in nixpkgs PR #570118.
     # Use pkgs.strata and remove this input once our official channel includes it.
     strata-nixpkgs.url = "github:Shangshui0302/nixpkgs?ref=feature/strata";
@@ -60,6 +64,12 @@
       packages.${system} = {
         agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };
         opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
+        orca-ide = pkgs.callPackage ./local-deriv/orca.nix {
+          communityOrca = inputs.llm-agents.packages.${system}.orca;
+        };
+        orca-skills = pkgs.callPackage ./local-deriv/orca-skills.nix {
+          communityOrca = inputs.llm-agents.packages.${system}.orca;
+        };
         material-gnome-theme = materialGnomeTheme;
         material-adw-kvantum = materialAdwTheme;
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };

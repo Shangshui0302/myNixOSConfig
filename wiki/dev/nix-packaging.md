@@ -171,6 +171,7 @@ sudo nixos-rebuild switch --flake .
 | --- | --- | --- |
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
+| Orca 与官方 skills | `nix build path:.#orca-ide path:.#orca-skills` | 基于固定社区包追加本机启动策略、DSH 桥与版本匹配的 skills，见 [Orca](orca.md) |
 
 ### ModernZ (`local-deriv/modernz.nix`)
 

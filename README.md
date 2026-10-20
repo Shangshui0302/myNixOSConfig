@@ -12,7 +12,7 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 | Shell | fish、bash/ble.sh、Starship、zellij |
 | 终端 | Foot，由 Home Manager 管理，半透明背景与合成器模糊 |
 | 文件夹默认打开 | 主桌面 Strata；GNOME 变体 Nautilus |
-| AI 工具 | Codex 与 Antigravity CLI、Antigravity 2.0 Agents 界面；Agent Reach 与 OpenCLI 平台访问工具 |
+| AI 工具 | Codex 与 Antigravity CLI、Antigravity 2.0 Agents 界面；Orca 多代理工作台（Codex / agy / DSH）；Agent Reach 与 OpenCLI 平台访问工具 |
 | 电子书与资料 | Z-Library 桌面客户端 |
 | 面板 | Noctalia，可切换 Caelestia |
 | 深浅模式 | Darkman 状态/portal + Matugen 运行时配色 |
@@ -67,6 +67,7 @@ nixos-rebuild dry-build --flake .
 - [Memory 索引](memory/INDEX.md)：查询非显而易见的配置决策。
 - [项目约束](wiki/constraints.md)：包管理、变体、secrets 和验证规则。
 - [Nix 手工打包](wiki/dev/nix-packaging.md)：`$nix-packaging`、本地派生和验证流程。
+- [Orca 多代理工作台](wiki/dev/orca.md)：社区 Nix 包、本地目录、三款代理入口与协作 skills。
 - [Agent Reach 与 OpenCLI](wiki/dev/agent-reach.md)：平台访问、Chrome 扩展连接与字幕提取。
 
 ## 约束

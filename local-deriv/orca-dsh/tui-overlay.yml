@@ -1,0 +1,42 @@
+# Orca owns presentation and its launch defaults; profile files remain shared.
+- id: webserver
+  config:
+    host: 127.0.0.1
+    port: 0
+    compression: gzip
+    compressionLevel: 1
+    compressionThresholdBytes: 1024
+- id: web-runtime
+  config:
+    openBrowser: false
+    printUrl: false
+    surfaceContext: false
+    trustedHosts: []
+- id: agent-default-model
+  config:
+    provider: deepseek-official
+    model: deepseek-v4-pro
+    reasoningEffort: high
+- id: sandbox-policy
+  config:
+    mode: workspace-write
+- id: approval
+  config:
+    policy: ask
+- id: permission
+  config:
+    defaultPreset: manual
+    presets:
+      manual:
+        name: Manual
+        sandbox: workspace-write
+        approval: ask
+- id: dsh-tui
+  config:
+    sessionId: !!js process.env.DSH_TUI_RESUME_SESSION ?? undefined
+    backend: !!js process.env.DSH_TUI_BACKEND || undefined
+    workspace: !!js process.env.DSH_TUI_WORKSPACE_TARGET ?? undefined
+    fullscreen: true
+    provider: deepseek-official
+    model: deepseek-v4-pro
+    effort: high
