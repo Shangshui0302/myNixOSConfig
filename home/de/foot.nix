@@ -43,7 +43,7 @@ in
       };
       "colors-dark" = {
         blur = "yes";
-        alpha = "0.8";
+        alpha = "0.55";
         foreground = "e0e2e8";
         background = "101418";
         selection-background = "34383d";

@@ -2,7 +2,7 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-09-09
+updated: 2026-10-18
 ---
 
 # Shell 环境指南
@@ -16,7 +16,24 @@ updated: 2026-09-09
 | **fish** | 默认 | 语法高亮、自动建议、4 个插件 |
 | **bash** | 备选 | ble.sh 语法高亮/补全、脚本兼容 |
 
-终端模拟器：**foot**（系统级），默认启动 fish。ghostty 暂时禁用。
+终端模拟器：**Foot**，由 Home Manager 的 `home/de/foot.nix` 管理，默认启动 fish。ghostty 暂时禁用。
+
+### Foot 透明度与模糊
+
+`home/de/foot.nix` 的 `programs.foot.settings."colors-dark"` 分别控制背景透明度和模糊请求：
+
+| 设置 | 当前值 | 含义 |
+| --- | --- | --- |
+| `alpha` | `0.55` | 背景 55% 不透明；`1` 完全不透明，`0` 完全透明 |
+| `blur` | `yes` | 请求合成器模糊透明背景；实际效果取决于合成器支持 |
+
+要更透明，继续调低 `alpha`；例如 `0.5` 比 `0.55` 更透明。该选项调整终端背景，不改变文字本身的透明度。
+
+Hyprland 还通过 `home/de/hyprland.nix` 给整个窗口叠加 `active_opacity = 0.88`、`inactive_opacity = 0.82`；这些值会连同文字一起影响。背景模糊已启用，强度为 `size = 15`、`passes = 4`，`ignore_opacity = true`。
+
+niri 的 `home/de/niri.nix` 有匹配 Foot 的窗口规则，启用 `background-effect { xray false; blur true; }`。Foot 的透明度配置在两个主桌面会话中共用。
+
+修改 Nix 后手动应用系统配置，再打开新的 Foot 窗口。已有窗口不会因配置文件更新自动重读；使用 `footclient` 时，服务进程也需要重新读取配置，新登录会话会重新启动该服务。当前 Foot 配色和透明度固定在该模块，不随 Matugen / Darkman 切换。
 
 ## 别名速查
 

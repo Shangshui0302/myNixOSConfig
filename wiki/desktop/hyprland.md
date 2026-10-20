@@ -23,9 +23,9 @@ updated: 2026-10-19
 
 Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 分发，切换到 Caelestia 后仍使用同一套按键；工作区总览由 compositor 直接处理，不依赖桌面 shell。壁纸和 Matugen 配色继续沿用主桌面的统一管线。
 
-**配色（stylix）**：`home/theme/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为配色中枢，`config.lib.stylix.colors` 从壁纸取色。foot 配色在 desktop.nix 手工注入：**背景/前景用 stylix 壁纸取色，语法高亮 8 色用经典高对比 palette**（壁纸金色系取色区分度差，认不出语法重点；foot 1.27 不接受 `#` 前缀，全部无前缀 hex）；hyprland/niri 配色手工注入（border 色）。foot 字体 `Iosevka Nerd Font:size=12`（原为 Anthropic Mono Variable，随 anthropic-fonts 卸载一并更换；stylix 接入时曾被误删、字号退回默认，已恢复）。
+**配色（stylix）**：`home/theme/stylix.nix` 接入 stylix（`github:nix-community/stylix`）作为合成器的构建期配色中枢，`config.lib.stylix.colors` 从壁纸取色，供 Hyprland/niri 边框使用。Foot 在 `home/de/foot.nix` 单独定义固定深色背景、前景与高对比 ANSI 色板，颜色使用无前缀 hex；字体为 `Iosevka Nerd Font:size=12, Source Han Sans SC:size=12`。
 
-**壁纸动态取色**：壁纸由 waypaper + awww 管理；切壁纸时 post_command 触发 Matugen（`-t scheme-content`）一次生成 Caelestia、Noctalia、Hyprland/niri、GTK 和 Qt 的配色。Noctalia palette 写完后会 `config-reload`；Hyprland 边框由 `hyprctl eval` 运行时下发，niri include 自动重读；Material-Gnome 的主桌面副本直接更新 `colors.css`，GTK 应用随即刷新；Qt5/Qt6 共用 qtct 调色板，新启动的 Qt 应用读取最新颜色。Foot 仍由 Stylix 管理，不随壁纸改变。
+**壁纸动态取色**：壁纸由 waypaper + awww 管理；切壁纸时 post_command 触发 Matugen（`-t scheme-content`）一次生成 Caelestia、Noctalia、Hyprland/niri、GTK 和 Qt 的配色。Noctalia palette 写完后会 `config-reload`；Hyprland 边框由 `hyprctl eval` 运行时下发，niri include 自动重读；Material-Gnome 的主桌面副本直接更新 `colors.css`，GTK 应用随即刷新；Qt5/Qt6 共用 qtct 调色板，新启动的 Qt 应用读取最新颜色。Foot 的配色与透明度由独立模块固定，不随壁纸改变。
 
 ### 图形授权窗口
 
@@ -224,6 +224,8 @@ Shift + Print   # 区域截图 → Swappy 标注 → 存文件 + 剪贴板
 当前主题：**NixOS 默认壁纸 / Matugen 动态配色**
 
 Fcitx5 候选窗使用上游 `both-blur` 主题；`decoration.blur.input_methods = true` 让 Hyprland 接受其原生模糊请求。
+
+Foot 背景不透明度为 `alpha = 0.55`，并启用客户端 `blur` 请求；Hyprland 的全局窗口不透明度为聚焦 `0.88`、失焦 `0.82`，背景模糊使用 `size = 15`、`passes = 4`。调整终端透明度时修改 Foot 的 `alpha`，详见 [Foot 透明度与模糊](shell.md#foot-透明度与模糊)。
 
 ---
 
