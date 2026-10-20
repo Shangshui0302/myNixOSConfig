@@ -72,4 +72,4 @@ nixos-rebuild dry-build --flake .
 - `hardware-configuration.nix` 自动生成，不手动大改。
 - secrets 放 `/persist/secrets/` 或 sops 加密文件，不进 git。
 - 任务分支使用 `feature/`、`fix/`、`docs/` 等用途前缀，禁止工具名称前缀。
-- 投稿包在 `~/Projects/nixpkgs-maintain` 开发，本仓库通过固定提交消费已验证版本。Strata 暂用独立 `strata-nixpkgs` input；个人 Matugen 链保留在 `home/theme/`，官方频道可用后移除临时 input。
+- 投稿包在 `~/Projects/nixpkgs-maintain` 开发。Strata 1.0.0 暂用独立 `strata-nixpkgs` input 跟随 fork 的 `feature/strata` 分支，由 `flake.lock` 固定每次更新的版本；个人 Matugen 链保留在 `home/theme/`，官方频道可用后移除临时 input。

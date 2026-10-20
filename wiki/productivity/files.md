@@ -2,7 +2,7 @@
 title: 文件管理器与归档工具
 category: 生产力
 tags: [nautilus, dolphin, strata, file-manager, archive, matugen]
-updated: 2026-10-04
+updated: 2026-10-20
 ---
 
 # 文件管理器与归档工具
@@ -30,7 +30,7 @@ updated: 2026-10-04
 
 ## Strata
 
-Strata v0.21.0 通过临时 `strata-nixpkgs` flake input 获取，固定到 fork 的已验证提交 `e7095c7d23897f76fbdae73a819d8c79fd9e68d4`（[nixpkgs PR #570118](https://github.com/NixOS/nixpkgs/pull/570118)）。本仓库只消费该包；包定义和补丁在 nixpkgs 任务分支维护，不在 `local-deriv/` 保存副本。
+Strata v1.0.0 通过临时 `strata-nixpkgs` flake input 获取，跟随 fork 的 `feature/strata` 分支（[nixpkgs PR #570118](https://github.com/NixOS/nixpkgs/pull/570118)）。`flake.lock` 记录当前提交 `e9b01117f28bcb546bea973820cf307fef1e1d6b`；以后运行 flake 更新时会获取该分支的最新提交，普通 rebuild 则沿用锁定版本。本仓库只消费该包；包定义和补丁在 nixpkgs 任务分支维护，不在 `local-deriv/` 保存副本。
 
 ```bash
 strata                       # 打开家目录
@@ -54,7 +54,7 @@ strata --version             # 打印版本
 
 ### 更新方式
 
-包装里带 `share/strata/install-source.toml`，声明该二进制由包管理器安装。因此 Settings → Updates 会显示「Installed by Nix as strata.」，并拒绝用应用内自更新覆盖 store 里的二进制；升级先在维护工作区完成打包和验证，再更新 `flake.nix` 中的固定提交与对应锁项，由用户手动 rebuild。系统自己的 `nixpkgs` input 不随该包改变；官方频道包含 Strata 后改用 `pkgs.strata`，移除临时 input。
+包装里带 `share/strata/install-source.toml`，声明该二进制由包管理器安装。因此 Settings → Updates 会显示「Installed by Nix as strata.」，并拒绝用应用内自更新覆盖 store 里的二进制；升级先在维护工作区完成打包和验证并推送到 fork 的 `feature/strata`，再运行 `nix flake update strata-nixpkgs` 更新锁项，由用户手动 rebuild。运行不带 input 名称的 `nix flake update` 则刷新全部 inputs。系统自己的 `nixpkgs` input 不随该包改变；官方频道包含 Strata 后改用 `pkgs.strata`，移除临时 input。
 
 ### 桌面集成
 
@@ -92,7 +92,7 @@ Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、
 
 独立包负责原生格式解析所需的 bubblewrap、Nix store 可见性、沙箱内工具路径、GStreamer 插件以及可信 helper 搜索路径。主机不再需要为 Strata 额外安装系统级 `bubblewrap`；桌面集成配置与 Matugen 主题仍由消费者决定。
 
-这些补丁与完整构建、上游测试和预览验证记录在 `~/Projects/nixpkgs-maintain/development/strata/`。升级先在 nixpkgs 任务 worktree 中集中修改和验证；未改变的 derivation 可复用既有构建证据。系统 dry-build 只验证集成，实际 GUI、媒体播放与 GVfs 访问仍以用户应用后的实测为准。
+这些补丁与完整构建、上游测试和预览验证记录在 `~/Projects/nixpkgs-maintain/development/strata/`。升级先在该包开发目录集中修改和验证，再集成到 nixpkgs 投稿分支；未改变的 derivation 可复用既有构建证据。系统 dry-build 只验证集成，实际 GUI、媒体播放与 GVfs 访问仍以用户应用后的实测为准。
 
 ### 回退
 
@@ -117,7 +117,7 @@ sudo nixos-rebuild switch --flake .
 
 ## 故障排查
 
-- **Strata 预览报 `Unable to start the preview sandbox`**：先确认实际运行的是固定 input 中的 0.21.0 包；该包自带可信 `bwrap` 搜索路径，再检查用户命名空间权限与应用日志。
+- **Strata 预览报 `Unable to start the preview sandbox`**：先确认实际运行的是固定 input 中的 1.0.0 包；该包自带可信 `bwrap` 搜索路径，再检查用户命名空间权限与应用日志。
 - **Strata 缩略图/PDF/压缩包预览空白**：在 nixpkgs 任务 worktree 核对沙箱补丁及对应验证记录；沙箱内工具和 GStreamer 插件路径由包提供。
 - **应用菜单里没有 Strata 图标**：图标与 desktop entry 在 store 里，重新登录一次让桌面缓存刷新。
 - **Yazi 没有缩略图**：见 [Yazi 文件管理器](yazi.md) 的排查节。

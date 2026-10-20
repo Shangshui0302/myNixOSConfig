@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-10-13
+updated: 2026-10-20
 ---
 
 # 系统服务
@@ -200,6 +200,8 @@ TLP 日志里那句 `Setting battery charge thresholds...done.` 是通用输出�
 
 `services.howdy` 启用 IR 红外人脸解锁，摄像头设备 `/dev/video2`，格式 `v4l2`，`dark_threshold = 100`。通过 `security.pam.services` 以 `sufficient` 控制集成到 sudo / su / login / greetd / noctalia。PAM 细节见 [PAM 认证](security/pam.md)。
 
+Howdy 专用的 OpenCV 保留 GTK 测试窗口与 V4L2 摄像头支持，只关闭未使用的 VTK 三维可视化依赖。此设置位于 `host/base/services.nix` 的 `services.howdy.package`，不改变其他应用使用的 OpenCV，也不改变 PAM 认证规则。
+
 ## 权限与安全
 
 - `security.polkit` 启用并添加规则，允许 `wheel` 组用户应用 Noctalia 外观（`org.noctalia.greeter.apply-appearance`）。
@@ -231,6 +233,7 @@ nmcli device status               # 网络连接状态
 - **电源管理异常**：`tlp-stat -s` 看模式与电源、`tlp-stat -c` 看有效配置，`systemctl status tlp` 看服务；`upower` 只管电池状态。
 - **Howdy 无法识别**：确认视频设备路径、PAM 集成与摄像头可用性。
 - **GUI 授权没有认证窗口**：确认当前图形会话中 `hyprpolkitagent` 正在运行，并检查 PAM 的 `polkit-1` 服务；shell 切换不应停止该会话服务。
+- **构建 Howdy 时 VTK 报 `Could not find the PEGTL external dependency`**：Howdy 的包定制关闭其不需要的 VTK 依赖以避开此故障；无需在宿主机额外安装 PEGTL。后续升级 nixpkgs 时，先验证默认包能否构建，再决定是否移除此定制。检查时构建实际服务包：`nix build path:.#nixosConfigurations.MechRevo-NixOS.config.services.howdy.package --no-link -L`。
 
 ## 相关链接
 

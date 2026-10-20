@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-10-04
+updated: 2026-10-20
 ---
 # Nix 手工打包
 
@@ -186,16 +186,16 @@ nixos-rebuild dry-build --flake path:.
 
 ## 已投稿包：Strata
 
-Strata v0.21.0 的包定义和六个补丁统一在 `~/Projects/nixpkgs-maintain/nixpkgs` 的 `feature/strata` 分支维护（`pkgs/by-name/st/strata/`），继续修改时创建该分支的任务 worktree。贡献规范、任务入口和验证记录在外层维护仓库中；本仓库不保存第二份 derivation。
+Strata v1.0.0 的包定义和补丁统一在 `~/Projects/nixpkgs-maintain/nixpkgs` 的 `feature/strata` 分支维护（`pkgs/by-name/st/strata/`），继续修改时创建该分支的任务 worktree。贡献规范、任务入口和验证记录在外层维护仓库中；本仓库不保存第二份 derivation。
 
-`flake.nix` 的临时 `strata-nixpkgs` input 固定到已构建并通过测试的提交 `e7095c7d23897f76fbdae73a819d8c79fd9e68d4`，只获取 `legacyPackages.x86_64-linux.strata`，保留独立包集的完整依赖版本。不要将系统 `nixpkgs` 改为 fork，也不要用系统包集重新 `callPackage` 该定义后宣称复用了原构建。
+`flake.nix` 的临时 `strata-nixpkgs` input 跟随 fork 的 `feature/strata` 分支，`flake.lock` 当前固定到提交 `e9b01117f28bcb546bea973820cf307fef1e1d6b`。本仓库只获取 `legacyPackages.x86_64-linux.strata`，保留独立包集的完整依赖版本。不要将系统 `nixpkgs` 改为 fork，也不要用系统包集重新 `callPackage` 该定义后宣称复用了原构建。
 
 - 入口仍为 `nix build path:.#strata`；`home/productivity/files.nix` 只在主 DE 安装它，GNOME 不安装。
 - 普通偏好由应用维护可写的 `settings.toml`；Matugen 模板和 `theme-apply` 留在本地消费者，包没有本机路径或主题依赖。
 - 包自带可信 helper、bubblewrap 与沙箱工具路径，不要求系统额外安装 `bubblewrap`。
 - [PR #570118](https://github.com/NixOS/nixpkgs/pull/570118) 被合并且当前官方频道包含该包后，消费者改为 `pkgs.strata`，删除 `strata-nixpkgs` input 和锁项。
 
-升级流程：在 nixpkgs 任务 worktree 中修改 → 先做快速检查与适用的 vet → 集中修复后执行一次最终构建、测试和 smoke → 记录提交、架构与 derivation → 更新消费者固定提交 → 系统 dry-build → 用户手动 switch。相同 derivation 的有效构建证据可复用，dry-build 不代表已应用。
+升级流程：在 nixpkgs 任务 worktree 中修改 → 先做快速检查与适用的 vet → 集中修复后执行一次最终构建、测试和 smoke → 记录并推送已验证提交 → `nix flake update strata-nixpkgs` 更新消费者锁项 → 系统 dry-build → 用户手动 switch。相同 derivation 的有效构建证据可复用，dry-build 不代表已应用。
 
 ```bash
 nix eval --raw path:.#strata.drvPath

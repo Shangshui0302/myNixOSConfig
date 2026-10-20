@@ -36,6 +36,15 @@
 
   services.howdy = {
     enable = true;
+    # Howdy uses 2D image processing, not OpenCV's VTK-based 3D visualization.
+    # Keep opencv4Full's GTK/V4L2 support, but avoid the broken VTK 9.5 PEGTL lookup.
+    package = pkgs.howdy.override {
+      python3 = pkgs.python3.override {
+        packageOverrides = final: prev: {
+          opencv4Full = prev.opencv4Full.override { enableVtk = false; };
+        };
+      };
+    };
     settings = {
       core = {
         device_path = "/dev/video2";

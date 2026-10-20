@@ -4,7 +4,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     # Temporary consumer of the tested package in nixpkgs PR #570118.
     # Use pkgs.strata and remove this input once our official channel includes it.
-    strata-nixpkgs.url = "github:Shangshui0302/nixpkgs/e7095c7d23897f76fbdae73a819d8c79fd9e68d4";
+    strata-nixpkgs.url = "github:Shangshui0302/nixpkgs?ref=feature/strata";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";

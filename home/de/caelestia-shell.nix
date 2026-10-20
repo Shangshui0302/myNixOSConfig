@@ -1,6 +1,16 @@
 { config, lib, pkgs, inputs, ... }:
 
 let
+  # Python 构建启用 structuredAttrs 后，上游顶层的版本变量不会导出给 hatch-vcs。
+  # 显式导出上游已有的 wheel 版本；上游迁移到 env 后可移除此覆盖。
+  caelestiaCli =
+    inputs.caelestia.inputs.caelestia-cli.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
+      (old: {
+        preBuild = (old.preBuild or "") + ''
+          export SETUPTOOLS_SCM_PRETEND_VERSION
+        '';
+      });
+
   # Caelestia 自动保存 shell.json（CLI 也会改写 cli.json）；HM 的默认链接指向 Nix store，
   # 只能在服务启动前解引用成普通文件。下一次 HM 激活仍会重新生成声明式源文件。
   prepareCaelestiaConfig = pkgs.writeShellScript "caelestia-prepare-config" ''
@@ -25,8 +35,13 @@ in
 
   programs.caelestia = {
     enable = true;
+    # HM 的 cli.package 不会替换 Shell 内置的 CLI 依赖，两个入口必须一起覆盖。
+    package = inputs.caelestia.packages.${pkgs.stdenv.hostPlatform.system}.with-cli.override {
+      caelestia-cli = caelestiaCli;
+    };
     # Hyprland 的共享快捷键通过 caelestia CLI 调用 shell IPC。
     cli.enable = true;
+    cli.package = caelestiaCli;
 
     # CLI 的 theme 管线：缺键即 true（utils/theme.py 的 check()），而条目存在即覆盖，
     # 所以必须显式写 false 才关得掉。它写入的目标全是 Matugen 的地盘（终端序列、
