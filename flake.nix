@@ -58,6 +58,8 @@
     in
     {
       packages.${system} = {
+        agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };
+        opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
         material-gnome-theme = materialGnomeTheme;
         material-adw-kvantum = materialAdwTheme;
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };

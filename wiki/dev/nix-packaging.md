@@ -167,6 +167,11 @@ sudo nixos-rebuild switch --flake .
 
 ## 当前本地包
 
+| 包 | 独立构建入口 | 说明 |
+| --- | --- | --- |
+| Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
+| OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
+
 ### ModernZ (`local-deriv/modernz.nix`)
 
 ModernZ v0.3.3 是 mpv 的 OSC 界面，当前以 `stdenvNoCC` 数据包集成，不在构建阶段联网或编译：
