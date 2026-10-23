@@ -36,7 +36,6 @@ dns:
   use-hosts: true
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
-    - "+.*"
     - "+.lan"
     - "+.local"
     - "time.*.com"
@@ -97,19 +96,6 @@ geox-url:
   geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
   mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb"
   asn: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
-
-# 机场订阅（proxy: DIRECT 避免鸡生蛋：provider下载不走代理链）
-proxy-providers:
-  ikuuu:
-    type: http
-    url: "${MIHOMO_SUBSCRIPTION_URL}"
-    path: ./providers/proxies.yaml
-    proxy: DIRECT
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
 
 # 社区规则集（MetaCubeX MRS 格式，每日自动更新）
 rule-providers:

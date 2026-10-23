@@ -18,6 +18,18 @@
         group = "root";
         mode = "0400";
       };
+      mihomo_gist_url = {
+        sopsFile = ../secrets/mihomo-gist.yaml;
+        owner = "root";
+        group = "root";
+        mode = "0400";
+      };
+      mihomo_bootstrap = {
+        sopsFile = ../secrets/mihomo-gist.yaml;
+        owner = "root";
+        group = "root";
+        mode = "0400";
+      };
     };
   };
 }

@@ -99,14 +99,14 @@ docs:
     memory:  []
 
   networking/mihomo.md:
-    sources: [host/base/network.nix, host/mihomo-config.yaml.in]
+    sources: [host/base/network.nix, host/base/sops.nix, host/mihomo-config.yaml.in, host/mihomo-gist-sync.py, host/secrets/mihomo-gist.yaml]
     memory:  [mihomo-tun-stack]
 
   security/index.md:
     sources: [host/base/sops.nix, host/base/users.nix, host/de/greeter.nix]
     memory:  [portal-gtk-dangling-symlink]
   security/sops.md:
-    sources: [host/base/sops.nix]
+    sources: [host/base/sops.nix, host/secrets/secrets.yaml, host/secrets/mihomo-gist.yaml, .sops.yaml]
     memory:  [mihomo-tun-stack]
   security/pam.md:
     sources: [host/base/services.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix]

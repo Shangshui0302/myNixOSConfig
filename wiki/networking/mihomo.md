@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-10-07
+updated: 2026-10-23
 ---
 
 # Mihomo 代理
@@ -17,13 +17,20 @@ updated: 2026-10-07
 > 7. [nix 下载慢](#nix-下载慢大文件极慢--挂起--curl-正常-nix-卡死)
 > 8. [相关链接](#相关链接)
 
-Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。配置模板由 Nix 管理，节点从机场订阅拉取，规则使用 MetaCubeX 社区规则集（MRS 格式）。
+Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。本机模板保留 DNS、TUN、嗅探和控制端设置；从私有 Gist 完整 YAML 仅提取 `proxies`、`proxy-groups`、`rule-providers`、`rules` 四项共享配置。
+
+共享配置由发布端 Sub-Store 管理：Secret Gist 的 `mihomo-template.yaml` 是保留注释的人工编辑源；Sub-Store 每 6 小时读取最新模板和 IKUUU、PPVPN 节点，生成 `mihomo-dual.yaml`。NixOS 继续订阅同一个成品地址，不读取未填节点的模板。只编辑模板，不手改会被同步覆盖的成品；修改后可在发布端手动同步，再等待本机定时更新。
+
+新版保留 17 个表情策略组及节点原名：`🤖 AI/Dev`、`🐙 GitHub` 默认使用 `🏠 PPVPN 住宅`，可选 `🏢 PPVPN 机房`；`📦 大流量` 只列 IKUUU 节点，地区组仅保留美国。下载分流按目标域名判断，不按传输大小自动切换；Nix 缓存、容器镜像、包和模型下载已有专门规则。各设备独立保存具体节点选择。
+
+更新器按配置内容验证节点、组成员、引用、循环和规则目标，并检查热加载后的实际组成员；不依赖组名或 `IK-`、`PP-` 节点前缀。旧 bootstrap 仍可读取，无需改写 SOPS；网络或候选校验失败保留上次有效快照。
 
 ## 架构
 
 ```
-preStart: envsubst 渲染模板 → /run/mihomo/config.yaml
-proxy-providers (type: http): 每 24h 自动更新节点
+首次启动：从 SOPS 机密读取 Gist URL 与 bootstrap，生成共享快照，并与当前本机模板及 Secret 合成 /persist/secrets/mihomo-gist-state/active.yaml
+后续启动：从共享快照重新合成、校验；systemd 将 root-only active.yaml 作为 credential 交给 DynamicUser，离线也可启动
+定时更新：每 6h 下载 Gist → 白名单合并 → Mihomo 校验 → 控制端 API 热重载并核对运行策略组 → 原子发布共享快照及启动配置；失败回滚
 rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 ```
 
@@ -32,7 +39,7 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 - 去广告（geosite:category-ads-all）
 - 国外网站代理兜底（geosite:geolocation-!cn）
 - 特定服务分流：
-  - **AI 与受限服务**（OpenAI, Claude, Meta, Antigravity 等）：路由至 `🤖 AI/Dev`，可在 `🇺🇸 美国节点` 与 `🔰 选择节点` 间切换。
+  - **AI 与开发服务**（OpenAI、Claude、Gemini、Copilot、Cursor 等）：路由至 `🤖 AI/Dev`，默认 PPVPN 住宅，可选择 PPVPN 机房或具体 PPVPN 节点。
   - **GitHub**：单独路由至 `🐙 GitHub` 选择组，避免与其他常规流量共用默认节点。
   - **Slack**：使用 `geosite-slack` 社区规则集，直接路由至 `🇺🇸 美国节点`，优先于通用国外流量规则；具体美国节点可在 WebUI 中选择。
   - **流媒体与常规服务**（Netflix, YouTube, Bilibili, Bahamut, Telegram 等）：按区域或默认走选择节点。
@@ -47,9 +54,33 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 
 | 文件 | 用途 |
 |------|------|
-| `host/base/network.nix` | mihomo 服务声明、preStart |
-| `host/mihomo-config.yaml.in` | 配置模板（envsubst 变量注入） |
-| `/persist/secrets/mihomo.env` | `MIHOMO_SECRET`、`MIHOMO_SUBSCRIPTION_URL` |
+| `host/base/network.nix` | Mihomo 服务、首次引导和六小时间隔更新 |
+| `host/mihomo-config.yaml.in` | 本机配置模板，保留控制端 Secret 占位符 |
+| `host/mihomo-gist-sync.py` | 下载、白名单合并、校验和原子发布 |
+| `host/secrets/mihomo-gist.yaml` | SOPS 加密的 `mihomo_gist_url` 与 `mihomo_bootstrap`；与现有 `secrets.yaml` 分开维护 |
+| `/run/secrets/mihomo_gist_url`、`/run/secrets/mihomo_bootstrap` | sops-nix 在系统激活的 systemd 阶段解密并安装，root-only |
+| `/persist/secrets/mihomo-gist-state/` | root 私有的 last-good 共享快照与 active 配置；失败时保留旧版，作为动态运行状态，不自动回写 SOPS |
+| `/run/secrets/mihomo_env` | 现有 SOPS 运行时文件，使用其中的 `MIHOMO_SECRET` |
+
+准备好并加密 `host/secrets/mihomo-gist.yaml` 后，沿用正常的 NixOS rebuild 流程：
+
+```bash
+cd ~/myNixOSConfig
+sudo nixos-rebuild switch --flake path:.#MechRevo-NixOS
+```
+
+`path:.` 使尚未加入 Git 的新文件也参与本次构建；应用会包含当前仓库的其他已有修改。无需额外运行安装脚本。系统配置会自动启用更新定时器，后续不必手动刷新。每次 rebuild 不保证立即下载 Gist。
+
+更新服务为 `Type=oneshot`，执行完即退出，两次任务之间没有同步脚本常驻。定时器在开机后 15 分钟、随后距上次启动更新服务 6 小时触发；未启用 `WakeSystem`，不会为更新唤醒休眠中的笔记本，单调计时在挂起期间暂停。候选配置不变时跳过核心校验与热加载；有变化才运行校验并更新。网络异常可能延长等待，但不是持续占用 CPU。
+
+如需排查或重试更新，可手动运行：
+
+```bash
+sudo systemctl start mihomo-gist-update.service
+systemctl status mihomo.service mihomo-gist-update.timer
+```
+
+每六小时更新只刷新共享快照，不会改写 SOPS 中的 bootstrap。原先 `/persist/secrets/mihomo-gist-url` 与 `/persist/secrets/mihomo-bootstrap.yaml` 不再部署。恢复迁移数据时仍需原 SSH host key；若无法沿用，需将新 host key 的 Age 公钥加入接收者并重新授权/加密密文。
 
 ## WebUI
 
@@ -57,7 +88,7 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 |------|-----|
 | 地址 | `http://127.0.0.1:9090` |
 | UI | zashboard（Nix 管理，`pkgs.zashboard`） |
-| Secret | `/persist/secrets/mihomo.env` 中 `MIHOMO_SECRET` |
+| Secret | 现有 sops `MIHOMO_SECRET` |
 
 ## 验证代理
 
