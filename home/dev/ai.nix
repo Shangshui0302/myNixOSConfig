@@ -6,7 +6,9 @@ let
   opencli = pkgs.callPackage ../../local-deriv/opencli.nix { };
 in
 {
-  imports = [ ./orca.nix ];
+  imports = [
+    ./agent-orchestrator.nix
+  ];
 
   home.packages = with pkgs; [
     codex

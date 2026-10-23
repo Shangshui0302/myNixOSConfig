@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-10-20
+updated: 2026-10-23
 ---
 # Nix 手工打包
 
@@ -171,7 +171,7 @@ sudo nixos-rebuild switch --flake .
 | --- | --- | --- |
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
-| Orca 与官方 skills | `nix build path:.#orca-ide path:.#orca-skills` | 基于固定社区包追加本机启动策略、DSH 桥与版本匹配的 skills，见 [Orca](orca.md) |
+| Agent Orchestrator | `nix build path:.#agent-orchestrator-distrobox` | 官方 AppImage 解包后适配 Nix 动态库，附 Arch DSH 桥；原始桌面包为 `agent-orchestrator`，见 [AO](agent-orchestrator.md) |
 
 ### ModernZ (`local-deriv/modernz.nix`)
 
