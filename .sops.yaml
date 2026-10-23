@@ -1,7 +1,7 @@
 keys:
   - &mechrevo-ssh age14h8vny4m35qd3upw5hn2nrf8s7vcqen3edfu6a4upzelmq9ktvwqvaum00
 creation_rules:
-  - path_regex: host/secrets/secrets\.yaml$
+  - path_regex: host/secrets/(secrets|mihomo-gist)\.yaml$
     key_groups:
       - age:
         - *mechrevo-ssh
