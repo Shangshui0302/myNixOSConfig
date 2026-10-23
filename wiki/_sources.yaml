@@ -101,6 +101,9 @@ docs:
   networking/mihomo.md:
     sources: [host/base/network.nix, host/base/sops.nix, host/mihomo-config.yaml.in, host/mihomo-gist-sync.py, host/secrets/mihomo-gist.yaml]
     memory:  [mihomo-tun-stack]
+  networking/mihomo-distribution.md:
+    sources: [host/base/network.nix, host/base/sops.nix, host/mihomo-config.yaml.in, host/mihomo-gist-sync.py, host/secrets/mihomo-gist.yaml, .sops.yaml]
+    memory:  [mihomo-template-distribution]
 
   security/index.md:
     sources: [host/base/sops.nix, host/base/users.nix, host/de/greeter.nix]

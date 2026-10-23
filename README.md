@@ -77,5 +77,6 @@ nixos-rebuild dry-build --flake .
 - secrets 放 `/persist/secrets/` 或 sops 加密文件，不进 git。
 - Mihomo 私有 Gist 地址与首次引导配置由 `host/secrets/mihomo-gist.yaml` 加密管理；运行时状态快照仍保存在 `/persist/secrets/`。
 - 双机场规则在 Secret Gist 的 `mihomo-template.yaml` 编辑，Sub-Store 自动更新节点并生成 `mihomo-dual.yaml`；NixOS 继续拉取原成品地址，支持表情策略组与节点原名。更新器兼容修改通过正常 rebuild 应用，后续模板/节点更新无需 rebuild。
+- 修改、生成、发布、三端更新和换机恢复步骤见 [Mihomo 配置修改与分发](wiki/networking/mihomo-distribution.md)。
 - 任务分支使用 `feature/`、`fix/`、`docs/` 等用途前缀，禁止工具名称前缀。
 - 投稿包在 `~/Projects/nixpkgs-maintain` 开发。Strata 1.0.0 暂用独立 `strata-nixpkgs` input 跟随 fork 的 `feature/strata` 分支，由 `flake.lock` 固定每次更新的版本；个人 Matugen 链保留在 `home/theme/`，官方频道可用后移除临时 input。

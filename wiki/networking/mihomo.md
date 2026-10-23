@@ -7,6 +7,8 @@ updated: 2026-10-23
 
 # Mihomo 代理
 
+日常修改共同规则、更新节点与跨设备分发，请看 [Mihomo 配置修改与分发](mihomo-distribution.md)。本文保留本机 TUN、WebUI 和网络排障说明。
+
 > **目录**
 > 1. [架构](#架构)
 > 2. [配置文件](#配置文件)
@@ -122,7 +124,7 @@ nftables 已启用，核心规则：
 # 查看 Mihomo 日志
 journalctl -u mihomo -f
 
-# 重启服务（触发 preStart 重新渲染模板）
+# 重启核心（先运行 seed，从有效共享快照和本机模板准备配置）
 sudo systemctl restart mihomo
 
 # 检查 WebUI 是否可访问
@@ -189,6 +191,7 @@ nix build --dry-run '.#nixosConfigurations.MechRevo-NixOS.config.system.build.to
 
 ## 相关链接
 
+- [Mihomo 配置修改与分发](mihomo-distribution.md) — 模板维护、三端更新与加密恢复
 - [Distrobox](../dev/distrobox.md) — 容器网络走 Mihomo TUN 全局代理
 - [Bottles 离线韧性改造](../dev/bottles-offline-workaround.md) — 策略 B 用 mihomo DIRECT 规则
 - [Memory: mihomo TUN 栈决策](../../memory/cards/mihomo-tun-stack.md) — 为何 gvisor + mtu 1500

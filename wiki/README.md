@@ -73,6 +73,7 @@ updated: 2026-10-23
 | 文档 | 内容 |
 |------|------|
 | [Mihomo 代理](networking/mihomo.md) | TUN 代理：架构、WebUI、故障排查、nix 下载慢 |
+| [Mihomo 配置修改与分发](networking/mihomo-distribution.md) | Gist 模板修改、节点生成、三端更新、服务职责与加密恢复 |
 
 ## 安全与隐私 `security/`
 
