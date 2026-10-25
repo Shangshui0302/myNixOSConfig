@@ -60,7 +60,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 
 ## 本机 Sub-Store
 
-`host/base/sub-store.nix` 声明本机回环监听的 Sub-Store 服务，使用独立系统用户和 systemd 管理的 `/var/lib/sub-store` 状态目录，不添加全局发布计划。旧数据已完成迁移，迁移兼容单元已移除。服务常驻供本机定时消费，Gist 发布与加密备份保持手动；正常 rebuild 不重写订阅数据库。运行 `systemctl status substore` 可查看状态和管理地址。打开、恢复与停止步骤见[本机 Sub-Store](networking/sub-store.md)。
+`host/base/sub-store.nix` 声明本机回环监听的 Sub-Store 服务，使用独立系统用户和 systemd 管理的 `/var/lib/sub-store` 状态目录，不添加全局发布计划。旧数据已完成迁移，迁移兼容单元已移除。服务常驻供本机定时消费，Gist 发布与加密备份保持手动；正常 rebuild 不重写订阅数据库。运行 `systemctl status sub-store.service` 可查看状态和管理地址。打开、恢复与停止步骤见[本机 Sub-Store](networking/sub-store.md)。
 
 ## 音频 / 蓝牙 / 打印
 

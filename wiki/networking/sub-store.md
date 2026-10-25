@@ -34,7 +34,7 @@ systemctl status sub-store.service
 journalctl -u sub-store.service -n 50 --no-pager
 ```
 
-也可以记作 `systemctl status substore`：`substore.service` 是正式服务的别名。应用配置后，状态输出的 `Docs:` 行会显示上述管理地址；忘记地址时无需翻配置文件。
+应用配置后，`systemctl status sub-store.service` 输出的 `Docs:` 行会显示上述管理地址；忘记地址时无需翻配置文件。
 
 ## 恢复数据与发布
 

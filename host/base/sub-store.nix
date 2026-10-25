@@ -11,7 +11,6 @@
   systemd.services.sub-store = {
     description = "Sub-Store subscription editor and publisher";
     documentation = [ "http://127.0.0.1:3001/?magicpath=backend" ];
-    aliases = [ "substore.service" ];
     wantedBy = [ "multi-user.target" ];
 
     environment = {
