@@ -202,9 +202,9 @@ Super + 鼠标滚轮   # 快速浏览工作区
 
 ### 小窗 / 浮动
 
-Token Monitor 托盘弹窗按应用标识 `token-monitor` 自动浮动，不固定宽高。
-规则同时清除并抑制最大化，避免浮动窗口铺满工作区后不能调整尺寸；
-`persistent_size` 保留当前 Hyprland 会话内的尺寸。
+Token Monitor 按应用标识 `token-monitor` 保留 `persistent_size` 尺寸记忆，
+不强制浮动，也不改写或抑制应用的最大化行为。
+尺寸记忆只对浮动窗口生效，保留范围为当前 Hyprland 会话；平铺尺寸由布局决定。
 启用应用的“仅托盘显示”后，失焦收回由应用负责；当前鼠标跟随
 焦点设置也可能在鼠标进入另一窗口时触发收回。登录自启见 [Token Monitor](../dev/token-monitor.md)。
 

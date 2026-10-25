@@ -337,10 +337,7 @@ in
         {
           name = "token-monitor-tray";
           match.class = "^token-monitor$";
-          # Keep tray popovers resizable even when the client requests maximization.
-          float = true;
-          fullscreen_state = "0 0";
-          suppress_event = "maximize";
+          # Remember floating dimensions without forcing the layout or maximization state.
           persistent_size = true;
         }
         {
