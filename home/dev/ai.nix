@@ -8,6 +8,7 @@ in
 {
   imports = [
     ./agent-orchestrator.nix
+    ./token-monitor.nix
   ];
 
   home.packages = with pkgs; [

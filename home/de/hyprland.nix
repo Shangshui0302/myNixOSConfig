@@ -335,6 +335,12 @@ in
           opacity = "0.96 override 0.96 override";
         }
         {
+          name = "token-monitor-tray";
+          match.class = "^token-monitor$";
+          # Token Monitor owns blur-to-hide and saved dimensions in tray-only mode.
+          float = true;
+        }
+        {
           name = "clipse-float";
           match = {
             class = "^clipse$";

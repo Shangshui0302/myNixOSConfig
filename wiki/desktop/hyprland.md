@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-10-19
+updated: 2026-10-25
 ---
 
 # Hyprland 使用指南
@@ -201,6 +201,10 @@ Super + 鼠标滚轮   # 快速浏览工作区
 ```
 
 ### 小窗 / 浮动
+
+Token Monitor 托盘弹窗按应用标识 `token-monitor` 自动浮动，不固定宽高。
+启用应用的“仅托盘显示”后，失焦收回和尺寸记忆由应用负责；当前鼠标跟随
+焦点设置也可能在鼠标进入另一窗口时触发收回。登录自启见 [Token Monitor](../dev/token-monitor.md)。
 
 ```
 Super + V       # 切换浮动（计算器、弹窗等）
