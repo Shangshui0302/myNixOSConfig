@@ -337,8 +337,11 @@ in
         {
           name = "token-monitor-tray";
           match.class = "^token-monitor$";
-          # Token Monitor owns blur-to-hide and saved dimensions in tray-only mode.
+          # Keep tray popovers resizable even when the client requests maximization.
           float = true;
+          fullscreen_state = "0 0";
+          suppress_event = "maximize";
+          persistent_size = true;
         }
         {
           name = "clipse-float";
