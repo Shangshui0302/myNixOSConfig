@@ -2,7 +2,7 @@
 title: SOPS 机密管理
 category: 安全
 tags: [sops, sops-nix, age, secrets, mihomo, ssh]
-updated: 2026-08-12
+updated: 2026-10-25
 ---
 
 # SOPS 机密管理
@@ -25,11 +25,11 @@ updated: 2026-08-12
 ## 涉及文件
 - `.sops.yaml`：SOPS 客户端配置，定义 Age 接收者（SSH host key 公钥）与创建规则。
 - `host/secrets/secrets.yaml`：加密后的秘密清单（密文 + SOPS 元数据）。
-- `host/secrets/mihomo-gist.yaml`：单独加密的 Mihomo Gist URL 与 bootstrap。
+- `host/secrets/mihomo-gist.yaml`：沿用现有密文内的 Mihomo bootstrap；旧 Gist URL 保留在密文中，但不再部署到运行时。
 - `host/base/sops.nix`：NixOS 模块，声明解密密钥来源（`age.sshKeyPaths`）、`useSystemdActivation`、默认密文文件与机密映射。
 - `flake.nix`：引入 sops-nix 的 NixOS 模块。
 - `host/default.nix`：导入 `host/base/sops.nix` 使配置生效。
-- `host/base/network.nix`：mihomo 服务通过 `EnvironmentFile` 和 SOPS secret 路径消费机密。
+- `host/base/mihomo.nix`：mihomo 服务通过 `EnvironmentFile` 和 SOPS secret 路径消费机密。
 
 ```mermaid
 graph TB
@@ -37,7 +37,7 @@ A[".sops.yaml<br/>创建规则与接收者"] --> B["host/secrets/(secrets|mihomo
 C["flake.nix<br/>引入 sops-nix 模块"] --> D["host/default.nix<br/>导入 host/base/sops.nix"]
 D --> E["host/base/sops.nix<br/>age.sshKeyPaths + useSystemdActivation"]
 E --> F["sops-install-secrets.service<br/>systemd 阶段解密到 /run/secrets/*"]
-F --> G["host/base/network.nix<br/>mihomo 通过 EnvironmentFile 读取"]
+F --> G["host/base/mihomo.nix<br/>mihomo 通过 EnvironmentFile 读取"]
 ```
 
 ## 工作流程
@@ -78,10 +78,10 @@ R --> M["services.mihomo (EnvironmentFile)"]
 **NixOS 模块（`host/base/sops.nix`）**：
 - `sops.age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"]` 使用系统 SSH host key 作为解密私钥（免单独管理 age 私钥）。
 - `sops.useSystemdActivation = true` 让 secrets 通过 `sops-install-secrets.service` 在 systemd 阶段安装（`after = local-fs.target`），而非 initrd activation script——避免 initrd 阶段读不到已挂载文件系统的时序问题。
-- `sops.defaultSopsFile` 指定默认密文文件 `secrets/secrets.yaml`；Gist 配置的两个 secret 单独指定 `secrets/mihomo-gist.yaml`。
-- `sops.secrets.<name>` 将键映射为 `/run/secrets/<name>` 并设置 owner/group/mode。`mihomo_env`、`mihomo_gist_url` 与 `mihomo_bootstrap` 均为 `root:root`、`0400`。
+- `sops.defaultSopsFile` 指定默认密文文件 `secrets/secrets.yaml`；bootstrap 单独指定 `secrets/mihomo-gist.yaml`。
+- `sops.secrets.<name>` 将键映射为 `/run/secrets/<name>` 并设置 owner/group/mode。当前 Mihomo 部署 `mihomo_env` 与 `mihomo_bootstrap`，均为 `root:root`、`0400`；不再安装 `mihomo_gist_url`。
 
-**服务消费（`host/base/network.nix`）**：`mihomo-gist-seed` 与 `mihomo-gist-update` 两个 root 服务通过 `EnvironmentFile` 和 SOPS secret 路径读取 Gist URL、bootstrap 及 `mihomo_env`。Mihomo 主服务不直接读取这些 SOPS 文件；它只通过 systemd credential 取得生成的 active 配置。secret 安装依赖 `sops-install-secrets.service`；`/run` 为临时目录，重启后会重新解密安装。
+**服务消费（`host/base/mihomo.nix`）**：`mihomo-config-seed` 与 `mihomo-config-update` 通过 `EnvironmentFile` 读取 `mihomo_env`，其中 seed 还可读取 bootstrap，update 只向本机 Sub-Store 获取新成品。Mihomo 主服务通过原生 systemd credential 取得 `/var/lib/mihomo-config/active.yaml`，不直接读取这些 SOPS 文件。secret 安装依赖 `sops-install-secrets.service`；`/run` 为临时目录，重启后会重新解密安装。Sub-Store 数据库与 Mihomo 快照属于受限运行状态，由各自的 systemd `StateDirectory` 管理。
 
 ## 新增一项机密
 1. 在对应的加密 YAML 中添加新键（用 `sops` 命令编辑）。
@@ -98,7 +98,7 @@ R --> M["services.mihomo (EnvironmentFile)"]
 ## 备份与恢复
 - 备份：解密密钥 **SSH host key** `/etc/ssh/ssh_host_ed25519_key`（随系统迁移）、`host/secrets/*.yaml` 密文及规则 `.sops.yaml`。
 - 恢复：确认 SSH host key 就位，应用系统配置后由 systemd 阶段解密，验证 `/run/secrets/*` 已按预期生成。
-- 迁移到新机器：恢复这些密文仍需**沿用原 SSH host key**；若无法沿用，需有权解密的原接收者将新 host key 的 Age 公钥加入 `.sops.yaml` 并重新授权/加密，否则无法恢复。Mihomo bootstrap 不会被每六小时的 Gist 更新自动改写。
+- 迁移到新机器：恢复这些密文仍需**沿用原 SSH host key**；若无法沿用，需有权解密的原接收者将新 host key 的 Age 公钥加入 `.sops.yaml` 并重新授权/加密，否则无法恢复。Mihomo bootstrap 不会被每六小时的 Sub-Store 更新自动改写。
 
 ## 故障排查
 - **激活时找不到解密密钥**：确认 `/etc/ssh/ssh_host_ed25519_key` 存在且权限正确（root 可读）；确认 `.sops.yaml` 接收者与该 key 的 age 公钥匹配。
@@ -108,5 +108,5 @@ R --> M["services.mihomo (EnvironmentFile)"]
 
 ## 相关链接
 - 安全与隐私总览：[index.md](./index.md)
-- Mihomo 网络代理（消费 `mihomo_env` 与 Gist 机密）：[../networking/mihomo.md](../networking/mihomo.md)
+- Mihomo 网络代理（消费 `mihomo_env` 与 bootstrap）：[../networking/mihomo.md](../networking/mihomo.md)
 - 决策：mihomo TUN 栈与 `mihomo_env` 机密 → [mihomo-tun-stack](../../memory/cards/mihomo-tun-stack.md)

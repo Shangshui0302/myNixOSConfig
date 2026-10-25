@@ -15,6 +15,8 @@
     ./nix.nix
     ./users.nix
     ./network.nix
+    ./mihomo.nix
+    ./sub-store.nix
     ./services.nix
     ./desktop.nix
     ./gaming.nix

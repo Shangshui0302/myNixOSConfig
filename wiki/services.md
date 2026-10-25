@@ -1,25 +1,26 @@
 ---
 title: 系统服务
 category: 顶层
-tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-10-20
+tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, sub-store, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
+updated: 2026-10-25
 ---
 
 # 系统服务
 
-systemd 服务总览：网络与代理、音频、蓝牙、打印、电源管理、生物识别与权限。系统级配置集中在 `host/base/services.nix` 与 `host/base/network.nix`，会话级 polkit agent 由 `home/de/polkit.nix` 管理。
+systemd 服务总览：网络与代理、音频、蓝牙、打印、电源管理、生物识别与权限。系统级配置按职责放在 `host/base/services.nix`、`host/base/network.nix`、`host/base/mihomo.nix` 与 `host/base/sub-store.nix`，会话级 polkit agent 由 `home/de/polkit.nix` 管理。
 
 ## 目录
 
 1. [服务编排总览](#服务编排总览)
 2. [网络与代理](#网络与代理)
-3. [音频 / 蓝牙 / 打印](#音频--蓝牙--打印)
-4. [电源与存储维护](#电源与存储维护)
-5. [生物识别 Howdy](#生物识别-howdy)
-6. [权限与安全](#权限与安全)
-7. [常用命令](#常用命令)
-8. [故障排查](#故障排查)
-9. [相关链接](#相关链接)
+3. [本机 Sub-Store](#本机-sub-store)
+4. [音频 / 蓝牙 / 打印](#音频--蓝牙--打印)
+5. [电源与存储维护](#电源与存储维护)
+6. [生物识别 Howdy](#生物识别-howdy)
+7. [权限与安全](#权限与安全)
+8. [常用命令](#常用命令)
+9. [故障排查](#故障排查)
+10. [相关链接](#相关链接)
 
 ## 服务编排总览
 
@@ -49,13 +50,17 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 
 - `services.avahi` 广播 `MechRevo-NixOS.local` 及本机地址，局域网内的 SSH 客户端可以使用主机名而不是 DHCP 地址。
 - `services.avahi.nssmdns4` 让本机程序解析 IPv4 `.local` 名称；防火墙由模块自动放行 mDNS UDP 5353。
-- `services.mihomo` 以 `tunMode` 运行，WebUI 使用 `zashboard`。
-- `systemd.services.mihomo` 通过 `after`/`wants` 依赖 `sops-install-secrets.service`，确保加密的环境变量（订阅链接等）就绪后再启动。
-- `preStart` 用 `envsubst` 将 `mihomo-config.yaml.in` 渲染到 `/run/mihomo/config.yaml`，敏感信息不入库。
+- `host/base/mihomo.nix` 使用原生 `services.mihomo` 以 `tunMode` 运行，WebUI 使用 `zashboard`。
+- Mihomo 由 `mihomo-config-seed.service` 准备启动配置，更新由 `mihomo-config-update.service` 处理；敏感凭据通过 systemd credential 传递，运行状态保存在 `/var/lib/mihomo-config/`。
+- seed 从快照或 bootstrap 合成并校验启动配置；update 每 6 小时请求本机 Sub-Store，用最新 Gist 模板和机场节点生成成品，合成本机设置、校验并热加载。仅 update 启动并等待 Sub-Store，Mihomo 启动不依赖它。模板和运行时流程见 [Mihomo 配置修改与分发](networking/mihomo-distribution.md)。
 - 开启 IPv4/IPv6 转发，启用 `nftables` 防火墙，仅放行必要端口（TCP/UDP 53317，信任 `Meta` 接口）。
 - 附带网络诊断工具：`dnsutils`、`iputils`、`tcpdump`、`mtr`、`nmap`、`iperf3`、`ethtool`、`iptables`。
 
 详细代理配置见 [Mihomo 代理](networking/mihomo.md)。
+
+## 本机 Sub-Store
+
+`host/base/sub-store.nix` 声明本机回环监听的 Sub-Store 服务，使用独立系统用户和 systemd 管理的 `/var/lib/sub-store` 状态目录，不添加全局发布计划。旧数据已完成迁移，迁移兼容单元已移除。服务常驻供本机定时消费，Gist 发布与加密备份保持手动；正常 rebuild 不重写订阅数据库。运行 `systemctl status substore` 可查看状态和管理地址。打开、恢复与停止步骤见[本机 Sub-Store](networking/sub-store.md)。
 
 ## 音频 / 蓝牙 / 打印
 
@@ -238,6 +243,7 @@ nmcli device status               # 网络连接状态
 ## 相关链接
 
 - [Mihomo 代理](networking/mihomo.md) — TUN 代理与 nftables 详解
+- [本机 Sub-Store](networking/sub-store.md) — 本机订阅管理与发布服务
 - [PAM 认证](security/pam.md) — Howdy 与 PAM 集成
 - [Hyprland](desktop/hyprland.md) — GUI polkit 认证窗口的外观
 - [部署与维护](deployment.md) — 服务生命周期与 rebuild

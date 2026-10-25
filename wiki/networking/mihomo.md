@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-10-23
+updated: 2026-10-25
 ---
 
 # Mihomo 代理
@@ -19,20 +19,20 @@ updated: 2026-10-23
 > 7. [nix 下载慢](#nix-下载慢大文件极慢--挂起--curl-正常-nix-卡死)
 > 8. [相关链接](#相关链接)
 
-Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。本机模板保留 DNS、TUN、嗅探和控制端设置；从私有 Gist 完整 YAML 仅提取 `proxies`、`proxy-groups`、`rule-providers`、`rules` 四项共享配置。
+Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。本机模板保留 DNS、TUN、嗅探和控制端设置；从本机 Sub-Store 生成的 YAML 仅提取 `proxies`、`proxy-groups`、`rule-providers`、`rules` 四项共享配置。
 
-共享配置由发布端 Sub-Store 管理：Secret Gist 的 `mihomo-template.yaml` 是保留注释的人工编辑源；Sub-Store 每 6 小时读取最新模板和 IKUUU、PPVPN 节点，生成 `mihomo-dual.yaml`。NixOS 继续订阅同一个成品地址，不读取未填节点的模板。只编辑模板，不手改会被同步覆盖的成品；修改后可在发布端手动同步，再等待本机定时更新。
+共享配置由 Sub-Store 管理：Secret Gist 的 `mihomo-template.yaml` 是保留注释的人工编辑源；本机更新器每 6 小时请求本机 Sub-Store，重新获取模板和 IKUUU、PPVPN 节点，生成成品供本机消费。只编辑模板，不手改会被生成覆盖的成品；修改后可立即运行本机更新服务。需要分发给订阅 Gist 的其他客户端时，再手动发布 `mihomo-dual.yaml`。
 
-新版保留 17 个表情策略组及节点原名：`🤖 AI/Dev`、`🐙 GitHub` 默认使用 `🏠 PPVPN 住宅`，可选 `🏢 PPVPN 机房`；`📦 大流量` 只列 IKUUU 节点，地区组仅保留美国。下载分流按目标域名判断，不按传输大小自动切换；Nix 缓存、容器镜像、包和模型下载已有专门规则。各设备独立保存具体节点选择。
+共享配置保留模板中的策略组及节点原名，组数随模板修改：`🤖 AI/Dev`、`🐙 GitHub` 默认使用 `🏠 PPVPN 住宅`，可选 `🏢 PPVPN 机房`；`📦 大流量` 只列 IKUUU 节点，地区组仅保留美国。下载分流按目标域名判断，不按传输大小自动切换；Nix 缓存、容器镜像、包和模型下载已有专门规则。各设备独立保存具体节点选择。
 
 更新器按配置内容验证节点、组成员、引用、循环和规则目标，并检查热加载后的实际组成员；不依赖组名或 `IK-`、`PP-` 节点前缀。旧 bootstrap 仍可读取，无需改写 SOPS；网络或候选校验失败保留上次有效快照。
 
 ## 架构
 
 ```
-首次启动：从 SOPS 机密读取 Gist URL 与 bootstrap，生成共享快照，并与当前本机模板及 Secret 合成 /persist/secrets/mihomo-gist-state/active.yaml
+首次启动：从 SOPS bootstrap 生成共享快照，与当前本机模板及 Secret 合成 /var/lib/mihomo-config/active.yaml
 后续启动：从共享快照重新合成、校验；systemd 将 root-only active.yaml 作为 credential 交给 DynamicUser，离线也可启动
-定时更新：每 6h 下载 Gist → 白名单合并 → Mihomo 校验 → 控制端 API 热重载并核对运行策略组 → 原子发布共享快照及启动配置；失败回滚
+定时更新：每 6h 请求本机 Sub-Store（最新 Gist 模板 + 机场节点）→ 白名单合并 → Mihomo 校验 → 控制端 API 热重载并核对运行策略组 → 原子发布共享快照及启动配置；失败回滚
 rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 ```
 
@@ -56,12 +56,14 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 
 | 文件 | 用途 |
 |------|------|
-| `host/base/network.nix` | Mihomo 服务、首次引导和六小时间隔更新 |
+| `host/base/network.nix` | 主机网络、转发和防火墙设置 |
+| `host/base/mihomo.nix` | Mihomo 原生服务、启动快照与六小时间隔更新 |
+| `host/base/sub-store.nix` | 本机 Sub-Store 常驻服务与持久状态；只在更新时参与生成，不阻塞 Mihomo 启动 |
 | `host/mihomo-config.yaml.in` | 本机配置模板，保留控制端 Secret 占位符 |
-| `host/mihomo-gist-sync.py` | 下载、白名单合并、校验和原子发布 |
-| `host/secrets/mihomo-gist.yaml` | SOPS 加密的 `mihomo_gist_url` 与 `mihomo_bootstrap`；与现有 `secrets.yaml` 分开维护 |
-| `/run/secrets/mihomo_gist_url`、`/run/secrets/mihomo_bootstrap` | sops-nix 在系统激活的 systemd 阶段解密并安装，root-only |
-| `/persist/secrets/mihomo-gist-state/` | root 私有的 last-good 共享快照与 active 配置；失败时保留旧版，作为动态运行状态，不自动回写 SOPS |
+| `host/mihomo-config-sync.py` | 下载、白名单合并、校验和原子发布 |
+| `host/secrets/mihomo-gist.yaml` | 沿用现有 SOPS 密文中的 `mihomo_bootstrap`；旧 Gist URL 已不部署、不消费 |
+| `/run/secrets/mihomo_bootstrap` | sops-nix 在系统激活的 systemd 阶段解密的首次引导配置，root-only |
+| `/var/lib/mihomo-config/` | systemd 管理的 `0700` 状态目录，保存 `0600` 的共享快照与 active 配置；失败时保留旧版，不自动回写 SOPS |
 | `/run/secrets/mihomo_env` | 现有 SOPS 运行时文件，使用其中的 `MIHOMO_SECRET` |
 
 准备好并加密 `host/secrets/mihomo-gist.yaml` 后，沿用正常的 NixOS rebuild 流程：
@@ -71,18 +73,20 @@ cd ~/myNixOSConfig
 sudo nixos-rebuild switch --flake path:.#MechRevo-NixOS
 ```
 
-`path:.` 使尚未加入 Git 的新文件也参与本次构建；应用会包含当前仓库的其他已有修改。无需额外运行安装脚本。系统配置会自动启用更新定时器，后续不必手动刷新。每次 rebuild 不保证立即下载 Gist。
+`path:.` 使尚未加入 Git 的新文件也参与本次构建；应用会包含当前仓库的其他已有修改。无需额外运行安装脚本。系统配置会自动启用更新定时器，后续不必手动刷新。每次 rebuild 不保证立即重新生成订阅。
 
 更新服务为 `Type=oneshot`，执行完即退出，两次任务之间没有同步脚本常驻。定时器在开机后 15 分钟、随后距上次启动更新服务 6 小时触发；未启用 `WakeSystem`，不会为更新唤醒休眠中的笔记本，单调计时在挂起期间暂停。候选配置不变时跳过核心校验与热加载；有变化才运行校验并更新。网络异常可能延长等待，但不是持续占用 CPU。
 
 如需排查或重试更新，可手动运行：
 
 ```bash
-sudo systemctl start mihomo-gist-update.service
-systemctl status mihomo.service mihomo-gist-update.timer
+sudo systemctl start mihomo-config-update.service
+systemctl status mihomo.service mihomo-config-update.timer
 ```
 
-每六小时更新只刷新共享快照，不会改写 SOPS 中的 bootstrap。原先 `/persist/secrets/mihomo-gist-url` 与 `/persist/secrets/mihomo-bootstrap.yaml` 不再部署。恢复迁移数据时仍需原 SSH host key；若无法沿用，需将新 host key 的 Age 公钥加入接收者并重新授权/加密密文。
+每六小时更新只刷新共享快照，不会改写 SOPS 中的 bootstrap。恢复迁移数据时仍需原 SSH host key；若无法沿用，需将新 host key 的 Age 公钥加入接收者并重新授权/加密密文。
+
+本机已完成旧状态迁移，服务统一使用 `mihomo-config-*` 和 `/var/lib/mihomo-config`，不再自动导入旧目录。启动只用本地快照或 bootstrap，无有效副本时报错；联网获取统一通过 Sub-Store，模板或机场失败时保留旧配置。NixOS 不覆盖 Sub-Store 的订阅与脚本，具体管理边界见[本机 Sub-Store](sub-store.md)。
 
 ## WebUI
 

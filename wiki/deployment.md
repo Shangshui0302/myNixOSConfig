@@ -2,7 +2,7 @@
 title: 部署与维护
 category: 顶层
 tags: [deployment, nixos-rebuild, flake, sops, backup, maintenance]
-updated: 2026-08-13
+updated: 2026-10-25
 ---
 
 # 部署与维护
@@ -42,8 +42,11 @@ A --> H["home 模块<br/>用户环境"]
 ## 日常 rebuild
 
 ```bash
-cd ~/myNixOSConfig && sudo nixos-rebuild switch --flake .
+cd ~/myNixOSConfig
+nh os switch --hostname MechRevo-NixOS path:.
 ```
+
+`nh` 会在需要时请求提权。仓库中有尚未被 Git 跟踪的新模块或脚本时，使用显式 `path:.`，让 Nix 看到当前目录内容；默认的 `nh os switch` 或 `--flake .` 使用 Git flake，会过滤未跟踪文件。文件正式纳入 Git 后可继续无参数 `nh os switch`。路径源会包含当前工作目录中的其他已有改动，不需要为让 Nix 看见新文件而临时暂存。
 
 - 用户级改动无需 sudo，rebuild 自动处理；系统级变更需相应权限。
 - 所有改动必须通过 `nixos-rebuild` 应用，禁止非 nix 方式修改系统。

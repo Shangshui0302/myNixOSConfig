@@ -74,6 +74,19 @@
         strata = inputs.strata-nixpkgs.legacyPackages.${system}.strata;
       };
 
+      checks.${system}.mihomo-config-sync = pkgs.runCommand "mihomo-config-sync-tests"
+        {
+          nativeBuildInputs = [ (pkgs.python3.withPackages (ps: [ ps.pyyaml ])) ];
+        }
+        ''
+          mkdir -p host tests
+          cp ${./host/mihomo-config-sync.py} host/mihomo-config-sync.py
+          cp ${./tests/test_mihomo_config_sync.py} tests/test_mihomo_config_sync.py
+          export PYTHONDONTWRITEBYTECODE=1
+          python3 -W error::ResourceWarning -m unittest discover -s tests -v
+          touch "$out"
+        '';
+
       devShells.${system}.packaging = pkgs.mkShellNoCC {
         packages = with pkgs; [
           binutils

@@ -99,27 +99,30 @@ docs:
     memory:  []
 
   networking/mihomo.md:
-    sources: [host/base/network.nix, host/base/sops.nix, host/mihomo-config.yaml.in, host/mihomo-gist-sync.py, host/secrets/mihomo-gist.yaml]
+    sources: [host/base/network.nix, host/base/mihomo.nix, host/base/sub-store.nix, host/base/sops.nix, host/mihomo-config.yaml.in, host/mihomo-config-sync.py, host/secrets/mihomo-gist.yaml]
     memory:  [mihomo-tun-stack]
   networking/mihomo-distribution.md:
-    sources: [host/base/network.nix, host/base/sops.nix, host/mihomo-config.yaml.in, host/mihomo-gist-sync.py, host/secrets/mihomo-gist.yaml, .sops.yaml]
+    sources: [host/base/network.nix, host/base/mihomo.nix, host/base/sops.nix, host/base/default.nix, host/base/sub-store.nix, host/mihomo-config.yaml.in, host/mihomo-config-sync.py, host/secrets/mihomo-gist.yaml, .sops.yaml]
     memory:  [mihomo-template-distribution]
+  networking/sub-store.md:
+    sources: [host/base/default.nix, host/base/sub-store.nix, host/base/mihomo.nix, host/mihomo-config-sync.py]
+    memory:  []
 
   security/index.md:
     sources: [host/base/sops.nix, host/base/users.nix, host/de/greeter.nix]
     memory:  [portal-gtk-dangling-symlink]
   security/sops.md:
-    sources: [host/base/sops.nix, host/secrets/secrets.yaml, host/secrets/mihomo-gist.yaml, .sops.yaml]
+    sources: [host/base/sops.nix, host/base/mihomo.nix, host/secrets/secrets.yaml, host/secrets/mihomo-gist.yaml, .sops.yaml]
     memory:  [mihomo-tun-stack]
   security/pam.md:
     sources: [host/base/services.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix]
     memory:  []
 
   services.md:
-    sources: [host/base/services.nix, host/base/tlp.nix, host/base/network.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/env/onedrive.nix, home/env/power-actions.nix, home/theme/gtk-matugen.nix, home/theme/runtime.nix]
+    sources: [host/base/services.nix, host/base/tlp.nix, host/base/network.nix, host/base/mihomo.nix, host/base/sub-store.nix, host/base/default.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/env/onedrive.nix, home/env/power-actions.nix, home/theme/gtk-matugen.nix, home/theme/runtime.nix]
     memory:  [mihomo-tun-stack, tlp-power-profiles, power-profile-session-actions]
   deployment.md:
-    sources: [flake.nix, host/base/boot.nix, host/base/sops.nix]
+    sources: [flake.nix, host/base/nix.nix, host/base/boot.nix, host/base/sops.nix]
     memory:  [flake-unstable-strategy, docs-sync-automation]
   troubleshooting.md:
     sources: []

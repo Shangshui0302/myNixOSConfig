@@ -2,6 +2,7 @@
 """Keep a validated shared snapshot and a locally composed Mihomo config."""
 
 import argparse
+import errno
 import fcntl
 import json
 import os
@@ -10,7 +11,9 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 import yaml
@@ -170,20 +173,60 @@ def yaml_bytes(value):
     return yaml.safe_dump(value, allow_unicode=True, sort_keys=False).encode("utf-8")
 
 
-def fetch(url):
-    if not url.startswith("https://gist.githubusercontent.com/"):
-        raise ValueError("Gist URL must use gist.githubusercontent.com over HTTPS")
-    for proxy in ("http://127.0.0.1:7890", None):
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def fetch_sub_store(url):
+    """Read fresh generated YAML only from the local Sub-Store file endpoint."""
+    try:
+        parsed = urllib.parse.urlsplit(url)
+        name = urllib.parse.unquote(parsed.path.removeprefix("/backend/api/file/"))
+        if (
+            url != url.strip()
+            or any(ord(char) < 33 or ord(char) == 127 for char in url)
+            or parsed.scheme != "http"
+            or parsed.hostname != "127.0.0.1"
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.netloc != "127.0.0.1" + (":" + str(parsed.port) if parsed.port is not None else "")
+            or "#" in url
+            or not parsed.path.startswith("/backend/api/file/")
+            or not name.strip()
+            or name in (".", "..")
+            or any(char in name for char in "/\\")
+            or parsed.query != "noCache=true"
+        ):
+            raise ValueError
+    except (ValueError, TypeError):
+        raise ValueError("Sub-Store source must be a local fresh file endpoint") from None
+
+    # An empty ProxyHandler bypasses ALL_PROXY, http_proxy and friends. Refuse
+    # every redirect so neither credentials nor requests can leave this endpoint.
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    ready_deadline = time.monotonic() + 10
+    while True:
         try:
-            handler = urllib.request.ProxyHandler({"https": proxy} if proxy else {})
-            with urllib.request.build_opener(handler).open(url, timeout=25) as response:
+            with opener.open(url, timeout=90) as response:
                 body = response.read(MAX_BYTES + 1)
-            if len(body) > MAX_BYTES:
-                raise ValueError("Gist YAML exceeds 10 MiB")
-            return body
-        except (OSError, TimeoutError) as exc:
-            last_error = exc
-    raise RuntimeError("Gist download failed") from last_error
+            break
+        except urllib.error.HTTPError as exc:
+            exc.close()
+            raise RuntimeError("Sub-Store generation request failed") from None
+        except urllib.error.URLError as exc:
+            # Type=simple can become active before the local HTTP listener is
+            # ready. Retry only connection refusal, never a generation failure.
+            remaining = ready_deadline - time.monotonic()
+            if isinstance(exc.reason, OSError) and exc.reason.errno == errno.ECONNREFUSED and remaining > 0:
+                time.sleep(min(0.25, remaining))
+                continue
+            raise RuntimeError("Sub-Store generation request failed") from None
+        except (OSError, TimeoutError):
+            raise RuntimeError("Sub-Store generation request failed") from None
+    if len(body) > MAX_BYTES:
+        raise ValueError("Sub-Store YAML exceeds 10 MiB")
+    return body
 
 
 def compose(template, shared, secret):
@@ -270,18 +313,20 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("mode", choices=("seed", "update"))
     p.add_argument("--template", type=Path, required=True)
-    p.add_argument("--url-file", type=Path, required=True)
-    p.add_argument("--bootstrap", type=Path, required=True)
+    p.add_argument("--bootstrap", type=Path, help="optional local shared-config snapshot used only by seed")
     p.add_argument("--state-dir", type=Path, required=True)
     p.add_argument("--mihomo", required=True)
     p.add_argument("--controller", default="http://127.0.0.1:9090")
+    p.add_argument("--sub-store-url", help="update source: local Sub-Store file endpoint with ?noCache=true")
     args = p.parse_args()
+    if args.mode == "update" and args.sub_store_url is None:
+        p.error("update requires --sub-store-url for the local Sub-Store source")
 
     state = args.state_dir
     state.mkdir(mode=0o700, parents=True, exist_ok=True)
     shared_path = state / "shared-lastgood.yaml"
     active_path = state / "active.yaml"
-    with (state / ".gist-sync.lock").open("w") as lock:
+    with (state / ".sync.lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         previous = active_path.read_bytes() if active_path.exists() else None
         previous_shared = shared_path.read_bytes() if shared_path.exists() else None
@@ -289,12 +334,12 @@ def main():
             if args.mode == "seed":
                 if previous_shared is not None:
                     shared = shared_fields(previous_shared)
-                elif args.bootstrap.is_file():
+                elif args.bootstrap is not None and args.bootstrap.is_file():
                     shared = shared_fields(args.bootstrap.read_bytes())
                 else:
-                    shared = shared_fields(fetch(args.url_file.read_text().strip()))
+                    raise RuntimeError("no shared snapshot available for seed; provide --bootstrap")
             else:
-                shared = shared_fields(fetch(args.url_file.read_text().strip()))
+                shared = shared_fields(fetch_sub_store(args.sub_store_url))
             shared_data = yaml_bytes(shared)
             candidate = compose(args.template, shared, os.environ["MIHOMO_SECRET"])
         except Exception:
@@ -359,5 +404,5 @@ if __name__ == "__main__":
         main()
     except Exception as exc:
         # Parser and HTTP errors can contain URL or proxy credentials.
-        print("Mihomo Gist sync failed (" + type(exc).__name__ + "); previous snapshot retained", file=sys.stderr)
+        print("Mihomo config sync failed (" + type(exc).__name__ + "); previous snapshot retained", file=sys.stderr)
         sys.exit(1)
