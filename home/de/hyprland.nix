@@ -157,6 +157,10 @@ in
 
     # HM owns the generated Lua file; this module is loaded before settings.
     extraLuaFiles = {
+      "token-monitor-size" = {
+        content = ./hyprland/token-monitor-size.lua;
+        autoLoad = true;
+      };
       "stylix-colors" = {
         content = ''
           hl.config({

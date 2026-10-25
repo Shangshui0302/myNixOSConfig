@@ -29,7 +29,7 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve, greetd-tuigreet-tty]
 
   desktop/hyprland.md:
-    sources: [home/de/hyprland.nix, home/de/polkit.nix, host/de/sessions.nix, local-deriv/hyprland-scroll-overview.nix, home/de/default.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/stylix.nix, home/theme/gtk-matugen.nix, host/base/boot.nix, home/theme/runtime.nix, home/theme/matugen/qtct-colors.conf.tpl]
+    sources: [home/de/hyprland.nix, home/de/hyprland/token-monitor-size.lua, home/de/polkit.nix, host/de/sessions.nix, local-deriv/hyprland-scroll-overview.nix, home/de/default.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/stylix.nix, home/theme/gtk-matugen.nix, host/base/boot.nix, home/theme/runtime.nix, home/theme/matugen/qtct-colors.conf.tpl]
     memory:  [hyprland-056-blur-amd, hyprland-scrolloverview-plugin, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, stylix-color-hub, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
     sources: [home/de/niri.nix, host/de/sessions.nix, host/de/greeter.nix]
@@ -82,7 +82,7 @@ docs:
     sources: [flake.nix, home/dev/ai.nix, home/dev/agent-reach/SKILL.md, home/dev/tools.nix, local-deriv/agent-reach.nix, local-deriv/opencli.nix]
     memory:  []
   dev/token-monitor.md:
-    sources: [home/dev/token-monitor.nix, home/dev/ai.nix, home/de/hyprland.nix]
+    sources: [home/dev/token-monitor.nix, home/dev/ai.nix, home/de/hyprland.nix, home/de/hyprland/token-monitor-size.lua]
     memory:  []
   dev/nix-packaging.md:
     sources: [flake.nix, flake.lock, local-deriv/hyprland-scroll-overview.nix, local-deriv/material-adw-kvantum.nix, local-deriv/material-gnome-theme.nix, local-deriv/modernz.nix, local-deriv/netease-cloud-music-web-player.nix, local-deriv/agent-reach.nix, local-deriv/opencli.nix, local-deriv/agent-orchestrator.nix, local-deriv/agent-orchestrator-distrobox.nix]
