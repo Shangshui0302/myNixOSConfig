@@ -18,10 +18,10 @@ let
       /usr/bin/token-monitor --ozone-platform=wayland
   '';
 
-  autostartEntry = pkgs.makeDesktopItem {
+  desktopEntry = pkgs.makeDesktopItem {
     name = "token-monitor-distrobox";
     desktopName = "Token Monitor";
-    comment = "Start the existing Arch Distrobox Token Monitor at graphical login";
+    comment = "AI usage and quota monitor in the existing Arch Distrobox";
     exec = toString startTokenMonitor;
     terminal = false;
     startupNotify = false;
@@ -29,10 +29,12 @@ let
   };
 in
 {
+  home.packages = [ desktopEntry ];
+
   # UWSM, niri-session and GNOME provide the desktop autostart lifecycle.
   # Tray-only mode and the Hub configuration remain application settings.
   xdg.autostart = {
     enable = true;
-    entries = [ "${autostartEntry}/share/applications/token-monitor-distrobox.desktop" ];
+    entries = [ "${desktopEntry}/share/applications/token-monitor-distrobox.desktop" ];
   };
 }
