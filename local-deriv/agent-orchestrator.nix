@@ -22,6 +22,7 @@
   git,
   glib,
   gtk3,
+  imagemagick,
   libdbusmenu-gtk3,
   libgbm,
   libGL,
@@ -74,6 +75,7 @@ stdenvNoCC.mkDerivation {
   nativeBuildInputs = [
     autoPatchelfHook
     addDriverRunpath
+    imagemagick
     makeWrapper
     wrapGAppsHook3
   ];
@@ -133,6 +135,14 @@ stdenvNoCC.mkDerivation {
     rm "$out/lib/${pname}/resources/acp-runtime/node/bin/node"
     ln -s ${lib.getExe nodejs_22} "$out/lib/${pname}/resources/acp-runtime/node/bin/node"
     cp -a usr/share/icons "$out/share/"
+    # The AppImage only ships 1024x1024, absent from the hicolor directory
+    # index and Noctalia's fallback paths. Install indexed sizes as well.
+    for size in 16 32 48 64 128 256 512; do
+      mkdir -p "$out/share/icons/hicolor/''${size}x''${size}/apps"
+      magick "$out/share/icons/hicolor/1024x1024/apps/${pname}.png" \
+        -resize "''${size}x''${size}" \
+        "$out/share/icons/hicolor/''${size}x''${size}/apps/${pname}.png"
+    done
     # AppImage's top-level LICENSE belongs to Electron; include AO's license too.
     install -Dm644 ${licenseFile} "$out/share/doc/${pname}/LICENSE"
     install -m644 ${desktopItem}/share/applications/${pname}.desktop \

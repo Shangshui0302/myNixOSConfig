@@ -2,7 +2,7 @@
 title: Agent Orchestrator 与 Arch DSH
 category: 开发与工具
 tags: [ao, agents, dsh, distrobox, home-manager]
-updated: 2026-10-23
+updated: 2026-10-25
 ---
 
 # Agent Orchestrator 与 Arch DSH
@@ -75,6 +75,7 @@ v0.14.5 的 Electron 配置目录由应用固定为 `~/.ao/electron`，会覆盖
 
 - **找不到 DSH**：先核对 `arch` 容器及 `/usr/bin/dsh`，再确认使用的是带 `-distrobox` 的 Nix 输出。终端单独运行全局 `dsh` 不能证明 AO 的私有桥已选中。
 - **界面偏小**：本机包装入口检测到 Wayland 会话时使用原生 Wayland，让界面跟随桌面缩放。避免强制 XWayland；Hyprland 的 `force_zero_scaling` 会使该路径不跟随桌面比例。需要单独微调 AO 时，可用 `Ctrl+=` 放大、`Ctrl+-` 缩小、`Ctrl+0` 重置。
+- **菜单或 Dock 图标缺失**：包内提供 16–512 像素的常用图标尺寸。上游 AppImage 只有 1024 像素图标，不在当前 hicolor 的目录索引与 Noctalia 的搜索范围内。应用本次 Nix 配置后重新打开 AO；只构建包不会更新活动菜单。
 - **ACP 输出解析失败**：桥接不能向 stdout 输出欢迎信息，也不能分配终端；诊断内容应走 stderr。
 - **项目目录不存在**：核对容器可访问该宿主绝对路径，包括 Git worktree 的 common repository；不要仅改 cwd 字符串而遗漏 Git 元数据路径。
 - **AO 回程报告 daemon 不存在**：核对 `AO_DATA_DIR`、`AO_RUN_FILE`，以及容器是否仍共享宿主 PID/网络。
