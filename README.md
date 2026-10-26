@@ -84,6 +84,7 @@ nix build path:.#checks.x86_64-linux.mihomo-config-sync --no-link -L
 - [Agent Orchestrator](wiki/dev/agent-orchestrator.md)：Nix 安装、Arch DSH 接入与隔离试用。
 - [Agent Reach 与 OpenCLI](wiki/dev/agent-reach.md)：平台访问、Chrome 扩展连接与字幕提取。
 - [Token Monitor](wiki/dev/token-monitor.md)：Arch Distrobox 登录自启、托盘弹窗与 Noctalia 连接。
+- [Distrobox](wiki/dev/distrobox.md)：容器镜像、持久化 home 与 Home Manager 管理的容器启动器入口。
 
 ## 约束
 

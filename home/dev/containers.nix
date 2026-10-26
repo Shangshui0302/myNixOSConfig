@@ -101,6 +101,34 @@ in
     virt-manager
   ];
 
+  # 上游生成的入口会写死当时的 store 路径；由 HM 随 generation 一起更新并保活。
+  xdg.desktopEntries = lib.genAttrs containerNames (name:
+    let
+      displayName = { arch = "Arch"; fedora = "Fedora"; ubuntu = "Ubuntu"; }.${name};
+    in {
+      name = displayName;
+      genericName = "Terminal entering ${displayName}";
+      comment = "Terminal entering ${displayName}";
+      exec = "${pkgs.distrobox}/bin/distrobox enter ${name}";
+      icon = "${hostHome}/.local/share/icons/distrobox/${name}.png";
+      terminal = true;
+      categories = [ "System" "Utility" ];
+      settings = {
+        TryExec = "${pkgs.distrobox}/bin/distrobox";
+        Keywords = "distrobox;";
+      };
+      actions.Remove = {
+        name = "Remove ${displayName} from system";
+        exec = "${pkgs.distrobox}/bin/distrobox rm ${name}";
+      };
+    });
+
+  # 用户目录中的旧入口优先于 profile；用同一份生成结果接管，首次激活由 HM 备份旧文件。
+  xdg.dataFile = lib.listToAttrs (map (name: {
+    name = "applications/${name}.desktop";
+    value.source = "${config.home.path}/share/applications/${name}.desktop";
+  }) containerNames);
+
   # 容器 home 是持久状态；由 HM 持续维护其中的配置入口和 Nix 包装器。
   home.file = containerHomeFiles;
 

@@ -2,7 +2,7 @@
 title: Distrobox
 category: dev
 tags: [distrobox, podman, containers]
-updated: 2026-09-29
+updated: 2026-10-26
 ---
 
 # Distrobox
@@ -92,12 +92,23 @@ distrobox enter <name> -- distrobox-export --app <app_name>
 distrobox enter <name> -- distrobox-export --bin /usr/bin/<binary>
 ```
 
+### 启动器入口
+
+启动器中的 Arch、Fedora、Ubuntu 由 Home Manager 管理，点击后打开终端并进入对应容器。
+三个 `.desktop` 文件随配置更新，避免上游生成入口中写死的旧 Nix store 路径被回收后失效。
+首次应用时，现有的同名入口会按仓库的 `hm-backup` 设置备份；保留现有发行版图标。
+入口的附加操作 `Remove` 会删除对应容器。
+
+修改后执行 `sudo nixos-rebuild switch --flake .` 应用；构建或 dry-build 不会更新活动入口。
+这些入口由 `home/dev/containers.nix` 统一维护，不再对三个容器运行 `distrobox generate-entry` 覆盖它们。
+容器内应用仍通过 `distrobox-export` 自行导出。
+
 ## 配置说明
 
 | 文件 | 用途 |
 |------|------|
 | `host/base/containers.nix` | Podman 服务、distrobox 包、镜像加速 |
-| `home/dev/containers.nix` | 镜像管理命令和 assemble manifest |
+| `home/dev/containers.nix` | 镜像管理命令、assemble manifest 和三个容器的启动器入口 |
 | `home/dev/container-images/*.Containerfile` | 三个发行版的基础镜像与软件包清单 |
 | `home/dev/container-images/manage.sh` | 构建、预览和状态检查实现 |
 | `~/.config/distrobox/distrobox.ini` | Nix 生成的容器清单 |
@@ -176,6 +187,7 @@ podman run --rm alpine:latest wget -qO- https://archlinux.org
 | `distrobox list` 为空 | 未创建容器 | 先构建镜像，再运行 `distrobox assemble create` |
 | manifest 引用的镜像不存在 | 尚未构建 Nix 管理的镜像 | `distrobox-images build <name>` |
 | 进入容器报错 | 容器未启动 | `podman start <container_name>` |
+| 启动器中的容器图标点击无反应 | 旧入口引用了已不存在的 Nix store 路径 | 应用 Home Manager 配置，更新 Arch、Fedora、Ubuntu 入口 |
 | 容器内网页链接无法打开 | `host-spawn` 继承了宿主不存在的 `/run/host/...` 当前目录 | 确认使用 Home Manager 管理的 `~/.local/bin/xdg-open` |
 | 容器内无网络 | podman 网络异常 | `podman system reset --force` 后重建 |
 | assemble 未找到命令 | distrobox 未安装 | rebuild 确认 `host/base/containers.nix` 已生效 |
