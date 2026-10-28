@@ -82,7 +82,7 @@ in
               || [ ! -f "$HOME/.config/mpv/script-opts/modernz.conf" ] \
               || [ ! -f "$HOME/.config/zellij/themes/matugen.kdl" ] \
               || { [ -d "$HOME/Documents/MyVault/.obsidian/snippets" ] \
-                && [ ! -f "$HOME/Documents/MyVault/.obsidian/snippets/matugen.css" ]; } \
+                && [ ! -f "$HOME/Documents/MyVault/.obsidian/snippets/Matugen Palette.css" ]; } \
               || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null \
               || [ ! -f "$HOME/.local/share/icons/Papirus-Matugen/index.theme" ]; then
               initial_wallpaper="$(${pkgs.waypaper}/bin/waypaper --list 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[0].wallpaper // empty' 2>/dev/null || true)"

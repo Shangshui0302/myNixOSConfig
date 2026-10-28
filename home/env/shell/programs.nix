@@ -245,8 +245,9 @@
         set -x PATH $HOME/.local/bin /usr/local/bin /usr/bin /bin $PATH
       end
 
-      # distrobox-export 导出的 CLI 工具（宿主机直接调用容器内命令）
-      fish_add_path $HOME/.local/bin
+      # Fish 配置和 universal variables 与容器共用，HOME 对应的 PATH 只修改当前进程。
+      # 避免将容器的 ~/.local/bin 持久写入宿主共用的 fish_user_paths。
+      fish_add_path --path $HOME/.local/bin
 
       # fish 问候
       set -g fish_greeting

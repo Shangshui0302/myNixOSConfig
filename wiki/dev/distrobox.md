@@ -2,7 +2,7 @@
 title: Distrobox
 category: dev
 tags: [distrobox, podman, containers]
-updated: 2026-10-26
+updated: 2026-10-27
 ---
 
 # Distrobox
@@ -136,6 +136,11 @@ Home Manager 在每个 `~/distrobox/<name>` 中维护以下入口：
 
 因此容器重建不会依赖旧容器可写层中的配置。Neovim 必须通过容器 home 的
 `.local/bin/nvim` 启动；Fish 的 Distrobox PATH 规则会确保它优先于 `/usr/bin/nvim`。
+
+Fish 配置目录和 universal variables 继续与宿主共用。启动配置使用
+`fish_add_path --path $HOME/.local/bin`，只修改当前进程的 PATH；不要省略
+`--path`，否则不同容器的 HOME 路径会被持久写进共用的 `fish_user_paths`，
+使宿主误选容器中的同名命令。修改需应用 Nix 配置后生效。
 
 ### 容器内 DNS 与 `.local` 解析
 

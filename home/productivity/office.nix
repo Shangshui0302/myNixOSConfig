@@ -9,5 +9,6 @@
     zettlr
     kdePackages.ghostwriter
     z-library-desktop
+    zotero
   ];
 }

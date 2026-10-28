@@ -12,8 +12,8 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 | Shell | fish、bash/ble.sh、Starship、zellij |
 | 终端 | Foot，由 Home Manager 管理，半透明背景与合成器模糊 |
 | 文件夹默认打开 | 主桌面 Strata；GNOME 变体 Nautilus |
-| AI 工具 | Codex 与 Antigravity CLI、Antigravity 2.0 Agents 界面；AO 自主开发协作与 Arch DSH 桥接；Agent Reach 与 OpenCLI 平台访问工具；容器内 Token Monitor 登录自启 |
-| 电子书与资料 | Z-Library 桌面客户端 |
+| AI 工具 | Codex 与 Antigravity CLI、Antigravity 2.0 Agents 界面；AO 自主开发协作与 Arch DSH 桥接；Agent Reach 与 OpenCLI 平台访问工具；Token Monitor 由 Arch 安装并通过 Distrobox 导出 |
+| 电子书与资料 | Z-Library 桌面客户端、Zotero 文献管理 |
 | 面板 | Noctalia，可切换 Caelestia |
 | 深浅模式 | Darkman 状态/portal + Matugen 运行时配色 |
 | 输入法 | fcitx5 + Rime / WeTypeX |
@@ -49,6 +49,10 @@ memory/                   # 本地决策卡与硬件约束（不进 Git）
 ```
 
 本机 Sub-Store 操作说明：[`wiki/networking/sub-store.md`](wiki/networking/sub-store.md)。
+
+Hyprland 滚动布局的单窗默认居中占显示器逻辑尺寸的 75%，多窗列宽默认约为三分之二；详见 [Hyprland 使用指南](wiki/desktop/hyprland.md#滚动布局-scrolling-layout)。
+
+Hyprland 窗口焦点通过点击或快捷键切换，鼠标移过窗口不会自动抢焦点。
 
 ## 应用配置
 
@@ -92,8 +96,8 @@ nix fmt -- --check flake.nix
 - [Nix 手工打包](wiki/dev/nix-packaging.md)：`$nix-packaging`、本地派生和验证流程。
 - [Agent Orchestrator](wiki/dev/agent-orchestrator.md)：Nix 安装、Arch DSH 接入与隔离试用。
 - [Agent Reach 与 OpenCLI](wiki/dev/agent-reach.md)：平台访问、Chrome 扩展连接与字幕提取。
-- [Token Monitor](wiki/dev/token-monitor.md)：Arch Distrobox 登录自启、托盘弹窗与 Noctalia 连接。
-- [Distrobox](wiki/dev/distrobox.md)：容器镜像、持久化 home 与 Home Manager 管理的容器启动器入口。
+- [Token Monitor](wiki/dev/token-monitor.md)：Arch desktop 与 Distrobox 导出、登录自启、托盘弹窗与 Noctalia 连接。
+- [Distrobox](wiki/dev/distrobox.md)：容器镜像、持久化 home、共用 Fish 配置与各环境独立的 PATH，以及 Home Manager 管理的容器启动器入口。
 
 ## 约束
 

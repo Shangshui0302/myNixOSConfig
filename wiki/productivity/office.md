@@ -1,8 +1,8 @@
 ---
 title: 办公软件套件
 category: 生产力
-tags: [office, libreoffice, onlyoffice, fonts, cjk, z-library]
-updated: 2026-10-18
+tags: [office, libreoffice, onlyoffice, fonts, cjk, z-library, zotero]
+updated: 2026-10-27
 ---
 
 # 办公软件套件
@@ -17,6 +17,7 @@ updated: 2026-10-18
 - **OnlyOffice Desktop Editors** — 对 MS Office 格式（docx/xlsx/pptx）兼容度高
 - **笔记 / Markdown**：Obsidian、Typora、Zettlr、Ghostwriter
 - **电子书 / 资料检索**：Z-Library 桌面客户端（Nixpkgs 包 `z-library-desktop`）
+- **文献管理**：Zotero（Nixpkgs 包 `zotero`）
 
 默认打开方式（MIME 关联）在模块里以注释形式预置。若想把 Office 格式统一默认用 OnlyOffice 打开，取消 `xdg.mimeApps` 那段注释并 rebuild 即可。
 
@@ -29,6 +30,16 @@ Z-Library
 ```
 
 主桌面与 GNOME 变体共用这份应用列表。客户端版本跟随仓库锁定的 Nixpkgs，桌面入口由软件包提供。
+
+## Zotero 文献管理
+
+手动应用配置后，在应用启动器搜索 **Zotero**，或在终端运行：
+
+```bash
+zotero
+```
+
+主桌面与 GNOME 变体共用此应用。当前锁定版本为 Zotero 10.0.4；其 Mozilla 运行时 Firefox ESR 140 已停止安全维护，Nixpkgs 默认拒绝评估。经用户选择，`host/base/nix.nix` 仅放行确切版本 `firefox-esr-140-bin-unwrapped-140.17.0esr`。更新 Nixpkgs 后若引擎已升级，应移除此例外；若仍因其他版本报错，重新核对依赖，不扩大全局放行范围。
 
 ## 分层结构
 
@@ -98,6 +109,7 @@ libreoffice --headless --convert-to pdf --outdir out/ *.docx
 | Office 内输入法不可用 | 确认 Fcitx5 环境变量已设，GTK/Qt 输入模块启用 |
 | 首次部署找不到字体 | 重新 rebuild，让 activation 复制字体并刷新缓存 |
 | 找不到 Z-Library 或命令不存在 | 确认已手动应用包含本次改动的 NixOS 配置 |
+| 找不到 Zotero 或命令不存在 | 确认已手动应用包含 Zotero 的配置，再重新打开应用启动器 |
 
 ## 相关链接
 

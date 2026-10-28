@@ -2,30 +2,44 @@
 title: Token Monitor
 category: dev
 tags: [ai, token-monitor, distrobox, autostart]
-updated: 2026-10-25
+updated: 2026-10-28
 ---
 
 # Token Monitor
 
 Token Monitor 在现有 `arch` Distrobox 中运行，向 Noctalia 插件提供额度和使用情况。
-Home Manager 管理图形登录自启，应用版本继续由容器中的包管理器维护。
+应用、启动参数和 desktop 文件由 Arch 容器维护，通过 Distrobox 导出菜单入口与图标。
+Nix 不管理此应用的安装、菜单或登录自启；Hyprland 的窗口尺寸规则仍属于桌面配置。
 
 ## 登录自启
 
-应用本次 Nix 配置后，下次图形登录会通过 XDG 自启入口启动 Token Monitor。
-Hyprland 的 UWSM、原生 niri-session 与 GNOME 负责执行桌面自启入口。
+容器内包提供 `/usr/share/applications/token-monitor.desktop`。
+用户级副本保存在容器的 `~/.local/share/applications/token-monitor.desktop`，其中启动行为：
 
-- 入口：`~/.config/autostart/token-monitor-distrobox.desktop`。
-- 目标：已经存在的 `arch` Distrobox；容器停止时由 Distrobox 启动。
-- 缺少 `arch` 时跳过并报告错误，不自动创建容器或安装软件。
-- 程序：容器内 `/usr/bin/token-monitor`，采用原生 Wayland。
-- Codex 数据：显式使用宿主 `~/.codex`。
-- 应用的账号、Hub 密钥和窗口设置继续保存在容器 home。
+```ini
+Exec=/usr/bin/env CODEX_HOME=/home/lishangshui/.codex /usr/bin/token-monitor --ozone-platform=wayland %U
+Icon=token-monitor
+```
 
-这是普通桌面应用的登录自启，不额外添加崩溃重启守护。
+修改该副本后，从宿主以普通用户调用容器中的导出工具：
+
+```bash
+distrobox enter arch -- distrobox-export --app /home/lishangshui/distrobox/arch/.local/share/applications/token-monitor.desktop --export-label none
+```
+
+Distrobox 生成宿主 `~/.local/share/applications/arch-token-monitor.desktop`，
+并复制应用自带的蓝底白色 Σ 图标到宿主用户图标目录。
+登录自启通过宿主 `~/.config/autostart/arch-token-monitor.desktop`
+链接到该导出文件，Hyprland 的 UWSM、原生 niri-session 与 GNOME 负责执行。
+容器停止时由 Distrobox 启动；应用的账号、Hub 密钥和窗口设置继续保存在容器 home。
+
 若在托盘菜单中主动退出，可在桌面启动器搜索 **Token Monitor** 重新启动。
-应用菜单和登录自启共用同一个容器启动入口。
 切换 Noctalia 与 Caelestia 不会重新执行图形登录自启。
+包升级后若需同步上游 desktop 的其他字段，先更新容器用户级副本，再重新导出。
+
+从旧 Nix 入口迁移时，旧的 `token-monitor-distrobox.desktop` 自启链接已撤下并备份到
+`~/.local/state/token-monitor-migration/`。宿主应用目录保留同名 `Hidden=true` 条目，
+用于隐藏尚在当前系统 generation 中的旧菜单入口；下次手动应用 Nix 配置后旧包会退出配置。
 
 ## 托盘与窗口尺寸
 
@@ -43,14 +57,15 @@ Hyprland 为 `token-monitor` 保留两种尺寸记忆，不强制浮动，
 - 滚动平铺窗口：收回托盘时记录列宽比例，重新打开并获得焦点时恢复。
   高度继续由布局和同列窗口分配；重新打开不会重建原来的同列组合。
 
-平铺记忆保存的是布局列宽比例，避免把单列自动撑满后的屏幕宽度记成用户尺寸。
-因此单列仍会按现有布局设置撑满，出现其他列后会使用记住的列宽。
+平铺记忆保存的是布局列宽比例，避免把布局自动调整后的屏幕宽度记成用户尺寸。
+单个平铺窗口按 [Hyprland 滚动布局策略](../desktop/hyprland.md#滚动布局-scrolling-layout)
+默认居中显示；回到单窗状态或重载配置时恢复默认尺寸，已有的列宽记忆机制仍用于适用的多列情形。
 失焦隐藏继续由 Token Monitor 的仅托盘模式负责。
 浮动记忆保留在当前 Hyprland 会话中；平铺记忆保留至配置重载或注销。
 重新启动桌面后的尺寸恢复仍取决于应用自身的保存行为。
 
-当前 Hyprland 使用鼠标跟随焦点；鼠标进入另一窗口可能转移焦点，
-因此也可能触发收回。应用设置页等需要持续交互时，保持焦点在弹窗内。
+当前 Hyprland 通过点击或快捷键切换焦点，鼠标移过其他窗口不会转移焦点。
+应用设置页等需要持续交互时，保持焦点在弹窗内；点击其他窗口可能触发收回。
 
 ## Noctalia 连接
 
@@ -71,7 +86,8 @@ Token Monitor 中选择 **Settings → Sync method → Host hub on this device**
 查看自启入口和容器中的安装版本：
 
 ```bash
-cat ~/.config/autostart/token-monitor-distrobox.desktop
+cat ~/.local/share/applications/arch-token-monitor.desktop
+readlink ~/.config/autostart/arch-token-monitor.desktop
 distrobox list
 podman exec arch pacman -Q token-monitor-bin
 ```
@@ -84,12 +100,13 @@ ss -ltnp '( sport = :17321 )'
 
 | 现象 | 排查 |
 | --- | --- |
-| 启动器找不到应用 | 确认已应用包含应用菜单入口的新配置，搜索 `Token Monitor` |
+| 启动器找不到应用 | 在 Arch 内重新执行 Distrobox 导出，搜索 `Token Monitor` |
+| 启动器显示通用齿轮 | 检查导出入口的 `Icon=token-monitor` 和宿主 `~/.local/share/icons/hicolor/512x512/apps/token-monitor.png` |
 | 登录后没有托盘图标 | 确认 `arch` 存在、应用已安装，并检查桌面会话的自启日志 |
-| 平铺时没有恢复原尺寸 | 确认已应用并重载新配置；调整列宽后收回再打开。单列自动撑满和同列高度仍由布局决定 |
+| 平铺时没有恢复原尺寸 | 确认已应用并重载新配置；调整列宽后收回再打开。单窗回到默认 75% 居中尺寸，多窗高度仍由布局决定 |
 | 点击图标后很快消失 | 检查焦点是否转到其他窗口；仅托盘模式会在失焦时隐藏 |
 | 额度停止更新 | 确认应用仍运行、Host hub 已启用，再使用插件的 Test connection |
-| 容器重建后程序缺失 | 在容器内恢复 `token-monitor-bin`；本模块只管理启动入口 |
+| 容器重建后程序缺失 | 在容器内恢复 `token-monitor-bin` 并重新导出 |
 
 ## 相关链接
 

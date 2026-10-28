@@ -2,12 +2,16 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-10-18
+updated: 2026-10-27
 ---
 
 # Shell 环境指南
 
 本机使用 fish 作为默认 shell，bash 作为备选（带 ble.sh 增强），starship 作为统一提示符。
+
+宿主和 Distrobox 容器共用 Fish 配置目录。`$HOME/.local/bin` 通过
+`fish_add_path --path` 加入当前进程的 PATH，避免将某个容器的路径持久写入
+共用的 `fish_user_paths`；详见 [Distrobox 的 Shell 配置](../dev/distrobox.md#shell-与-neovim-配置)。
 
 ## Shell 选择
 

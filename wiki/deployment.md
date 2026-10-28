@@ -2,7 +2,7 @@
 title: 部署与维护
 category: 顶层
 tags: [deployment, nixos-rebuild, flake, sops, backup, maintenance]
-updated: 2026-10-25
+updated: 2026-10-27
 ---
 
 # 部署与维护
@@ -110,6 +110,7 @@ D --> |否| E["拒绝提交<br/>提示运行文档维护"]
 - **屏幕亮度异常（全黑）**：确认内核参数 `amdgpu.dcdebugmask` 已启用位屏蔽。
 - **Howdy 无法识别**：确认视频设备路径、PAM 集成与权限。
 - **普通用户无法 rebuild**：检查 sudo 白名单与用户组。
+- **Zotero 的运行时被标为 insecure**：当前只放行 `firefox-esr-140-bin-unwrapped-140.17.0esr`。升级锁文件后重新核对引擎；换用受支持版本后移除例外，详见 [Zotero 文献管理](productivity/office.md#zotero-文献管理)。
 
 ## 相关链接
 

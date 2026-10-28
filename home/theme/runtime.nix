@@ -10,10 +10,8 @@
 let
   homeDir = config.home.homeDirectory;
   defaultWallpaper = ../../assets/nixos_logo.png;
-  # The current vault is the only Obsidian consumer in this profile.  Keep its
-  # generated snippet user-owned so Obsidian can manage the surrounding vault.
   obsidianVault = "${homeDir}/Documents/MyVault";
-  obsidianSnippet = "${obsidianVault}/.obsidian/snippets/matugen.css";
+  obsidianSnippet = "${obsidianVault}/.obsidian/snippets/Matugen Palette.css";
   # The upstream HM module owns the package and links selected templates here.
   fcitxTemplateRoot = "${homeDir}/.config/matugen/templates/fcitx5-matugen-theme";
 
@@ -144,10 +142,7 @@ let
   vscodeColorsJsonTemplate = mode: mkMatugenModeTemplate mode "vscode-colors-json" ./matugen/vscode-colors.json.tpl;
   # Neovim consumes a small Lua palette for its dashboard and statusline.
   nvimColorsTemplate = mode: mkMatugenModeTemplate mode "nvim-colors" ./matugen/nvim-colors.lua.tpl;
-  # Obsidian keeps one CSS snippet with native light/dark selectors.  Its
-  # surfaces and typography stay with Minimal/Claude for Minimal; only accent
-  # variables are distributed here.
-  obsidianAccentTemplate = ./matugen/obsidian-accent.css.tpl;
+  obsidianPaletteTemplate = ./matugen/obsidian-accent.css.tpl;
 
   # Matugen writes here first.  The shell script copies a complete staging tree
   # into a content-addressed cache only after every template succeeded.
@@ -312,9 +307,9 @@ let
     input_path = '${nvimColorsTemplate "dark"}'
     output_path = '${matugenOutputRoot}/dark/nvim-colors.lua'
 
-    [templates.obsidian-accent]
-    input_path = '${obsidianAccentTemplate}'
-    output_path = '${matugenOutputRoot}/dual/obsidian/matugen.css'
+    [templates.obsidian-palette]
+    input_path = '${obsidianPaletteTemplate}'
+    output_path = '${matugenOutputRoot}/dual/obsidian/palette.css'
 
     [templates.gtk3-light]
     input_path = '${../../local-deriv/material-gnome/gtk3-light.tpl}'
@@ -531,7 +526,7 @@ let
           dark/vscode/vscode-colors.json
           light/nvim-colors.lua
           dark/nvim-colors.lua
-          dual/obsidian/matugen.css
+          dual/obsidian/palette.css
           dual/gtk3-light/colors.css
           dual/gtk3-dark/colors.css
           dual/gtk4/colors.css
@@ -760,14 +755,11 @@ let
         fcitx_end="$(now_ms)"
         log "stage=fcitx duration_ms=$((fcitx_end - fcitx_start)) mode=$mode"
 
-        # Obsidian's vault is mutable user data.  Update only its generated
-        # snippet, and only when the wallpaper palette changed (or the snippet
-        # was removed); a mode-only toggle is handled by the CSS selectors.
+        # The vault owns snippet activation; only publish the optional palette.
         obsidian_snippet_dir="${obsidianVault}/.obsidian/snippets"
         if [ -d "$obsidian_snippet_dir" ] \
           && { [ "$assets_changed" -eq 1 ] || [ ! -f "${obsidianSnippet}" ]; }; then
-          copy_atomic "$cache_dir/dual/obsidian/matugen.css" \
-            "${obsidianSnippet}"
+          copy_atomic "$cache_dir/dual/obsidian/palette.css" "${obsidianSnippet}"
           log "stage=obsidian status=updated"
         fi
 

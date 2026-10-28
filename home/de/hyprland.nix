@@ -157,6 +157,10 @@ in
 
     # HM owns the generated Lua file; this module is loaded before settings.
     extraLuaFiles = {
+      "scrolling-policy" = {
+        content = ./hyprland/scrolling-policy.lua;
+        autoLoad = true;
+      };
       "token-monitor-size" = {
         content = ./hyprland/token-monitor-size.lua;
         autoLoad = true;
@@ -277,9 +281,11 @@ in
         };
 
         scrolling = {
-          column_width = 0.5;
+          column_width = 0.667;
           direction = "right";
           follow_focus = true;
+          focus_fit_method = 0;
+          # The single-window policy keeps a 75% pseudo window inside this full-width slot.
           fullscreen_on_one_column = true;
           explicit_column_widths = "0.33, 0.5, 0.67, 0.81, 0.96";
         };
@@ -296,7 +302,7 @@ in
         input = {
           kb_layout = "us";
           kb_options = "caps:escape";
-          follow_mouse = 1;
+          follow_mouse = 0; # 避免鼠标移过窗口时意外切换焦点。
           sensitivity = 0;
           touchpad = {
             natural_scroll = true;

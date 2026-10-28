@@ -145,6 +145,7 @@ Flake-->>User : 生成可重现的系统与用户配置
 - 打包辅助工具从 `nix develop .#packaging` 获取，不常驻安装到用户环境。
 - 系统级变更用 `sudo nixos-rebuild switch --flake .`；用户级变更由 rebuild 自动处理。
 - 缓存加速：在 `host/base/nix.nix` 配置多个 substituters（官方 + 镜像源），并启用 `nix-command`、`flakes` 实验特性；`nh` 自动清理旧代际以维持磁盘空间。
+- Zotero 的 ESR 140 运行时采用确切版本例外放行；升级引擎后移除，见 [办公软件套件](../productivity/office.md#zotero-文献管理)。
 
 ## 相关链接
 
