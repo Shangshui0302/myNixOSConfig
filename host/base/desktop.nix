@@ -75,6 +75,15 @@ in
     type = "fcitx5";
     fcitx5.waylandFrontend = true;
     fcitx5.addons = with pkgs; [
+      (pkgs.callPackage ../../local-deriv/fcitx5-wetypex.nix {
+        # true restores WeTypeX's controls for the shared Fcitx5 theme/font.
+        enableWeTypeTheme = false;
+        enableAI = true;
+        enableVoice = true;
+        enableLayerShell = true;
+        # First-run values only; existing GUI preferences remain user-owned.
+        defaultSettings = { };
+      })
       (fcitx5-rime.override {
         rimeDataPkgs = [ rime-ice rime-moegirl rime-zhwiki ];
       })

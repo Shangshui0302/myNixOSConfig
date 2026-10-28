@@ -58,6 +58,7 @@
     in
     {
       packages.${system} = {
+        fcitx5-wetypex = pkgs.callPackage ./local-deriv/fcitx5-wetypex.nix { };
         agent-orchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
         agent-orchestrator-distrobox = pkgs.callPackage ./local-deriv/agent-orchestrator-distrobox.nix {
           agentOrchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
