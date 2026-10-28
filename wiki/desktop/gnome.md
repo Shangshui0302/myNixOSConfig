@@ -2,7 +2,7 @@
 title: GNOME
 category: 桌面
 tags: [gnome, gdm, specialisation, wayland]
-updated: 2026-09-04
+updated: 2026-10-28
 ---
 
 # GNOME
@@ -26,6 +26,7 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 
 ## 配置要点（host/gnome/ + home/gnome.nix）
 
+- **Home Manager 集成**：通过共享的 `host/base/home-manager.nix` 统一设置包集、用户包和备份扩展名；`host/gnome/default.nix` 只选择 GNOME 用户入口 `home/gnome.nix`，主桌面入口仍独立选择 `home/home.nix`。
 - **隔离机制**：`inheritParentConfig=false`，变体从零 import 共享 `host/base/` + GNOME 专属（`host/gnome/desktop.nix`）+ 变体 home（`home/gnome.nix`，import 共享 `home/base.nix` + Material 主题）。Material 主题包由共享主题路径提供给需要它的桌面；GNOME 闭包不含 Hyprland/foot/wlr portal/qt5ct/adw-gtk3/noctalia 等主 DE 专属内容
 - **GSettings override 生效条件**（gnome.md 官方）：override 某包 schema 必须把该包加进 `extraGSettingsOverridePackages`，否则对应段被编译丢弃（Console/nautilus 曾因此失效）。GNOME Shell 扩展 schema 在非标准路径（`share/gnome-shell/extensions/<uuid>/schemas/`），需用 `withStandardSchemas` 链接到标准 gsettings-schemas 路径后加入 override 包，dash-to-dock/blur-my-shell/user-theme 的 override 才生效
 

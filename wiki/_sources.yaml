@@ -4,25 +4,30 @@
 # 正向表：doc -> {sources: [.nix ...], memory: [卡 slug ...]}。
 # 反向映射（nix -> docs）由 wiki-maintainer skill / doc-sync hook 从本表实时计算，不手维。
 #
-# 不变式（由 hook/skill 校验）：
-#   1. 每个 host/*.nix 与 home/**/*.nix 模块至少被一篇文档的 sources 引用。
+# 不变式（由 scripts/check-repo-structure.py / flake checks 校验）：
+#   1. 每个 host/**/*.nix 与 home/**/*.nix 模块至少被一篇文档的 sources 引用。
 #   2. 每篇文档 sources 里列出的文件均真实存在。
-#   3. 每篇文档 memory 里列出的卡在 memory/cards/<slug>.md 存在。
+#   3. 本地 memory 可用或显式指定 --memory-root 时，核对卡片存在；纯 flake 检查跳过。
+#   4. 每篇 wiki Markdown（含导航页）都有条目，YAML key 不重复。
 #
 # 2026-08-19 重构：按职责重新归类用户包、主机兼容层与 Flatpak 服务。
 # 工作流：改了某个 .nix -> 反查本表得到「应更新文档集」-> 按 wiki 三方合并规则更新正文 + 刷新 frontmatter updated。
 # 新增/删除 wiki 文档或新增 nix 模块时，必须同步本清单。
 
 docs:
+  README.md:
+    sources: [wiki/_sources.yaml]
+    memory:  []
+
   overview.md:
     sources: [flake.nix, host/default.nix, home/base.nix, home/env/systools.nix, home/productivity/files.nix, home/productivity/comms.nix, home/git.nix]
     memory:  [flake-unstable-strategy]
 
   architecture/index.md:
-    sources: [flake.nix, host/default.nix, host/base/default.nix, host/de/sessions.nix, host/de/greeter.nix, host/gnome/default.nix, home/base.nix, home/home.nix, home/gnome.nix, home/theme, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
+    sources: [flake.nix, host/default.nix, host/base/default.nix, host/base/home-manager.nix, host/de/sessions.nix, host/de/greeter.nix, host/gnome/default.nix, home/base.nix, home/home.nix, home/gnome.nix, home/theme, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
     memory:  [flake-unstable-strategy, desktop-environment-host-hm-boundary]
   architecture/flake.md:
-    sources: [flake.nix, host/base/nix.nix]
+    sources: [flake.nix, checks/default.nix, scripts/check-repo-structure.py, tests, host/base/nix.nix, host/base/home-manager.nix, host/default.nix, host/gnome/default.nix]
     memory:  [flake-unstable-strategy]
   architecture/host.md:
     sources: [host/default.nix, host/base/default.nix, host/de/sessions.nix, host/base/boot.nix, host/base/hardware.nix, host/base/compat.nix, host/de/greeter.nix, host/base/users.nix, host/base/locale.nix]
@@ -35,7 +40,7 @@ docs:
     sources: [home/de/niri.nix, host/de/sessions.nix, host/de/greeter.nix]
     memory:  [stylix-color-hub, greetd-tuigreet-tty]
   desktop/gnome.md:
-    sources: [flake.nix, host/gnome/default.nix, host/gnome/desktop.nix, home/home.nix, home/gnome.nix, home/base.nix, home/theme/base.nix, home/theme/gtk-static.nix, home/theme/gtk-matugen.nix, local-deriv/material-gnome-theme.nix, host/de/greeter.nix]
+    sources: [flake.nix, host/base/home-manager.nix, host/gnome/default.nix, host/gnome/desktop.nix, home/home.nix, home/gnome.nix, home/base.nix, home/theme/base.nix, home/theme/gtk-static.nix, home/theme/gtk-matugen.nix, local-deriv/material-gnome-theme.nix, host/de/greeter.nix]
     memory:  [gnome-specialisation]
   desktop/fcitx5.md:
     sources: [flake.nix, host/base/desktop.nix, host/de/sessions.nix, home/home.nix, home/de/default.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]

@@ -33,7 +33,7 @@
 ```text
 host/
 ├── default.nix
-├── base/                 # 两个桌面变体共享的系统层
+├── base/                 # 两个桌面变体共享的系统层与 Home Manager 集成
 ├── de/                   # 主 DE 的系统集成：sessions.nix、greeter.nix
 └── gnome/                # GNOME 系统层：default.nix（变体入口）、desktop.nix
 
@@ -47,6 +47,9 @@ home/
 ├── dev/                  # 编辑器、AI、开发工具、容器
 ├── productivity/         # 办公、通讯、文件管理、图像工具、Yazi
 └── leisure/              # 浏览器、影音、游戏
+checks/                   # flake 检查入口：Python/Lua 测试与仓库结构校验
+scripts/                  # 仓库维护工具；check-repo-structure.py 检查来源映射
+tests/                    # Python 同步器测试与 Lua 事件 mock
 wiki/                     # 怎么用；_sources.yaml 是配置来源清单
 memory/                   # 为什么这么配；本地知识库，不进 Git
 .agents/skills/           # 项目专用 skills（project-commit/session-wrapup/wiki-maintainer）

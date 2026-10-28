@@ -25,7 +25,7 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 ```text
 flake.nix                 # inputs、outputs、主机入口
 host/
-├── base/                 # 两个桌面变体共享的系统层
+├── base/                 # 两个桌面变体共享的系统层与 Home Manager 集成
 ├── de/                   # 主 DE 的 sessions、portal、greeter
 └── gnome/                # GNOME 系统层：default.nix（变体入口）、desktop.nix
 home/
@@ -39,6 +39,9 @@ home/
 ├── productivity/         # 办公、通讯、文件管理（主 DE 保留 Strata）、图像工具、Yazi
 └── leisure/              # 浏览器、影音、游戏
 local-deriv/              # 不在 nixpkgs 的本地包
+checks/                   # flake 检查入口：已有测试与仓库结构校验
+scripts/                  # 仓库维护工具（来源映射检查）
+tests/                    # Python 同步器测试与 Lua 事件 mock
 wiki/                     # 操作手册与来源映射
 memory/                   # 本地决策卡与硬件约束（不进 Git）
 .agents/skills/           # 项目专用 skills
@@ -63,15 +66,21 @@ nix-instantiate --parse <file>
 nixos-rebuild dry-build --flake path:.
 ```
 
-Mihomo 同步器的隔离测试已纳入 flake 检查，使用 Nix 提供的 Python 与 PyYAML，不读取真实订阅或操作运行中的代理：
+统一检查由 `checks/default.nix` 维护，运行时依赖跟随 `flake.lock`：
+
+- `mihomo-config-sync`：已有的 Python 同步器测试，不读取真实订阅或操作运行中的代理。
+- `hyprland-policies`：`tests/` 目录中的 Lua 事件 mock，不启动或连接桌面会话。
+- `repository-structure`：核对 Wiki 来源路径、文档和模块覆盖，以及重复的 YAML 条目。
 
 ```bash
 nix flake check path:.
-# 只运行这一项检查：
-nix build path:.#checks.x86_64-linux.mihomo-config-sync --no-link -L
+# 只运行来源映射检查：
+nix build path:.#checks.x86_64-linux.repository-structure --no-link -L
+# 使用锁定版本的格式化工具检查指定文件：
+nix fmt -- --check flake.nix
 ```
 
-这些检查不应用系统配置；`nix flake check --no-build` 只检查求值，不运行测试。
+这些检查不应用系统配置；`nix flake check --no-build` 只检查求值，不运行测试。Lua mock 也不替代桌面运行验证。本地 `memory/` 不进入 flake 检查，卡片核验方式见 [Flake 配置管理](wiki/architecture/flake.md#统一检查入口)。
 
 ## 常用入口
 

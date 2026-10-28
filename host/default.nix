@@ -1,10 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  inputs,
-  ...
-}:
+{ materialAdwTheme, ... }:
 {
   # main（Hyprland/niri DE）：共享 base + 桌面会话集成。
   imports = [
@@ -12,6 +6,9 @@
     ./de/sessions.nix
     ./de/greeter.nix
   ];
+
+  home-manager.users.lishangshui = import ../home/home.nix;
+  home-manager.extraSpecialArgs = { inherit materialAdwTheme; };
 
   # GNOME 变体：inheritParentConfig=false，完全不继承本配置（桌面包体不进 GNOME 闭包）。
   # 变体系统层在 host/gnome/、用户层在 home/gnome.nix，boot 菜单显示 "NixOS (gnome)"。

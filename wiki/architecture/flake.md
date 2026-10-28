@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-10-07
+updated: 2026-10-28
 ---
 
 # Flake 配置管理
@@ -11,10 +11,11 @@ updated: 2026-10-07
 1. [简介](#简介)
 2. [inputs：外部依赖](#inputs外部依赖)
 3. [outputs：系统装配](#outputs系统装配)
-4. [依赖锁定与跟随](#依赖锁定与跟随)
-5. [装配流程](#装配流程)
-6. [最佳实践](#最佳实践)
-7. [相关链接](#相关链接)
+4. [统一检查入口](#统一检查入口)
+5. [依赖锁定与跟随](#依赖锁定与跟随)
+6. [装配流程](#装配流程)
+7. [最佳实践](#最佳实践)
+8. [相关链接](#相关链接)
 
 ## 简介
 
@@ -40,12 +41,14 @@ updated: 2026-10-07
 
 - `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。
 - `devShells.x86_64-linux.packaging` 提供 `$nix-packaging` 流程使用的预取、更新、格式化和 ELF 诊断工具。
+- `checks.x86_64-linux` 从 `checks/default.nix` 加载测试与仓库结构检查；`formatter.x86_64-linux` 使用锁定包集的 `nixfmt`。
 - `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。
 
 - `system` 指定为 `x86_64-linux`。
-- `specialArgs` 将 `inputs` 与共享的 `materialGnomeTheme` 传入系统模块。
-- `modules` 列表组合：本地 `host/default.nix`、sops-nix 和 Home Manager 的 NixOS 模块。
-- Home Manager 侧：`useGlobalPkgs`/`useUserPackages` 开启，`backupFileExtension = "hm-backup"`，主配置指向 `home/home.nix`，GNOME 变体指向 `home/gnome.nix`。
+- `specialArgs` 将 `inputs`、`materialGnomeTheme`、`materialAdwTheme` 传入系统模块。
+- `modules` 列表组合本地 `host/default.nix`、sops-nix、Home Manager 与公共设置 `host/base/home-manager.nix`；GNOME 入口也复用同一份公共设置。上游模块保持原来的导入层级，避免改变列表合并顺序。
+- Home Manager 公共设置集中在 `host/base/home-manager.nix`：开启 `useGlobalPkgs`/`useUserPackages`，设置 `backupFileExtension = "hm-backup"`，传递共享参数 `inputs` 与 `materialGnomeTheme`。
+- `host/default.nix` 选择 `home/home.nix` 并补充主桌面使用的 `materialAdwTheme`；`host/gnome/default.nix` 选择 `home/gnome.nix`，保持两个桌面用户入口独立。
 
 ```mermaid
 flowchart TD
@@ -54,14 +57,45 @@ Inputs --> Outputs["outputs 定义"]
 Outputs --> Packages["packages.x86_64-linux<br/>本地手工包"]
 Outputs --> DevShell["devShells.x86_64-linux.packaging<br/>打包工具环境"]
 Outputs --> NixOS["nixosSystem(system=x86_64-linux)"]
-NixOS --> SpecialArgs["specialArgs={inherit inputs materialGnomeTheme}"]
-SpecialArgs --> Modules["modules=[host, sops-nix, home-manager]"]
-Modules --> HM["home-manager.users.<user> = import ./home/home.nix"]
-HM --> ExtraArgs["extraSpecialArgs={inherit inputs materialGnomeTheme}"]
-ExtraArgs --> End(["生成系统配置"])
+NixOS --> Host["host/default.nix + sops-nix"]
+NixOS --> Shared["Home Manager 上游模块<br/>+ host/base/home-manager.nix 公共设置"]
+Host --> MainHome["home/home.nix<br/>主桌面用户入口"]
+Host -. specialisation .-> Gnome["host/gnome/default.nix"]
+Gnome --> Shared
+Gnome --> GnomeHome["home/gnome.nix<br/>GNOME 用户入口"]
 ```
 
-各子模块的组合方式：`host/default.nix` 导入共享的 `host/base/default.nix` 与主桌面的 session/greeter；`host/base/default.nix` 再集中导入 `boot`、`hardware`、`locale`、`nix`、`users`、`network`、`services`、`desktop`、`gaming`、`virtualization`、`containers`、`sops`。`home/base.nix` 导入两个变体共享的环境、开发、生产力和娱乐模块，并启用 nix-flatpak 用户模块；主题与桌面模块由各自 HM 入口组合。
+各子模块的组合方式：`host/default.nix` 导入共享的 `host/base/default.nix` 与主桌面的 session/greeter；`host/base/default.nix` 再集中导入硬件与系统服务。Home Manager 集成由系统装配入口显式导入。`home/base.nix` 导入两个变体共享的环境、开发、生产力和娱乐模块，并启用 nix-flatpak 用户模块；主题与桌面模块由各自 HM 入口组合。
+
+## 统一检查入口
+
+```bash
+nix flake check path:.
+nixos-rebuild dry-build --flake path:.
+# 格式化检查只针对本次修改的文件，按需追加路径：
+nix fmt -- --check flake.nix
+```
+
+`nix flake check` 会求值 flake，并构建 `checks` 中的检查；`--no-build` 不运行测试，见 [Nix 命令说明](https://nix.dev/manual/nix/2.34/command-ref/new-cli/nix3-flake-check)。
+
+| 检查 | 覆盖范围 |
+| --- | --- |
+| `mihomo-config-sync` | 已有的 Python 同步器测试，不访问真实订阅或运行中的服务 |
+| `hyprland-policies` | `tests/` 目录中的 Lua 事件 mock，不启动或连接 Hyprland |
+| `repository-structure` | Wiki 文档登记、来源路径存在性、home/host Nix 模块覆盖，以及重复 YAML key |
+
+单独运行一项：`nix build path:.#checks.x86_64-linux.repository-structure --no-link -L`。
+
+`scripts/check-repo-structure.py` 只读 `wiki/_sources.yaml` 这一份映射。目录来源覆盖其下 Nix 模块；新增文件未进入 Git 时使用 `path:.`，无需为检查暂存。检查源排除 Git 元数据、本地 `memory/`、工具状态和构建产物。
+
+需要额外核对本地记忆卡片时，复用检查所用的 Python 与 PyYAML 环境：
+
+```bash
+nix develop path:.#checks.x86_64-linux.repository-structure -c \
+  python3 scripts/check-repo-structure.py --memory-root /home/lishangshui/myNixOSConfig/memory
+```
+
+未显式指定路径且当前仓库没有 `memory/cards/` 时，会明确提示跳过；显式指定后，目录或卡片缺失都报错。纯 flake 检查不依赖本机记忆。上述测试与 dry-build 均不应用配置，Lua mock 不证明桌面运行行为。
 
 ## 依赖锁定与跟随
 
@@ -96,7 +130,8 @@ User->>Flake : 调用 nixos-rebuild --flake
 Flake->>Flake : 解析 inputs (nixpkgs, home-manager, noctalia, sops-nix...)
 Flake->>Host : 加载系统模块集合
 Host-->>SOPS : 启用并配置机密注入
-Flake->>HM : 启用 Home Manager 并绑定用户
+Flake->>HM : 加载上游模块与公共集成设置
+Host->>HM : 绑定当前桌面的用户入口
 HM->>Home : 加载用户模块集合
 Home-->>HM : 返回用户环境配置
 Flake-->>User : 生成可重现的系统与用户配置
