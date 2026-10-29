@@ -116,6 +116,10 @@ in
   home.file.".config/gtk-4.0/colors.css".source = lib.mkForce (
     config.lib.file.mkOutOfStoreSymlink "${matugenThemeDir}/gtk-4.0/colors.css"
   );
+  # Reclaim the declared theme files after switching desktop variants; no backups.
+  home.file.".config/gtk-4.0/gtk.css".force = true;
+  home.file.".config/gtk-4.0/gtk-dark.css".force = true;
+  home.file.".config/gtk-4.0/colors.css".force = true;
 
   services.flatpak.overrides.settings.global = {
     Context.filesystems = "$HOME/.themes:ro";

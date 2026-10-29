@@ -14,6 +14,10 @@
   home.file.".config/gtk-4.0/colors.css".source =
     "${materialGnomeTheme}/share/themes/Material-Gnome/gtk-4.0/colors.css";
 
+  home.file.".config/gtk-4.0/gtk.css".force = true;
+  home.file.".config/gtk-4.0/gtk-dark.css".force = true;
+  home.file.".config/gtk-4.0/colors.css".force = true;
+
   # 主题源 ~/.themes（GTK3 应用 / flatpak 访问）
   home.file.".themes/Material-Gnome".source = "${materialGnomeTheme}/share/themes/Material-Gnome";
 

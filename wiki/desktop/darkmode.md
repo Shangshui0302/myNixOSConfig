@@ -71,7 +71,7 @@ journalctl --user -u darkman -b
 - **Foot**：由 `home/de/foot.nix` 定义固定深色配色，不随壁纸变化。
 - **Fcitx5**：系统级 ClassicUI 配置是回退值；Home Manager 上游模块安装 `both-blur` 两套 Mellow 静态资源并管理 Matugen 模板，`theme-apply` 为用户目录生成两套完整 `theme.conf` 和 `highlight.svg`。完整配置避免用户层颜色片段遮蔽 profile 中的布局；壁纸素材变化时重启 Fcitx5，单纯模式切换优先使用 `fcitx5-remote --check -r`。
 
-Obsidian 和 VS Code 已取消 Matugen 专属色板的生成、缓存校验及分发。2026-10-29 已单独清理本机的 VS Code Matugen 扩展、色板及两者的历史生成缓存；Obsidian 的 `Matugen Palette.css`、旧版 `matugen.css` 和对应片段启用项也已移除。应用自选主题和其它插件保留。此次清理备份位于 `~/.local/state/theme-cleanup/20261029-211112/`，不是持续执行的删除规则。
+Obsidian 和 VS Code 已取消 Matugen 专属色板的生成、缓存校验及分发。2026-10-29 已单独清理本机的 VS Code Matugen 扩展、色板及两者的历史生成缓存；Obsidian 的 `Matugen Palette.css`、旧版 `matugen.css` 和对应片段启用项也已移除。应用自选主题和其它插件保留。同日已按用户要求删除此次清理的临时备份，不保留持续备份机制。
 
 部分拥有自绘主题的应用可能忽略系统 GTK/Qt 调色板，这是应用本身的限制。
 

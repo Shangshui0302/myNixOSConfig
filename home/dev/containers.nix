@@ -123,10 +123,11 @@ in
       };
     });
 
-  # 用户目录中的旧入口优先于 profile；用同一份生成结果接管，首次激活由 HM 备份旧文件。
+  # 用户目录中的旧入口优先于 profile；用同一份生成结果接管，直接替换这些受管理入口，不生成备份。
   xdg.dataFile = lib.listToAttrs (map (name: {
     name = "applications/${name}.desktop";
     value.source = "${config.home.path}/share/applications/${name}.desktop";
+    value.force = true;
   }) containerNames);
 
   # 容器 home 是持久状态；由 HM 持续维护其中的配置入口和 Nix 包装器。

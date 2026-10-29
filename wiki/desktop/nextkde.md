@@ -48,7 +48,7 @@ KOS 的服务随 Plasma 工作区启动和停止。Plasma shell 保留壁纸，K
 - 锁屏：静态主题文件由 Home Manager 管理，天气数据文件保持可写；应用时自动迁移旧的整目录链接，解决天气发布失败。
 - 空间壁纸：Nix 固定下载并校验两个模型，合计约 265 MiB；首次登录复制到可写缓存并启用服务和空间壁纸。首次图片处理可能需要等待，实际渲染效果须登录后验收。
 
-空间壁纸初始化只运行一次，保留 macOS/liquid 等现有外观字段。原配置备份在 `~/.local/state/quickshell/kos/appearance/config.json.before-spatial-bootstrap`，完成标记为同目录的 `.spatial-bootstrap-v1`。之后在 KOS 设置中关闭功能或清理模型，后续登录不会强行恢复。遵循 `XDG_STATE_HOME` 与 `XDG_CACHE_HOME`；默认模型位置为 `~/.cache/liquid-shell/models/`。Nix store 仍保存固定资源，清理缓存不会删除 store 中的副本。
+空间壁纸初始化只运行一次，保留 macOS/liquid 等现有外观字段。不另存配置备份，完成标记为 `~/.local/state/quickshell/kos/appearance/.spatial-bootstrap-v1`。之后在 KOS 设置中关闭功能或清理模型，后续登录不会强行恢复。遵循 `XDG_STATE_HOME` 与 `XDG_CACHE_HOME`；默认模型位置为 `~/.cache/liquid-shell/models/`。Nix store 仍保存固定资源，清理缓存不会删除 store 中的副本。
 
 独立构建入口：
 
@@ -62,7 +62,7 @@ nix build path:.#nextkde path:.#nextkde-apps path:.#nextkde-spatial-models --no-
 
 各变体使用同一个用户家目录。应用写入的设置、数据和状态不会随系统 generation 回滚；切换或回退系统时，这些可写文件仍可能影响其他会话。
 
-Home Manager 接管冲突文件时保留 `.hm-backup`，已有备份依次保存为 `.hm-backup.~1~` 等编号文件，避免来回切换桌面时因备份重名中止整套用户配置恢复。旧 generation 仍使用旧备份策略，应从新版普通主配置返回 Hyprland/niri。
+Home Manager 不生成配置备份；切回主桌面时直接接管 GTK4 主题文件和 Hyprland 自动生成的示例配置。旧 generation 仍使用旧策略，应从新版普通主配置返回 Hyprland/niri。
 
 `/etc/xdg/kwinrc` 和 `/etc/xdg/plasmashellrc` 提供 KOS 需要的默认插件、装饰和 shell 配置。用户的 `~/.config/kwinrc` 与 `~/.config/plasmashellrc` 仍可写，除受管理的 Fcitx `InputMethod` 单键外，其同名设置可能覆盖系统默认值。上述初始化只在 NextKDE 会话执行；已有共享应用数据不做迁移。
 
@@ -76,7 +76,7 @@ Home Manager 接管冲突文件时保留 `.hm-backup`，已有备份依次保存
 - **系统设置、搜索中的输入法候选框一直是浅色**：新版会话改走 KWin 原生输入协议，需要重新登录使应用获得新环境；Fcitx 的 `UseDarkTheme=True` 才会跟随系统。少数旧 Qt 5 XWayland 应用若无法输入，可仅对该应用指定 `QT_IM_MODULE=fcitx`，不要重新设置整个会话。
 - **sudo 报缺少 setuid 权限**：旧版 KOS 服务的精简 PATH 会误用 `/run/current-system/sw/bin/sudo`。用 `/run/wrappers/bin/sudo nixos-rebuild boot --flake path:.#MechRevo-NixOS` 安装修复后，重启进入新版 NextKDE；已有终端不会自动获得新环境。正常情况下 `command -v sudo` 应输出 `/run/wrappers/bin/sudo`，无需修改 sudo 文件权限。
 - **登录后界面异常**：先检查是否从启动菜单进入了 `nextkde`，并查看 `journalctl --user -b` 中 KOS 和 Plasma 的日志。系统构建成功本身不能证明桌面运行正常。
-- **效果、装饰或壁纸不符合预期**：检查上述两个用户配置文件是否已有覆盖项，并与 `/etc/xdg/` 中的默认值比较；先备份再自行调整。
+- **效果、装饰或壁纸不符合预期**：检查上述两个用户配置文件是否已有覆盖项，并与 `/etc/xdg/` 中的默认值比较；按需自行调整。
 - **目录打开了其他程序**：用户的 `~/.config/mimeapps.list` 中已有目录关联可能优先于系统默认值。详见[文件管理器与归档工具](../productivity/files.md)。
 - **需要返回原桌面**：重启后在启动菜单选择普通主配置或旧 generation；用户家目录中的可写状态不会自动回退。
 

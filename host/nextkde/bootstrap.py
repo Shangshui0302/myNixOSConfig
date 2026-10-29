@@ -59,14 +59,6 @@ def bootstrap(models):
             raise ValueError(f"missing spatial model: {models / name}")
 
     appearance.mkdir(parents=True, exist_ok=True)
-    if original is not None:
-        backup = appearance / "config.json.before-spatial-bootstrap"
-        try:
-            with backup.open("xb") as stream:
-                stream.write(original)
-        except FileExistsError:
-            pass
-
     destination = cache / "liquid-shell/models"
     destination.mkdir(parents=True, exist_ok=True)
     for name in MODEL_NAMES:
