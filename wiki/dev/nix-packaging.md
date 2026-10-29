@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-10-28
+updated: 2026-10-29
 ---
 # Nix 手工打包
 
@@ -18,7 +18,7 @@ updated: 2026-10-28
 - [Derivation 规范](#derivation-规范)
 - [获取和更新哈希](#获取和更新哈希)
 - [验证](#验证)
-- [当前本地包](#当前本地包)
+- [本地包与上游包入口](#本地包与上游包入口)
 - [已投稿包：Strata](#已投稿包strata)
 - [更新已有包](#更新已有包)
 - [故障排查](#故障排查)
@@ -165,14 +165,14 @@ cd ~/myNixOSConfig
 sudo nixos-rebuild switch --flake .
 ```
 
-## 当前本地包
+## 本地包与上游包入口
 
 | 包 | 独立构建入口 | 说明 |
 | --- | --- | --- |
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
 | Agent Orchestrator | `nix build path:.#agent-orchestrator-distrobox` | 官方 AppImage 解包后适配 Nix 动态库，附 Arch DSH 桥；原始桌面包为 `agent-orchestrator`，见 [AO](agent-orchestrator.md) |
-| WeTypeX | `nix build path:.#fcitx5-wetypex` | 固定源码构建 Fcitx5 插件与原生引擎宿主，适配 Nix store 沙箱路径；支持 AI、语音、LayerShell、共用皮肤构建开关和首次默认值，原版引擎由用户初始化，见 [Fcitx5](../desktop/fcitx5.md#wetypex-首次使用) |
+| WeTypeX | `nix build path:.#fcitx5-wetypex` | 直接构建 `wetypex` input 的上游默认包，`flake.lock` 固定源码；系统中的个人选项在 `host/base/input-method.nix` 通过 `.override` 设置，无本地包定义或补丁，原版引擎由用户初始化，见 [Fcitx5](../desktop/fcitx5.md#wetypex-首次使用) |
 
 ### ModernZ (`local-deriv/modernz.nix`)
 

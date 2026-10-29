@@ -2,7 +2,7 @@
 title: 办公软件套件
 category: 生产力
 tags: [office, libreoffice, onlyoffice, fonts, cjk, z-library, zotero]
-updated: 2026-10-27
+updated: 2026-10-29
 ---
 
 # 办公软件套件
@@ -82,7 +82,7 @@ Rule --> End(["应用生效"])
 
 ## 输入法与本地化
 
-- **Fcitx5 + Rime**（`host/base/desktop.nix`）：GTK/Qt/X11/Wayland 多环境兼容，Office 中文输入体验一致。
+- **Fcitx5 + Rime**（`host/base/input-method.nix`）：GTK/Qt/X11/Wayland 多环境兼容，Office 中文输入体验一致。
 - **区域设置**（`host/locale.nix`）：时区 Asia/Shanghai，语言 zh_CN.UTF-8，数字 / 日期 / 排序符合中文习惯。
 
 ## 打印与 PDF 导出

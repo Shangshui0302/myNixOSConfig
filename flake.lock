@@ -429,7 +429,8 @@
         "shell-switcher": "shell-switcher",
         "sops-nix": "sops-nix",
         "strata-nixpkgs": "strata-nixpkgs",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "wetypex": "wetypex"
       }
     },
     "shell-switcher": {
@@ -629,6 +630,26 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-zed",
+        "type": "github"
+      }
+    },
+    "wetypex": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793252776,
+        "narHash": "sha256-/2SgGUz0rckVC6qisiSE7MHOnW8+8U/kKIdZsn1ZFUc=",
+        "owner": "panxuc",
+        "repo": "fcitx5-wetypex",
+        "rev": "df013268e2e537c7ee748082d3caac2e343bd315",
+        "type": "github"
+      },
+      "original": {
+        "owner": "panxuc",
+        "repo": "fcitx5-wetypex",
         "type": "github"
       }
     }

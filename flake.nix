@@ -36,6 +36,10 @@
       url = "github:Shangshui0302/fcitx5-mellow-themes-matugen";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wetypex = {
+      url = "github:panxuc/fcitx5-wetypex";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   nixConfig = {
     extra-substituters = [ "https://nix-community.cachix.org" ];
@@ -58,7 +62,8 @@
     in
     {
       packages.${system} = {
-        fcitx5-wetypex = pkgs.callPackage ./local-deriv/fcitx5-wetypex.nix { };
+        # Upstream defaults; host/base/input-method.nix selects this host's options.
+        fcitx5-wetypex = inputs.wetypex.packages.${system}.fcitx5-wetypex;
         agent-orchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
         agent-orchestrator-distrobox = pkgs.callPackage ./local-deriv/agent-orchestrator-distrobox.nix {
           agentOrchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };

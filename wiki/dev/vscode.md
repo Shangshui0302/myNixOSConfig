@@ -2,7 +2,7 @@
 title: VS Code 集成
 category: 开发
 tags: [vscode, editor, home-manager, dev, matugen, darkman]
-updated: 2026-10-23
+updated: 2026-10-29
 ---
 
 # VS Code 集成
@@ -25,7 +25,7 @@ updated: 2026-10-23
 - 安装由 Home Manager 统一管理，改动这个模块后 rebuild 即生效。
 - 配套的工具链在 `home/dev/tools.nix`（Node.js、Python、GCC、搜索工具等），VS Code 插件生态所需的运行时基本都在这里提供。
 - 容器化开发靠 `home/dev/containers.nix` 的 Distrobox 模板，配合 Remote 场景使用。
-- 桌面基础设施（GNOME Keyring、Fcitx5 输入法、字体）由 `host/base/desktop.nix` 提供，保障凭据存储、中文输入与显示。
+- GNOME Keyring 和字体由 `host/base/desktop.nix` 提供，Fcitx5 输入法由 `host/base/input-method.nix` 提供，保障凭据存储、中文输入与显示。
 
 ## Matugen 动态主题
 
@@ -65,11 +65,12 @@ D --> V["home/dev/vscode.nix"]
 D --> T["home/dev/tools.nix"]
 D --> C["home/dev/containers.nix"]
 F --> S["host/base/desktop.nix"]
+F --> I["host/base/input-method.nix"]
 ```
 
 - Flake 层：`flake.nix` 引入 Home Manager 并注入用户配置。
 - Home Manager 层：`home/base.nix` 聚合各功能模块，`home/dev/default.nix` 再引入 vscode / tools / containers。
-- 桌面层：`host/base/desktop.nix` 提供 Keyring、输入法、字体，直接影响 VS Code 的凭据与界面表现。
+- 桌面层：`host/base/desktop.nix` 提供 Keyring 和字体，`host/base/input-method.nix` 提供输入法，直接影响 VS Code 的凭据与界面表现。
 
 ## 工作区配置怎么管
 
@@ -101,7 +102,7 @@ VS-->>Dev : 展示结果
 
 - 调试器：在 `launch.json` 声明；确保 `home/dev/tools.nix` 已装好对应运行时与调试符号。
 - 任务：在 `tasks.json` 定义构建 / 测试 / 格式化，复用工具链路径。
-- 终端：结合 `host/base/desktop.nix` 的输入法配置获得一致交互。
+- 终端：结合 `host/base/input-method.nix` 的输入法配置获得一致交互。
 
 ## 远程与容器开发
 

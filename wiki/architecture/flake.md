@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-10-28
+updated: 2026-10-29
 ---
 
 # Flake 配置管理
@@ -27,6 +27,7 @@ updated: 2026-10-28
 
 - `nixpkgs`：跟踪 `nixos-unstable` 频道，作为基础包集与 NixOS 模块来源。
 - `strata-nixpkgs`：临时固定 fork 提交，只消费其中的 Strata，包集与系统隔离；官方频道可用后移除。
+- `wetypex`：WeTypeX 上游 flake，提交由 `flake.lock` 固定，依赖跟随根 `nixpkgs`；`host/base/input-method.nix` 直接使用其包参数设置个人功能和主题选项。
 - `home-manager`：用户环境管理框架。
 - `noctalia`：桌面壳模块；主桌面登录器由本地 `host/de/greeter.nix` 配置 greetd/tuigreet。
 - `sops-nix`：机密管理与注入。
@@ -39,7 +40,7 @@ updated: 2026-10-28
 
 `outputs` 同时提供本地包、打包开发环境和名为 `MechRevo-NixOS` 的系统配置：
 
-- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。
+- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包、WeTypeX 上游默认包别名和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。
 - `devShells.x86_64-linux.packaging` 提供 `$nix-packaging` 流程使用的预取、更新、格式化和 ELF 诊断工具。
 - `checks.x86_64-linux` 从 `checks/default.nix` 加载测试与仓库结构检查；`formatter.x86_64-linux` 使用锁定包集的 `nixfmt`。
 - `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。

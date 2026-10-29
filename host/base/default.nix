@@ -19,6 +19,7 @@
     ./sub-store.nix
     ./services.nix
     ./desktop.nix
+    ./input-method.nix
     ./gaming.nix
     ./tlp.nix
     ./virtualization.nix
