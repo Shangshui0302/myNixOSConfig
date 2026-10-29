@@ -11,14 +11,7 @@ updated: 2026-10-29
 
 ## 怎么装
 
-`home/dev/vscode.nix` 只做一件事——把 `vscode` 加入用户环境：
-
-```nix
-{ pkgs, ... }:
-{
-  home.packages = with pkgs; [ vscode ];
-}
-```
+`home/dev/vscode.nix` 只安装 VS Code；主题、用户设置、配置档及扩展由应用自行管理。
 
 要点：
 
@@ -27,33 +20,11 @@ updated: 2026-10-29
 - 容器化开发靠 `home/dev/containers.nix` 的 Distrobox 模板，配合 Remote 场景使用。
 - GNOME Keyring 和字体由 `host/base/desktop.nix` 提供，Fcitx5 输入法由 `host/base/input-method.nix` 提供，保障凭据存储、中文输入与显示。
 
-## Matugen 动态主题
+## 主题配置
 
-VS Code 扩展 `haikalllp.matugen-theme` 由 VS Code 账号同步管理，不由 Nix 安装。它提供 `Matugen` 和 `Matugen Bordered` 两个主题，并监听以下用户缓存文件：
+仓库不再声明 VS Code 的自动明暗检测或首选主题，也不再生成和分发 Matugen 色板。通过 VS Code 自身设置选择主题即可。停止 Nix 管理本身不会重置用户设置。2026-10-29 已按用户要求单独卸载 `haikalllp.matugen-theme`，清理其色板缓存及壁纸缓存中的 VS Code 产物；其它扩展与当前自选主题保留。
 
-```text
-~/.cache/matugen/vscode-colors
-~/.cache/matugen/vscode-colors.json
-```
-
-现有 `theme-apply` 仍是唯一的 Matugen 调色入口：壁纸变化时生成并缓存深浅两套 VS Code 色板；Darkman 只切换模式时，从已有壁纸缓存复制对应模式的两个文件，不会再次分析壁纸。扩展检测到文件变化后在自身可写的扩展目录中原子更新主题文件。
-
-首次使用：
-
-1. 确认扩展已启用。
-2. 按 `Ctrl + K`、`Ctrl + T`，选择 `Matugen`（或 `Matugen Bordered`）。
-3. 保持扩展设置 `matugenTheme.autoUpdate = true`。
-
-检查分发链：
-
-```bash
-code --list-extensions --show-versions | rg '^haikalllp\.matugen-theme@'
-stat ~/.cache/matugen/vscode-colors ~/.cache/matugen/vscode-colors.json
-```
-
-如果主题没有刷新，先在 VS Code 命令面板运行 `Matugen Theme: Clear Cache`，再运行 `Matugen Theme: Update Theme`；随后检查 `View → Output → Matugen Theme`。若只切换 Darkman 模式，确认两个缓存文件的修改时间变化，然后等待扩展的文件监听完成。
-
-这套扩展生成的是完整 VS Code 工作台/语法主题，而不是只覆盖 accent。要保留其他主题的语法配色，应在 Matugen 模板层另做裁剪。
+NextKDE 下运行中切换明暗的故障暂不处理；相关上游记录见 [Electron #48736](https://github.com/electron/electron/issues/48736)。
 
 ## 组件关系
 
@@ -124,6 +95,7 @@ Agent Orchestrator 提供主代理派工、开发看板和审查流程，并通�
 
 | 现象 | 排查 |
 |------|------|
+| 不跟随系统明暗 | 检查自动检测及首选明暗主题，不能将两者都固定为同一个 Matugen 主题；再检查配置档或工作区覆盖 |
 | 凭据无法保存 | 确认 `host/base/desktop.nix` 已启用 GNOME Keyring，会话变量正确 |
 | 中文输入异常 | 检查 Fcitx5 与 Wayland/XWayland 兼容配置 |
 | 调试器不可用 | 确认 `tools.nix` 装了对应运行时且 PATH 正确 |

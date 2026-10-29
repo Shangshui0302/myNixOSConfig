@@ -26,6 +26,7 @@ updated: 2026-10-29
 `flake.nix` 的 `inputs` 部分声明了系统所需的全部外部来源：
 
 - `nixpkgs`：跟踪 `nixos-unstable` 频道，作为基础包集与 NixOS 模块来源。
+- `nextkde`：固定上游提交 `3fa1d7006869bbd3404a05d362c6e6028e0fe3da`，跟随根 `nixpkgs`，提供 KOS 模块和包。
 - `strata-nixpkgs`：临时固定 fork 提交，只消费其中的 Strata，包集与系统隔离；官方频道可用后移除。
 - `wetypex`：WeTypeX 上游 flake，提交由 `flake.lock` 固定，依赖跟随根 `nixpkgs`；`host/base/input-method.nix` 直接使用其包参数设置个人功能和主题选项。
 - `home-manager`：用户环境管理框架。
@@ -40,7 +41,7 @@ updated: 2026-10-29
 
 `outputs` 同时提供本地包、打包开发环境和名为 `MechRevo-NixOS` 的系统配置：
 
-- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包、WeTypeX 上游默认包别名和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。
+- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包、WeTypeX 上游默认包别名、NextKDE 和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。NextKDE 分为 `nextkde`（含天气）、`nextkde-apps`（日历/待办/计算器）、`nextkde-spatial-models`（固定空间壁纸模型）、`nextkde-platform-whitesur`（KOS 的 WhiteSur 明暗配色修正）和 `nextkde-qdbus6`（Qt 命令名兼容入口），只由对应 specialisation 消费。
 - `devShells.x86_64-linux.packaging` 提供 `$nix-packaging` 流程使用的预取、更新、格式化和 ELF 诊断工具。
 - `checks.x86_64-linux` 从 `checks/default.nix` 加载测试与仓库结构检查；`formatter.x86_64-linux` 使用锁定包集的 `nixfmt`。
 - `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。
@@ -49,7 +50,7 @@ updated: 2026-10-29
 - `specialArgs` 将 `inputs`、`materialGnomeTheme`、`materialAdwTheme` 传入系统模块。
 - `modules` 列表组合本地 `host/default.nix`、sops-nix、Home Manager 与公共设置 `host/base/home-manager.nix`；GNOME 入口也复用同一份公共设置。上游模块保持原来的导入层级，避免改变列表合并顺序。
 - Home Manager 公共设置集中在 `host/base/home-manager.nix`：开启 `useGlobalPkgs`/`useUserPackages`，设置 `backupFileExtension = "hm-backup"`，传递共享参数 `inputs` 与 `materialGnomeTheme`。
-- `host/default.nix` 选择 `home/home.nix` 并补充主桌面使用的 `materialAdwTheme`；`host/gnome/default.nix` 选择 `home/gnome.nix`，保持两个桌面用户入口独立。
+- `host/default.nix` 选择 `home/home.nix` 并补充主桌面使用的 `materialAdwTheme`；`host/gnome/default.nix` 选择 `home/gnome.nix`，`host/nextkde/default.nix` 选择 `home/nextkde.nix`，保持三个桌面用户入口独立。
 
 ```mermaid
 flowchart TD
@@ -62,11 +63,13 @@ NixOS --> Host["host/default.nix + sops-nix"]
 NixOS --> Shared["Home Manager 上游模块<br/>+ host/base/home-manager.nix 公共设置"]
 Host --> MainHome["home/home.nix<br/>主桌面用户入口"]
 Host -. specialisation .-> Gnome["host/gnome/default.nix"]
+Host -. specialisation .-> NextKDE["host/nextkde/default.nix"]
+NextKDE --> NextHome["home/nextkde.nix"]
 Gnome --> Shared
 Gnome --> GnomeHome["home/gnome.nix<br/>GNOME 用户入口"]
 ```
 
-各子模块的组合方式：`host/default.nix` 导入共享的 `host/base/default.nix` 与主桌面的 session/greeter；`host/base/default.nix` 再集中导入硬件与系统服务。Home Manager 集成由系统装配入口显式导入。`home/base.nix` 导入两个变体共享的环境、开发、生产力和娱乐模块，并启用 nix-flatpak 用户模块；主题与桌面模块由各自 HM 入口组合。
+各子模块的组合方式：`host/default.nix` 导入共享的 `host/base/default.nix` 与主桌面的 session/greeter；`host/base/default.nix` 再集中导入硬件与系统服务。Home Manager 集成由系统装配入口显式导入。`home/base.nix` 导入三个变体共享的环境、开发、生产力和娱乐模块，并启用 nix-flatpak 用户模块；主题与桌面模块由各自 HM 入口组合。
 
 ## 统一检查入口
 
@@ -109,7 +112,7 @@ nix develop path:.#checks.x86_64-linux.repository-structure -c \
 graph LR
 Root["flake.nix"] --> Lock["flake.lock<br/>依赖锁定"]
 Root --> Host["host/default.nix"]
-Root --> Home["home/home.nix<br/>GNOME: home/gnome.nix"]
+Root --> Home["home/home.nix<br/>GNOME: home/gnome.nix<br/>NextKDE: home/nextkde.nix"]
 Host --> SOPS["host/base/sops.nix"]
 Home --> HM["home-manager 模块"]
 Root --> Ext["外部依赖<br/>nixpkgs/home-manager/noctalia/sops-nix"]

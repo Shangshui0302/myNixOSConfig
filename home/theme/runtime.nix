@@ -10,8 +10,6 @@
 let
   homeDir = config.home.homeDirectory;
   defaultWallpaper = ../../assets/nixos_logo.png;
-  obsidianVault = "${homeDir}/Documents/MyVault";
-  obsidianSnippet = "${obsidianVault}/.obsidian/snippets/Matugen Palette.css";
   # The upstream HM module owns the package and links selected templates here.
   fcitxTemplateRoot = "${homeDir}/.config/matugen/templates/fcitx5-matugen-theme";
 
@@ -134,15 +132,8 @@ let
   # Yazi runs in the same dark Foot terminal and keeps a dark background while
   # its semantic accents follow the wallpaper palette.
   yaziDarkTemplate = mkMatugenModeTemplate "dark" "yazi-flavor" ./matugen/yazi-flavor.toml.tpl;
-  # mpv's video surface stays dark for readable OSC text; only its accents
-  # follow the wallpaper palette.
-  # Matugen Theme watches these two files and regenerates its writable VS Code
-  # theme files when the selected mode or wallpaper palette changes.
-  vscodeColorsTemplate = mode: mkMatugenModeTemplate mode "vscode-colors" ./matugen/vscode-colors.tpl;
-  vscodeColorsJsonTemplate = mode: mkMatugenModeTemplate mode "vscode-colors-json" ./matugen/vscode-colors.json.tpl;
   # Neovim consumes a small Lua palette for its dashboard and statusline.
   nvimColorsTemplate = mode: mkMatugenModeTemplate mode "nvim-colors" ./matugen/nvim-colors.lua.tpl;
-  obsidianPaletteTemplate = ./matugen/obsidian-accent.css.tpl;
 
   # Matugen writes here first.  The shell script copies a complete staging tree
   # into a content-addressed cache only after every template succeeded.
@@ -283,22 +274,6 @@ let
     input_path = '${matugenModeTemplates.dark.modernz}'
     output_path = '${matugenOutputRoot}/dark/mpv/script-opts/modernz.conf'
 
-    [templates.vscode-colors-light]
-    input_path = '${vscodeColorsTemplate "light"}'
-    output_path = '${matugenOutputRoot}/light/vscode/vscode-colors'
-
-    [templates.vscode-colors-dark]
-    input_path = '${vscodeColorsTemplate "dark"}'
-    output_path = '${matugenOutputRoot}/dark/vscode/vscode-colors'
-
-    [templates.vscode-colors-json-light]
-    input_path = '${vscodeColorsJsonTemplate "light"}'
-    output_path = '${matugenOutputRoot}/light/vscode/vscode-colors.json'
-
-    [templates.vscode-colors-json-dark]
-    input_path = '${vscodeColorsJsonTemplate "dark"}'
-    output_path = '${matugenOutputRoot}/dark/vscode/vscode-colors.json'
-
     [templates.nvim-colors-light]
     input_path = '${nvimColorsTemplate "light"}'
     output_path = '${matugenOutputRoot}/light/nvim-colors.lua'
@@ -306,10 +281,6 @@ let
     [templates.nvim-colors-dark]
     input_path = '${nvimColorsTemplate "dark"}'
     output_path = '${matugenOutputRoot}/dark/nvim-colors.lua'
-
-    [templates.obsidian-palette]
-    input_path = '${obsidianPaletteTemplate}'
-    output_path = '${matugenOutputRoot}/dual/obsidian/palette.css'
 
     [templates.gtk3-light]
     input_path = '${../../local-deriv/material-gnome/gtk3-light.tpl}'
@@ -520,13 +491,8 @@ let
           dark/strata/themes/matugen.toml
           light/mpv/script-opts/modernz.conf
           dark/mpv/script-opts/modernz.conf
-          light/vscode/vscode-colors
-          dark/vscode/vscode-colors
-          light/vscode/vscode-colors.json
-          dark/vscode/vscode-colors.json
           light/nvim-colors.lua
           dark/nvim-colors.lua
-          dual/obsidian/palette.css
           dual/gtk3-light/colors.css
           dual/gtk3-dark/colors.css
           dual/gtk4/colors.css
@@ -755,21 +721,7 @@ let
         fcitx_end="$(now_ms)"
         log "stage=fcitx duration_ms=$((fcitx_end - fcitx_start)) mode=$mode"
 
-        # The vault owns snippet activation; only publish the optional palette.
-        obsidian_snippet_dir="${obsidianVault}/.obsidian/snippets"
-        if [ -d "$obsidian_snippet_dir" ] \
-          && { [ "$assets_changed" -eq 1 ] || [ ! -f "${obsidianSnippet}" ]; }; then
-          copy_atomic "$cache_dir/dual/obsidian/palette.css" "${obsidianSnippet}"
-          log "stage=obsidian status=updated"
-        fi
-
-        # Consumers use fixed paths under ~/.cache/matugen.  Publish the
-        # current mode on every apply so a Darkman-only toggle updates them
-        # from the existing wallpaper cache without running Matugen again.
-        copy_atomic "$cache_dir/$mode/vscode/vscode-colors" \
-          "$HOME/.cache/matugen/vscode-colors"
-        copy_atomic "$cache_dir/$mode/vscode/vscode-colors.json" \
-          "$HOME/.cache/matugen/vscode-colors.json"
+        # Publish Neovim's current mode from the wallpaper cache.
         copy_atomic "$cache_dir/$mode/nvim-colors.lua" \
           "$HOME/.cache/matugen/nvim-colors.lua"
 

@@ -74,15 +74,11 @@ in
               || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig" ] \
               || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.svg" ] \
               || [ ! -f "$HOME/.local/share/color-schemes/MaterialAdwMatugen.colors" ] \
-              || [ ! -f "$HOME/.cache/matugen/vscode-colors" ] \
-              || [ ! -f "$HOME/.cache/matugen/vscode-colors.json" ] \
               || [ ! -f "$HOME/.cache/matugen/nvim-colors.lua" ] \
               || [ ! -f "$HOME/.config/btop/themes/matugen.theme" ] \
               || [ ! -f "$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml" ] \
               || [ ! -f "$HOME/.config/mpv/script-opts/modernz.conf" ] \
               || [ ! -f "$HOME/.config/zellij/themes/matugen.kdl" ] \
-              || { [ -d "$HOME/Documents/MyVault/.obsidian/snippets" ] \
-                && [ ! -f "$HOME/Documents/MyVault/.obsidian/snippets/Matugen Palette.css" ]; } \
               || ! grep -q 'prefers-color-scheme: dark' "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css" 2>/dev/null \
               || [ ! -f "$HOME/.local/share/icons/Papirus-Matugen/index.theme" ]; then
               initial_wallpaper="$(${pkgs.waypaper}/bin/waypaper --list 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[0].wallpaper // empty' 2>/dev/null || true)"

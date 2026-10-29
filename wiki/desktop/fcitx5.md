@@ -204,4 +204,4 @@ SESSION["UWSM / niri-session / graphical-session.target"] --> IM
 - 决策：Portal / gtk 悬空软链问题 → [portal-gtk-dangling-symlink](../../memory/cards/portal-gtk-dangling-symlink.md)
 - 决策：greetd/tuigreet TTY 与会话入口 → [greetd-tuigreet-tty](../../memory/cards/greetd-tuigreet-tty.md)
 - 历史：TTY、UWSM 与 Fcitx5 autostart → [uwsm-kmscon-session-handoff](../../memory/cards/uwsm-kmscon-session-handoff.md)
-- 决策：Darkman 状态、Matugen 渲染与 Stylix 基线 → [darkman-theme-authority](../../memory/cards/darkman-theme-authority.md)
+- 决策：Darkman 状态与 Matugen 渲染 → [darkman-theme-authority](../../memory/cards/darkman-theme-authority.md)

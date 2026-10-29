@@ -2,7 +2,7 @@
 title: 主机系统架构与启动流程
 category: 架构
 tags: [host, boot, hardware, compat, systemd, tty, greetd, tuigreet, amdgpu]
-updated: 2026-09-02
+updated: 2026-10-29
 ---
 
 # 主机系统架构与启动流程
@@ -20,6 +20,8 @@ updated: 2026-09-02
 ## 简介
 
 主机层（`host/`）负责从 BIOS/UEFI 到桌面环境的完整系统构建，涵盖硬件抽象、引导加载器、内核参数、systemd 服务与登录会话初始化。硬件抽象被拆分为两部分：由 `nixos-generate-config` 自动生成的设备清单，以及在 `host/` 层手工维护的驱动与服务策略。这一「自动检测 + 手工增强」的设计，使不同机器可通过替换硬件清单并复用 `host/` 策略实现「一次编写，多机部署」。
+
+NextKDE 使用独立的 `host/nextkde/` specialisation，复用共享主机基础，通过 SDDM 登录 Plasma Wayland；操作与返回方式见 [NextKDE](../desktop/nextkde.md)。
 
 ## 硬件抽象层
 

@@ -8,10 +8,10 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 | --- | --- |
 | 系统 | NixOS 26.05，nixos-unstable |
 | 主桌面 | Hyprland（UWSM）+ niri（niri-session），greetd + tuigreet TTY |
-| 变体 | GNOME specialisation，独立 GDM 会话 |
+| 变体 | GNOME specialisation（GDM）和 NextKDE specialisation（Plasma Wayland + SDDM） |
 | Shell | fish、bash/ble.sh、Starship、zellij |
 | 终端 | Foot，由 Home Manager 管理，半透明背景与合成器模糊 |
-| 文件夹默认打开 | 主桌面 Strata；GNOME 变体 Nautilus |
+| 文件夹默认打开 | 主桌面 Strata；GNOME 变体 Nautilus；NextKDE 变体 Dolphin |
 | AI 工具 | Codex 与 Antigravity CLI、Antigravity 2.0 Agents 界面；AO 自主开发协作与 Arch DSH 桥接；Agent Reach 与 OpenCLI 平台访问工具；Token Monitor 由 Arch 安装并通过 Distrobox 导出 |
 | 电子书与资料 | Z-Library 桌面客户端、Zotero 文献管理 |
 | 面板 | Noctalia，可切换 Caelestia |
@@ -25,15 +25,17 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 ```text
 flake.nix                 # inputs、outputs、主机入口
 host/
-├── base/                 # 两个桌面变体共享的系统层与 Home Manager 集成
+├── base/                 # 三个桌面变体共享的系统层与 Home Manager 集成
 ├── de/                   # 主 DE 的 sessions、portal、greeter
-└── gnome/                # GNOME 系统层：default.nix（变体入口）、desktop.nix
+├── gnome/                # GNOME 系统层：default.nix（变体入口）、desktop.nix
+└── nextkde/              # NextKDE 系统层：default.nix（变体入口）、desktop.nix
 home/
 ├── home.nix              # 主 DE HM 入口（base + theme/ + de/）
 ├── base.nix              # 共享 HM 入口
-├── theme/                # 颜色/壁纸/主题域（base、gtk-matugen、gtk-static、runtime、wallpaper、stylix）
+├── theme/                # 颜色/壁纸/主题域（base、gtk-matugen、gtk-static、runtime、wallpaper）
 ├── de/                   # Hyprland、niri、Foot、桌面 Shell
 ├── gnome.nix             # GNOME 变体 HM 入口（base + theme/gtk-static）
+├── nextkde.nix           # NextKDE 变体 HM 入口（base + KOS shell/锁屏）
 ├── env/                  # Shell、系统工具、OneDrive
 ├── dev/                  # 编辑器、AI、开发工具、容器
 ├── productivity/         # 办公、通讯、文件管理（主 DE 保留 Strata）、图像工具、Yazi

@@ -34,20 +34,23 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve, greetd-tuigreet-tty]
 
   desktop/hyprland.md:
-    sources: [home/de/hyprland.nix, home/de/hyprland/scrolling-policy.lua, home/de/hyprland/token-monitor-size.lua, home/de/polkit.nix, host/de/sessions.nix, local-deriv/hyprland-scroll-overview.nix, home/de/default.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/stylix.nix, home/theme/gtk-matugen.nix, host/base/boot.nix, home/theme/runtime.nix, home/theme/matugen/qtct-colors.conf.tpl]
-    memory:  [hyprland-056-blur-amd, hyprland-scrolloverview-plugin, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, stylix-color-hub, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
+    sources: [home/de/hyprland.nix, home/de/hyprland/scrolling-policy.lua, home/de/hyprland/token-monitor-size.lua, home/de/polkit.nix, host/de/sessions.nix, local-deriv/hyprland-scroll-overview.nix, home/de/default.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/gtk-matugen.nix, host/base/boot.nix, home/theme/runtime.nix, home/theme/matugen/qtct-colors.conf.tpl]
+    memory:  [hyprland-056-blur-amd, hyprland-scrolloverview-plugin, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
     sources: [home/de/niri.nix, host/de/sessions.nix, host/de/greeter.nix]
-    memory:  [stylix-color-hub, greetd-tuigreet-tty]
+    memory:  [greetd-tuigreet-tty]
   desktop/gnome.md:
     sources: [host/base/input-method.nix, flake.nix, host/base/home-manager.nix, host/gnome/default.nix, host/gnome/desktop.nix, home/home.nix, home/gnome.nix, home/base.nix, home/theme/base.nix, home/theme/gtk-static.nix, home/theme/gtk-matugen.nix, local-deriv/material-gnome-theme.nix, host/de/greeter.nix]
     memory:  [gnome-specialisation]
+  desktop/nextkde.md:
+    sources: [flake.nix, flake.lock, host/default.nix, host/nextkde/default.nix, host/nextkde/desktop.nix, host/nextkde/bootstrap.py, host/base/home-manager.nix, local-deriv/nextkde-apps.nix, local-deriv/nextkde-platform-whitesur.nix, local-deriv/nextkde-spatial-models.nix, local-deriv/nextkde-qdbus6.nix, local-deriv/nextkde-session-tools.nix, home/nextkde.nix, home/de/foot.nix, home/base.nix, host/base/desktop.nix, home/productivity/files.nix]
+    memory:  []
   desktop/fcitx5.md:
     sources: [flake.nix, flake.lock, host/base/default.nix, host/base/input-method.nix, host/de/sessions.nix, home/home.nix, home/de/default.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff, greetd-tuigreet-tty]
   desktop/noctalia.md:
     sources: [home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/productivity/graphics.nix, home/productivity/phone.nix, host/base/desktop.nix, home/theme/runtime.nix, host/de/greeter.nix]
-    memory:  [darkman-theme-authority, stylix-color-hub, matugen-wallpaper-theming]
+    memory:  [darkman-theme-authority, matugen-wallpaper-theming]
   desktop/shell-switcher.md:
     sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix, home/theme/runtime.nix, home/theme/matugen/caelestia-scheme.json.tpl]
     memory:  [shell-switcher-generic]
@@ -55,7 +58,7 @@ docs:
     sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/de/foot.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
     memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
-    sources: [flake.nix, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/gtk-static.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, local-deriv/material-adw-kvantum.nix, home/theme/matugen/material-adw-colors.colors.tpl, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/obsidian-accent.css.tpl, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, local-deriv/material-gnome/recolor-shell.py, home/de/polkit.nix, home/theme/matugen/qtct-colors.conf.tpl]
+    sources: [flake.nix, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/gtk-static.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/vscode.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, local-deriv/material-adw-kvantum.nix, home/theme/matugen/material-adw-colors.colors.tpl, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, local-deriv/material-gnome/recolor-shell.py, home/de/polkit.nix, home/theme/matugen/qtct-colors.conf.tpl]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
     sources: [host/base/services.nix]
@@ -78,7 +81,7 @@ docs:
     sources: [home/dev/nvim.nix, home/dev/nvim/init.lua, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/nvim-colors.lua.tpl]
     memory:  []
   dev/vscode.md:
-    sources: [host/base/input-method.nix, home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/vscode-colors.tpl, home/theme/matugen/vscode-colors.json.tpl]
+    sources: [host/base/input-method.nix, home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
     memory:  [ai-tools-source]
   dev/agent-orchestrator.md:
     sources: [flake.nix, flake.lock, home/dev/ai.nix, home/dev/agent-orchestrator.nix, local-deriv/agent-orchestrator.nix, local-deriv/agent-orchestrator, local-deriv/agent-orchestrator-distrobox.nix]

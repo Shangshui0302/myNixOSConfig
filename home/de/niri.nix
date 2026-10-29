@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   wayland.windowManager.niri = {
@@ -34,11 +34,11 @@
       layout {
           gaps 5
 
-          // 默认焦点环，Phase 5 (matugen+stylix) 再接管配色
+          // 静态回退保留原生成色板，末尾的 Matugen 文件在运行时覆盖。
           focus-ring {
               width 2
-              active-color "#7fc8ff"
-              inactive-color "#505050"
+              active-color "#4badba"
+              inactive-color "#4badba"
           }
           border {
               off
@@ -202,22 +202,10 @@
           Mod+Shift+Slash { spawn-sh "noctalia msg panel-toggle kenn/keybind-cheatsheet:cheatsheet"; }
       }
 
-      // stylix 配色注入（替代 Noctalia 模板）：focus-ring 颜色壁纸取色，与 foot 同源
-      include optional=true "~/.config/niri/stylix-colors.kdl"
-      // matugen 动态配色（壁纸取色）：stylix 之后 include，位置序覆盖；matugen 写该文件自动热载
+      // Matugen 动态覆盖焦点环配色；写入该文件后自动热载。
       include optional=true "~/.config/niri/wallpaper-colors.kdl"
     '';
   };
-
-  # stylix 配色注入：niri focus-ring 颜色壁纸取色（与 hyprland stylix-colors.lua 同机制）
-  xdg.configFile."niri/stylix-colors.kdl".text = ''
-    layout {
-        focus-ring {
-            active-color "${config.lib.stylix.colors.withHashtag.base0D}"
-            inactive-color "${config.lib.stylix.colors.withHashtag.base03}"
-        }
-    }
-  '';
 
   # 补全（跟随消费者）：包内 fish vendor 补全。
   xdg.configFile."fish/completions/niri.fish".source =

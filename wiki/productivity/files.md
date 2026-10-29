@@ -2,12 +2,12 @@
 title: 文件管理器与归档工具
 category: 生产力
 tags: [nautilus, dolphin, strata, file-manager, archive, matugen]
-updated: 2026-10-20
+updated: 2026-10-29
 ---
 
 # 文件管理器与归档工具
 
-`home/productivity/files.nix` 提供三个图形文件管理器和一组归档/压缩工具。主 DE 默认使用 Strata，GNOME 变体默认使用 Nautilus。
+`home/productivity/files.nix` 提供三个图形文件管理器和一组归档/压缩工具。主 DE 默认使用 Strata，GNOME 变体默认使用 Nautilus，NextKDE 变体默认使用 Dolphin。
 
 ## 目录
 
@@ -22,15 +22,15 @@ updated: 2026-10-20
 
 | 程序 | 启动 | 说明 |
 |------|------|------|
-| Nautilus + Sushi | 应用菜单 / `nautilus` | 主 DE 与 GNOME 变体共用，Sushi 提供空格快速预览 |
+| Nautilus + Sushi | 应用菜单 / `nautilus` | 三个桌面变体共用，Sushi 提供空格快速预览 |
 | Dolphin | 应用菜单 / `dolphin` | KDE 文件管理器及其依赖 |
 | Strata | 应用菜单 / `strata` | 主 DE 专用的 GTK4 文件管理器，来自固定提交的 nixpkgs fork |
 
-主 DE 安装 Strata、Nautilus 和 Dolphin，默认使用 Strata；GNOME 变体不安装 Strata，继续使用 Nautilus。其他文件管理器仍可从应用菜单手动启动。
+主 DE 安装 Strata、Nautilus 和 Dolphin，默认使用 Strata；GNOME 与 NextKDE 变体不安装 Strata，分别默认使用 Nautilus 和 Dolphin。其他文件管理器仍可从应用菜单手动启动。
 
 ### 文件夹默认打开方式
 
-使用系统默认打开方式的「打开文件夹」由目录 MIME 类型 `inode/directory` 选择默认程序。`host/base/desktop.nix` 使用 NixOS 原生 `xdg.mime.defaultApplications`，主 DE 设为 `io.github.lgse.Strata.desktop`，GNOME 变体设为 `org.gnome.Nautilus.desktop`；应用配置后生成 `/etc/xdg/mimeapps.list`。用户的 `~/.config/mimeapps.list` 保持可写，其他文件类型的默认程序沿用现状；已有用户级目录关联会优先于系统默认值。
+使用系统默认打开方式的「打开文件夹」由目录 MIME 类型 `inode/directory` 选择默认程序。`host/base/desktop.nix` 使用 NixOS 原生 `xdg.mime.defaultApplications`，主 DE 设为 `io.github.lgse.Strata.desktop`，GNOME 变体设为 `org.gnome.Nautilus.desktop`，NextKDE 变体设为 `org.kde.dolphin.desktop`；应用配置后生成 `/etc/xdg/mimeapps.list`。用户的 `~/.config/mimeapps.list` 保持可写，其他文件类型的默认程序沿用现状；已有用户级目录关联会优先于系统默认值。
 
 应用配置后检查：
 
@@ -40,7 +40,7 @@ gio mime inode/directory
 xdg-open ~/Documents
 ```
 
-主 DE 前两项应显示 `io.github.lgse.Strata.desktop`，第三项应打开 Strata；GNOME 变体对应 Nautilus。部分应用的「在文件管理器中显示」会走独立的 `org.freedesktop.FileManager1` D-Bus 接口，主 DE 的用户级服务由 Home Manager 链接到 Strata 包提供的模板。MIME 查询正确只能证明默认关联，仍需在原应用中验证实际打开行为。
+主 DE 前两项应显示 `io.github.lgse.Strata.desktop`，第三项应打开 Strata；GNOME 变体对应 Nautilus，NextKDE 变体对应 Dolphin。部分应用的「在文件管理器中显示」会走独立的 `org.freedesktop.FileManager1` D-Bus 接口，主 DE 的用户级服务由 Home Manager 链接到 Strata 包提供的模板。MIME 查询正确只能证明默认关联，仍需在原应用中验证实际打开行为。
 
 ## Strata
 

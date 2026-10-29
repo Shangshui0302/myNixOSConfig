@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-10-19
+updated: 2026-10-29
 ---
 
 # Niri 使用指南
@@ -54,21 +54,21 @@ Hyprland ↔ niri 切换：注销当前 compositor 回到 greetd → 选择另�
 
 截图保存到 `~/Pictures/Screenshots/`，并复制到剪贴板；区域截图使用 niri 自带选择界面。
 
-## 配色（stylix 底色 + matugen 动态）
+## 配色（静态回退 + Matugen 动态）
 
 niri 的 focus-ring 颜色分两层：
 
-1. **stylix 构建期底色**：`niri/stylix-colors.kdl`（壁纸取色，与 foot 同源），rebuild 生效
+1. **静态回退色**：直接定义在 `config.kdl` 的 `layout.focus-ring` 中，保留原生成色板
 2. **matugen 动态覆盖**：`~/.config/niri/wallpaper-colors.kdl`——切壁纸时 matugen 直接写该文件，niri 的 include 监视自动热载换色（active = primary，inactive = outline）
 
-config.kdl 末尾依次 `include` stylix-colors.kdl 和 wallpaper-colors.kdl（后者位置序覆盖前者）。改配色切壁纸即可，无需 rebuild。
+config.kdl 末尾 `include` wallpaper-colors.kdl，覆盖前面的静态回退值。改配色切壁纸即可，无需 rebuild。
 
 > Noctalia 不再分发 niri 配色（`niri_colors` 模板已停用），切 Noctalia 主题不影响 niri focus-ring。
 
 ## 已知差异（vs Hyprland）
 
 - **blur 不是实时**：niri 默认 x-ray blur 只模糊壁纸一次（静态），窗口背后动态内容不实时模糊。Noctalia bar 的 blur 强制关闭（`layer-rule`），因为 x-ray blur 会错误模糊 bar 的透明部分
-- **focus-ring 颜色** 由 stylix 注入（壁纸取色），不是 Hyprland 的 border
+- **focus-ring 颜色** 由 Matugen 动态覆盖，不是 Hyprland 的 border
 - **epic-mouse sensitivity**：niri 无逐设备等价项，未迁移
 
 ## 相关链接

@@ -2,7 +2,7 @@
 title: 系统架构总览
 category: 架构
 tags: [architecture, flake, host, home-manager, modules]
-updated: 2026-10-28
+updated: 2026-10-29
 ---
 
 # 系统架构总览
@@ -26,9 +26,9 @@ updated: 2026-10-28
 整体架构以 Flake 为中心，组织两大层次：
 
 - 顶层 `flake.nix` 通过 `nixpkgs.lib.nixosSystem` 创建系统配置，并注入 `specialArgs`（`inputs`），供各模块访问外部依赖。
-- `host/default.nix` 组合共享系统入口 `host/base/default.nix` 与主桌面的 `host/de/` 会话、登录器配置；GNOME 使用独立入口 `host/gnome/default.nix`。
-- `host/base/home-manager.nix` 统一配置 Home Manager 共享策略；两个 host 入口分别绑定自己的用户配置，主桌面专属参数留在主入口。
-- 主桌面用户入口是 `home/home.nix`，组合共享 `home/base.nix`、主题与桌面模块；GNOME 入口 `home/gnome.nix` 组合共享基础与静态 GTK 主题。共享基础按 `env`/`dev`/`productivity`/`leisure` 拆分。
+- `host/default.nix` 组合共享系统入口 `host/base/default.nix` 与主桌面的 `host/de/` 会话、登录器配置；GNOME 与 NextKDE 分别使用独立入口 `host/gnome/default.nix` 和 `host/nextkde/default.nix`。
+- `host/base/home-manager.nix` 统一配置 Home Manager 共享策略；三个 host 入口分别绑定自己的用户配置，主桌面专属参数留在主入口。
+- 主桌面用户入口是 `home/home.nix`，组合共享 `home/base.nix`、主题与桌面模块；GNOME 入口 `home/gnome.nix` 组合共享基础与静态 GTK 主题。NextKDE 入口 `home/nextkde.nix` 组合共享基础与 Plasma shell。共享基础按 `env`/`dev`/`productivity`/`leisure` 拆分。
 - 外部输入以 NixOS / Home Manager 模块形式被直接导入，避免硬编码路径，提升可移植性。
 
 ```mermaid
@@ -40,6 +40,7 @@ HB["host/base/default.nix"]
 HC["hardware-configuration.nix<br/>host/base/boot、services、network、desktop、sops 等"]
 HD["host/de/sessions.nix<br/>host/de/greeter.nix"]
 HG["host/gnome/default.nix<br/>独立 GNOME 变体"]
+HK["host/nextkde/default.nix<br/>独立 NextKDE 变体"]
 end
 subgraph "用户层 (home)"
 U1["home/home.nix<br/>主桌面入口"]
@@ -47,6 +48,7 @@ UB["home/base.nix<br/>共享用户基础"]
 UC["home/env、dev、productivity、leisure"]
 UD["home/theme 动态主题<br/>home/de 桌面模块"]
 UG["home/gnome.nix<br/>静态 GTK 主题"]
+UK["home/nextkde.nix<br/>KOS Plasma shell"]
 end
 F --> H1
 H1 --> HB
@@ -54,6 +56,10 @@ HB --> HC
 H1 --> HD
 H1 -. specialisation .-> HG
 HG --> HB
+H1 -. specialisation .-> HK
+HK --> HB
+HK --> UK
+UK --> UB
 H1 --> U1
 U1 --> UB
 UB --> UC
@@ -66,7 +72,7 @@ UG --> UB
 
 系统与用户配置分别按入口组合共享基础和桌面专属模块：
 
-- `flake.nix` 通过 `nixosSystem` 指定 `system`、`specialArgs`，并将 `host/default.nix`、sops-nix、Home Manager 与公共设置 `host/base/home-manager.nix` 加入 `modules` 列表；GNOME 入口也复用公共设置，上游模块保持原来的导入层级。
+- `flake.nix` 通过 `nixosSystem` 指定 `system`、`specialArgs`，并将 `host/default.nix`、sops-nix、Home Manager 与公共设置 `host/base/home-manager.nix` 加入 `modules` 列表；GNOME 和 NextKDE 入口也复用公共设置，上游模块保持原来的导入层级。
 - `host/default.nix` 直接导入 `host/base/default.nix`、`host/de/sessions.nix` 和 `host/de/greeter.nix`；硬件、引导、服务、网络、容器、SOPS 等共享模块由 `host/base/default.nix` 汇总。
 - Home Manager 主入口 `home/home.nix` 导入 `home/base.nix`、主题与桌面模块；`home/base.nix` 汇总共享用户配置，并设置用户名、家目录、`stateVersion` 等元信息。
 
@@ -114,7 +120,7 @@ FL --> NC["noctalia"]
 FL --> SN["sops-nix"]
 FL --> NF["nix-flatpak"]
 FL --> NP["nixpkgs"]
-HM --> HOME["home/home.nix<br/>GNOME: home/gnome.nix"]
+HM --> HOME["home/home.nix<br/>GNOME: home/gnome.nix<br/>NextKDE: home/nextkde.nix"]
 SN --> HOST["host/base/sops.nix"]
 NC --> HM
 NP --> HOST
@@ -126,6 +132,8 @@ NP --> HOST
 - **可回滚**：每次切换生成新代次，失败可快速回退（配合 btrfs 快照）。
 - **可审计**：变更集中在配置文件，便于审查与追踪。
 - **可维护**：模块按 `host`/`home` 拆分，职责单一；外部输入统一由 Flake 管理，升级降级可控。
+
+切换桌面变体时，Home Manager 将冲突文件保存为 `.hm-backup`，旧备份按 `.~1~`、`.~2~` 编号保留，避免备份重名导致用户配置未恢复。
 
 ## 相关链接
 

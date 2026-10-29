@@ -165,23 +165,24 @@ in
         content = ./hyprland/token-monitor-size.lua;
         autoLoad = true;
       };
-      "stylix-colors" = {
+      # Static fallback preserves the former generated palette until Matugen applies.
+      "fallback-colors" = {
         content = ''
           hl.config({
             general = {
-              ["col.active_border"] = "${config.lib.stylix.colors.withHashtag.base0D}",
-              ["col.inactive_border"] = "${config.lib.stylix.colors.withHashtag.base03}",
+              ["col.active_border"] = "#4badba",
+              ["col.inactive_border"] = "#4badba",
             },
             group = {
-              ["col.border_active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
-              ["col.border_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
-              ["col.border_locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
-              ["col.border_locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+              ["col.border_active"] = "#4badba",
+              ["col.border_inactive"] = "#4badba",
+              ["col.border_locked_active"] = "#4badba",
+              ["col.border_locked_inactive"] = "#4badba",
               groupbar = {
-                ["col.active"] = "${config.lib.stylix.colors.withHashtag.base0D}",
-                ["col.inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
-                ["col.locked_active"] = "${config.lib.stylix.colors.withHashtag.base0C}",
-                ["col.locked_inactive"] = "${config.lib.stylix.colors.withHashtag.base03}",
+                ["col.active"] = "#4badba",
+                ["col.inactive"] = "#4badba",
+                ["col.locked_active"] = "#4badba",
+                ["col.locked_inactive"] = "#4badba",
               },
             },
           })

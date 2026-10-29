@@ -2,6 +2,11 @@
   description = "MechRevo-NixOS configuration";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nextkde = {
+      # Includes the post-v0.1.1 Nix module/deployment fixes; upgrades are explicit.
+      url = "github:NextKde/NextKde/3fa1d7006869bbd3404a05d362c6e6028e0fe3da";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Temporary consumer of the tested package in nixpkgs PR #570118.
     # Use pkgs.strata and remove this input once our official channel includes it.
     strata-nixpkgs.url = "github:Shangshui0302/nixpkgs?ref=feature/strata";
@@ -26,10 +31,6 @@
     };
     shell-switcher = {
       url = "github:Shangshui0302/shell-switcher";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    stylix = {
-      url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     fcitx5-matugen-theme = {
@@ -62,6 +63,19 @@
     in
     {
       packages.${system} = {
+        nextkde = pkgs.callPackage "${inputs.nextkde}/packaging/nix/package.nix" {
+          src = inputs.nextkde;
+          buildWeather = true;
+        };
+        nextkde-apps = pkgs.callPackage ./local-deriv/nextkde-apps.nix {
+          src = inputs.nextkde;
+        };
+        nextkde-platform-whitesur = pkgs.callPackage ./local-deriv/nextkde-platform-whitesur.nix {
+          src = inputs.nextkde;
+        };
+        nextkde-spatial-models = pkgs.callPackage ./local-deriv/nextkde-spatial-models.nix { };
+        nextkde-qdbus6 = pkgs.callPackage ./local-deriv/nextkde-qdbus6.nix { };
+        nextkde-session-tools = pkgs.callPackage ./local-deriv/nextkde-session-tools.nix { };
         # Upstream defaults; host/base/input-method.nix selects this host's options.
         fcitx5-wetypex = inputs.wetypex.packages.${system}.fcitx5-wetypex;
         agent-orchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };

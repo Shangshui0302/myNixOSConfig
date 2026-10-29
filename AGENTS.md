@@ -7,6 +7,7 @@
 - 主机：MechRevo-NixOS，AMD Ryzen 7 8845HS，Radeon 780M，2560x1600。
 - 主 DE：Hyprland（UWSM）+ niri（原生 `niri-session`），均由 greetd/tuigreet TTY 会话启动。
 - GNOME：`host/gnome/`（系统层）+ `home/gnome.nix`（HM 入口）独立变体，不能依赖主 DE 配置。
+- NextKDE：`host/nextkde/` + `home/nextkde.nix` 独立变体，使用 Plasma Wayland、SDDM 和 KOS；不继承主 DE 配置。
 - Shell：fish + bash/ble.sh；终端：Foot；输入法：fcitx5；代理：mihomo TUN；局域网主机发现：Avahi mDNS。
 - 主桌面深浅模式：Darkman 是唯一状态源，Matugen 负责运行时取色与模板渲染。
 
@@ -22,7 +23,7 @@
 
 ## 包分类硬规则
 
-- 按主要用途单一归类：系统集成放 `host/`，共享环境放 `home/env/`，生产力放 `home/productivity/`，开发放 `home/dev/`，娱乐放 `home/leisure/`，DE 专属内容放对应的 `host/de/`、`host/gnome/` 或 `home/de/`、`home/gnome.nix`。
+- 按主要用途单一归类：系统集成放 `host/`，共享环境放 `home/env/`，生产力放 `home/productivity/`，开发放 `home/dev/`，娱乐放 `home/leisure/`，DE 专属内容放对应的 `host/de/`、`host/gnome/`、`host/nextkde/` 或 `home/de/`、`home/gnome.nix`、`home/nextkde.nix`。
 - 支撑包跟随实际消费者；公共系统能力放 `host/`，用户应用放 `home/`，禁止重复声明。
 - 新增包先检查已有声明和 nixpkgs；改动后同步导入关系与 Wiki 来源映射，并执行 parse 和 dry-build。
 - 每个手工包必须在 `flake.nix` 暴露 `packages.${system}.<pname>`，以 `nix build path:.#<pname>` 作为统一独立构建入口。
@@ -33,16 +34,18 @@
 ```text
 host/
 ├── default.nix
-├── base/                 # 两个桌面变体共享的系统层与 Home Manager 集成
+├── base/                 # 三个桌面变体共享的系统层与 Home Manager 集成
 ├── de/                   # 主 DE 的系统集成：sessions.nix、greeter.nix
-└── gnome/                # GNOME 系统层：default.nix（变体入口）、desktop.nix
+├── gnome/                # GNOME 系统层：default.nix（变体入口）、desktop.nix
+└── nextkde/              # NextKDE 系统层：default.nix（变体入口）、desktop.nix
 
 home/
 ├── home.nix              # 主 DE HM 入口（base + theme/ + de/）
-├── base.nix              # 两个桌面变体共享的 HM 入口
-├── theme/                # 颜色/壁纸/主题域：base、gtk-matugen、gtk-static、runtime、wallpaper、stylix
+├── base.nix              # 三个桌面变体共享的 HM 入口
+├── theme/                # 颜色/壁纸/主题域：base、gtk-matugen、gtk-static、runtime、wallpaper
 ├── de/                   # Hyprland/niri、Foot、桌面 Shell
 ├── gnome.nix             # GNOME 变体 HM 入口（base + theme/gtk-static）
+├── nextkde.nix           # NextKDE 变体 HM 入口
 ├── env/                  # Shell、系统工具、OneDrive
 ├── dev/                  # 编辑器、AI、开发工具、容器
 ├── productivity/         # 办公、通讯、文件管理、图像工具、Yazi

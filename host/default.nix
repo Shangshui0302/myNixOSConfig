@@ -16,4 +16,9 @@
     inheritParentConfig = false;
     configuration = import ./gnome/default.nix;
   };
+
+  specialisation.nextkde = {
+    inheritParentConfig = false;
+    configuration = import ./nextkde/default.nix;
+  };
 }

@@ -1,9 +1,8 @@
 { config, pkgs, ... }:
 
 let
-  # 变体判据：当前仅两变体（main=Hyprland + gnome），"非 gnome 即 Hyprland" 是二元假设。
-  # 若将来加第三个变体，需把此布尔泛化为显式变体标识（如 specialArgs 注入 variant 字符串）。
   gnome = config.services.desktopManager.gnome.enable;
+  plasma = config.services.desktopManager.plasma6.enable;
 in
 
 {
@@ -15,7 +14,12 @@ in
   # 目录默认值与各变体已安装的文件管理器一致；保留用户层可写的其他 MIME 关联。
   # 不启用 HM 的整份 mimeapps.list 管理，避免顺带激活已有的文本默认值。
   xdg.mime.defaultApplications."inode/directory" =
-    if gnome then "org.gnome.Nautilus.desktop" else "io.github.lgse.Strata.desktop";
+    if gnome then
+      "org.gnome.Nautilus.desktop"
+    else if plasma then
+      "org.kde.dolphin.desktop"
+    else
+      "io.github.lgse.Strata.desktop";
 
   # 主桌面的手机互联；原生模块同时安装 KDE Connect 并开放发现所需端口。
   # GNOME 变体已有 GSConnect，避免同时运行两个 KDE Connect 协议实现。
