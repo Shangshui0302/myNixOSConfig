@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 
 # Flake 配置管理
@@ -41,7 +41,7 @@ updated: 2026-10-29
 
 `outputs` 同时提供本地包、打包开发环境和名为 `MechRevo-NixOS` 的系统配置：
 
-- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包、WeTypeX 上游默认包别名、NextKDE 和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。NextKDE 分为 `nextkde`（含天气）、`nextkde-apps`（日历/待办/计算器）、`nextkde-spatial-models`（固定空间壁纸模型）、`nextkde-platform-whitesur`（KOS 的 WhiteSur 明暗配色修正）和 `nextkde-qdbus6`（Qt 命令名兼容入口），只由对应 specialisation 消费。
+- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包、WeTypeX 上游默认包别名、NextKDE 和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。NextKDE 分为 `nextkde-shell`（含天气，保留 `nextkde` 兼容别名）、`nextkde-apps`（日历/待办/计算器）、`nextkde-spatial-models`（固定空间壁纸模型）、`nextkde-platform-whitesur`（KOS 的 WhiteSur 明暗配色修正）和 `nextkde-qdbus6`（Qt 命令名兼容入口），只由对应 specialisation 消费。
 - `devShells.x86_64-linux.packaging` 提供 `$nix-packaging` 流程使用的预取、更新、格式化和 ELF 诊断工具。
 - `checks.x86_64-linux` 从 `checks/default.nix` 加载测试与仓库结构检查；`formatter.x86_64-linux` 使用锁定包集的 `nixfmt`。
 - `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。
@@ -49,7 +49,7 @@ updated: 2026-10-29
 - `system` 指定为 `x86_64-linux`。
 - `specialArgs` 将 `inputs`、`materialGnomeTheme`、`materialAdwTheme` 传入系统模块。
 - `modules` 列表组合本地 `host/default.nix`、sops-nix、Home Manager 与公共设置 `host/base/home-manager.nix`；GNOME 入口也复用同一份公共设置。上游模块保持原来的导入层级，避免改变列表合并顺序。
-- Home Manager 公共设置集中在 `host/base/home-manager.nix`：开启 `useGlobalPkgs`/`useUserPackages`，设置 `backupFileExtension = "hm-backup"`，传递共享参数 `inputs` 与 `materialGnomeTheme`。
+- Home Manager 公共设置集中在 `host/base/home-manager.nix`：开启 `useGlobalPkgs`/`useUserPackages`，传递共享参数 `inputs` 与 `materialGnomeTheme`。不设置全局备份后缀；与未受管理的同名文件发生冲突时会阻止激活，显式设置 `force = true` 的文件会直接覆盖，且不生成备份。
 - `host/default.nix` 选择 `home/home.nix` 并补充主桌面使用的 `materialAdwTheme`；`host/gnome/default.nix` 选择 `home/gnome.nix`，`host/nextkde/default.nix` 选择 `home/nextkde.nix`，保持三个桌面用户入口独立。
 
 ```mermaid

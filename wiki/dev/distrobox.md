@@ -2,7 +2,7 @@
 title: Distrobox
 category: dev
 tags: [distrobox, podman, containers]
-updated: 2026-10-27
+updated: 2026-10-30
 ---
 
 # Distrobox
@@ -96,7 +96,7 @@ distrobox enter <name> -- distrobox-export --bin /usr/bin/<binary>
 
 启动器中的 Arch、Fedora、Ubuntu 由 Home Manager 管理，点击后打开终端并进入对应容器。
 三个 `.desktop` 文件随配置更新，避免上游生成入口中写死的旧 Nix store 路径被回收后失效。
-首次应用时，现有的同名入口会按仓库的 `hm-backup` 设置备份；保留现有发行版图标。
+应用时直接替换现有的同名入口，不生成备份；如需保留自定义入口内容，应在应用前另行保存。现有发行版图标保持不变。
 入口的附加操作 `Remove` 会删除对应容器。
 
 修改后执行 `sudo nixos-rebuild switch --flake .` 应用；构建或 dry-build 不会更新活动入口。

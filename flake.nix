@@ -72,15 +72,16 @@
     in
     {
       packages.${system} = {
-        nextkde = pkgs.callPackage ./local-deriv/nextkde-shell.nix {
+        nextkde-shell = pkgs.callPackage ./local-deriv/nextkde-shell.nix {
           src = inputs.nextkde;
           buildWeather = true;
         };
+        nextkde = inputs.self.packages.${system}.nextkde-shell;
         nextkde-apps = pkgs.callPackage ./local-deriv/nextkde-apps.nix {
           src = inputs.nextkde;
         };
         nextkde-sync-shell = pkgs.callPackage ./local-deriv/nextkde-sync-shell.nix {
-          kos = inputs.self.packages.${system}.nextkde;
+          kos = inputs.self.packages.${system}.nextkde-shell;
         };
         nextkde-platform-whitesur = pkgs.callPackage ./local-deriv/nextkde-platform-whitesur.nix {
           src = inputs.nextkde;

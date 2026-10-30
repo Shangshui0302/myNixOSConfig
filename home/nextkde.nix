@@ -37,12 +37,6 @@
 
       # KWin plugins and window decoration for NextKDE desktop
       "kwinrc" = {
-        Wayland = {
-          InputMethod = {
-            value = "/run/current-system/sw/share/applications/fcitx5-wayland-launcher.desktop";
-            immutable = true;
-          };
-        };
         Plugins = {
           blurEnabled = false;
           glassEnabled = true;

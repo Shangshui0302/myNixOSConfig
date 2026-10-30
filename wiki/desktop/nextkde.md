@@ -56,7 +56,7 @@ KDE 强调色与深浅模式驱动独立的应用颜色分发，缓存位于 `~/
 独立构建入口：
 
 ```bash
-nix build path:.#nextkde path:.#nextkde-sync-shell path:.#nextkde-apps path:.#nextkde-spatial-models path:.#kmusic --no-link
+nix build path:.#nextkde-shell path:.#nextkde-sync-shell path:.#nextkde-apps path:.#nextkde-spatial-models path:.#kmusic --no-link
 ```
 
 `Meta+Space` 打开启动器，`Meta+B` 打开控制中心；这些快捷键由 KOS 注册。Dock 与外观保留当前选择，可继续在 KOS 设置中调整。
