@@ -177,7 +177,7 @@ TLP 源码 `func.d/10-tlp-func-cpu` 的判断是 `[ -n "$maxfreq" ] && [ "$maxfr
 
 ### 会话层动作（`power-actions`）
 
-档位变化时由用户侧 `power-profile-actions.timer`（每 30s，挂 `graphical-session.target`）执行 `home/env/power-actions.nix`：
+档位变化时由用户侧 `power-profile-actions.timer`（每 30s，挂 `graphical-session.target`）执行 `home/env/power-actions.nix`（外置脚本实现见 `home/env/scripts/power-actions.sh`）：
 
 | 进入 `power-saver` | 离开 `power-saver` |
 | --- | --- |
