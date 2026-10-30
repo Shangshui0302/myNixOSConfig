@@ -130,7 +130,7 @@ docs:
     memory:  []
 
   services.md:
-    sources: [host/base/services.nix, host/base/tlp.nix, host/base/network.nix, host/base/mihomo.nix, host/base/sub-store.nix, host/base/default.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/env/onedrive.nix, home/env/power-actions.nix, home/theme/gtk-matugen.nix, home/theme/runtime.nix]
+    sources: [host/base/services.nix, host/base/tlp.nix, host/base/network.nix, host/base/mihomo.nix, host/base/sub-store.nix, host/base/default.nix, host/base/users.nix, host/de/sessions.nix, home/de/polkit.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/env/onedrive.nix, home/env/power-actions.nix, home/env/scripts/power-actions.sh, home/theme/gtk-matugen.nix, home/theme/runtime.nix]
     memory:  [mihomo-tun-stack, tlp-power-profiles, power-profile-session-actions]
   deployment.md:
     sources: [flake.nix, host/base/nix.nix, host/base/boot.nix, host/base/sops.nix]
