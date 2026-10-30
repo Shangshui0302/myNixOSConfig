@@ -105,13 +105,6 @@ in
             ExecStart = syncShell;
           };
           preStart = ''
-            # Materialize only the effective ShellPackage key. Upstream's colour
-            # reader ignores /etc/xdg; retain any explicit user-selected package
-            # and leave all other Plasma settings writable and untouched.
-            shellPackage=$(${pkgs.kdePackages.kconfig}/bin/kreadconfig6 \
-              --file plasmashellrc --group Shell --key ShellPackage --default org.kos.desktop)
-            ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
-              --file "$HOME/.config/plasmashellrc" --group Shell --key ShellPackage "$shellPackage"
             # An invalid appearance file must not prevent the desktop from starting.
             if ! ${pkgs.python3}/bin/python3 ${./bootstrap.py} ${spatialModels}/models; then
               echo "Spatial setup skipped; inspect kos-shell-init journal before retrying." >&2
@@ -184,45 +177,11 @@ in
         };
       };
 
-  # Mirror kosctl's core desktop takeover without running its mutable installer.
-  # plasmashell stays alive for wallpaper; KOS owns the bar, dock and desktop files.
-  # These are defaults, not immutable user files: KOS Settings and Stage mode
-  # must be able to write their overrides to ~/.config/kwinrc.
-  environment.etc."xdg/plasmashellrc".text = ''
-    [Shell]
-    ShellPackage=org.kos.desktop
-  '';
-  # Plasma otherwise interprets a missing active package as Breeze at login,
-  # even when individual components and the light/dark package pair are WhiteSur.
-  # These are defaults: an explicit selection in KDE's GUI still takes priority.
-  environment.etc."xdg/kdeglobals".text = ''
-    [KDE]
-    LookAndFeelPackage=com.github.vinceliuice.WhiteSur
-    DefaultLightLookAndFeel=com.github.vinceliuice.WhiteSur
-    DefaultDarkLookAndFeel=com.github.vinceliuice.WhiteSur-dark
-  '';
-  # The main desktop persists an app-specific Matugen scheme in dolphinrc.
-  # KColorSchemeManager treats an empty scheme as following the KDE palette.
-  # Override only that key in this variant; retain the user's original file.
-  environment.etc."xdg/dolphinrc".text = ''
-    [UiSettings]
-    ColorScheme[$i]=
-  '';
+  # Pin only the input-method selector at system level; desktop plugins,
+  # decorations, and application palettes belong to Home Manager (programs.plasma).
   environment.etc."xdg/kwinrc".text = ''
-    # Pin only the input-method selector; all other KWin settings stay writable.
-    # A stable profile path also survives Fcitx package updates.
     [Wayland]
     InputMethod[$i]=/run/current-system/sw/share/applications/fcitx5-wayland-launcher.desktop
-
-    [Plugins]
-    blurEnabled=false
-    glassEnabled=true
-    kos_bridgeEnabled=true
-    kos_context_menu_inputEnabled=true
-    kos_dock_window_animationEnabled=true
-
-    [org.kde.kdecoration2]
-    library=kos_decoration
   '';
 
   # KDE owns the mode/accent. kos-colors publishes separate Fcitx5 palettes;
