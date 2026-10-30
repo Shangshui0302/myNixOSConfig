@@ -17,7 +17,7 @@ in
 {
   theme-apply =
     pkgs.runCommand "theme-apply-tests"
-      { nativeBuildInputs = [ pkgs.python3 pkgs.bash pkgs.coreutils pkgs.util-linux pkgs.gnugrep pkgs.diffutils pkgs.gawk ]; }
+      { nativeBuildInputs = [ pkgs.python3 pkgs.bash pkgs.coreutils pkgs.util-linux pkgs.gnugrep pkgs.gnused pkgs.diffutils pkgs.gawk pkgs.kdePackages.kconfig ]; }
       ''
         mkdir -p home/theme/scripts tests
         cp ${../home/theme/scripts/theme-apply.sh} home/theme/scripts/theme-apply.sh
@@ -97,6 +97,25 @@ in
         for test in tests/*.lua; do
           lua "$test"
         done
+        touch "$out"
+      '';
+
+  power-actions =
+    pkgs.runCommand "power-actions-behavior-tests"
+      {
+        nativeBuildInputs = [
+          pkgs.python3
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.util-linux
+        ];
+      }
+      ''
+        mkdir -p home/env/scripts tests
+        cp ${../home/env/scripts/power-actions.sh} home/env/scripts/power-actions.sh
+        cp ${../tests/test_power_actions.py} tests/test_power_actions.py
+        export PYTHONDONTWRITEBYTECODE=1
+        python3 -m unittest discover -s tests -p test_power_actions.py -v
         touch "$out"
       '';
 

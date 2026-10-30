@@ -26,7 +26,8 @@ class ThemeApplyTest(unittest.TestCase):
         self.files = self.root / 'required'
         self.files.write_text('\n'.join(required))
         real = {'coreutils': ['date','dirname','mktemp','cp','mv','rm','head','sha256sum','cut','chmod','touch'],
-                'util_linux': ['flock'], 'gnugrep': ['grep'], 'diffutils': ['cmp'], 'gawk': ['awk']}
+                'util_linux': ['flock'], 'gnugrep': ['grep'], 'diffutils': ['cmp'], 'gawk': ['awk'], 'gnused': ['sed'],
+                'kdePackages_kconfig': ['kwriteconfig6']}
         values = {}
         for name, commands in real.items():
             prefix = self.root / name
@@ -51,7 +52,7 @@ if name == 'fcitx5-remote' and os.environ.get('REMOTE_FAIL') == '1': sys.exit(1)
 '''
         names = {'util_linux': ['logger'], 'matugen':['matugen'], 'darkman':['darkman'],
                  'libnotify':['notify-send'], 'waypaper':['waypaper'], 'jq':['jq'],
-                 'kdePackages_kconfig':['kwriteconfig6'], 'glib':['gsettings'],
+                 'glib':['gsettings'],
                  'systemd':['systemctl'], 'noctalia':['noctalia'], 'hyprland':['hyprctl'],
                  'procps':['pkill'], 'fcitx5':['fcitx5-remote']}
         for name, commands in names.items():
@@ -184,5 +185,20 @@ if name == 'fcitx5-remote' and os.environ.get('REMOTE_FAIL') == '1': sys.exit(1)
         self.assertFalse(pending_file.exists())
         relevant = [x.split()[0] for x in self.calls() if 'app-org.fcitx.Fcitx5@autostart.service' in x or x.startswith('fcitx5-remote ')]
         self.assertEqual(relevant, ['fcitx5-remote'])
+
+    def test_dolphinrc_immutable_cleared_on_theme_apply(self):
+        # Simulate NextKDE leftover immutable ColorScheme in ~/.config/dolphinrc
+        dolphinrc = self.home / '.config/dolphinrc'
+        dolphinrc.parent.mkdir(parents=True, exist_ok=True)
+        dolphinrc.write_text('[UiSettings]\nColorScheme[$i]=\n')
+
+        res = self.run_apply('dark')
+        self.assertEqual(res.returncode, 0)
+        # Verify [$i] was cleared and real kwriteconfig6 successfully wrote ColorScheme=MaterialAdwMatugen
+        content = dolphinrc.read_text()
+        self.assertNotIn('[$i]=', content)
+        self.assertIn('ColorScheme=MaterialAdwMatugen', content)
+        # Verify subsequent stages were reached and executed (gsettings, etc.)
+        self.assertTrue(any(x.startswith('gsettings ') and 'color-scheme' in x for x in self.calls()))
 
 if __name__ == '__main__': unittest.main()

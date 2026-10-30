@@ -424,8 +424,8 @@ let
   cacheIdentity = "theme-cache-v4|${pkgs.matugen}|${matugenConfig}|${toString inputs.fcitx5-matugen-theme}";
 
   themeApply = pkgs.writeShellScript "theme-apply" (builtins.replaceStrings
-    [ "@cacheIdentity@" "@defaultWallpaper@" "@matugenConfig@" "@papirusFolderApply@" "@pkgs_coreutils@" "@pkgs_darkman@" "@pkgs_diffutils@" "@pkgs_fcitx5@" "@pkgs_gawk@" "@pkgs_glib@" "@pkgs_gnugrep@" "@pkgs_hyprland@" "@pkgs_jq@" "@pkgs_kdePackages_kconfig@" "@pkgs_libnotify@" "@pkgs_matugen@" "@pkgs_noctalia@" "@pkgs_procps@" "@pkgs_systemd@" "@pkgs_util_linux@" "@pkgs_waypaper@" ]
-    [ "${cacheIdentity}" "${defaultWallpaper}" "${matugenConfig}" "${papirusFolderApply}" "${pkgs.coreutils}" "${pkgs.darkman}" "${pkgs.diffutils}" "${pkgs.fcitx5}" "${pkgs.gawk}" "${pkgs.glib}" "${pkgs.gnugrep}" "${pkgs.hyprland}" "${pkgs.jq}" "${pkgs.kdePackages.kconfig}" "${pkgs.libnotify}" "${pkgs.matugen}" "${pkgs.noctalia}" "${pkgs.procps}" "${pkgs.systemd}" "${pkgs.util-linux}" "${pkgs.waypaper}" ]
+    [ "@cacheIdentity@" "@defaultWallpaper@" "@matugenConfig@" "@papirusFolderApply@" "@pkgs_coreutils@" "@pkgs_darkman@" "@pkgs_diffutils@" "@pkgs_fcitx5@" "@pkgs_gawk@" "@pkgs_glib@" "@pkgs_gnugrep@" "@pkgs_gnused@" "@pkgs_hyprland@" "@pkgs_jq@" "@pkgs_kdePackages_kconfig@" "@pkgs_libnotify@" "@pkgs_matugen@" "@pkgs_noctalia@" "@pkgs_procps@" "@pkgs_systemd@" "@pkgs_util_linux@" "@pkgs_waypaper@" ]
+    [ "${cacheIdentity}" "${defaultWallpaper}" "${matugenConfig}" "${papirusFolderApply}" "${pkgs.coreutils}" "${pkgs.darkman}" "${pkgs.diffutils}" "${pkgs.fcitx5}" "${pkgs.gawk}" "${pkgs.glib}" "${pkgs.gnugrep}" "${pkgs.gnused}" "${pkgs.hyprland}" "${pkgs.jq}" "${pkgs.kdePackages.kconfig}" "${pkgs.libnotify}" "${pkgs.matugen}" "${pkgs.noctalia}" "${pkgs.procps}" "${pkgs.systemd}" "${pkgs.util-linux}" "${pkgs.waypaper}" ]
     (builtins.readFile ./scripts/theme-apply.sh));
 in
 {

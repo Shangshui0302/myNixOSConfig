@@ -358,6 +358,11 @@
       "$cache_root/papirus-folder-color"
 
     # Dolphin consumes KDE semantic colors separately from the Qt palette.
+    # Clear any leftover immutable entry from previous NextKDE sessions
+    # so kwriteconfig6 can set the Matugen scheme without aborting theme-apply.
+    if [ -f "$HOME/.config/dolphinrc" ]; then
+      @pkgs_gnused@/bin/sed -i 's/^ColorScheme\[\$i\]=/ColorScheme=/' "$HOME/.config/dolphinrc" 2>/dev/null || true
+    fi
     @pkgs_kdePackages_kconfig@/bin/kwriteconfig6 \
       --file "$HOME/.config/dolphinrc" \
       --group UiSettings \
