@@ -8,6 +8,26 @@
     withUWSM = true;
   };
 
+  # HiDPI display scale for main DE sessions
+  environment.sessionVariables = {
+    GDK_SCALE = "2";
+  };
+
+  # Main DE Fcitx5 theme addons & classicui fallback configuration
+  i18n.inputMethod.fcitx5 = {
+    addons = with pkgs; [
+      fcitx5-mellow-themes
+      fcitx5-material-color
+      catppuccin-fcitx5
+    ];
+    settings.addons.classicui.globalSection = {
+      Theme = "mellow-matugen";
+      DarkTheme = "mellow-matugen-dark";
+      UseDarkTheme = "True";
+      "Vertical Candidate List" = "True";
+    };
+  };
+
   # Expose niri's session entry to greetd; its actual user configuration stays in Home Manager.
   services.displayManager.sessionPackages = [ pkgs.niri ];
 

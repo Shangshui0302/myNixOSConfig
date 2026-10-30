@@ -123,7 +123,7 @@ defaultSettings = {
 也可对已有包使用 `.override { enableWeTypeTheme = true; }`。更改后需手动应用配置并重启 Fcitx5。开启会恢复上游保存设置时改写共用 `classicui.conf` 的行为，Rime 等其他输入法也会使用同一皮肤；Darkman/Matugen 主题脚本仍会在刷新桌面主题时写回桌面配置。若希望稳定沿用桌面主题，保持此选项关闭。
 
 ## 主题与候选窗定制
-主桌面（Hyprland/niri）的 ClassicUI 系统级配置由 `host/base/input-method.nix` 生成，运行时覆盖由 `theme-apply` 写入；GNOME 候选窗由 kimpanel 扩展绘制：
+主桌面（Hyprland/niri）的 ClassicUI 系统级配置由 `host/de/sessions.nix` 提供（NextKDE 由 `host/nextkde/desktop.nix` 提供 mellow-kde），运行时覆盖由 `theme-apply` 写入；GNOME 候选窗由 kimpanel 扩展绘制：
 
 - 浅色主题 `Theme = "mellow-matugen"`，深色主题 `DarkTheme = "mellow-matugen-dark"`。
 - `UseDarkTheme = "True"`：让服务端 ClassicUI 通过 XDG Settings 接口跟随 Darkman。

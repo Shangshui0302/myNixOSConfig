@@ -33,7 +33,6 @@ in
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
-    GDK_SCALE = "2";
     GDK_BACKEND = "wayland";
   };
 

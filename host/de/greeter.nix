@@ -285,6 +285,20 @@
     # rows = 45
   '';
 
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.noctalia.greeter.apply-appearance" &&
+          subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
+  security.pam.services = {
+    greetd.howdy = { enable = true; control = "sufficient"; };
+    noctalia.howdy = { enable = true; control = "sufficient"; };
+  };
+
   # greetd supplies its own PAM stack (`useDefaultRules = false`); add Howdy
   # before its login substack so face unlock remains available.
   security.pam.services.greetd.rules.auth.howdy = {

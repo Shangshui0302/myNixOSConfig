@@ -15,6 +15,18 @@ let
   };
 in
 {
+  theme-apply =
+    pkgs.runCommand "theme-apply-tests"
+      { nativeBuildInputs = [ pkgs.python3 pkgs.bash pkgs.coreutils pkgs.util-linux pkgs.gnugrep pkgs.diffutils pkgs.gawk ]; }
+      ''
+        mkdir -p home/theme/scripts tests
+        cp ${../home/theme/scripts/theme-apply.sh} home/theme/scripts/theme-apply.sh
+        cp ${../tests/test_theme_apply.py} tests/test_theme_apply.py
+        export PYTHONDONTWRITEBYTECODE=1
+        python3 -m unittest discover -s tests -p test_theme_apply.py -v
+        touch "$out"
+      '';
+
   font-sync =
     pkgs.runCommand "font-sync-tests"
       {

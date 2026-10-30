@@ -203,13 +203,13 @@ TLP 日志里那句 `Setting battery charge thresholds...done.` 是通用输出�
 
 ## 生物识别 Howdy
 
-`services.howdy` 启用 IR 红外人脸解锁，摄像头设备 `/dev/video2`，格式 `v4l2`，`dark_threshold = 100`。通过 `security.pam.services` 以 `sufficient` 控制集成到 sudo / su / login / greetd / noctalia。PAM 细节见 [PAM 认证](security/pam.md)。
+`services.howdy` 启用 IR 红外人脸解锁，摄像头设备 `/dev/video2`，格式 `v4l2`，`dark_threshold = 100`。基础层通过 `security.pam.services` 以 `sufficient` 控制集成到 sudo / su / login，主 DE 专属的 greetd / noctalia 由 `host/de/greeter.nix` 接入。PAM 细节见 [PAM 认证](security/pam.md)。
 
 Howdy 专用的 OpenCV 保留 GTK 测试窗口与 V4L2 摄像头支持，只关闭未使用的 VTK 三维可视化依赖。此设置位于 `host/base/services.nix` 的 `services.howdy.package`，不改变其他应用使用的 OpenCV，也不改变 PAM 认证规则。
 
 ## 权限与安全
 
-- `security.polkit` 启用并添加规则，允许 `wheel` 组用户应用 Noctalia 外观（`org.noctalia.greeter.apply-appearance`）。
+- `security.polkit` 启用，主 DE 会话在 `host/de/greeter.nix` 添加规则允许 `wheel` 组用户应用 Noctalia 外观（`org.noctalia.greeter.apply-appearance`）。
 - 图形程序请求管理员授权时，由主桌面会话中的 `hyprpolkitagent` 显示认证窗口；它属于 `graphical-session.target`，Noctalia 与 Caelestia 切换时继续由同一个会话服务提供提示。Noctalia 自带的 polkit agent 已关闭，避免重复弹窗。
 - polkit-1 的 PAM 服务在主桌面变体接入 Howdy：人脸识别成功可直接授权，识别失败时继续显示密码认证。此设置不改变 GNOME specialisation 的 PAM 链，也不等同于 sudo 的认证规则。认证窗口使用 Qt 6 的 qt6ct 平台主题，并由 Matugen 提供配色。
 - `security.rtkit` 启用，提升实时音频任务优先级。

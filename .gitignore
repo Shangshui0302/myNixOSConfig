@@ -12,3 +12,6 @@ issues/
 agent/skills/
 memory/
 .vscode/
+__pycache__/
+*.pyc
+.agents/teamwork/

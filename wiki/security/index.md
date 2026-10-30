@@ -78,7 +78,7 @@ SS-->>S : 提供 /run/secrets/* 或环境变量
 `host/base/sops.nix` 通过 `age.sshKeyPaths` 指定解密密钥（SSH host key `/etc/ssh/ssh_host_ed25519_key`）并启用 `useSystemdActivation`，将 `secrets.yaml` 中的键映射为 `/run/secrets/<name>`，并设置 owner/group/mode。需要机密的服务（如 mihomo）声明 `after`/`wants` 依赖 `sops-install-secrets.service`，确保机密就绪后再启动。详细配置见 [sops.md](./sops.md)。
 
 ## 生物识别登录与 Keyring
-`host/base/services.nix` 启用 Howdy 并将 `pam_howdy.so` 注入 sudo/su/login/greetd/noctalia 的 PAM 链，控制位 `sufficient` 实现「扫脸即过」。由于 Howdy 短路了密码输入，`pam_gnome_keyring.so` 拿不到登录密码，login keyring 不会自动解锁——首次需要 keyring 的应用会弹出解锁提示，输入一次登录密码即可，并非每次开机都要输入。PAM 链路与 Keyring 的行为细节见 [pam.md](./pam.md)、[../desktop/keyring.md](../desktop/keyring.md)。
+`host/base/services.nix` 启用 Howdy 并将 `pam_howdy.so` 注入通用 sudo/su/login 的 PAM 链，主 DE 专属的 greetd/noctalia 由 `host/de/greeter.nix` 注入，控制位 `sufficient` 实现「扫脸即过」。由于 Howdy 短路了密码输入，`pam_gnome_keyring.so` 拿不到登录密码，login keyring 不会自动解锁——首次需要 keyring 的应用会弹出解锁提示，输入一次登录密码即可，并非每次开机都要输入。PAM 链路与 Keyring 的行为细节见 [pam.md](./pam.md)、[../desktop/keyring.md](../desktop/keyring.md)。
 
 ## 用户权限与访问控制
 `host/base/users.nix` 中普通用户 `lishangshui` 加入 `wheel`、`networkmanager`、`video`、`dialout` 组；并通过 `security.sudo.extraRules` 授予部分命令 NOPASSWD 权限（`nixos-rebuild`、`nix`、`tee`、`chmod`、`chown`、`install`、`mv`、`cp`、`rm`），便于自动化运维。Polkit 在 `host/base/services.nix` 中启用，并允许 wheel 组执行特定动作。建议定期审查 sudo 规则，遵循最小权限原则。
