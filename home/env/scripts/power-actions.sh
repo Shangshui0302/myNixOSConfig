@@ -14,7 +14,7 @@ balanced_above=@balanced_above@
 pause_units="@pause_units@"
 effects_values="@effects_values@"
 
-power_supply_dir="${POWER_SUPPLY_DIR:-/sys/class/power_supply}"
+power_supply_dir="@power_supply_dir@"
 runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 state_dir="$runtime_dir/power-actions"
 state_file="$state_dir/state"

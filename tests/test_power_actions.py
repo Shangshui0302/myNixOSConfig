@@ -150,6 +150,7 @@ if cmd == 'hyprctl':
             "@power_saver_below@": "40",
             "@balanced_above@": "60",
             "@pause_units@": "onedrive",
+            "@power_supply_dir@": str(self.sysfs),
             "@effects_values@": (
                 "animations:enabled false\n"
                 "decoration:active_opacity 1.0\n"
@@ -178,7 +179,6 @@ if cmd == 'hyprctl':
             os.environ,
             HOME=str(self.home),
             XDG_RUNTIME_DIR=str(self.runtime_dir),
-            POWER_SUPPLY_DIR=str(self.sysfs),
             CALLS_FILE=str(self.log),
             MOCK_STATE_DIR=str(self.state_dir),
             PATH=f"{self.bin_dir}:{os.environ.get('PATH', '')}",
@@ -420,6 +420,30 @@ if cmd == 'hyprctl':
         res = self.run_cmd("status")
         self.assertEqual(res.returncode, 0)
         self.assertIn("Hyprland   : 无运行实例", res.stdout)
+
+    def test_runtime_environment_cannot_override_power_supply_dir(self):
+        # Verify that setting POWER_SUPPLY_DIR in the runtime environment does NOT
+        # override the generation-time configured power_supply_dir.
+        rogue_sysfs = self.root / "rogue_sysfs"
+        rogue_sysfs.mkdir()
+        rogue_bat = rogue_sysfs / "BAT0"
+        rogue_bat.mkdir()
+        (rogue_bat / "type").write_text("Battery\n")
+        (rogue_bat / "capacity").write_text("5\n")
+        (rogue_bat / "status").write_text("Discharging\n")
+
+        # Set valid battery in generation-time self.sysfs (capacity 80% on AC -> balanced)
+        self.set_battery(capacity=80, ac=True)
+
+        # Run with rogue POWER_SUPPLY_DIR environment variable
+        res = self.run_cmd("run", POWER_SUPPLY_DIR=str(rogue_sysfs))
+        self.assertEqual(res.returncode, 0)
+
+        # The script must read from self.sysfs (80% -> balanced), NOT rogue_sysfs (5% -> saver)
+        band_file = self.runtime_dir / "power-actions" / "band"
+        self.assertTrue(band_file.exists())
+        self.assertEqual(band_file.read_text().strip(), "balanced")
+        self.assertEqual((self.state_dir / "profile").read_text().strip(), "balanced")
 
 
 if __name__ == "__main__":

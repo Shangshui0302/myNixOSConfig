@@ -73,6 +73,7 @@ let
         "@balanced_above@"
         "@pause_units@"
         "@effects_values@"
+        "@power_supply_dir@"
       ]
       [
         cfg.powerSaverProfile
@@ -83,6 +84,7 @@ let
         (toString cfg.policy.balancedAbove)
         units
         effectValues
+        "/sys/class/power_supply"
       ]
       (builtins.readFile ./scripts/power-actions.sh);
   };
