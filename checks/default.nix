@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, nextkdeSync }:
 let
   python = pkgs.python3.withPackages (ps: [ ps.pyyaml ]);
   # path:. 包含新文件；排除本地记忆、工具状态和构建产物，保持检查可移植。
@@ -15,6 +15,49 @@ let
   };
 in
 {
+  font-sync =
+    pkgs.runCommand "font-sync-tests"
+      {
+        nativeBuildInputs = [
+          pkgs.python3
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.findutils
+          pkgs.rsync
+        ];
+      }
+      ''
+        mkdir -p home/theme tests
+        cp ${../home/theme/sync-ms-fonts.sh} home/theme/sync-ms-fonts.sh
+        cp ${../tests/test_sync_ms_fonts.py} tests/test_sync_ms_fonts.py
+        export PYTHONDONTWRITEBYTECODE=1
+        python3 -m unittest discover -s tests -p test_sync_ms_fonts.py -v
+        touch "$out"
+      '';
+
+  nextkde-shell-sync =
+    pkgs.runCommand "nextkde-shell-sync-tests"
+      {
+        nativeBuildInputs = [ pkgs.python3 ];
+        KOS_SYNC_SCRIPT = nextkdeSync;
+      }
+      ''
+        export PYTHONDONTWRITEBYTECODE=1
+        python3 ${../tests/test_nextkde_sync.py} -v
+        touch "$out"
+      '';
+
+  kde-colors =
+    pkgs.runCommand "kde-color-distribution-tests" { nativeBuildInputs = [ pkgs.python3 ]; }
+      ''
+        mkdir -p home/theme tests
+        cp ${../home/theme/kde-colors.py} home/theme/kde-colors.py
+        cp ${../tests/test_kde_colors.py} tests/test_kde_colors.py
+        export PYTHONDONTWRITEBYTECODE=1
+        python3 -W error::ResourceWarning -m unittest discover -s tests -p test_kde_colors.py -v
+        touch "$out"
+      '';
+
   mihomo-config-sync =
     pkgs.runCommand "mihomo-config-sync-tests"
       {

@@ -9,4 +9,9 @@
     ./theme/wallpaper.nix
     ./de
   ];
+
+  services.udiskie.enable = true;
+  programs.btop.settings.color_theme = "matugen";
+  programs.zellij.settings.theme = "matugen";
+  programs.yazi.theme.flavor.dark = "matugen-runtime";
 }

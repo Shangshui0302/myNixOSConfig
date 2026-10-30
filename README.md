@@ -2,6 +2,8 @@
 
 MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 
+三个桌面复用通用应用与字体，桌面服务和配色入口分别管理；共用用户目录中的可写状态仍可能跨变体保留。字体仅在源内容变化时同步，NextKDE 的 Shell 仅在包版本变化或需要修复时重新部署。
+
 ## 当前系统
 
 | 项目 | 配置 |
@@ -32,10 +34,10 @@ host/
 home/
 ├── home.nix              # 主 DE HM 入口（base + theme/ + de/）
 ├── base.nix              # 共享 HM 入口
-├── theme/                # 颜色/壁纸/主题域（base、gtk-matugen、gtk-static、runtime、wallpaper）
+├── theme/                # 颜色/壁纸/主题域（base、gtk-matugen、gtk-static、runtime、kde-runtime、wallpaper）
 ├── de/                   # Hyprland、niri、Foot、桌面 Shell
 ├── gnome.nix             # GNOME 变体 HM 入口（base + theme/gtk-static）
-├── nextkde.nix           # NextKDE 变体 HM 入口（base + KOS shell/锁屏）
+├── nextkde.nix           # NextKDE 变体 HM 入口（base + KOS shell/锁屏 + KDE 取色分发 + KMusic）
 ├── env/                  # Shell、系统工具、OneDrive
 ├── dev/                  # 编辑器、AI、开发工具、容器
 ├── productivity/         # 办公、通讯、文件管理（主 DE 保留 Strata）、图像工具、Yazi

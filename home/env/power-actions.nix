@@ -53,14 +53,16 @@ let
 
   actionsScript = pkgs.writeShellApplication {
     name = "power-actions";
-    runtimeInputs = with pkgs; [
-      systemd # systemctl --user
-      coreutils
-      util-linux # flock：串行化 run/mode/apply/revert 与 status
-      hyprland # hyprctl（锁定 nixpkgs 的 0.56.2，与运行中的合成器同版本）
-      darkman
-      tlp-pd # tlpctl：tlp-pd 的 D-Bus 客户端，普通用户即可读写档位
-    ];
+    runtimeInputs =
+      with pkgs;
+      [
+        systemd # systemctl --user
+        coreutils
+        util-linux # flock：串行化 run/mode/apply/revert 与 status
+        tlp-pd # tlpctl：tlp-pd 的 D-Bus 客户端，普通用户即可读写档位
+      ]
+      ++ lib.optional cfg.hyprlandEffects.enable pkgs.hyprland
+      ++ lib.optional cfg.darkMode pkgs.darkman;
     text = ''
       # ↓↓↓ 由 home/env/power-actions.nix 注入，改配置请改 nix ↓↓↓
       power_saver_profile="${cfg.powerSaverProfile}"
@@ -548,8 +550,14 @@ let
         else
           printf 'AC/电量    : 探测不到电池\n'
         fi
-        printf 'darkman    : %s\n' "$(darkman get 2>/dev/null || echo 未运行)"
-        if sig="$(hypr_sig)"; then
+        if [ "$dark_mode" = "true" ]; then
+          printf 'darkman    : %s\n' "$(darkman get 2>/dev/null || echo 未运行)"
+        else
+          printf 'darkman    : 已禁用\n'
+        fi
+        if [ "$effects_enabled" != "true" ]; then
+          printf 'Hyprland   : 特效调整已禁用\n'
+        elif sig="$(hypr_sig)"; then
           printf 'Hyprland   : %s\n' "$sig"
           while read -r kw want; do
             [ -n "$kw" ] || continue

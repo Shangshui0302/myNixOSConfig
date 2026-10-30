@@ -9,7 +9,14 @@
   imports = [
     ./base.nix
     ./de/foot.nix
+    ./theme/kde-runtime.nix
   ];
+
+  home.packages = [ (pkgs.callPackage ../local-deriv/kmusic.nix { }) ];
+
+  # An empty managed value removes just this inherited override in merge mode.
+  # Keep unrelated Flatpak permissions and environment overrides writable.
+  services.flatpak.overrides.settings.global.Environment.GTK_THEME = "";
 
   # Reuse the terminal preferences without the main desktop's Hyprland focus hook.
   programs.foot.settings."desktop-notifications".command =

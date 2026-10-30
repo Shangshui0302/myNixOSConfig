@@ -14,4 +14,6 @@
 
   # GNOME 变体未接入 Darkman，保持原有固定深色偏好。
   dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
+  powerActions.darkMode = false;
+  powerActions.hyprlandEffects.enable = false;
 }

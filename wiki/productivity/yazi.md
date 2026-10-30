@@ -2,7 +2,7 @@
 title: Yazi 文件管理器
 category: 生产力
 tags: [yazi, file-manager, tui, ffmpeg, plugins]
-updated: 2026-09-08
+updated: 2026-10-30
 ---
 
 # Yazi 文件管理器
@@ -74,15 +74,15 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、10
 
 ## 主题
 
-活动主题：**matugen-runtime**（暗色），基于当前壁纸的 Matugen Material 3 色板。
+主 DE 和 NextKDE 使用 **matugen-runtime**（暗色）；主 DE 根据壁纸取色，NextKDE 根据 KDE 强调色生成。GNOME 使用静态 **myargonaut**，不运行动态配色分发。
 
-Yazi 与 btop 一样保持深色底，因为 Foot 终端背景固定为深色；目录、重点、选中、边框、文件类型和错误颜色会随壁纸重点色更新。运行时 flavor 是用户可写文件，不会覆盖同目录下的 `myargonaut` 或 `noctalia`。
+主 DE 的 Yazi 与 btop 一样保持深色底，因为 Foot 终端背景固定为深色；目录、重点、选中、边框、文件类型和错误颜色会随壁纸重点色更新。运行时 flavor 是用户可写文件，不会覆盖同目录下的 `myargonaut` 或 `noctalia`。
 
-`theme-apply` 将产物缓存到 `~/.cache/wallpaper-colors/cache/<key>/dark/yazi/flavor.toml`，再复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`。壁纸变化时重新取色，普通 Darkman 深浅切换复用缓存；当前运行实例若未热重载，重新打开 Yazi 即可读取新颜色。
+主 DE 的 `theme-apply` 将产物缓存到 `~/.cache/wallpaper-colors/cache/<key>/dark/yazi/flavor.toml`，再复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`。壁纸变化时重新取色，普通 Darkman 深浅切换复用缓存；当前运行实例若未热重载，重新打开 Yazi 即可读取新颜色。
 
 ### 切换主题
 
-静态回退主题仍在 `/home/lishangshui/myNixOSConfig/home/productivity/yazi.nix` 的 `myargonaut` 配置中；如需修改 Matugen 的颜色映射，编辑 `home/theme/matugen/yazi-flavor.toml.tpl` 后再由用户手动 rebuild。
+NextKDE 使用 `kos-colors` 分发相同名称的动态 flavor；重新打开 Yazi 可读取新颜色。静态主题在 `/home/lishangshui/myNixOSConfig/home/productivity/yazi.nix` 的 `myargonaut` 配置中；如需修改 Matugen 的颜色映射，编辑 `home/theme/matugen/yazi-flavor.toml.tpl` 后再由用户手动 rebuild。
 
 ## 预览功能
 

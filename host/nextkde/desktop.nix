@@ -6,11 +6,14 @@
   ...
 }:
 let
+  shell = pkgs.callPackage ../../local-deriv/nextkde-shell.nix { src = inputs.nextkde; };
+  syncShell = pkgs.callPackage ../../local-deriv/nextkde-sync-shell.nix { kos = shell; };
+  shellControl = pkgs.callPackage "${inputs.nextkde}/packaging/nix/kos-ctl.nix" {
+    sync-shell = syncShell;
+  };
   apps = pkgs.callPackage ../../local-deriv/nextkde-apps.nix { src = inputs.nextkde; };
   spatialModels = pkgs.callPackage ../../local-deriv/nextkde-spatial-models.nix { };
-  platform = pkgs.callPackage ../../local-deriv/nextkde-platform-whitesur.nix {
-    src = inputs.nextkde;
-  };
+  platform = shell.kos-platform;
   # systemd expands %h/%u/%S, not shell variables. Mirror the NixOS profile paths
   # so applications launched by KOS inherit the wrappers and user packages.
   sessionPath = lib.concatStringsSep ":" (
@@ -40,8 +43,6 @@ in
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
   services.displayManager.defaultSession = "plasma";
-  services.kos.enable = true;
-  services.kos.weather.enable = true;
 
   # Qt's Fcitx client-side candidate window reads Theme only, ignoring DarkTheme.
   # KWin's native input path lets the daemon follow the appearance portal. Qt 6
@@ -57,86 +58,131 @@ in
     cliphist
     brightnessctl
     whitesur-kde # WhiteSur / WhiteSurDark palettes for KOS light/dark switching
-    (lib.hiPrio platform) # Match KWin's desktop-entry permission to ExecStart.
+    quickshell
+    shell
+    shellControl
+    shell.kosctl
+    shell.kwin-dock-window-animation
+    shell.kwin-stage-animation
+    shell.kwin-context-menu-input
+    shell.kwin-effects-glass
+    shell.kwin-kos-bridge
+    shell.kwin-kos-decoration
+    shell.weather
     (lib.getBin pulseaudio) # pactl: outputs, per-application mixer and audio events
     (lib.getBin glib) # gio: trash, Open With and MIME associations
     apps
     (pkgs.callPackage ../../local-deriv/nextkde-qdbus6.nix { })
     (pkgs.callPackage ../../local-deriv/nextkde-session-tools.nix { })
   ];
+  environment.pathsToLink = [ "/lib/kwin" ];
   services.dbus.packages = [ apps ];
   # Define the PIM unit below instead of importing its upstream session ordering.
 
   # KOS provides its own PIM service; the KDE PIM suite is unnecessary.
   programs.kde-pim.enable = false;
 
-  # Upstream targets every graphical session. This variant starts KOS only with
-  # Plasma, and stops its daemons with the Plasma session.
-  systemd.user.services = lib.mkMerge [
-    (lib.genAttrs
-      [
-        "kos-shell-init"
-        "kos-platform"
-        "kos-data"
-        "kos-shell"
-      ]
-      (name: {
-        wantedBy = lib.mkForce [ "plasma-workspace.target" ];
-        partOf = lib.mkForce [ "plasma-workspace.target" ];
-        # The last Environment= assignment wins. Preserve upstream's Qt/KOS
-        # variables while replacing its truncated PATH after those assignments.
-        serviceConfig.Environment = lib.mkAfter [ "PATH=${sessionPath}" ];
-        # Plasma's workspace target is Before=graphical-session.target. Keeping
-        # upstream's After=graphical-session.target would create an ordering cycle.
-        after = lib.mkForce (
-          [ "plasma-kwin_wayland.service" ]
-          ++ lib.optionals (name == "kos-shell") [
+  # Own the Plasma integration here: upstream has no package injection option.
+  # Services, kos-ctl and plugins share one patched package; no priority-based
+  # overlay of a second complete KOS installation is needed.
+  systemd.user.services =
+    lib.mapAttrs
+      (
+        _: unit:
+        {
+          wantedBy = [ "plasma-workspace.target" ];
+          partOf = [ "plasma-workspace.target" ];
+          # Plasma starts its workspace before graphical-session.target.
+          after = [ "plasma-kwin_wayland.service" ];
+        }
+        // unit
+      )
+      {
+        kos-shell-init = {
+          description = "KOS shell config initializer";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = syncShell;
+          };
+          preStart = ''
+            # Materialize only the effective ShellPackage key. Upstream's colour
+            # reader ignores /etc/xdg; retain any explicit user-selected package
+            # and leave all other Plasma settings writable and untouched.
+            shellPackage=$(${pkgs.kdePackages.kconfig}/bin/kreadconfig6 \
+              --file plasmashellrc --group Shell --key ShellPackage --default org.kos.desktop)
+            ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+              --file "$HOME/.config/plasmashellrc" --group Shell --key ShellPackage "$shellPackage"
+            # An invalid appearance file must not prevent the desktop from starting.
+            if ! ${pkgs.python3}/bin/python3 ${./bootstrap.py} ${spatialModels}/models; then
+              echo "Spatial setup skipped; inspect kos-shell-init journal before retrying." >&2
+            fi
+          '';
+        };
+        kos-platform = {
+          description = "KOS platform integration service";
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${platform}/libexec/kos-platform daemon";
+            Environment = [
+              "KOS_PLATFORM_KWIN_SCRIPT=${platform}/share/kos/platform/kwin/window-bridge.js"
+              "PATH=${sessionPath}"
+            ];
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+        };
+        kos-data = {
+          description = "KOS persistent data service";
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${shell}/libexec/kos-data-service";
+            Environment = [ "PATH=${sessionPath}" ];
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+        };
+        kos-shell = {
+          description = "KOS Quickshell desktop shell";
+          requires = [
+            "kos-platform.service"
+            "kos-shell-init.service"
+          ];
+          wants = [ "kos-data.service" ];
+          after = [
+            "plasma-kwin_wayland.service"
             "plasma-plasmashell.service"
             "kos-platform.service"
             "kos-data.service"
             "kos-shell-init.service"
             "kos-pim-service.service"
-          ]
-        );
-      })
-    )
-    {
-      # Upstream hardcodes BreezeLight/BreezeDark. Replace only this daemon;
-      # keep the shell, KWin plugins and their package identities unchanged.
-      kos-platform.serviceConfig.ExecStart = lib.mkForce "${platform}/libexec/kos-platform daemon";
-      # The widgets only read a snapshot; they do not activate the D-Bus service.
-      # Dependency lists cannot be cleared by a drop-in. Replace the full unit
-      # to remove upstream's After=graphical-session.target, retaining its D-Bus
-      # readiness and restart semantics.
-      kos-pim-service = {
-        description = "KOS calendar, task, and reminder service";
-        wantedBy = [ "plasma-workspace.target" ];
-        after = [ "plasma-kwin_wayland.service" ];
-        partOf = [ "plasma-workspace.target" ];
-        serviceConfig = {
-          Type = "dbus";
-          BusName = "org.nextkde.Kos.Pim1";
-          ExecStart = "${apps}/bin/kos-pim-service";
-          Restart = "on-failure";
-          RestartSec = 2;
-          Slice = "background.slice";
+          ];
+          serviceConfig = {
+            Type = "simple";
+            KillMode = "process";
+            ExecStart = "${pkgs.quickshell}/bin/quickshell --no-duplicate -c kos";
+            Environment = [
+              "QS_DISABLE_FILE_WATCHER=1"
+              "MALLOC_ARENA_MAX=2"
+              "QML2_IMPORT_PATH=%h/.config/quickshell/kos:${shell.kos-spatial3d}/lib/qt6/qml:${pkgs.kdePackages.qtquick3d}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml"
+              "QT_PLUGIN_PATH=${pkgs.kdePackages.qtsvg}/lib/qt-6/plugins:${pkgs.kdePackages.qtimageformats}/lib/qt-6/plugins"
+              "PATH=${sessionPath}"
+            ];
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+        };
+        kos-pim-service = {
+          description = "KOS calendar, task, and reminder service";
+          serviceConfig = {
+            Type = "dbus";
+            BusName = "org.nextkde.Kos.Pim1";
+            ExecStart = "${apps}/bin/kos-pim-service";
+            Restart = "on-failure";
+            RestartSec = 2;
+            Slice = "background.slice";
+          };
         };
       };
-      kos-shell-init.preStart = ''
-        # Materialize only the effective ShellPackage key. Upstream's colour
-        # reader ignores /etc/xdg; retain any explicit user-selected package
-        # and leave all other Plasma settings writable and untouched.
-        shellPackage=$(${pkgs.kdePackages.kconfig}/bin/kreadconfig6 \
-          --file plasmashellrc --group Shell --key ShellPackage --default org.kos.desktop)
-        ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
-          --file "$HOME/.config/plasmashellrc" --group Shell --key ShellPackage "$shellPackage"
-        # An invalid appearance file must not prevent the desktop from starting.
-        if ! ${pkgs.python3}/bin/python3 ${./bootstrap.py} ${spatialModels}/models; then
-          echo "Spatial setup skipped; inspect kos-shell-init journal before retrying." >&2
-        fi
-      '';
-    }
-  ];
 
   # Mirror kosctl's core desktop takeover without running its mutable installer.
   # plasmashell stays alive for wallpaper; KOS owns the bar, dock and desktop files.
@@ -145,6 +191,15 @@ in
   environment.etc."xdg/plasmashellrc".text = ''
     [Shell]
     ShellPackage=org.kos.desktop
+  '';
+  # Plasma otherwise interprets a missing active package as Breeze at login,
+  # even when individual components and the light/dark package pair are WhiteSur.
+  # These are defaults: an explicit selection in KDE's GUI still takes priority.
+  environment.etc."xdg/kdeglobals".text = ''
+    [KDE]
+    LookAndFeelPackage=com.github.vinceliuice.WhiteSur
+    DefaultLightLookAndFeel=com.github.vinceliuice.WhiteSur
+    DefaultDarkLookAndFeel=com.github.vinceliuice.WhiteSur-dark
   '';
   # The main desktop persists an app-specific Matugen scheme in dolphinrc.
   # KColorSchemeManager treats an empty scheme as following the KDE palette.
@@ -170,9 +225,10 @@ in
     library=kos_decoration
   '';
 
-  # No Darkman/matugen runtime in this variant; retain a built-in Fcitx5 fallback.
+  # KDE owns the mode/accent. kos-colors publishes separate Fcitx5 palettes;
+  # do not select or modify the main desktop's mellow-matugen theme files.
   i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection = {
-    Theme = lib.mkForce "default";
-    DarkTheme = lib.mkForce "default-dark";
+    Theme = lib.mkForce "mellow-kde";
+    DarkTheme = lib.mkForce "mellow-kde-dark";
   };
 }

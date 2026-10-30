@@ -6,16 +6,19 @@
 }:
 
 let
-  # MS Office CJK 字体：从 /persist 拷贝到用户字体目录（原在 office.nix，属字体域）。
-  # theme-base 的 fontconfig 依赖这些字体存在（20-ms-office-cjk.conf 别名解析）。
+  # 仅在字体内容变更时同步并刷新缓存；源不可用时保留已有字体。
   copyMsCjkFonts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    out="$HOME/.local/share/fonts/MS"
-    rm -rf "$out"
-    mkdir -p "$out"
-    find /persist/Fonts/ -type f \( -iname "*.ttf" -o -iname "*.ttc" \) -exec cp -L {} "$out/" \;
-    chmod 644 "$out"/*
-    ${pkgs.fontconfig}/bin/fc-cache -f "$out" >/dev/null 2>&1 || true
+    run ${pkgs.coreutils}/bin/env PATH=${
+      lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.findutils
+        pkgs.rsync
+      ]
+    }:$PATH \
+      ${pkgs.bash}/bin/bash ${./sync-ms-fonts.sh} /persist/Fonts \
+      "$HOME/.local/share/fonts/MS" ${pkgs.fontconfig}/bin/fc-cache
   '';
+
 in
 {
   # 共享主题基础（两 DE）：指针光标、字体、图标主题、深浅色。

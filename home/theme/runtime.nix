@@ -935,6 +935,9 @@ in
     installMatugenTemplates = true;
   };
 
+  xdg.configFile."fish/completions/darkman.fish".source =
+    "${pkgs.darkman}/share/fish/vendor_completions.d/darkman.fish";
+
   # Fixed Chengdu coordinates keep sunrise/sunset scheduling independent of Mihomo's
   # proxy exit and avoid making Geoclue a runtime dependency.
   xdg.configFile."darkman/config.yaml".text = ''

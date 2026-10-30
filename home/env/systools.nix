@@ -1,8 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
-  services.udiskie.enable = true;
-
   services.flatpak.packages = [
     "io.github.wh201906.serialtest"
   ];
@@ -23,7 +21,7 @@
   programs.btop = {
     enable = true;
     settings = {
-      color_theme = "matugen";
+      color_theme = lib.mkDefault "blackgolden";
       theme_background = false;
       truecolor = true;
       force_tty = false;

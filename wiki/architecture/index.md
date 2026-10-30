@@ -2,7 +2,7 @@
 title: 系统架构总览
 category: 架构
 tags: [architecture, flake, host, home-manager, modules]
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 
 # 系统架构总览
@@ -110,6 +110,8 @@ Flake 声明的关键输入及其角色：
 - `sops-nix`：机密管理与注入。
 - `nix-flatpak`：Flatpak 集成。
 - `codex-desktop-linux`：Codex Desktop 的桌面发行来源。
+
+三个桌面共享字体：Home Manager 将 `/persist/Fonts/` 中的 TTF/TTC 同步到 `~/.local/share/fonts/MS/`，仅内容变化时复制并刷新字体缓存。源目录暂不可用或为空时保留已安装字体；同名冲突会中止同步，避免覆盖错误字体。缓存刷新失败会在下次激活重试。
 
 模块耦合关系：`network.nix` 强依赖 `sops-install-secrets.service`（`after`/`wants`），确保机密可用后再启动 mihomo；`desktop.nix` 依赖输入法、字体、Portal、终端等子系统。
 

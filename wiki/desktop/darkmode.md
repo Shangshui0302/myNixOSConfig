@@ -2,7 +2,7 @@
 title: 深色模式与动态配色
 category: desktop
 tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode, strata]
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 
 # 深色模式与动态配色
@@ -24,6 +24,20 @@ darkman set/toggle
       ├─ Fcitx5 深浅主题（壁纸变化才重启，模式变化优先 reload）
       └─ Noctalia 当前模式
 ```
+
+## 桌面变体的分发边界
+
+主桌面继续使用 Darkman → 壁纸取色 → Matugen → `theme-apply`，缓存为 `~/.cache/wallpaper-colors/`。NextKDE 使用 KDE/KOS 壁纸取色 → `kdeglobals` 原始强调色与实际窗口底色 → systemd 文件触发 → `kos-colors` 按需调用 Matugen，缓存为 `~/.cache/kos-colors/`；两个变体不同时运行各自的分发服务。
+
+`kos-colors.path` 由已有的 systemd 监测 `~/.config/kdeglobals`，变化时运行一次 `kos-colors.service`；登录也同步一次。没有额外的常驻监听进程，不轮询壁纸，不依赖 Python D-Bus 模块。读取 `[General] AccentColor`，避免将 Portal 返回的选中背景色再次取色；未设置自定义强调色时回退到当前配色的选中背景。仅强调色或模板变化时重新生成明暗两套色板，单独切换深浅模式复用色板。输出完整后原子切换指针，只保留当前一代，不生成备份；配置尚未完整或渲染失败时保留已有输出，下一次变化或手动运行时重试。
+
+GNOME 不运行这两条动态分发链；btop 使用 `blackgolden`，Zellij 使用内置主题，Yazi 使用 `myargonaut`。主 DE 和 NextKDE 的 btop、Zellij、Yazi 分别使用 `matugen`、`matugen`、`matugen-runtime`。
+
+NextKDE 分发 Fcitx5、Neovim、Zellij、btop、Yazi、mpv；后三者保持固定深色底色。应用现有配色入口由 Home Manager 指向本变体的缓存，切回主配置时恢复主分发链。Fcitx5 使用独立的 `mellow-kde` / `mellow-kde-dark` 目录，保留半透明但将 `EnableBlur` 设为 `False`，主桌面的 `mellow-matugen` 不被改写。切换只更新 ClassicUI 的主题选择键，保留字体、候选排列及其他字段。
+
+KDE 分发不写 GTK/Qt、Dolphin、KDE 配色、图标、装饰或 KOS 面板；这些仍由 KDE/KOS 管理。Matugen 由强调色派生完整语义色板，派生出的 primary 不承诺与 KDE 强调色逐值相同。VS Code、Obsidian 和 Foot 均不新增配色分发。
+
+KDE 必须启用“从当前壁纸获取强调色”。KOS 换壁纸后会将取色结果交给 Plasma，Plasma 保存新配色后触发分发；如果两张壁纸的强调色相同，则不重复渲染。NextKDE 登录后可检查 `systemctl --user status kos-colors.path`；正常应为等待状态，`kos-colors.service` 单次完成后显示 inactive 是正常的。日志用 `journalctl --user -u kos-colors.service -n 40`，手动同步运行 `kos-colors`。Neovim 可用 `:MatugenReload` 重读；Yazi、mpv 通常需要重新打开，已有 Zellij 会话若未刷新可重新连接。
 
 ## 切换模式
 
@@ -66,7 +80,7 @@ journalctl --user -u darkman -b
 - **Yazi**：`programs.yazi` 的 dark flavor 指向 `matugen-runtime`。由于 Foot 终端背景固定为深色，`theme-apply` 始终使用 Matugen 的深色语义色板，生成并复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`；浅色模式不改变 Yazi 背景。Yazi 26.9.1 虽支持 `app:theme`，但当前分发链不猜测外部实例 ID，运行中的实例需重新启动后读取新 flavor。
 - **mpv / ModernZ**：`home/leisure/player.nix` 关闭默认 OSC，安装 ModernZ Lua、Material 图标字体和中文 locale。Matugen 为 light/dark 各生成一份 ModernZ 配置，但 `theme-apply` 始终复制 dark 变体到 `~/.config/mpv/script-opts/modernz.conf`，把 `primary`、`surface_container`、`on_surface` 和 `outline_variant` 分别用于重点色、控件底色、文字/图标和边框；布局使用 ModernZ 的 `mini` 与 `small` 进度条。mpv 进程通常需要重新打开才能读取新配置。
 - **Strata**：本地源码构建的 GTK4 文件管理器（见 [文件管理器与归档工具](../productivity/files.md)）。它用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、零处引用系统 GTK/Adwaita 命名色，所以系统 GTK 主题决定不了它的配色。Matugen 通过 `home/theme/matugen/strata-theme.toml.tpl` 生成 `~/.config/strata/themes/matugen.toml`（文件名 stem 即主题 id），`theme-apply` 每次按当前模式复制 light 或 dark 变体，并把 `~/.config/strata/settings.toml` 的顶层 `theme`/`mode` 重写为 `matugen`/`theme`（文件不存在时创建最小文件；内容已一致则不写；畸形文件放弃改写并记 `settings-assert-failed`）。该文件由 Strata 全量重写，所以 UI 里换主题会在下次 apply 被改回，做法与 Dolphin 的 ColorScheme 相同。Strata 只在启动时扫描主题目录、不监听文件变化，所以换壁纸或深浅切换后需要重开 Strata；语法高亮色不写进模板，由 Strata 自己从 accent/text 推导（本机 scheme-content + saturation 常把 secondary/tertiary 收敛到 primary，显式写反而更差）。
-- **Zellij**：`programs.zellij` 使用固定主题名 `matugen`；`theme-apply` 按当前 Darkman 模式，将缓存中的 `light/zellij/theme.kdl` 或 `dark/zellij/theme.kdl` 原子复制到 `~/.config/zellij/themes/matugen.kdl`。Zellij 0.45.1 支持从 `CONFIG_DIR/themes` 加载主题并监视主题文件，运行中的会话通常可以直接刷新；若实例未刷新，重新连接会话即可。这里不依赖终端上报的 CSI 2031 色彩状态，因为 Darkman 才是本机唯一模式源。
+- **Zellij**：`programs.zellij` 使用固定主题名 `matugen`；`theme-apply` 按当前 Darkman 模式，将缓存中的 `light/zellij/theme.kdl` 或 `dark/zellij/theme.kdl` 原子复制到 `~/.config/zellij/themes/matugen.kdl`。Zellij 0.45.1 支持从 `CONFIG_DIR/themes` 加载主题并监视主题文件，运行中的会话通常可以直接刷新；若实例未刷新，重新连接会话即可。这里不依赖终端上报的 CSI 2031 色彩状态，因为 Darkman 才是主桌面的唯一模式源。
 - **Neovim**：`home/dev/nvim/init.lua` 读取 `~/.cache/matugen/nvim-colors.lua`，用它为 Snacks dashboard、状态栏和模式色提供重点色；`theme-apply` 按当前模式从壁纸缓存发布文件。壁纸或模式变化后重启 Neovim，或在运行中的实例执行 `:MatugenReload`。
 - **Foot**：由 `home/de/foot.nix` 定义固定深色配色，不随壁纸变化。
 - **Fcitx5**：系统级 ClassicUI 配置是回退值；Home Manager 上游模块安装 `both-blur` 两套 Mellow 静态资源并管理 Matugen 模板，`theme-apply` 为用户目录生成两套完整 `theme.conf` 和 `highlight.svg`。完整配置避免用户层颜色片段遮蔽 profile 中的布局；壁纸素材变化时重启 Fcitx5，单纯模式切换优先使用 `fcitx5-remote --check -r`。

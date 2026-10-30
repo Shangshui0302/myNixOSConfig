@@ -2,12 +2,14 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, wetypex, 输入法, wayland, 深色模式]
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 
 # Fcitx5 输入法框架
 
 本文说明本仓库如何在 NixOS + Home Manager 下启用并集成 Fcitx5：引擎与主题管理、中文输入方案、Wayland 主桌面集成、候选窗定制与常见排障。核心 + 变体差异集中在系统级 `host/base/input-method.nix`；主桌面（Hyprland/niri）使用 ClassicUI，GNOME 走 kimpanel。
+
+NextKDE 使用独立的 `mellow-kde` / `mellow-kde-dark`，保留半透明但关闭背景模糊，由 `kos-colors` 在 KDE 配置变化时单次同步强调色和深浅模式，无额外常驻分发进程。主桌面继续使用 `mellow-matugen` / `mellow-matugen-dark` 与 Darkman；两套主题目录和生成缓存独立，字体、候选布局及词库共用。详见[颜色分发边界](darkmode.md#两个桌面的分发边界)。
 
 ## 目录
 1. [快速上手](#快速上手)

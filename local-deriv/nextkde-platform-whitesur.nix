@@ -5,6 +5,7 @@
 (pkgs.callPackage "${src}/packaging/nix/kos-platform.nix" { inherit src; }).overrideAttrs
   (old: {
     pname = "nextkde-platform-whitesur";
+    patches = (old.patches or [ ]) ++ [ ./nextkde-platform-preserve-theme.patch ];
     postPatch = (old.postPatch or "") + ''
       substituteInPlace src/daemon/PlatformServerTheme.cpp \
         --replace-fail 'QStringLiteral("BreezeDark")' 'QStringLiteral("WhiteSurDark")' \

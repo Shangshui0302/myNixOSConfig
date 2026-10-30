@@ -18,7 +18,6 @@ let
     wl-copy = pkgs.wl-clipboard;
     wl-paste = pkgs.wl-clipboard;
     ya = pkgs.yazi;
-    darkman = pkgs.darkman;
     tlp = pkgs.tlp;
     tlp-stat = pkgs.tlp;
     tlpctl = pkgs.tlp-pd;

@@ -2,7 +2,7 @@
 title: 媒体播放
 category: 娱乐
 tags: [mpv, modernz, matugen, media, pipewire, ani-cli, kazumi, go-musicfox, obs, loupe]
-updated: 2026-09-15
+updated: 2026-10-30
 ---
 
 # 媒体播放
@@ -43,6 +43,10 @@ N --> |"运行依赖"| H
 | `ani-cli` | 命令行动漫搜索与播放，默认调用 mpv；使用 `ani-cli` 启动 |
 | Kazumi | 图形化动漫聚合播放器，支持自定义规则、字幕与弹幕；由 nixpkgs 提供桌面入口 |
 | 网易云网页版 | 本地派生 `local-deriv/netease-cloud-music-web-player.nix` Electron 打包 |
+
+NextKDE 额外通过 `home/nextkde.nix` 安装 [KMusic](https://github.com/NextKde/KMusic)，从启动器打开 KMusic 或运行 `kmusic`。它是独立的 Qt Quick 音乐应用，支持本地音乐库、在线音源及账户功能；具体音源可用性由提供方决定。包定义在 `local-deriv/kmusic.nix`，源码固定到 `ad0222d4404a166a1607e2967f3201cea64111c5`，不运行上游可变安装器，不添加后台常驻服务。主桌面和 GNOME 不新增此应用。
+
+独立构建命令为 `nix build path:.#kmusic --no-link`。Nix 构建与辅助程序检查不能替代应用界面、账户登录或实际播放验收；这些需要应用配置后另行检查。
 
 浏览器（Firefox、Google Chrome）在 `home/leisure/browser.nix`，用于访问 Netflix、YouTube、Bilibili 等在线流媒体。
 

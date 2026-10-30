@@ -187,9 +187,6 @@
 
   programs.zellij = {
     enable = true;
-    settings = {
-      theme = "matugen";
-    };
   };
 
   programs.bash = {

@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, sub-store, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-10-25
+updated: 2026-10-30
 ---
 
 # 系统服务
@@ -69,7 +69,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 - `services.pipewire` 启用，并开 PulseAudio 兼容、ALSA（含 32 位）与 JACK，作为统一音频后端。
 - `hardware.bluetooth` 启用且 `powerOnBoot`，开机自动上电。
 - `services.printing`（CUPS）提供系统级打印。
-- `services.gvfs` 启用虚拟文件系统，配合 `ntfs3g` 挂载 NTFS。
+- `services.gvfs` 启用虚拟文件系统，配合 `ntfs3g` 挂载 NTFS。udiskie 仅在主 DE 启用；GNOME 和 NextKDE 使用各自原生设备挂载机制。
 - `environment.systemPackages` 提供 `ntfs3g`。Strata 的 `bubblewrap` 和工具搜索路径由独立包提供，不再要求系统额外安装。
 - `services.flatpak.enable` 提供用户级 Flatpak 的系统运行时；具体应用仍按主要用途放在对应的 Home Manager 模块。
 
@@ -189,7 +189,7 @@ TLP 源码 `func.d/10-tlp-func-cpu` 的判断是 `[ -n "$maxfreq" ] && [ "$maxfr
 - 关/开特效与透明走 `hyprctl eval 'hl.config({…})'`：0.56 的 Lua 解析器下旧的 `hyprctl keyword` **不生效但退出码仍是 0**，所以脚本按输出是否为 `ok` 判定成败；读值仍用 `hyprctl -j getoption`（bool 型是 `"bool": true`，int 型是 `"int": N`，float 型是 `"float": 0.88`，要按类型解析）。
 - **省电档为什么不关模糊、而是调便宜**：`foot`（`alpha=0.8`）、Noctalia 的 bar/panel、fcitx5 候选窗都是**应用自己画的半透明**，把 `decoration:blur:enabled` 关掉后它们就直接透出桌面（观感像"变透明"），比留着模糊更难看。成本模型（源码 `blurFramebufferWithDamage`）：强度 ≈ `size × 2^passes`，开销 ≈ `2 × passes` 次全分辨率 draw（**与 `size` 几乎无关**），硬上限 `size ≤ 40`、`passes ≤ 8`（超了会被 clamp）。本机原值 `15 / 4`（半径 240、8 次 draw）→ 省电档 `5 / 2`（半径 20、4 次 draw，模糊开销减半）。想更"挡"先加 `size`（几乎免费），不够再加 `passes`。
 - 排障顺序：`power-actions status` → `journalctl --user -u power-profile-actions -n 20` → `power-actions revert`。
-- niri 会话没有 `hyprctl` 运行时接口，特效那部分自然空操作；GNOME 变体下 darkman/Hyprland 都不在跑，只剩 onedrive 暂停。
+- niri 会话没有 `hyprctl` 运行时接口，特效那部分自然空操作；GNOME 和 NextKDE 明确关闭 Darkman 与 Hyprland 动作，保留公共电量策略和用户单元暂停行为。
 
 本机做不到的：EC 性能档与风扇曲线（没有 ACPI `platform_profile`）、电池充电阈值——BAT0 既没有
 `charge_control_start_threshold` / `charge_control_end_threshold`，也没有 `charge_behaviour`；

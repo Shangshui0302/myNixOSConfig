@@ -1,0 +1,18 @@
+--- a/src/daemon/PlatformServerTheme.cpp
++++ b/src/daemon/PlatformServerTheme.cpp
+@@ -21,2 +20,0 @@
+-    const QString lookAndFeel = dark ? QStringLiteral("org.kde.breezedark.desktop")
+-                                     : QStringLiteral("org.kde.breeze.desktop");
+@@ -25,2 +22,0 @@
+-    const QString applyLookAndFeel = QStandardPaths::findExecutable(
+-        QStringLiteral("plasma-apply-lookandfeel"));
+@@ -39,4 +34,0 @@
+-    } else if (!applyLookAndFeel.isEmpty()) {
+-        program = applyLookAndFeel;
+-        arguments = {QStringLiteral("--apply"), lookAndFeel};
+-        method = QStringLiteral("lookAndFeel");
+@@ -50 +42 @@
+-               [dark, colorScheme, lookAndFeel, method](const QByteArray &, int) {
++               [dark, colorScheme, method](const QByteArray &, int) {
+@@ -53 +44,0 @@
+-                           {QStringLiteral("lookAndFeel"), lookAndFeel},

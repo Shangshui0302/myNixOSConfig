@@ -2,7 +2,7 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-10-27
+updated: 2026-10-30
 ---
 
 # Shell 环境指南
@@ -55,7 +55,7 @@ niri 的 `home/de/niri.nix` 有匹配 Foot 的窗口规则，启用 `background-
 | `find` | `fd` | fd 查找文件 |
 | `top` | `btop` | 系统监视器 |
 
-btop 默认使用 `matugen` 主题的深色变体。由于 Foot 背景固定为深色，Darkman 切换深浅色时 btop 不切换背景；每次 `theme-apply` 都发送 `SIGUSR2` 让运行中的 btop 重读文件，只有壁纸变化才更新重点色。静态 `blackgolden` 主题仍保留作备用。
+主 DE 与 NextKDE 的 btop 使用 `matugen` 主题的深色变体；GNOME 使用静态 `blackgolden`。由于 Foot 背景固定为深色，Darkman 切换深浅色时 btop 不切换背景；主 DE 的 `theme-apply` 在色板变化时发送 `SIGUSR2` 让运行中的 btop 重读文件。静态 `blackgolden` 主题仍保留作备用。
 
 ## Starship 提示符
 
@@ -84,8 +84,8 @@ btop 默认使用 `matugen` 主题的深色变体。由于 Foot 背景固定为�
 
 ## Zellij
 
-终端多路复用器，使用运行时生成的 `matugen` 主题。主题文件位于
-`~/.config/zellij/themes/matugen.kdl`，由 Darkman 的主题分发链按当前模式更新；Zellij 会监视主题文件，已存在的会话通常无需重启即可刷新。
+终端多路复用器。主 DE 和 NextKDE 使用运行时生成的 `matugen` 主题；GNOME 使用 Zellij 内置主题。主题文件位于
+`~/.config/zellij/themes/matugen.kdl`，分别由主 DE 的 Darkman 分发链或 NextKDE 的 `kos-colors` 按当前模式更新；Zellij 会监视主题文件，已存在的会话通常无需重启即可刷新。
 
 ```bash
 zellij           # 启动
@@ -94,7 +94,7 @@ zellij attach    # 重新连接已有会话
 
 常用快捷键见 Zellij 内置帮助 (`Ctrl+g` → `?`)。
 
-如果主题没有刷新，先确认当前文件和 Darkman 状态：
+主 DE 如果主题没有刷新，先确认当前文件和 Darkman 状态；NextKDE 请检查 `kos-colors.path`：
 
 ```bash
 darkman get

@@ -63,12 +63,15 @@
     in
     {
       packages.${system} = {
-        nextkde = pkgs.callPackage "${inputs.nextkde}/packaging/nix/package.nix" {
+        nextkde = pkgs.callPackage ./local-deriv/nextkde-shell.nix {
           src = inputs.nextkde;
           buildWeather = true;
         };
         nextkde-apps = pkgs.callPackage ./local-deriv/nextkde-apps.nix {
           src = inputs.nextkde;
+        };
+        nextkde-sync-shell = pkgs.callPackage ./local-deriv/nextkde-sync-shell.nix {
+          kos = inputs.self.packages.${system}.nextkde;
         };
         nextkde-platform-whitesur = pkgs.callPackage ./local-deriv/nextkde-platform-whitesur.nix {
           src = inputs.nextkde;
@@ -76,6 +79,7 @@
         nextkde-spatial-models = pkgs.callPackage ./local-deriv/nextkde-spatial-models.nix { };
         nextkde-qdbus6 = pkgs.callPackage ./local-deriv/nextkde-qdbus6.nix { };
         nextkde-session-tools = pkgs.callPackage ./local-deriv/nextkde-session-tools.nix { };
+        kmusic = pkgs.callPackage ./local-deriv/kmusic.nix { };
         # Upstream defaults; host/base/input-method.nix selects this host's options.
         fcitx5-wetypex = inputs.wetypex.packages.${system}.fcitx5-wetypex;
         agent-orchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
@@ -94,7 +98,10 @@
         strata = inputs.strata-nixpkgs.legacyPackages.${system}.strata;
       };
 
-      checks.${system} = import ./checks { inherit pkgs; };
+      checks.${system} = import ./checks {
+        inherit pkgs;
+        nextkdeSync = inputs.self.packages.${system}.nextkde-sync-shell;
+      };
 
       formatter.${system} = pkgs.nixfmt;
 

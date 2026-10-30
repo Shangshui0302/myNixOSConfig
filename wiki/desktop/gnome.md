@@ -2,7 +2,7 @@
 title: GNOME
 category: 桌面
 tags: [gnome, gdm, specialisation, wayland]
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 
 # GNOME
@@ -26,7 +26,7 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
 
 ## 配置要点（host/gnome/ + home/gnome.nix）
 
-- **Home Manager 集成**：通过共享的 `host/base/home-manager.nix` 统一设置包集、用户包和备份扩展名；`host/gnome/default.nix` 只选择 GNOME 用户入口 `home/gnome.nix`，主桌面入口仍独立选择 `home/home.nix`。
+- **Home Manager 集成**：通过共享的 `host/base/home-manager.nix` 统一设置包集和用户包；`host/gnome/default.nix` 只选择 GNOME 用户入口 `home/gnome.nix`，主桌面入口仍独立选择 `home/home.nix`。
 - **隔离机制**：`inheritParentConfig=false`，变体从零 import 共享 `host/base/` + GNOME 专属（`host/gnome/desktop.nix`）+ 变体 home（`home/gnome.nix`，import 共享 `home/base.nix` + Material 主题）。Material 主题包由共享主题路径提供给需要它的桌面；GNOME 闭包不含 Hyprland/foot/wlr portal/qt5ct/adw-gtk3/noctalia 等主 DE 专属内容
 - **GSettings override 生效条件**（gnome.md 官方）：override 某包 schema 必须把该包加进 `extraGSettingsOverridePackages`，否则对应段被编译丢弃（Console/nautilus 曾因此失效）。GNOME Shell 扩展 schema 在非标准路径（`share/gnome-shell/extensions/<uuid>/schemas/`），需用 `withStandardSchemas` 链接到标准 gsettings-schemas 路径后加入 override 包，dash-to-dock/blur-my-shell/user-theme 的 override 才生效
 
@@ -39,12 +39,13 @@ sudo /run/current-system/specialisation/gnome/bin/switch-to-configuration test
   - 注：no-title-bar / pano 已被 nixpkgs 移除（上游停维护）；tray-icons-reloaded / forge / just-perfection / unite / hide-activities-button 未启用故移除（2026-08-12 清理）
 - **dash-to-dock**：intellihide 全窗口避让（遮挡即隐藏、鼠标移边缘呼出）+ 底部 + DASHES 白条指示器，经 `extraGSettingsOverrides` 配置
 - **主题**：`material-gnome-theme`（local-deriv 自建包：构建期 matugen 从壁纸取色 + shellLayout 布局参数化），`user-theme name='Material-Gnome'` 加载；GNOME 变体使用静态 Material-Gnome 主题，Hyprland 主桌面使用 matugen 主题链路
+- **共享应用与设备**：btop 使用 `blackgolden`，Zellij 使用内置主题，Yazi 使用 `myargonaut`；GNOME 不运行动态配色分发。可移动设备由 GNOME 原生机制处理，不启用 udiskie。电量策略保留，但关闭 Darkman 和 Hyprland 会话动作。
 - **console**：`[org.gnome.Console]` 设 `shell=['fish']`（系统 passwd 默认是 bash）+ `ignore-scrollback-limit=true`
 - **blur-my-shell**：静态高斯模糊 + 自带 corner pipeline（`pipeline_default_rounded`），panel/applications/dash-to-dock 分段配置，无需 rounded-blur 库
 - **用户设置持久化**：`extraGSettingsOverrides`（状态栏/日历/外设/夜灯/nautilus/console 偏好 + dash-to-dock + blur-my-shell + user-theme + enabled-extensions）+ `favoriteAppsOverride`（Dock：Nautilus/Chrome/Console/Code）；默认壁纸使用 `assets/nixos_logo.png`。图标/深浅色由 `home/theme/base.nix` 共享，gtk-theme 在变体 `home/gnome.nix` 设 Material-Gnome
 - GDM 接管 tty1；变体不 import `host/de/greeter.nix`（greetd/kmscon 天然不存在，无需覆盖）
 - fcitx5：核心在共享 `host/base/input-method.nix`；GNOME Wayland 走 text-input-v3，**无 `GTK_IM_MODULE`**（base 只设 QT_IM_MODULE/XMODIFIERS）；kimpanel addon 强制启用
-- 变体 home = 共享 `home/base.nix`（通用工具）+ Material 主题；Hyprland 主桌面 home 另行 `home/home.nix`（import `home/de/`），两套互不干扰
+- 变体 home = 共享 `home/base.nix`（通用工具）+ Material 主题；Hyprland 主桌面 home 另行 `home/home.nix`（import `home/de/`），变体共享同一 HOME 和用户数据，切换时 Home Manager 管理各自声明的配置
 
 ## 故障排查
 

@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-10-29
+updated: 2026-10-30
 ---
 # Nix 手工打包
 
@@ -174,7 +174,7 @@ sudo nixos-rebuild switch --flake .
 | Agent Orchestrator | `nix build path:.#agent-orchestrator-distrobox` | 官方 AppImage 解包后适配 Nix 动态库，附 Arch DSH 桥；原始桌面包为 `agent-orchestrator`，见 [AO](agent-orchestrator.md) |
 | WeTypeX | `nix build path:.#fcitx5-wetypex` | 直接构建 `wetypex` input 的上游默认包，`flake.lock` 固定源码；系统中的个人选项在 `host/base/input-method.nix` 通过 `.override` 设置，无本地包定义或补丁，原版引擎由用户初始化，见 [Fcitx5](../desktop/fcitx5.md#wetypex-首次使用) |
 
-NextKDE 另提供 `nextkde-platform-whitesur`（复用锁定的上游平台服务构建，仅替换明暗配色对）、`nextkde-apps`（Qt 日历、待办、计算器与 PIM 服务）、`nextkde-spatial-models`（固定哈希的深度与前景 ONNX 模型）及 `nextkde-qdbus6`（Qt 6 qdbus 的兼容命令名）。仅在 NextKDE 变体集成，详见 [NextKDE 桌面变体](../desktop/nextkde.md)。
+NextKDE 的 `nextkde` 构建入口使用 `local-deriv/nextkde-shell.nix`，去掉控制中心和启动台的最低模糊限制。另提供 `nextkde-platform-whitesur`（复用锁定的平台服务，替换明暗配色对并禁止整套全局主题回退）、`nextkde-apps`（Qt 日历、待办、计算器与 PIM 服务）、`nextkde-spatial-models`（固定哈希的深度与前景 ONNX 模型）及 `nextkde-qdbus6`（Qt 6 qdbus 的兼容命令名）。仅在 NextKDE 变体集成，详见 [NextKDE 桌面变体](../desktop/nextkde.md)。
 
 ### ModernZ (`local-deriv/modernz.nix`)
 
@@ -192,6 +192,8 @@ nix-instantiate --parse local-deriv/modernz.nix
 nix build path:.#modernz-mpv -L --no-link --print-out-paths
 nixos-rebuild dry-build --flake path:.
 ```
+
+KMusic 的源码包入口为 `nix build path:.#kmusic --no-link`，由 `home/nextkde.nix` 仅在 NextKDE 安装；源码固定，依赖及辅助程序随 Nix 包提供。
 
 ## 已投稿包：Strata
 

@@ -10,6 +10,7 @@
 - NextKDE：`host/nextkde/` + `home/nextkde.nix` 独立变体，使用 Plasma Wayland、SDDM 和 KOS；不继承主 DE 配置。
 - Shell：fish + bash/ble.sh；终端：Foot；输入法：fcitx5；代理：mihomo TUN；局域网主机发现：Avahi mDNS。
 - 主桌面深浅模式：Darkman 是唯一状态源，Matugen 负责运行时取色与模板渲染。
+- NextKDE 配色：KDE 的 `kdeglobals` 是强调色/深浅模式源，systemd 文件触发 `kos-colors` 单次分发应用色板；不写 KDE 主题。两条链使用独立缓存及 Fcitx5 主题目录。
 
 ## 配置边界
 
@@ -42,7 +43,7 @@ host/
 home/
 ├── home.nix              # 主 DE HM 入口（base + theme/ + de/）
 ├── base.nix              # 三个桌面变体共享的 HM 入口
-├── theme/                # 颜色/壁纸/主题域：base、gtk-matugen、gtk-static、runtime、wallpaper
+├── theme/                # 颜色/壁纸/主题域：base、gtk-matugen、gtk-static、runtime、kde-runtime、wallpaper
 ├── de/                   # Hyprland/niri、Foot、桌面 Shell
 ├── gnome.nix             # GNOME 变体 HM 入口（base + theme/gtk-static）
 ├── nextkde.nix           # NextKDE 变体 HM 入口

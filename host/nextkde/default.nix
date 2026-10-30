@@ -5,7 +5,6 @@
     ../base/default.nix
     inputs.sops-nix.nixosModules.sops
     inputs.home-manager.nixosModules.home-manager
-    inputs.nextkde.nixosModules.kos
     ../base/home-manager.nix
     ./desktop.nix
   ];
