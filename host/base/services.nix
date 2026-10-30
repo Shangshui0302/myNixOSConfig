@@ -3,14 +3,7 @@
 {
   security.rtkit.enable = true;
   security.polkit.enable = true;
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-      if (action.id == "org.noctalia.greeter.apply-appearance" &&
-          subject.isInGroup("wheel")) {
-        return polkit.Result.YES;
-      }
-    });
-  '';
+
   services.flatpak.enable = true;
 
   services.pipewire = {
@@ -60,8 +53,6 @@
     sudo.howdy = { enable = true; control = "sufficient"; };
     su.howdy = { enable = true; control = "sufficient"; };
     login.howdy = { enable = true; control = "sufficient"; };
-    greetd.howdy = { enable = true; control = "sufficient"; };
-    noctalia.howdy = { enable = true; control = "sufficient"; };
   };
 
   services.gvfs.enable = true;

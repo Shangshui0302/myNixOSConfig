@@ -117,5 +117,4 @@
   # The shared battery policy stays available; desktop appearance belongs to KOS.
   powerActions.darkMode = false;
   powerActions.hyprlandEffects.enable = false;
-  home.pointerCursor.hyprcursor.enable = lib.mkForce false;
 }

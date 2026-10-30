@@ -1,7 +1,17 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  lib,
+  osConfig,
+  ...
+}:
 
 let
   modernz = pkgs.callPackage ../../local-deriv/modernz.nix { };
+  terminalExec =
+    if osConfig.services.desktopManager.gnome.enable then
+      "kgx -e musicfox"
+    else
+      "foot -e musicfox";
 in
 {
   home.packages = with pkgs; [
@@ -29,7 +39,7 @@ in
     name = "go-musicfox";
     genericName = "Terminal Music Player";
     comment = "网易云音乐命令行客户端";
-    exec = "foot -e musicfox";
+    exec = terminalExec;
     icon = "terminal";
     terminal = false;
     categories = [
