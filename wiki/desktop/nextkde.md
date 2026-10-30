@@ -69,7 +69,7 @@ NextKDE 撤销主桌面留下的 Flatpak 全局 `GTK_THEME`，让沙箱应用自
 
 Home Manager 不生成配置备份；切回主桌面时直接接管 GTK4 主题文件和 Hyprland 自动生成的示例配置。旧 generation 仍使用旧策略，应从新版普通主配置返回 Hyprland/niri。
 
-`/etc/xdg/kwinrc` 仅保留系统级固定 Fcitx 输入法选择（`InputMethod[$i]`）。KWin 插件（模糊/玻璃/桥接/上下文菜单/Dock动画）、窗口装饰、WhiteSur 明暗外观包默认值、`plasmashellrc` 的 `ShellPackage` 以及 Dolphin 配色跟随均已迁移至 Home Manager（`home/nextkde.nix` 中的 `programs.plasma.configFile`），由 Home Manager 声明式写入用户配置并保持增量合并。明暗配色服务仅调用配色工具，工具不可用时返回失败，不再回退为应用整套 Breeze。
+`/etc/xdg/kwinrc` 保留系统级固定 Fcitx 输入法选择（`InputMethod[$i]`），`/etc/xdg/dolphinrc` 保留系统级配色覆盖（`ColorScheme[$i]=`），防止污染共享 `$HOME` 下的 `~/.config/dolphinrc`。KWin 插件（模糊/玻璃/桥接/上下文菜单/Dock动画）、窗口装饰、WhiteSur 明暗外观包默认值以及 `plasmashellrc` 的 `ShellPackage` 均已迁移至 Home Manager（`home/nextkde.nix` 中的 `programs.plasma.configFile`），由 Home Manager 声明式写入用户配置并保持增量合并。明暗配色服务仅调用配色工具，工具不可用时返回失败，不再回退为应用整套 Breeze。
 
 用户的 `~/.config/kwinrc` 与 `~/.config/plasmashellrc` 由 Home Manager 声明基础项，其余运行时配置仍由 KOS 与 Plasma 在用户层正常写入，除受管理的 Fcitx `InputMethod` 单键外保持可写。上述配置仅在 NextKDE 会话生效；已有共享应用数据不做迁移。
 

@@ -17,7 +17,7 @@ in
 {
   theme-apply =
     pkgs.runCommand "theme-apply-tests"
-      { nativeBuildInputs = [ pkgs.python3 pkgs.bash pkgs.coreutils pkgs.util-linux pkgs.gnugrep pkgs.diffutils pkgs.gawk ]; }
+      { nativeBuildInputs = [ pkgs.python3 pkgs.bash pkgs.coreutils pkgs.util-linux pkgs.gnugrep pkgs.gnused pkgs.diffutils pkgs.gawk pkgs.kdePackages.kconfig ]; }
       ''
         mkdir -p home/theme/scripts tests
         cp ${../home/theme/scripts/theme-apply.sh} home/theme/scripts/theme-apply.sh

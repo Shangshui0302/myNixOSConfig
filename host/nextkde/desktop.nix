@@ -177,8 +177,16 @@ in
         };
       };
 
-  # Pin only the input-method selector at system level; desktop plugins,
-  # decorations, and application palettes belong to Home Manager (programs.plasma).
+  # Pin input-method selector and variant-scoped Dolphin palette override at
+  # system level; desktop plugins, decorations, and WhiteSur defaults belong
+  # to Home Manager (programs.plasma).
+  # The main desktop persists an app-specific Matugen scheme in dolphinrc.
+  # KColorSchemeManager treats an empty scheme as following the KDE palette.
+  # Override only that key in this variant; retain the user's original file.
+  environment.etc."xdg/dolphinrc".text = ''
+    [UiSettings]
+    ColorScheme[$i]=
+  '';
   environment.etc."xdg/kwinrc".text = ''
     [Wayland]
     InputMethod[$i]=/run/current-system/sw/share/applications/fcitx5-wayland-launcher.desktop

@@ -35,13 +35,6 @@
         DefaultDarkLookAndFeel = "com.github.vinceliuice.WhiteSur-dark";
       };
 
-      # Dolphin color scheme: overrides any Matugen scheme from the main DE,
-      # keeping Dolphin synchronized with KDE system colors.
-      "dolphinrc"."UiSettings"."ColorScheme" = {
-        value = "";
-        immutable = true;
-      };
-
       # KWin plugins and window decoration for NextKDE desktop
       "kwinrc" = {
         Wayland = {
