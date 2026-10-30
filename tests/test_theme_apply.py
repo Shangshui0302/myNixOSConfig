@@ -140,4 +140,49 @@ if name == 'fcitx5-remote' and os.environ.get('REMOTE_FAIL') == '1': sys.exit(1)
         relevant = [x.split()[0] for x in self.calls() if 'app-org.fcitx.Fcitx5@autostart.service' in x or x.startswith('fcitx5-remote ')]
         self.assertEqual(relevant, ['fcitx5-remote', 'systemctl'])
 
+    def test_fcitx_retry_on_previous_failure(self):
+        pending_file = self.home / '.cache/wallpaper-colors/fcitx-pending'
+
+        # Both restart and remote fail; assets and config are written to disk,
+        # but pending refresh state is retained for retry.
+        res1 = self.run_apply('dark', RESTART_FAIL='1', REMOTE_FAIL='1')
+        self.assertEqual(res1.returncode, 0)
+        self.assertIn('stage=fcitx action=restart status=failed', res1.stderr)
+        self.assertTrue(pending_file.exists())
+        self.assertEqual(pending_file.read_text().strip(), 'restart')
+
+        # Second run: same wallpaper & theme, files on disk are identical, but
+        # failure flags are cleared. It must retry the restart rather than noop.
+        self.log.unlink()
+        res2 = self.run_apply('dark')
+        self.assertEqual(res2.returncode, 0)
+        self.assertIn('stage=fcitx action=restart', res2.stderr)
+        self.assertNotIn('status=failed', res2.stderr)
+        self.assertFalse(pending_file.exists())
+        relevant = [x.split()[0] for x in self.calls() if 'app-org.fcitx.Fcitx5@autostart.service' in x or x.startswith('fcitx5-remote ')]
+        self.assertEqual(relevant, ['systemctl'])
+
+        # Third run: everything up-to-date and pending flag cleared -> noop.
+        self.log.unlink()
+        res3 = self.run_apply('dark')
+        self.assertEqual(res3.returncode, 0)
+        self.assertIn('stage=fcitx action=noop', res3.stderr)
+        self.assertFalse(any('app-org.fcitx.Fcitx5@autostart.service' in x or x.startswith('fcitx5-remote ') for x in self.calls()))
+
+        # Also verify config reload failure retry:
+        res4 = self.run_apply('light', RESTART_FAIL='1', REMOTE_FAIL='1')
+        self.assertEqual(res4.returncode, 0)
+        self.assertIn('stage=fcitx action=reload status=failed', res4.stderr)
+        self.assertTrue(pending_file.exists())
+        self.assertEqual(pending_file.read_text().strip(), 'reload')
+
+        self.log.unlink()
+        res5 = self.run_apply('light')
+        self.assertEqual(res5.returncode, 0)
+        self.assertIn('stage=fcitx action=reload', res5.stderr)
+        self.assertNotIn('status=failed', res5.stderr)
+        self.assertFalse(pending_file.exists())
+        relevant = [x.split()[0] for x in self.calls() if 'app-org.fcitx.Fcitx5@autostart.service' in x or x.startswith('fcitx5-remote ')]
+        self.assertEqual(relevant, ['fcitx5-remote'])
+
 if __name__ == '__main__': unittest.main()

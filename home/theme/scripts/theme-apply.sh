@@ -39,6 +39,7 @@
     staging_dir="$cache_root/staging"
     cache_store="$cache_root/cache"
     applied_papirus="$cache_root/applied-papirus-color"
+    fcitx_pending_file="$cache_root/fcitx-pending"
     cache_identity="@cacheIdentity@"
     mkdir -p "$cache_root" "$cache_store"
 
@@ -451,18 +452,32 @@ EOF
     trap - EXIT
 
     # Refresh decision:
-    # if fcitx_assets_changed == 1: try-restart daemon (fallback to remote -r)
-    # elif fcitx_config_changed == 1: remote -r (fallback to try-restart)
-    # else: noop
-    if [ "$fcitx_assets_changed" -eq 1 ]; then
-      @pkgs_systemd@/bin/systemctl --user try-restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
-        || @pkgs_fcitx5@/bin/fcitx5-remote --check -r 2>/dev/null || true
-      log "stage=fcitx action=restart assets_changed=1"
-    elif [ "$fcitx_config_changed" -eq 1 ]; then
-      if ! @pkgs_fcitx5@/bin/fcitx5-remote --check -r 2>/dev/null; then
-        @pkgs_systemd@/bin/systemctl --user try-restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null || true
+    # Separate file publishing state from refresh success state. If systemctl and
+    # fcitx5-remote both fail, record the pending refresh action so the next
+    # theme-apply retries the refresh even if files on disk are already identical.
+    fcitx_pending=""
+    if [ -f "$fcitx_pending_file" ]; then
+      fcitx_pending="$(cat "$fcitx_pending_file")"
+    fi
+
+    if [ "$fcitx_assets_changed" -eq 1 ] || [ "$fcitx_pending" = "restart" ]; then
+      if @pkgs_systemd@/bin/systemctl --user try-restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
+        || @pkgs_fcitx5@/bin/fcitx5-remote --check -r 2>/dev/null; then
+        @pkgs_coreutils@/bin/rm -f "$fcitx_pending_file"
+        log "stage=fcitx action=restart assets_changed=$fcitx_assets_changed"
+      else
+        write_atomic "$fcitx_pending_file" "restart"
+        log "stage=fcitx action=restart status=failed"
       fi
-      log "stage=fcitx action=reload config_changed=1 mode=$mode"
+    elif [ "$fcitx_config_changed" -eq 1 ] || [ "$fcitx_pending" = "reload" ]; then
+      if @pkgs_fcitx5@/bin/fcitx5-remote --check -r 2>/dev/null \
+        || @pkgs_systemd@/bin/systemctl --user try-restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null; then
+        @pkgs_coreutils@/bin/rm -f "$fcitx_pending_file"
+        log "stage=fcitx action=reload config_changed=$fcitx_config_changed mode=$mode"
+      else
+        write_atomic "$fcitx_pending_file" "reload"
+        log "stage=fcitx action=reload status=failed mode=$mode"
+      fi
     else
       log "stage=fcitx action=noop mode=$mode"
     fi
