@@ -49,6 +49,7 @@ KDE 强调色与深浅模式驱动独立的应用颜色分发，缓存位于 `~/
 - 切换用户：将上游 LightDM 命令兼容到 KDE/SDDM 流程，先锁屏，再返回登录界面。
 - 锁屏：静态主题文件由 Home Manager 管理，天气数据文件保持可写；应用时自动迁移旧的整目录链接，解决天气发布失败。
 - 空间壁纸：Nix 固定下载并校验两个模型，合计约 265 MiB；首次登录复制到可写缓存并启用服务和空间壁纸。首次图片处理可能需要等待，实际渲染效果须登录后验收。
+- KDE 设置管理（plasma-manager）：在 `home/nextkde.nix` 接入 `plasma-manager` 模块并提供 `rc2nix` 工具。采用增量合并方式管理 KDE 配置，不破坏文件的运行时可写性；KOS 独立负责桌面面板与 Dock，因此不使用 `programs.plasma.panels`，KWin 行为、快捷键、窗口规则与外设可通过 `programs.plasma` 声明式管理。可以通过终端运行 `rc2nix` 快速提取当前手动调好的配置。
 
 空间壁纸初始化只运行一次，保留 macOS/liquid 等现有外观字段。不另存配置备份，完成标记为 `~/.local/state/quickshell/kos/appearance/.spatial-bootstrap-v1`。之后在 KOS 设置中关闭功能或清理模型，后续登录不会强行恢复。遵循 `XDG_STATE_HOME` 与 `XDG_CACHE_HOME`；默认模型位置为 `~/.cache/liquid-shell/models/`。Nix store 仍保存固定资源，清理缓存不会删除 store 中的副本。
 
@@ -68,9 +69,9 @@ NextKDE 撤销主桌面留下的 Flatpak 全局 `GTK_THEME`，让沙箱应用自
 
 Home Manager 不生成配置备份；切回主桌面时直接接管 GTK4 主题文件和 Hyprland 自动生成的示例配置。旧 generation 仍使用旧策略，应从新版普通主配置返回 Hyprland/niri。
 
-`/etc/xdg/kwinrc` 和 `/etc/xdg/plasmashellrc` 提供 KOS 需要的默认插件、装饰和 shell 配置。`/etc/xdg/kdeglobals` 为缺失的全局主题选择提供 WhiteSur 默认值，避免 Plasma 登录时按 Breeze 生成默认图标和装饰；用户在 KDE 设置里另选的全局主题优先。明暗配色服务仅调用配色工具，工具不可用时返回失败，不再回退为应用整套 Breeze。
+`/etc/xdg/kwinrc` 仅保留系统级固定 Fcitx 输入法选择（`InputMethod[$i]`）。KWin 插件（模糊/玻璃/桥接/上下文菜单/Dock动画）、窗口装饰、WhiteSur 明暗外观包默认值、`plasmashellrc` 的 `ShellPackage` 以及 Dolphin 配色跟随均已迁移至 Home Manager（`home/nextkde.nix` 中的 `programs.plasma.configFile`），由 Home Manager 声明式写入用户配置并保持增量合并。明暗配色服务仅调用配色工具，工具不可用时返回失败，不再回退为应用整套 Breeze。
 
-用户的 `~/.config/kwinrc` 与 `~/.config/plasmashellrc` 仍可写，除受管理的 Fcitx `InputMethod` 单键外，其同名设置可能覆盖系统默认值。上述初始化只在 NextKDE 会话执行；已有共享应用数据不做迁移。
+用户的 `~/.config/kwinrc` 与 `~/.config/plasmashellrc` 由 Home Manager 声明基础项，其余运行时配置仍由 KOS 与 Plasma 在用户层正常写入，除受管理的 Fcitx `InputMethod` 单键外保持可写。上述配置仅在 NextKDE 会话生效；已有共享应用数据不做迁移。
 
 ## 故障排查
 
