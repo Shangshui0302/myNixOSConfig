@@ -537,7 +537,7 @@ let
           }
           destination_dir="$(${pkgs.coreutils}/bin/dirname "$destination")"
           mkdir -p "$destination_dir"
-          if [ -f "$destination" ] && ${pkgs.diffutils}/bin/cmp -s "$source" "$destination"; then
+          if [ -f "$destination" ] && [ ! -L "$destination" ] && ${pkgs.diffutils}/bin/cmp -s "$source" "$destination"; then
             return 0
           fi
           temporary="$(${pkgs.coreutils}/bin/mktemp "$destination_dir/.theme-apply.XXXXXX")"
@@ -676,51 +676,6 @@ let
         copy_atomic "$cache_dir/dual/gtk4/colors.css" \
           "$HOME/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css"
 
-        # Fcitx5's theme.conf and highlight.svg are copied on every apply.  The
-        # highlight.svg is used by the tray icon and the candidate window; it
-        # must be updated even on a mode-only toggle.  The theme.conf is used by
-        # fcitx5-gtk and fcitx5-qt; it must be updated even on a mode-only toggle.  The tray icon and candidate window
-        # are not updated until fcitx5 is restarted, so restart it only when the files change or when fc
-        fcitx_start="$(now_ms)"
-
-        if ! ${pkgs.diffutils}/bin/cmp -s \
-            "$cache_dir/light/fcitx5/mellow-matugen/highlight.svg" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen/highlight.svg" \
-          || ! ${pkgs.diffutils}/bin/cmp -s \
-            "$cache_dir/light/fcitx5/mellow-matugen/theme.conf" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen/theme.conf" \
-          || ! ${pkgs.diffutils}/bin/cmp -s \
-            "$cache_dir/dark/fcitx5/mellow-matugen-dark/highlight.svg" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg" \
-          || ! ${pkgs.diffutils}/bin/cmp -s \
-            "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"; then
-
-          copy_atomic \
-            "$cache_dir/light/fcitx5/mellow-matugen/highlight.svg" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen/highlight.svg"
-          copy_atomic \
-            "$cache_dir/light/fcitx5/mellow-matugen/theme.conf" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen/theme.conf"
-          copy_atomic \
-            "$cache_dir/dark/fcitx5/mellow-matugen-dark/highlight.svg" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg"
-          copy_atomic \
-            "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
-            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"
-
-          ${pkgs.systemd}/bin/systemctl --user restart \
-            app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
-            || ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null \
-            || true
-        elif ! ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null; then
-          ${pkgs.systemd}/bin/systemctl --user restart \
-            app-org.fcitx.Fcitx5@autostart.service 2>/dev/null || true
-        fi
-
-        fcitx_end="$(now_ms)"
-        log "stage=fcitx duration_ms=$((fcitx_end - fcitx_start)) mode=$mode"
-
         # Publish Neovim's current mode from the wallpaper cache.
         copy_atomic "$cache_dir/$mode/nvim-colors.lua" \
           "$HOME/.cache/matugen/nvim-colors.lua"
@@ -733,11 +688,8 @@ let
           "$HOME/.config/niri/wallpaper-colors.kdl"
         copy_atomic "$cache_dir/dark/btop.theme" \
           "$HOME/.config/btop/themes/matugen.theme"
-        yazi_flavor="$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml"
-        if [ "$assets_changed" -eq 1 ] || [ ! -f "$yazi_flavor" ]; then
-          copy_atomic "$cache_dir/dark/yazi/flavor.toml" "$yazi_flavor"
-          log "stage=yazi status=updated"
-        fi
+        copy_atomic "$cache_dir/dark/yazi/flavor.toml" \
+          "$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml"
         # Strata scans ~/.config/strata/themes/*.toml only at startup (no watcher),
         # uses the file stem as the theme id, and owns settings.toml: it rewrites the
         # whole file on any preference change.  Republish the current mode's theme and
@@ -871,12 +823,44 @@ let
           log "stage=btop status=skipped mode=$mode assets_changed=0"
         fi
 
-        # fcitx5-gtk's Wayland client reads Theme directly; keep the complete
-        # user config but avoid restarting the daemon when only the mode changed.
+        fcitx_start="$(now_ms)"
+        fcitx_assets_changed=0
+
+        # Sync light/dark mellow-matugen highlight.svg and theme.conf
+        if ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/light/fcitx5/mellow-matugen/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/highlight.svg" \
+          || ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/light/fcitx5/mellow-matugen/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/theme.conf" \
+          || ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg" \
+          || ! ${pkgs.diffutils}/bin/cmp -s \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"; then
+
+          copy_atomic \
+            "$cache_dir/light/fcitx5/mellow-matugen/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/highlight.svg"
+          copy_atomic \
+            "$cache_dir/light/fcitx5/mellow-matugen/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen/theme.conf"
+          copy_atomic \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/highlight.svg" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/highlight.svg"
+          copy_atomic \
+            "$cache_dir/dark/fcitx5/mellow-matugen-dark/theme.conf" \
+            "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"
+          fcitx_assets_changed=1
+        fi
+
+        # Write classicui.conf atomically
+        fcitx_config_changed=0
         fcitx_dir="$HOME/.config/fcitx5/conf"
         mkdir -p "$fcitx_dir"
         fcitx_tmp="$(${pkgs.coreutils}/bin/mktemp "$fcitx_dir/.classicui.conf.XXXXXX")"
-        trap 'rm -f "$fcitx_tmp"' EXIT
+        trap '${pkgs.coreutils}/bin/rm -f "$fcitx_tmp"' EXIT
         cat > "$fcitx_tmp" <<EOF
     Theme=$fcitx_theme
     DarkTheme=mellow-matugen-dark
@@ -886,20 +870,30 @@ let
         if [ ! -f "$fcitx_dir/classicui.conf" ] \
           || ! ${pkgs.diffutils}/bin/cmp -s "$fcitx_tmp" "$fcitx_dir/classicui.conf"; then
           ${pkgs.coreutils}/bin/mv -f "$fcitx_tmp" "$fcitx_dir/classicui.conf"
+          fcitx_config_changed=1
         else
           ${pkgs.coreutils}/bin/rm -f "$fcitx_tmp"
         fi
         trap - EXIT
 
-        fcitx_start="$(now_ms)"
-        if [ "$assets_changed" -eq 1 ]; then
-          ${pkgs.systemd}/bin/systemctl --user restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
+        # Refresh decision:
+        # if fcitx_assets_changed == 1: try-restart daemon (fallback to remote -r)
+        # elif fcitx_config_changed == 1: remote -r (fallback to try-restart)
+        # else: noop
+        if [ "$fcitx_assets_changed" -eq 1 ]; then
+          ${pkgs.systemd}/bin/systemctl --user try-restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null \
             || ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null || true
-        elif ! ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null; then
-          ${pkgs.systemd}/bin/systemctl --user restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null || true
+          log "stage=fcitx action=restart assets_changed=1"
+        elif [ "$fcitx_config_changed" -eq 1 ]; then
+          if ! ${pkgs.fcitx5}/bin/fcitx5-remote --check -r 2>/dev/null; then
+            ${pkgs.systemd}/bin/systemctl --user try-restart app-org.fcitx.Fcitx5@autostart.service 2>/dev/null || true
+          fi
+          log "stage=fcitx action=reload config_changed=1 mode=$mode"
+        else
+          log "stage=fcitx action=noop mode=$mode"
         fi
         fcitx_end="$(now_ms)"
-        log "stage=fcitx duration_ms=$((fcitx_end - fcitx_start)) mode=$mode assets_changed=$assets_changed"
+        log "stage=fcitx duration_ms=$((fcitx_end - fcitx_start))"
 
         papirus_target="$(cat "$cache_dir/$mode/papirus-folder-color")"
         papirus_current=""

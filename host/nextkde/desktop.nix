@@ -228,7 +228,8 @@ in
   # KDE owns the mode/accent. kos-colors publishes separate Fcitx5 palettes;
   # do not select or modify the main desktop's mellow-matugen theme files.
   i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection = {
-    Theme = lib.mkForce "mellow-kde";
-    DarkTheme = lib.mkForce "mellow-kde-dark";
+    Theme = "mellow-kde";
+    DarkTheme = "mellow-kde-dark";
+    UseDarkTheme = "True";
   };
 }

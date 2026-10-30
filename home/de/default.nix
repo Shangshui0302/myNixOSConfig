@@ -12,6 +12,8 @@
     ./polkit.nix
   ];
 
+  home.pointerCursor.hyprcursor.enable = true;
+
   home.sessionVariables = {
     GTK_IM_MODULE = "fcitx";
     SDL_IM_MODULE = "fcitx";

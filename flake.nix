@@ -60,6 +60,7 @@
         shellLayout = "default"; # GNOME 原版实心通栏
       };
       materialAdwTheme = import ./local-deriv/material-adw-kvantum.nix { inherit pkgs; };
+      agentOrchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
     in
     {
       packages.${system} = {
@@ -82,9 +83,9 @@
         kmusic = pkgs.callPackage ./local-deriv/kmusic.nix { };
         # Upstream defaults; host/base/input-method.nix selects this host's options.
         fcitx5-wetypex = inputs.wetypex.packages.${system}.fcitx5-wetypex;
-        agent-orchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
+        agent-orchestrator = agentOrchestrator;
         agent-orchestrator-distrobox = pkgs.callPackage ./local-deriv/agent-orchestrator-distrobox.nix {
-          agentOrchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
+          inherit agentOrchestrator;
         };
         agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };
         opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
