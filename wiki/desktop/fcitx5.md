@@ -2,7 +2,7 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, wetypex, 输入法, wayland, 深色模式]
-updated: 2026-10-30
+updated: 2026-10-31
 ---
 
 # Fcitx5 输入法框架
@@ -81,7 +81,7 @@ fcitx5-wetypex-setup --check
 
 ### WeTypeX 构建选项与首次默认值
 
-在 `host/base/input-method.nix` 的 `.override` 参数中设置以下选项。四个布尔参数的上游默认值均为 `true`；本机保留 AI、语音、LayerShell 开启，`enableWeTypeTheme = false`、`defaultSettings = { }`。
+在 `host/base/input-method.nix` 的 `.override` 参数中设置以下选项。四个布尔参数的上游默认值均为 `true`；本机关闭 AI 助手（`enableAI = false`），保留语音、LayerShell 开启，`enableWeTypeTheme = false`、`defaultSettings = { }`。AI 助手入口、快捷键设置和查看器不再构建；已有偏好文件无需删除。
 
 | 参数 | 默认值 | 效果 |
 | --- | --- | --- |

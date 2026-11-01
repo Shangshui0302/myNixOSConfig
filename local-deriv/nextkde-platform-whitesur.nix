@@ -1,11 +1,11 @@
 { pkgs, src }:
 
 # Keep the pinned upstream daemon and all its integrations. Only replace the
-# palette pair used by theme.apply-system; never apply a full Look-and-Feel.
+# palette pair used by theme.apply-system. Plasma appearance defaults belong
+# to plasma-manager; the session supplies plasma-apply-colorscheme.
 (pkgs.callPackage "${src}/packaging/nix/kos-platform.nix" { inherit src; }).overrideAttrs
   (old: {
     pname = "nextkde-platform-whitesur";
-    patches = (old.patches or [ ]) ++ [ ./nextkde-platform-preserve-theme.patch ];
     postPatch = (old.postPatch or "") + ''
       substituteInPlace src/daemon/PlatformServerTheme.cpp \
         --replace-fail 'QStringLiteral("BreezeDark")' 'QStringLiteral("WhiteSurDark")' \

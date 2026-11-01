@@ -26,7 +26,7 @@
         (inputs.wetypex.packages.${pkgs.stdenv.hostPlatform.system}.fcitx5-wetypex.override {
           # true restores WeTypeX's controls for the shared Fcitx5 theme/font.
           enableWeTypeTheme = false;
-          enableAI = true;
+          enableAI = false;
           enableVoice = true;
           enableLayerShell = true;
           # First-run values only; existing GUI preferences remain user-owned.

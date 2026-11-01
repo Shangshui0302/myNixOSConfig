@@ -18,9 +18,37 @@
     inputs.plasma-manager.packages.${pkgs.stdenv.hostPlatform.system}.rc2nix
   ];
 
-  # Declarative KDE management via plasma-manager
+  # Preserve the rendering preferences selected in Plasma's Fonts KCM.
+  # Keep HM's font search paths separate from the rendering policy.
+  fonts.fontconfig = {
+    antialiasing = true;
+    hinting = "full";
+    subpixelRendering = "rgb";
+  };
+
+  # GUI preferences are captured here after review; keep KDE files writable.
   programs.plasma = {
     enable = true;
+    overrideConfig = false;
+    immutableByDefault = false;
+
+    kwin.effects = {
+      translucency.enable = true;
+      wobblyWindows.enable = true;
+    };
+    input.keyboard.layouts = [ { layout = "us"; } ];
+    # Only saved non-default Plasma shortcuts. KOS owns its own bindings and
+    # releases Meta+Tab from KWin's window switcher at runtime.
+    shortcuts = {
+      kwin = {
+        MinimizeAll = "Meta+Shift+D";
+        minimizeAllOthers = "Meta+Shift+O";
+      };
+      plasmashell = {
+        "next activity" = "Meta+A";
+        "previous activity" = "Meta+Shift+A";
+      };
+    };
 
     configFile = {
       # Plasmashell shell package: directs Plasma to use KOS desktop shell,
@@ -30,14 +58,36 @@
       # KDE global appearance defaults: sets WhiteSur light/dark package pair
       # to prevent login-time Breeze fallback while keeping user choices writable.
       "kdeglobals"."KDE" = {
+        AutomaticLookAndFeel = true;
         LookAndFeelPackage = "com.github.vinceliuice.WhiteSur";
         DefaultLightLookAndFeel = "com.github.vinceliuice.WhiteSur";
         DefaultDarkLookAndFeel = "com.github.vinceliuice.WhiteSur-dark";
       };
 
+      "kdeglobals"."General" = {
+        accentColorFromWallpaper = true;
+        XftAntialias = true;
+        XftHintStyle = "hintfull";
+        XftSubPixel = "rgb";
+      };
+
       # KWin plugins and window decoration for NextKDE desktop
       "kwinrc" = {
+        # The high-level number option also rewrites desktop IDs. Preserve the
+        # existing IDs and per-desktop layouts by owning only count and rows.
+        Desktops = {
+          Number = 3;
+          Rows = 1;
+        };
+        ElectricBorders = {
+          BottomLeft = "ShowDesktop";
+          TopRight = "KRunner";
+        };
+        NightColor.Active = false;
         Plugins = {
+          desktopchangeosdEnabled = true;
+          minimizeallEnabled = true;
+          sheetEnabled = true;
           blurEnabled = false;
           glassEnabled = true;
           kos_bridgeEnabled = true;
@@ -47,6 +97,37 @@
         "org.kde.kdecoration2" = {
           library = "kos_decoration";
         };
+      };
+      # The high-level touchpad module also removes unspecified properties.
+      # Own only the GUI preferences captured here, leaving other tuning intact.
+      "kcminputrc"."Libinput/2362/597/UNIW0001:00 093A:0255 Touchpad" = {
+        Enabled = true;
+        NaturalScroll = true;
+      };
+      "kcminputrc"."Libinput/2362/597/UNIW0001:00 093A:0255 Mouse" = {
+        NaturalScroll = false;
+        ScrollMethod = 4;
+      };
+      "plasma-localerc"."Formats".LANG = "zh_CN.UTF-8";
+      "kded_device_automounterrc"."General" = {
+        AutomountEnabled = true;
+        AutomountOnLogin = true;
+        AutomountOnPlugin = true;
+        AutomountUnknownDevices = true;
+      };
+      "dolphinrc" = {
+        General.LockPanels = false;
+        "KFileDialog Settings" = {
+          "Places Icons Auto-resize" = false;
+          "Places Icons Static Size" = 22;
+        };
+      };
+      "spectaclerc" = {
+        General = {
+          autoSaveImage = true;
+          clipboardGroup = "PostScreenshotCopyImage";
+        };
+        ImageSave.imageSaveLocation = "file://${config.home.homeDirectory}/Pictures/Screenshots/";
       };
     };
   };
