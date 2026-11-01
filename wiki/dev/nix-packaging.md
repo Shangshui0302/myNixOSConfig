@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-10-31
+updated: 2026-11-01
 ---
 # Nix 手工打包
 
@@ -172,6 +172,8 @@ sudo nixos-rebuild switch --flake .
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
 | Agent Orchestrator | `nix build path:.#agent-orchestrator-distrobox` | 官方 AppImage 解包后适配 Nix 动态库，附 Arch DSH 桥；原始桌面包为 `agent-orchestrator`，见 [AO](agent-orchestrator.md) |
+| Kiro Crew | `nix build path:.#kirocrew` | 固定官方 AppImage；在同一 FHS 环境内连接 `kiro-cli-unwrapped`，避免嵌套运行环境 |
+| Grok Bot | `nix build path:.#grok-bot` | 消费固定提交的 `llm-agents` input，仅引入目标包；使用限制见 [AI 工具](vscode.md#ai-辅助扩展) |
 | WeTypeX | `nix build path:.#fcitx5-wetypex` | 直接构建 `wetypex` input 的上游默认包，`flake.lock` 固定源码；系统中的个人选项在 `host/base/input-method.nix` 通过 `.override` 设置，无本地包定义或补丁，原版引擎由用户初始化，见 [Fcitx5](../desktop/fcitx5.md#wetypex-首次使用) |
 
 NextKDE 的 `nextkde` 构建入口使用 `local-deriv/nextkde-shell.nix`，去掉控制中心和启动台的最低模糊限制。另提供 `nextkde-platform-whitesur`（复用锁定的平台服务，仅替换 WhiteSur 明暗配色对）、`nextkde-apps`（Qt 日历、待办、计算器与 PIM 服务）、`nextkde-spatial-models`（固定哈希的深度与前景 ONNX 模型）及 `nextkde-qdbus6`（Qt 6 qdbus 的兼容命令名）。仅在 NextKDE 变体集成，详见 [NextKDE 桌面变体](../desktop/nextkde.md)。

@@ -2,7 +2,7 @@
 title: VS Code 集成
 category: 开发
 tags: [vscode, editor, home-manager, dev, matugen, darkman]
-updated: 2026-10-29
+updated: 2026-11-01
 ---
 
 # VS Code 集成
@@ -87,6 +87,30 @@ VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI C
 Agent Orchestrator 提供主代理派工、开发看板和审查流程，并通过专用桥接使用 Arch DSH，试用方式见 [Agent Orchestrator](agent-orchestrator.md)。
 
 当前 ai.nix 管理的工具：`codex`、`codex-desktop`，以及 Google Antigravity CLI 与 Antigravity 2.0 Agents 桌面端。Antigravity CLI 在终端用 `agy` 启动；Agents 界面在应用菜单选择 Antigravity，或运行 `antigravity`。这两个包来自锁定的 nixpkgs，未安装 `antigravity-ide`。首次使用时按应用提示完成登录。
+
+另外提供以下 AI 工具；除表中标明的本地包和独立 input 外，版本跟随仓库锁定的 nixpkgs。登录与项目授权在首次启动后按各应用提示完成：
+
+| 工具 | 启动命令 | 包来源 |
+|------|----------|--------|
+| GitHub Copilot CLI | `copilot` | `github-copilot-cli` |
+| Kiro 编辑器 | `kiro` | `kiro` |
+| Kiro CLI | `kiro-cli` | `kiro-cli` |
+| Cursor 编辑器 | `cursor` | `code-cursor` |
+| Cursor CLI | `cursor-agent` | `cursor-cli` |
+| Grok Build | `grok` | `grok-build` |
+| Paseo CLI／服务端 | `paseo`、`paseo-server` | `paseo` |
+| Paseo 桌面端 | `paseo-desktop` | `paseo.desktop` |
+| Herdr 终端工作区 | `herdr` | `herdr` |
+| Kiro Crew | `kirocrew` | 本地打包官方发布物 |
+| Grok Bot | `grok-bot` | 固定提交的 `numtide/llm-agents.nix` |
+
+Paseo 和 Herdr 可以用于本地目录，无需为项目添加 GitHub remote。配置只安装程序，不注册常驻服务；Paseo 启动后的 daemon 和跨设备连接按应用内流程管理。Herdr 可在项目目录运行 `herdr`；Nix 包装的代理可能遇到[状态识别问题](https://github.com/herdrdev/herdr/issues/803)，应分别确认终端内代理运行和侧栏状态。
+
+Kiro Crew 0.11.1 的官方桌面包未内置 CLI；本地包在同一个运行环境内连接 `kiro-cli-unwrapped`，默认设置绝对 `KIROCREW_KIRO_BIN`，避免重复嵌套运行环境。可通过该环境变量显式覆盖 CLI 路径。
+
+Grok Bot 使用 Cursor 账号，官方 Linux 下载同样由 Cursor 域名提供。社区包为规避上游 Electron webview 崩溃添加 `--no-sandbox`，意味着关闭 Electron 的进程沙箱；这不是系统级权限提升。Kiro Crew 与 Grok Bot 的桌面运行及登录需要在应用系统配置后验证。
+
+这些程序由 Nix 更新，不运行上游的自安装脚本。Grok Build 另带 `agent` 别名，建议使用明确的 `grok` 命令。
 
 同一模块还管理 Agent Reach、OpenCLI、mcporter，并启用 yt-dlp 与本机适配的 Agent Reach Skill。
 平台访问的首次连接和字幕提取见 [Agent Reach 与 OpenCLI](agent-reach.md)；Exa 暂不配置。

@@ -10,6 +10,11 @@
     # Temporary consumer of the tested package in nixpkgs PR #570118.
     # Use pkgs.strata and remove this input once our official channel includes it.
     strata-nixpkgs.url = "github:Shangshui0302/nixpkgs?ref=feature/strata";
+    llm-agents = {
+      # Grok Bot is not available in our locked nixpkgs yet.
+      url = "github:numtide/llm-agents.nix/8efcba308a6b12a92441cb4df624e484bad9e18a";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -60,7 +65,11 @@
     { nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs {
+        inherit system;
+        # Match the host policy for standalone packages such as Kiro Crew.
+        config.allowUnfree = true;
+      };
       # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
       materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
         inherit pkgs;
@@ -96,6 +105,8 @@
         agent-orchestrator-distrobox = pkgs.callPackage ./local-deriv/agent-orchestrator-distrobox.nix {
           inherit agentOrchestrator;
         };
+        kirocrew = pkgs.callPackage ./local-deriv/kirocrew.nix { };
+        grok-bot = inputs.llm-agents.packages.${system}.grok-bot;
         agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };
         opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
         material-gnome-theme = materialGnomeTheme;
