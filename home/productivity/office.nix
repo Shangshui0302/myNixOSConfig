@@ -3,7 +3,6 @@
 {
   home.packages = with pkgs; [
     libreoffice-stable
-    onlyoffice-desktopeditors
     obsidian
     typora
     zettlr

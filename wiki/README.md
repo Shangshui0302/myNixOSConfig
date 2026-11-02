@@ -44,7 +44,7 @@ updated: 2026-11-02
 
 | 文档 | 内容 |
 |------|------|
-| [办公软件套件](productivity/office.md) | LibreOffice、OnlyOffice、Obsidian、Markdown 编辑器 |
+| [办公软件套件](productivity/office.md) | LibreOffice、Obsidian、Markdown 编辑器 |
 | [图像与视频工具](productivity/graphics.md) | gThumb、GIMP、Kdenlive、Glaxnimate、Blender |
 | [文件管理器与归档工具](productivity/files.md) | Dolphin、Strata、Ark、归档与缩略图工具 |
 | [Yazi 文件管理器](productivity/yazi.md) | 文件管理器：按键、插件、主题 |
@@ -66,7 +66,7 @@ updated: 2026-11-02
 
 | 文档 | 内容 |
 |------|------|
-| [游戏平台](leisure/gaming.md) | Steam、Lutris/Bottles、MangoHud、32-bit 图形库、Windows 虚拟机 |
+| [游戏平台](leisure/gaming.md) | Steam、Bottles、MangoHud、32-bit 图形库、Windows 虚拟机 |
 | [媒体播放](leisure/media.md) | mpv、Gwenview、网易云、OBS、ani-cli、Kazumi |
 
 ## 网络与代理 `networking/`

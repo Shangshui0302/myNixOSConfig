@@ -121,7 +121,7 @@ Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、
 ## 故障排查
 
 - **应用打开文件夹却启动 VS Code**：先确认已应用配置，再查询 `xdg-mime query default inode/directory`；若仍不正确，检查 `~/.config/mimeapps.list` 或桌面专属 `*-mimeapps.list` 中是否有优先级更高的目录关联。
-- **宿主默认值正确，Lutris/Bottles 仍打开 VS Code**：两者的 FHS 环境默认看不到系统的 `/etc/xdg`。`home/leisure/gaming.nix` 已补上整个目录的只读映射，兼容通用和桌面专属关联，同时保留用户关联的优先级；手动 rebuild 后完全退出并重新启动相应应用，再测试原入口。详见[游戏平台](../leisure/gaming.md#故障排查)。
+- **宿主默认值正确，Bottles 仍打开 VS Code**：Bottles 的 FHS 环境默认看不到系统的 `/etc/xdg`。`home/leisure/gaming.nix` 已补上整个目录的只读映射，兼容通用和桌面专属关联，同时保留用户关联的优先级；手动 rebuild 后完全退出并重新启动相应应用，再测试原入口。详见[游戏平台](../leisure/gaming.md#故障排查)。
 - **默认关联是 Strata，但「在文件管理器中显示」仍打开别的程序**：该入口可能使用 FileManager1；确认上述用户级服务链接存在，重新登录释放旧服务的 D-Bus 名称后，再在原应用中测试。
 - **Strata 预览报 `Unable to start the preview sandbox`**：先确认实际运行的是固定 input 中的 1.0.0 包；该包自带可信 `bwrap` 搜索路径，再检查用户命名空间权限与应用日志。
 - **Strata 缩略图/PDF/压缩包预览空白**：在 nixpkgs 任务 worktree 核对沙箱补丁及对应验证记录；沙箱内工具和 GStreamer 插件路径由包提供。

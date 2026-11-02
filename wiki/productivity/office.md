@@ -1,7 +1,7 @@
 ---
 title: 办公软件套件
 category: 生产力
-tags: [office, libreoffice, onlyoffice, fonts, cjk, z-library, zotero]
+tags: [office, libreoffice, fonts, cjk, z-library, zotero]
 updated: 2026-11-02
 ---
 
@@ -13,13 +13,12 @@ updated: 2026-11-02
 
 `home/productivity/office.nix` 通过 `home.packages` 安装：
 
-- **LibreOffice Fresh** — 文档 / 表格 / 演示，全能主力
-- **OnlyOffice Desktop Editors** — 对 MS Office 格式（docx/xlsx/pptx）兼容度高
+- **LibreOffice Stable** — 文档 / 表格 / 演示，全能主力
 - **笔记 / Markdown**：Obsidian、Typora、Zettlr、Ghostwriter
 - **电子书 / 资料检索**：Z-Library 桌面客户端（Nixpkgs 包 `z-library-desktop`）
 - **文献管理**：Zotero（Nixpkgs 包 `zotero`）
 
-默认打开方式（MIME 关联）在模块里以注释形式预置。若想把 Office 格式统一默认用 OnlyOffice 打开，取消 `xdg.mimeApps` 那段注释并 rebuild 即可。
+办公套件保留 LibreOffice；默认打开方式可在桌面的文件关联设置中选择。
 
 ## Z-Library 桌面客户端
 
@@ -54,7 +53,7 @@ S3["locale.nix<br/>时区/区域设置"]
 end
 subgraph "用户层(home)"
 U1["productivity/default.nix<br/>导入办公模块"]
-U2["productivity/office.nix<br/>安装LibreOffice/OnlyOffice"]
+U2["productivity/office.nix<br/>安装LibreOffice"]
 U3["home/theme/base.nix<br/>fontconfig规则"]
 end
 U1 --> U2
@@ -87,8 +86,8 @@ Rule --> End(["应用生效"])
 
 ## 打印与 PDF 导出
 
-- 系统层 `host/services.nix` 启用 CUPS，为 LibreOffice/OnlyOffice 提供打印能力。
-- 两者都支持"导出为 PDF"，底层依赖系统字体与渲染管线，中文排版正确的前提是字体回退链生效。
+- 系统层 `host/services.nix` 启用 CUPS，为 LibreOffice 提供打印能力。
+- LibreOffice 支持"导出为 PDF"，底层依赖系统字体与渲染管线，中文排版正确的前提是字体回退链生效。
 - 批量转换用无头模式命令行，例如脚本化 `docx → pdf`：
 
 ```bash
