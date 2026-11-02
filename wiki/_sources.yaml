@@ -78,7 +78,7 @@ docs:
     sources: [home/dev/nvim.nix, home/dev/nvim/init.lua, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/nvim-colors.lua.tpl]
     memory:  []
   dev/vscode.md:
-    sources: [flake.nix, flake.lock, local-deriv/kirocrew.nix, host/base/input-method.nix, home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
+    sources: [flake.nix, flake.lock, local-deriv/kirocrew.nix, local-deriv/herdr-app.nix, local-deriv/herdr-core.nix, host/base/input-method.nix, home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
     memory:  [ai-tools-source]
   dev/agent-orchestrator.md:
     sources: [flake.nix, flake.lock, home/dev/ai.nix, home/dev/agent-orchestrator.nix, local-deriv/agent-orchestrator.nix, local-deriv/agent-orchestrator, local-deriv/agent-orchestrator-distrobox.nix]
@@ -90,7 +90,7 @@ docs:
     sources: [home/de/hyprland.nix, home/de/hyprland/scrolling-policy.lua, home/de/hyprland/token-monitor-size.lua]
     memory:  []
   dev/nix-packaging.md:
-    sources: [flake.nix, flake.lock, local-deriv/kirocrew.nix, host/base/input-method.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/material-gnome-theme.nix, local-deriv/modernz.nix, local-deriv/kmusic.nix, local-deriv/netease-cloud-music-web-player.nix, local-deriv/agent-reach.nix, local-deriv/opencli.nix, local-deriv/agent-orchestrator.nix, local-deriv/agent-orchestrator-distrobox.nix]
+    sources: [flake.nix, flake.lock, local-deriv/kirocrew.nix, local-deriv/herdr-app.nix, local-deriv/herdr-core.nix, host/base/input-method.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/material-gnome-theme.nix, local-deriv/modernz.nix, local-deriv/kmusic.nix, local-deriv/netease-cloud-music-web-player.nix, local-deriv/agent-reach.nix, local-deriv/opencli.nix, local-deriv/agent-orchestrator.nix, local-deriv/agent-orchestrator-distrobox.nix]
     memory:  [nix-package-runtime-freshness]
   dev/distrobox.md:
     sources: [home/dev/containers.nix, home/dev/container-images/arch.Containerfile, home/dev/container-images/fedora.Containerfile, home/dev/container-images/ubuntu.Containerfile, home/dev/container-images/manage.sh, home/dev/nvim.nix, home/dev/nvim/init.lua, home/env/shell/programs.nix, host/base/containers.nix]

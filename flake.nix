@@ -103,6 +103,8 @@
         agent-orchestrator-distrobox = pkgs.callPackage ./local-deriv/agent-orchestrator-distrobox.nix {
           inherit agentOrchestrator;
         };
+        herdr-app = pkgs.callPackage ./local-deriv/herdr-app.nix { };
+        herdr-core = pkgs.callPackage ./local-deriv/herdr-core.nix { };
         kirocrew = pkgs.callPackage ./local-deriv/kirocrew.nix { };
         grok-bot = inputs.llm-agents.packages.${system}.grok-bot;
         agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };

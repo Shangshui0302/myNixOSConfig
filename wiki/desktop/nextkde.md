@@ -101,7 +101,7 @@ Home Manager 不生成配置备份；切回主桌面时直接接管 GTK4 主题�
 - **台前调度开关无效**：若 `kos-shell` 日志包含 `qdbus6: 未找到命令`，说明仍在运行缺少兼容入口的旧 generation；安装新版 NextKDE 后重试。插件 `stageanim13` 已随 KOS 安装，兼容入口只补命令名称。
 - **每次登录都要重选 Fcitx 虚拟键盘**：新版配置固定 KWin 启动入口，覆盖用户文件中的空值、旧路径及错误转义键。安装后需重新进入 NextKDE 会话才能验证开机连接；无需手改用户 `kwinrc` 或反复重启 Fcitx。
 - **Dolphin 出现黑白交替行、文字看不清或不跟随深浅色**：旧的 `dolphinrc` 可能固定了 Matugen 配色，与当前 KDE 配色混用。新版 NextKDE 通过 `/etc/xdg/dolphinrc` 的 `[UiSettings] ColorScheme[$i]=` 覆盖该选择；安装后重新打开 Dolphin，应用级配色应为跟随系统。
-- **WhiteSur 配色切换后变回微风**：锁定的上游 KOS 将应用配色写死为 Breeze。本变体使用 `nextkde-platform-whitesur` 修正为 WhiteSur 明暗配色，并安装 `whitesur-kde` 提供资源。安装新版并重新登录后，在 KOS 中切换一次明暗即可应用；Dolphin 保持“跟随系统”，无需单独选择 WhiteSur。这里只切换配色，不应用完整全局主题，也不替换图标、窗口装饰或控件样式。已有用户目录中的同名 WhiteSur 配色优先于系统包。
+- **WhiteSur 配色切换后变回微风**：锁定的上游 KOS 将应用配色写死为 Breeze。本变体使用 `nextkde-platform-whitesur` 修正为 WhiteSur 明暗配色，并安装 `whitesur-kde` 提供资源。安装新版并重新登录后，在 KOS 中切换一次明暗即可应用；Dolphin 保持“跟随系统”，无需单独选择 WhiteSur。这里只切换配色，不应用完整全局主题，也不替换图标、窗口装饰或控件样式。Home Manager 接管用户目录中的 WhiteSur 明暗色板，激活时替换遗留同名文件，避免旧色板覆盖系统包或阻断配置部署。
 - **系统设置、搜索中的输入法候选框一直是浅色**：新版会话改走 KWin 原生输入协议，需要重新登录使应用获得新环境；Fcitx 的 `UseDarkTheme=True` 才会跟随系统。少数旧 Qt 5 XWayland 应用若无法输入，可仅对该应用指定 `QT_IM_MODULE=fcitx`，不要重新设置整个会话。
 - **sudo 报缺少 setuid 权限**：旧版 KOS 服务的精简 PATH 会误用 `/run/current-system/sw/bin/sudo`。用 `/run/wrappers/bin/sudo nixos-rebuild boot --flake path:.#MechRevo-NixOS` 安装修复后，重启进入新版 NextKDE；已有终端不会自动获得新环境。正常情况下 `command -v sudo` 应输出 `/run/wrappers/bin/sudo`，无需修改 sudo 文件权限。
 - **登录后界面异常**：先检查是否从启动菜单进入了 `nextkde`，并查看 `journalctl --user -b` 中 KOS 和 Plasma 的日志。系统构建成功本身不能证明桌面运行正常。

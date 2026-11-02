@@ -49,10 +49,12 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 ## 快捷键（与 Hyprland 绑定）
 
+niri 的控制中心仍使用 `Super + K`。
+
 | 按键 | 功能 |
 |------|------|
 | `Super + Space` | 应用启动器 |
-| `Super + K` | 控制中心 |
+| `Super + Alt + K` | 控制中心 |
 | `Super + ,` | 设置面板 |
 | `Super + ?` | Keybind Cheatsheet（Hyprland / niri） |
 | `Super + Tab` | Hyprland 的 ScrollOverview；niri 使用原生 `toggle-overview`，不经过 Noctalia |
@@ -79,7 +81,7 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 ## 控制中心
 
-点击顶栏最右侧图标或 `Super + K` 打开。
+点击顶栏最右侧图标或 `Super + Alt + K` 打开。
 
 **左侧快捷操作：**
 | 项目 | 说明 |
@@ -165,7 +167,7 @@ Super + Shift + D  # Darkman 切换暗色/亮色
 ### 更换壁纸
 
 ```
-Super + K        # 控制中心
+Super + Alt + K        # 控制中心
 WallpaperSelector # 浏览壁纸目录
 点击选择          # 带过渡动画切换
 ```
@@ -174,7 +176,7 @@ WallpaperSelector # 浏览壁纸目录
 
 ```
 顶栏左侧系统监视器  # 实时 CPU/内存
-Super + K → Media/Sysmon 卡片  # 详细信息
+Super + Alt + K → Media/Sysmon 卡片  # 详细信息
 ```
 
 ### 使用 AI 助手

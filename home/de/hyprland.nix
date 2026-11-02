@@ -639,7 +639,7 @@ in
       -- description 字段，缺了就只有键位没有功能说明。
       hl.bind("SUPER + D", hl.dsp.exec_cmd("desktop-shell-action dashboard"), { description = "Dashboard（Caelestia）" })
       hl.bind("SUPER + A", hl.dsp.exec_cmd("desktop-shell-action sidebar"), { description = "侧栏（Caelestia）" })
-      hl.bind("SUPER + L", hl.dsp.exec_cmd("desktop-shell-action session"), { description = "会话菜单（Caelestia）" })
+      hl.bind("SUPER + ALT + L", hl.dsp.exec_cmd("desktop-shell-action session"), { description = "会话菜单（Caelestia）" })
       hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd("desktop-shell-action showall"), { description = "总开关：dashboard + OSD" })
 
       -- Launch
@@ -655,7 +655,7 @@ in
       hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"), { description = "Neovim（foot）" })
       hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"), { description = "Obsidian" })
       hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("desktop-shell-action launcher"), { description = "应用启动器" })
-      hl.bind("SUPER + K", hl.dsp.exec_cmd("desktop-shell-action control"), { description = "控制中心" })
+      hl.bind("SUPER + ALT + K", hl.dsp.exec_cmd("desktop-shell-action control"), { description = "控制中心" })
       hl.bind("SUPER + comma", hl.dsp.exec_cmd("desktop-shell-action settings"), { description = "设置面板" })
       hl.bind("SUPER + SHIFT + slash", hl.dsp.exec_cmd("noctalia msg panel-toggle kenn/keybind-cheatsheet:cheatsheet"), { description = "快捷键速查表" })
       hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("darkman toggle"), { description = "深浅模式切换（Darkman）" })
@@ -672,6 +672,10 @@ in
       hl.bind("SUPER + SHIFT + M", hl.dsp.exit(), { description = "退出 Hyprland 会话" })
 
       -- Focus
+      hl.bind("SUPER + H", hl.dsp.focus({ direction = "l" }), { description = "焦点向左" })
+      hl.bind("SUPER + J", hl.dsp.focus({ direction = "d" }), { description = "焦点向下" })
+      hl.bind("SUPER + K", hl.dsp.focus({ direction = "u" }), { description = "焦点向上" })
+      hl.bind("SUPER + L", hl.dsp.focus({ direction = "r" }), { description = "焦点向右" })
       hl.bind("SUPER + left", hl.dsp.focus({ direction = "l" }), { description = "焦点向左" })
       hl.bind("SUPER + right", hl.dsp.focus({ direction = "r" }), { description = "焦点向右" })
       hl.bind("SUPER + up", hl.dsp.focus({ direction = "u" }), { description = "焦点向上" })

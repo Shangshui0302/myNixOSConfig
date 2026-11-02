@@ -22,6 +22,8 @@ in
     paseo
     paseo.desktop
     herdr
+    (pkgs.callPackage ../../local-deriv/herdr-app.nix { })
+    (pkgs.callPackage ../../local-deriv/herdr-core.nix { })
     (pkgs.callPackage ../../local-deriv/kirocrew.nix { })
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.grok-bot
     antigravity-cli

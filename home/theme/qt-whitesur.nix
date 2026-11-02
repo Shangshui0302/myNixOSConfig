@@ -17,6 +17,8 @@
 
   # Dolphin and other KDE consumers select these semantic palettes by name.
   xdg.dataFile = lib.genAttrs [ "WhiteSur" "WhiteSurDark" ] (name: {
+    # Reclaim legacy user copies so they cannot block the entire HM activation.
+    force = true;
     target = "color-schemes/${name}.colors";
     source = "${pkgs.whitesur-kde}/share/color-schemes/${name}.colors";
   });

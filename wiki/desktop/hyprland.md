@@ -71,11 +71,11 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 | `Super + C` | 剪贴板历史（Noctalia 面板 / Caelestia 用 `cliphist`+`fuzzel`） |
 | `Super + Shift + C` | 删除剪贴板条目（Noctalia 清空历史 / Caelestia `cliphist delete`） |
 | `Super + Space` | 应用启动器（Noctalia / Caelestia） |
-| `Super + K` | 控制中心（Noctalia / Caelestia utilities） |
+| `Super + Alt + K` | 控制中心（Noctalia / Caelestia utilities） |
 | `Super + ,` | 设置面板（Noctalia / Caelestia Nexus） |
 | `Super + D` | dashboard（仅 Caelestia；Noctalia 下无响应） |
 | `Super + A` | 侧栏（仅 Caelestia；Noctalia 下无响应） |
-| `Super + L` | 会话菜单（仅 Caelestia；Noctalia 下无响应） |
+| `Super + Alt + L` | 会话菜单（仅 Caelestia；Noctalia 下无响应） |
 | `Super + Shift + W` | 面板总开关：dashboard + OSD（仅 Caelestia） |
 | `Super + Shift + L` | 锁屏（Noctalia session lock / Caelestia 自带锁屏） |
 | `Super + Tab` | ScrollOverview 工作区总览 |
@@ -122,6 +122,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 | 按键 | 功能 |
 |------|------|
+| `Super + H/J/K/L` | 焦点向左/下/上/右（Vim 式） |
 | `Super + ←/→/↑/↓` | 切换焦点 |
 | `Super + 1–0` | 切换到工作区 1–10 |
 | `Super + G` / `Super + Tab` | 打开 / 关闭 ScrollOverview 工作区总览 |

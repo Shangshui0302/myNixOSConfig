@@ -172,6 +172,8 @@ sudo nixos-rebuild switch --flake .
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
 | Agent Orchestrator | `nix build path:.#agent-orchestrator-distrobox` | 官方 AppImage 解包后适配 Nix 动态库，附 Arch DSH 桥；原始桌面包为 `agent-orchestrator`，见 [AO](agent-orchestrator.md) |
+| Herdr 桌面版 | `nix build path:.#herdr-app` | 固定官方 Linux 0.1.11 发布物；包装器提供 `herdr-core`，使用说明见 [AI 工具](vscode.md#ai-辅助扩展) |
+| Herdr 核心 | `nix build path:.#herdr-core` | 固定官方 Linux 0.1.16 静态可执行文件，提供 `herdr-core` 与 `hc` |
 | Kiro Crew | `nix build path:.#kirocrew` | 固定官方 AppImage；在同一 FHS 环境内连接 `kiro-cli-unwrapped`，避免嵌套运行环境 |
 | Grok Bot | `nix build path:.#grok-bot` | 消费固定提交的 `llm-agents` input，仅引入目标包；使用限制见 [AI 工具](vscode.md#ai-辅助扩展) |
 | WeTypeX | `nix build path:.#fcitx5-wetypex` | 直接构建 `wetypex` input 的上游默认包，`flake.lock` 固定源码；系统中的个人选项在 `host/base/input-method.nix` 通过 `.override` 设置，无本地包定义或补丁，原版引擎由用户初始化，见 [Fcitx5](../desktop/fcitx5.md#wetypex-首次使用) |
