@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   # System-level session integration shared by the Hyprland/niri DE.
@@ -34,17 +38,38 @@
   };
 
   xdg.portal = {
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr pkgs.darkman ];
+    # Select Strata only for file dialogs; keep the original compositor/GTK
+    # defaults for other interfaces and the shared KWallet credential provider.
+    extraPortals = [
+      inputs.strata-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.strata
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.kdePackages.kwallet
+      pkgs.xdg-desktop-portal-wlr
+      pkgs.darkman
+    ];
 
     config.hyprland = {
-      default = [ "hyprland" "gtk" ];
+      default = [
+        "hyprland"
+        "gtk"
+      ];
+      "org.freedesktop.impl.portal.FileChooser" = [ "strata" "gtk" ];
       "org.freedesktop.impl.portal.Settings" = [ "darkman" ];
+      "org.freedesktop.impl.portal.Secret" = [ "kwallet" ];
+      "org.freedesktop.impl.portal.ScreenCast" = [ "hyprland" ];
+      "org.freedesktop.impl.portal.Screenshot" = [ "hyprland" ];
     };
 
     config.niri = {
-      default = [ "wlr" "gtk" ];
+      default = [
+        "wlr"
+        "gtk"
+      ];
       "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
+      "org.freedesktop.impl.portal.Screenshot" = [ "wlr" ];
+      "org.freedesktop.impl.portal.FileChooser" = [ "strata" "gtk" ];
       "org.freedesktop.impl.portal.Settings" = [ "darkman" ];
+      "org.freedesktop.impl.portal.Secret" = [ "kwallet" ];
     };
   };
 }

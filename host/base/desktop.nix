@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   plasma = config.services.desktopManager.plasma6.enable;
@@ -7,16 +12,45 @@ in
 {
   # 共享桌面基础：keyring / 字体 / X server。
 
-  # GNOME Keyring — 为 Electron/VS Code 类应用提供加密凭据存储
-  services.gnome.gnome-keyring.enable = true;
+  # Both desktop variants share one wallet; desktop detection must not choose
+  # a different encryption key for the same browser profile.
+  services.gnome.gnome-keyring.enable = false;
+  services.dbus.packages = [
+    pkgs.kdePackages.kwallet
+    # KWallet 6.31 ships org.kde.secretservicecompat, but generic libsecret
+    # clients also need activation by the standard Secret Service bus name.
+    (pkgs.writeTextDir "share/dbus-1/services/org.freedesktop.secrets.service" ''
+      [D-BUS Service]
+      Name=org.freedesktop.secrets
+      Exec=${pkgs.kdePackages.kwallet}/bin/ksecretd
+    '')
+  ];
+  environment.etc."xdg/kwalletrc".text = ''
+    [KSecretD]
+    Enabled[$i]=true
+  '';
+  # greetd and SDDM include login's PAM stack. TTY-based greetd needs force_run.
+  security.pam.services.login.kwallet = {
+    enable = true;
+    forceRun = !plasma;
+  };
+  # Plasma already starts this upstream helper; UWSM/niri need an explicit hook.
+  systemd.user.services.plasma-kwallet-pam = lib.mkIf (!plasma) {
+    description = "Unlock KWallet from login credentials";
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    after = [ "graphical-session-pre.target" ];
+    before = [ "xdg-desktop-portal.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.kdePackages.kwallet-pam}/libexec/pam_kwallet_init";
+    };
+  };
 
   # 目录默认值与各变体已安装的文件管理器一致；保留用户层可写的其他 MIME 关联。
   # 不启用 HM 的整份 mimeapps.list 管理，避免顺带激活已有的文本默认值。
   xdg.mime.defaultApplications."inode/directory" =
-    if plasma then
-      "org.kde.dolphin.desktop"
-    else
-      "io.github.lgse.Strata.desktop";
+    if plasma then "org.kde.dolphin.desktop" else "io.github.lgse.Strata.desktop";
 
   # 主桌面的手机互联；原生模块同时安装 KDE Connect 并开放发现所需端口。
   programs.kdeconnect.enable = true;
@@ -53,7 +87,17 @@ in
   # 必须 systemctl --user start 才起。故显式加入 default.target（与同目录
   # gcr-ssh-agent.nix 的做法一致）。
   systemd.user.services.at-spi-dbus-bus.wantedBy = [ "default.target" ];
-  environment.systemPackages = with pkgs; [ wtype ];
+  environment.systemPackages = [
+    pkgs.wtype
+  ]
+  ++ lib.optionals (!plasma) (
+    with pkgs.kdePackages;
+    [
+      kwallet
+      kwallet-pam
+      kwalletmanager
+    ]
+  );
 
   services.xserver.enable = true;
   services.xserver.xkb.layout = "us";

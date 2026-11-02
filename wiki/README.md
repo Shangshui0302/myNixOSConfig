@@ -38,7 +38,7 @@ updated: 2026-11-02
 | [系统服务：权限与安全](services.md#权限与安全) | polkit 图形授权窗口、Howdy 与 PAM 回退 |
 | [Shell 环境](desktop/shell.md) | fish/bash、别名、starship、zellij、foot |
 | [深色模式架构](desktop/darkmode.md) | 深色调度、dconf/qt5ct/portal 分发 |
-| [GNOME Keyring](desktop/keyring.md) | 凭据存储：PAM 解锁、Electron 应用、故障排查 |
+| [KWallet 共享凭据存储](desktop/keyring.md) | 凭据存储：PAM 解锁、Electron 应用、故障排查 |
 
 ## 生产力 `productivity/`
 

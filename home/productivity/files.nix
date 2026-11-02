@@ -11,7 +11,7 @@ let
   mainDesktop = !osConfig.services.desktopManager.plasma6.enable;
 in
 {
-  # Plasma 自带 Dolphin，Strata 仅在主 DE 提供。
+  # Plasma 自带 Dolphin；主 DE 的 Strata 由系统 FileChooser Portal 注册提供。
   home.packages =
     with pkgs;
     [
@@ -25,7 +25,6 @@ in
     ++ lib.optionals mainDesktop [
       kdePackages.dolphin
       kdePackages.ark
-      strata
     ];
 
   # “在文件管理器中显示”走 FileManager1，独立于目录 MIME 默认关联。

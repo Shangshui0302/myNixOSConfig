@@ -71,7 +71,7 @@ journalctl --user -u darkman -b
 ## GTK 与 Qt
 
 - **GTK4**：`Material-Gnome-Matugen/gtk-4.0/colors.css` 始终同时包含浅色和深色变量，用 `@media (prefers-color-scheme: dark)` 选择。GTK4 收到 portal 模式事件时不再依赖 Matugen 写文件的先后顺序，因此不会读取上一轮颜色而反向。
-- **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`；壁纸色板变化后还会重启 `xdg-desktop-portal-gtk`，避免 VS Code/Codex 复用长驻文件选择器进程中的旧 CSS，普通深浅切换不重启。
+- **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`。主桌面文件选择器改由 Strata Portal 提供，不再为文件选择器重启 GTK Portal。
 - **Flatpak GTK 应用**：继续通过 `$HOME/.themes:ro` 和固定 `GTK_THEME=Material-Gnome-Matugen` 读取主题。GTK4 4.20 及以上可使用双配色媒体查询；GTK3 Flatpak 暂不动态切换到 `-Dark` 目录。
 - **Qt 与 Dolphin**：两个桌面共用 WhiteSur 的 Kvantum 明暗主题和 KDE 色板；主桌面由 `qtct` 提供 Qt5/Qt6 平台主题，Darkman 经 `theme-apply` 选择 `WhiteSur` 或 `WhiteSurDark`，并为 Dolphin 选择对应色板。NextKDE 保持 Plasma 平台和 KDE 色源，由 `kos-colors` 根据 KDE 模式选择相同的 Kvantum 主题。Qt 资源使用 WhiteSur 原始配色，不随壁纸重新着色；已运行的 Qt 应用可能需要重新启动才能采用新模式。
 - **认证窗口**：`hyprpolkitagent` 的 Qt Widgets 使用 qt6ct 与 Kvantum，Qt Quick 控件保留 Hyprland 样式；实际弹窗外观和模式切换仍需在应用配置后验收。
@@ -154,7 +154,7 @@ systemctl --user status darkman xdg-desktop-portal
 journalctl --user -u darkman -b
 ```
 
-若自动切换时间明显不对，确认当前运行的配置包含成都坐标，并检查系统时区；不要根据 Mihomo 当前节点判断 Darkman 的位置。若 portal 后端无法启动，先执行 `systemctl --user restart darkman xdg-desktop-portal`。GTK 的文件选择器仍由 gtk portal 提供；若它单独报 `not-found`，再排查历史遗留的 `xdg-desktop-portal-gtk.service` dangling symlink。
+若自动切换时间明显不对，确认当前运行的配置包含成都坐标，并检查系统时区；不要根据 Mihomo 当前节点判断 Darkman 的位置。若 portal 后端无法启动，先执行 `systemctl --user restart darkman xdg-desktop-portal`。主桌面文件选择器由 Strata Portal 按需启动；故障时检查 `org.freedesktop.impl.portal.desktop.strata` 的 D-Bus 激活及 `xdg-desktop-portal` 日志，不要运行 Strata 自安装命令覆盖 Nix 配置。
 
 ## 相关链接
 

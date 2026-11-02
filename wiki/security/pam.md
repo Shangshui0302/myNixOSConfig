@@ -17,7 +17,7 @@ PAM（Pluggable Authentication Modules）是 Linux 的**身份认证框架**。�
 PAM (认证链)
   ├─ pam_unix.so            ← 验证密码是否匹配 /etc/shadow
   ├─ pam_env.so             ← 加载环境变量
-  ├─ pam_gnome_keyring.so   ← 自动解锁 login keyring
+  ├─ pam_kwallet5.so   ← 自动解锁 kdewallet
   └─ pam_systemd.so         ← 注册用户 session
   │
   ▼
@@ -66,9 +66,9 @@ PAM 的核心思想是**分离策略和机制**：
 
 ```text
 auth       requisite   pam_unix.so
-auth       optional    pam_gnome_keyring.so
+auth       optional    pam_kwallet5.so
 session    required    pam_systemd.so
-session    optional    pam_gnome_keyring.so auto_start
+session    optional    pam_kwallet5.so force_run
 ```
 
 关键行：
@@ -76,9 +76,9 @@ session    optional    pam_gnome_keyring.so auto_start
 | 行                                            | 作用                             |
 | --------------------------------------------- | -------------------------------- |
 | `pam_unix.so` (auth)                        | 用`/etc/shadow` 验证密码       |
-| `pam_gnome_keyring.so` (auth)               | 用登录密码尝试解锁 login keyring |
+| `pam_kwallet5.so` (auth)               | 用登录密码尝试解锁 kdewallet |
 | `pam_systemd.so` (session)                  | 注册 systemd user session        |
-| `pam_gnome_keyring.so auto_start` (session) | 如果 keyring 还没跑，启动它      |
+| `pam_kwallet5.so force_run` (session) | 为 TTY 会话启动钱包；图形会话仍需初始化助手      |
 
 ### sudo (`/etc/pam.d/sudo`, NixOS 默认)
 
@@ -96,22 +96,14 @@ Howdy（`pam_howdy.so`）用红外摄像头做人脸识别。典型配置是 `su
 ```text
 auth sufficient  pam_howdy.so              ← 人脸识别成功！
 auth required    pam_unix.so                ← 被跳过，没拿到密码
-auth optional    pam_gnome_keyring.so       ← 没有密码，无法解锁 keyring
+auth optional    pam_kwallet5.so       ← 没有密码，无法解锁 keyring
 ```
 
-**根因**：`pam_gnome_keyring.so` 在 auth 阶段需要用登录密码来解密 keyring。但 Howdy 用 `sufficient` 短路了整个 auth 链——密码从来没被捕获过，keyring 就只能保持锁定。
+**根因**：`pam_kwallet5.so` 在 auth 阶段需要用登录密码来解密 keyring。但 Howdy 用 `sufficient` 短路了整个 auth 链——密码从来没被捕获过，keyring 就只能保持锁定。
 
 这不是 Howdy 的 bug，是 **无密码认证 × 密码解锁 keyring** 这个根本矛盾。指纹（`pam_fprintd.so`）和 FIDO2 同样会遇到。
 
-**三种应对**：
-
-| 方案            | 做法                                                                  | 取舍                                     |
-| --------------- | --------------------------------------------------------------------- | ---------------------------------------- |
-| 空密码 keyring  | `gnome-keyring-daemon --change-password` 设为空，或初始创建时就留空 | 凭据文件可被任何登录用户读取             |
-| 扫脸 + 密码双重 | `pam_howdy.so` 用 `required` 代替 `sufficient`                  | 人脸白用了，每次还得输密码               |
-| 接受手动解锁    | 人脸登录后，有应用需要 keyring 时会弹解锁对话框，输一次密码           | 不额外操作；弹出时才输，不是每次开机都输 |
-
-实际上 `pam_gnome_keyring.so` 在 auth 阶段是 `optional` 控制位——有密码就用，没密码就静默跳过。所以默认行为是第三种：人脸登录后 keyring 锁定，Electron 应用（VS Code、Chrome 等）触发 keyring 访问时弹出解锁提示，输一次登录密码即可，不是每次重启都要输。
+本配置保留人脸登录，并接受需要时手动解锁钱包。密码登录时，钱包密码与登录密码一致才可自动解锁；主桌面还需要 `plasma-kwallet-pam.service` 完成会话环境传递。更换成 KWallet 不会让生物识别产生解密密码。
 
 ## 常见 PAM 模块
 
@@ -119,7 +111,7 @@ auth optional    pam_gnome_keyring.so       ← 没有密码，无法解锁 keyr
 | ------------------------ | ------------------------------------------------ |
 | `pam_unix.so`          | 传统 UNIX 密码验证（读`/etc/shadow`）          |
 | `pam_systemd.so`       | 注册 logind session，管理 cgroup                 |
-| `pam_gnome_keyring.so` | 解锁/启动 GNOME Keyring                          |
+| `pam_kwallet5.so` | 解锁/启动 KWallet                          |
 | `pam_env.so`           | 读取`/etc/environment`、`~/.pam_environment` |
 | `pam_fprintd.so`       | 指纹认证                                         |
 | `pam_faillock.so`      | 失败锁定（防暴力破解）                           |
@@ -157,7 +149,7 @@ journalctl -b | grep -i pam
 
 ### keyring 没自动解锁
 
-检查 `/etc/pam.d/login` 是否有 `pam_gnome_keyring.so` 行。NixOS 中由 `services.gnome.gnome-keyring.enable` 控制。确认后注销重登（锁屏解锁不走 PAM auth）。
+检查 `/etc/pam.d/login` 是否有 `pam_kwallet5.so` 行。NixOS 中由 `security.pam.services.login.kwallet.enable` 控制。确认后注销重登（锁屏解锁不走 PAM auth）。
 
 ### polkit 人脸失败后没有密码提示
 
@@ -166,12 +158,12 @@ journalctl -b | grep -i pam
 ## 注意事项
 
 - **修改 PAM 配置要极度小心** — 配错会导致无法登录。NixOS 通过 option 管理 PAM 是安全的，不要手动改 `/etc/pam.d/`
-- `services.gnome.gnome-keyring.enable` 只改动 `login` 和 `greetd` 的 PAM 配置
+- greetd 与 SDDM 引用 `login` 的 PAM 栈；主桌面额外设置 KWallet `forceRun` 并启动会话初始化助手
 - PAM 是串行的 — 一个模块超时会拖慢整个认证链
 - NixOS 中 PAM 配置由 `security.pam.services` 声明式管理，rebuild 后生效
 
 ## 相关链接
 
-- [GNOME Keyring](../desktop/keyring.md) — 依赖 PAM 自动解锁
+- [KWallet](../desktop/keyring.md) — 依赖 PAM 自动解锁
 - [安全总览](index.md) — SOPS、用户权限、网络安全概览
 - [wiki 首页](../README.md)

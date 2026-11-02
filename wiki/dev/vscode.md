@@ -2,7 +2,7 @@
 title: VS Code 集成
 category: 开发
 tags: [vscode, editor, home-manager, dev, matugen, darkman]
-updated: 2026-11-01
+updated: 2026-11-02
 ---
 
 # VS Code 集成
@@ -18,7 +18,7 @@ updated: 2026-11-01
 - 安装由 Home Manager 统一管理，改动这个模块后 rebuild 即生效。
 - 配套的工具链在 `home/dev/tools.nix`（Node.js、Python、GCC、搜索工具等），VS Code 插件生态所需的运行时基本都在这里提供。
 - 容器化开发靠 `home/dev/containers.nix` 的 Distrobox 模板，配合 Remote 场景使用。
-- GNOME Keyring 和字体由 `host/base/desktop.nix` 提供，Fcitx5 输入法由 `host/base/input-method.nix` 提供，保障凭据存储、中文输入与显示。
+- KWallet 和字体由 `host/base/desktop.nix` 提供，Fcitx5 输入法由 `host/base/input-method.nix` 提供，保障凭据存储、中文输入与显示。
 
 ## 主题配置
 
@@ -52,7 +52,7 @@ VS Code 本体由 Nix 管理，但工作区级配置放在项目仓库里、纳�
 - `.vscode/launch.json` — 调试配置，按语言选对应调试器
 - `.vscode/extensions.json` — 推荐扩展清单
 
-敏感信息不要提交，用环境变量或 GNOME Keyring 存放。
+敏感信息不要提交，用环境变量或 KWallet 存放。
 
 ## 调试与任务集成
 
@@ -122,7 +122,7 @@ Grok Bot 使用 Cursor 账号，官方 Linux 下载同样由 Cursor 域名提供
 | 现象 | 排查 |
 |------|------|
 | 不跟随系统明暗 | 检查自动检测及首选明暗主题，不能将两者都固定为同一个 Matugen 主题；再检查配置档或工作区覆盖 |
-| 凭据无法保存 | 确认 `host/base/desktop.nix` 已启用 GNOME Keyring，会话变量正确 |
+| 凭据无法保存 | 确认 `host/base/desktop.nix` 已启用 KWallet，会话变量正确 |
 | 中文输入异常 | 检查 Fcitx5 与 Wayland/XWayland 兼容配置 |
 | 调试器不可用 | 确认 `tools.nix` 装了对应运行时且 PATH 正确 |
 | 容器内行为不一致 | 核对容器镜像与宿主机 toolchain 版本 |

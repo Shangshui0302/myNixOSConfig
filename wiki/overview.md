@@ -103,7 +103,7 @@ Note over Desktop,Hypr : "Noctalia 主题与颜色在首次加载时生成"
 ## 故障排查入口
 
 - Hyprland 模糊在 AMD 核显上失效：见 memory 卡片。
-- Fcitx5 浅色皮肤无法激活：检查 portal-gtk 悬挂符号链接导致的 D-Bus 无法激活。
+- Fcitx5 浅色皮肤无法激活：检查 Darkman Settings Portal 与会话总线；主桌面文件选择由 Strata Portal 提供。
 - 首次部署缺少 `/persist/mihomo/config.yaml` 或 age 密钥会导致相关服务启动失败。
 
 ## 相关链接
