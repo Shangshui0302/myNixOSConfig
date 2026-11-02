@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-11-01
+updated: 2026-11-02
 ---
 # Nix 手工打包
 
@@ -203,7 +203,7 @@ Strata v1.0.0 的包定义和补丁统一在 `~/Projects/nixpkgs-maintain/nixpkg
 
 `flake.nix` 的临时 `strata-nixpkgs` input 跟随 fork 的 `feature/strata` 分支，`flake.lock` 当前固定到提交 `e9b01117f28bcb546bea973820cf307fef1e1d6b`。本仓库只获取 `legacyPackages.x86_64-linux.strata`，保留独立包集的完整依赖版本。不要将系统 `nixpkgs` 改为 fork，也不要用系统包集重新 `callPackage` 该定义后宣称复用了原构建。
 
-- 入口仍为 `nix build path:.#strata`；`home/productivity/files.nix` 只在主 DE 安装它，GNOME 不安装。
+- 入口仍为 `nix build path:.#strata`；`home/productivity/files.nix` 只在主 DE 安装它，NextKDE 不安装。
 - 普通偏好由应用维护可写的 `settings.toml`；Matugen 模板和 `theme-apply` 留在本地消费者，包没有本机路径或主题依赖。
 - 包自带可信 helper、bubblewrap 与沙箱工具路径，不要求系统额外安装 `bubblewrap`。
 - [PR #570118](https://github.com/NixOS/nixpkgs/pull/570118) 被合并且当前官方频道包含该包后，消费者改为 `pkgs.strata`，删除 `strata-nixpkgs` input 和锁项。

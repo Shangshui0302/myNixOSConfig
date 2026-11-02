@@ -6,7 +6,7 @@
 }:
 
 {
-  # 共享 home 入口：两 DE（main Hyprland 与 host/gnome 变体）共同 import。
+  # 共享 home 入口：主桌面与 NextKDE 共同 import。
   imports = [
     ./git.nix
     ./theme/base.nix

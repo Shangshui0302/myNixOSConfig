@@ -326,14 +326,6 @@ in
           allow_workspace_cycles = true;
         };
 
-        windowrulev2 = [
-          "float, class:^(org.gnome.NautilusPreviewer)$"
-          "center, class:^(org.gnome.NautilusPreviewer)$"
-          "size 70% 70%, class:^(org.gnome.NautilusPreviewer)$"
-          "float, class:^(sushi)$"
-          "center, class:^(sushi)$"
-          "size 70% 70%, class:^(sushi)$"
-        ];
       };
 
       window_rule = [

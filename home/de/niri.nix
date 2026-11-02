@@ -71,11 +71,6 @@
           clip-to-geometry true
       }
 
-      // 文件预览器浮动（与 Hyprland 的 windowrulev2 一致）
-      window-rule {
-          match app-id=r#"^(org\.gnome\.NautilusPreviewer|sushi)$"#
-          open-floating true
-      }
 
       // Noctalia bar：xray 静态 blur 会错误糊掉透明圆角/间隙，
       // 改用 realtime (non-xray) blur 精确跟随 bar 形状（毛玻璃）。
@@ -91,7 +86,7 @@
       // 常用窗口 realtime (non-xray) blur —— 真毛玻璃（跟随圆角形状）
       // 需要窗口半透明才可见（foot 需 background 带 alpha）
       window-rule {
-          match app-id=r#"^(foot|org\.gnome\.Nautilus|obsidian)$"#
+          match app-id=r#"^(foot|obsidian)$"#
           background-effect {
               xray false
               blur true

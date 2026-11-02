@@ -2,7 +2,7 @@
 title: 游戏平台
 category: 娱乐
 tags: [steam, proton, gaming, amdgpu, libvirtd, flatpak, mangohud, lutris, bottles, wine]
-updated: 2026-10-20
+updated: 2026-11-02
 ---
 
 # 游戏平台
@@ -73,7 +73,7 @@ A --> H["home/leisure/player.nix<br/>OBS"]
 
 - **Lutris**：右上角 `+` 添加游戏；`Preferences → Runners` 里选 runner。Wine 版本列表里能看到 nixpkgs 打包的 Proton-GE（按小写目录名列出，含 32 位），也可以用列表里的下载按钮取上游 GE 版本。
 - **Bottles**：首次启动按向导新建 bottle，会从 GitHub 取 Soda runner 与 DXVK/vkd3d 组件。
-- Lutris/Bottles 的「打开文件夹」沿用系统默认文件管理器（主 DE 为 Strata，GNOME 为 Nautilus）。两者的 FHS 包装只读映射系统的 `/etc/xdg`，同时支持通用与桌面专属的 MIME 默认关联；用户自己的默认程序选择仍优先。
+- Lutris/Bottles 的「打开文件夹」沿用系统默认文件管理器（主 DE 为 Strata，NextKDE 为 Dolphin）。两者的 FHS 包装只读映射系统的 `/etc/xdg`，同时支持通用与桌面专属的 MIME 默认关联；用户自己的默认程序选择仍优先。
 - 两者都提供 MangoHud / Gamescope 开关；Lutris 侧需要的可执行文件由 `programs.lutris.extraPackages` 放进沙箱。GameMode 的守护进程默认未启用（见故障排查）。
 
 | 事项 | 路径 |

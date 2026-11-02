@@ -2,12 +2,12 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, wetypex, 输入法, wayland, 深色模式]
-updated: 2026-10-31
+updated: 2026-11-02
 ---
 
 # Fcitx5 输入法框架
 
-本文说明本仓库如何在 NixOS + Home Manager 下启用并集成 Fcitx5：引擎与主题管理、中文输入方案、Wayland 主桌面集成、候选窗定制与常见排障。核心 + 变体差异集中在系统级 `host/base/input-method.nix`；主桌面（Hyprland/niri）使用 ClassicUI，GNOME 走 kimpanel。
+本文说明本仓库如何在 NixOS + Home Manager 下启用并集成 Fcitx5：引擎与主题管理、中文输入方案、Wayland 主桌面集成、候选窗定制与常见排障。核心 + 变体差异集中在系统级 `host/base/input-method.nix`；主桌面（Hyprland/niri）和 NextKDE 使用各自的 ClassicUI 主题。
 
 NextKDE 使用独立的 `mellow-kde` / `mellow-kde-dark`，保留半透明但关闭背景模糊，由 `kos-colors` 在 KDE 配置变化时单次同步强调色和深浅模式，无额外常驻分发进程。主桌面继续使用 `mellow-matugen` / `mellow-matugen-dark` 与 Darkman；两套主题目录和生成缓存独立，字体、候选布局及词库共用。详见[颜色分发边界](darkmode.md#两个桌面的分发边界)。
 
@@ -25,7 +25,7 @@ NextKDE 使用独立的 `mellow-kde` / `mellow-kde-dark`，保留半透明但关
 ## 快速上手
 Fcitx5 在系统构建后即随会话启动，无需额外操作：
 
-- 应用通过环境变量自动接入 fcitx（GTK/Qt/SDL 统一）。
+- 主桌面应用通过环境变量接入 fcitx；NextKDE 的 Qt 应用优先使用 KWin 原生输入通道。
 - `i18n.inputMethod` 安装 Fcitx5 及 addons，并提供 XDG autostart desktop entry。
 - UWSM 或 niri-session 激活图形会话后，`systemd-xdg-autostart-generator` 将其转换为用户单元 `app-org.fcitx.Fcitx5@autostart.service`。
 - 使用桌面环境快捷键（如 `Super+Space`）在中英文/输入法间切换。
@@ -42,7 +42,7 @@ journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
 系统层在 `host/base/input-method.nix` 中完成以下工作：
 
 - Host 层提供跨桌面的 `QT_IM_MODULE=fcitx` 与 `XMODIFIERS=@im=fcitx`。
-- 主桌面 HM 配置补充 `GTK_IM_MODULE=fcitx` 与 `SDL_IM_MODULE=fcitx`；GNOME 保持 GTK 原生 Wayland text-input-v3。
+- 主桌面 HM 配置补充 `GTK_IM_MODULE=fcitx` 与 `SDL_IM_MODULE=fcitx`。
 - 启用 `i18n.inputMethod`，`type = "fcitx5"`，并开启 `fcitx5.waylandFrontend = true` 以获得 Wayland 下更好的兼容性与性能。
 - 安装插件与主题包（见下文）。
 - `org.freedesktop.impl.portal.Settings` 由 Darkman 提供，供 Fcitx5 检测系统深浅色；GTK portal 继续提供文件选择等其他接口。
@@ -52,8 +52,7 @@ journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
 
 - `fcitx5-rime`，并通过 `rimeDataPkgs` 注入 `rime-ice`、`rime-moegirl`、`rime-zhwiki` 数据包。
 - `fcitx5-wetypex`：从固定版本源码构建的社区适配层，使用原版微信输入法引擎；初次使用还需完成下方初始化。
-- 核心（两 DE）：`qt6Packages.fcitx5-chinese-addons`、`qt6Packages.fcitx5-configtool`、`kdePackages.fcitx5-qt`。
-- 主桌面（`lib.optionals (!gnome)`）：`fcitx5-gtk` 桥 + 主题包（mellow/material/catppuccin）。
+- 核心（两桌面变体）：`qt6Packages.fcitx5-chinese-addons`、`qt6Packages.fcitx5-configtool`、`kdePackages.fcitx5-qt`、`fcitx5-gtk`。
 
 拼音、五笔、注音等具体方案由 Rime 数据与用户方案决定；上述数据包提供基础词库能力。如需新增或切换方案，在 Rime 数据层配置即可（不在本仓库内直接体现）。
 
@@ -123,7 +122,7 @@ defaultSettings = {
 也可对已有包使用 `.override { enableWeTypeTheme = true; }`。更改后需手动应用配置并重启 Fcitx5。开启会恢复上游保存设置时改写共用 `classicui.conf` 的行为，Rime 等其他输入法也会使用同一皮肤；Darkman/Matugen 主题脚本仍会在刷新桌面主题时写回桌面配置。若希望稳定沿用桌面主题，保持此选项关闭。
 
 ## 主题与候选窗定制
-主桌面（Hyprland/niri）的 ClassicUI 系统级配置由 `host/de/sessions.nix` 提供（NextKDE 由 `host/nextkde/desktop.nix` 提供 mellow-kde），运行时覆盖由 `theme-apply` 写入；GNOME 候选窗由 kimpanel 扩展绘制：
+主桌面（Hyprland/niri）的 ClassicUI 系统级配置由 `host/de/sessions.nix` 提供（NextKDE 由 `host/nextkde/desktop.nix` 提供 mellow-kde），运行时覆盖由 `theme-apply` 写入：
 
 - 浅色主题 `Theme = "mellow-matugen"`，深色主题 `DarkTheme = "mellow-matugen-dark"`。
 - `UseDarkTheme = "True"`：让服务端 ClassicUI 通过 XDG Settings 接口跟随 Darkman。
@@ -134,12 +133,12 @@ defaultSettings = {
 - Hyprland 的 `decoration.blur.input_methods = true` 允许主题请求 compositor 原生模糊；不支持该协议的会话会退化为普通主题。
 - `"Vertical Candidate List" = "True"`：启用垂直候选列表，更适合长词条与高分屏。
 
-安装的主题包：HM 模块提供的 `fcitx5-matugen-theme`（`both-blur`）、`fcitx5-mellow-themes`、`fcitx5-material-color`、`catppuccin-fcitx5`。
+主题资源由 `fcitx5-matugen-theme`（`both-blur`）提供；未选用的 Mellow 原版、Material Color 和 Catppuccin 主题包已移除。
 
 > 注意：HM 模块不写 `classicui.conf`；该文件仍由 `theme-apply` 原子生成，不要用图形配置工具手动覆盖。完整无 section header 的格式是必要的。
 
 ## 桌面集成与崩溃自恢复
-- GTK/Qt/SDL 应用均通过环境变量接入 fcitx，无需逐应用配置。
+- 主桌面 GTK/Qt/SDL 应用通过环境变量接入 fcitx；NextKDE 的 Qt 应用优先使用 KWin 原生输入通道。
 - Wayland 下启用 `waylandFrontend` 减少 X11 桥接开销。
 - 在 Hyprland 下，`home/de/hyprland.nix` 为 Fcitx5 提供 systemd user service 的崩溃自恢复策略（on-failure 重启），提升长期稳定性。
 - `host/de/sessions.nix` 负责 GTK Portal 注册；`home/theme/base.nix` 只负责共享字体、光标和主题基础。
@@ -186,7 +185,6 @@ SESSION["UWSM / niri-session / graphical-session.target"] --> IM
 - rebuild 在 `theme.cpp` 出现 `Hunk FAILED`、`theme.h` 出现 `Reversed (or previously applied) patch`：检查是否还在添加旧 SVG 性能补丁 `d6552a5b52b4ff75cae3fb6dc949ef379171b2b9`。上游 5.1.23 已包含该修复，应直接使用 nixpkgs 原包，无需再次打补丁。
 - 输入法不显示：检查 IM 环境变量（`GTK_IM_MODULE`、`QT_IM_MODULE`、`XMODIFIERS`）是否生效；确认 Fcitx5 进程在运行，若崩溃查看 systemd user service 是否自动重启。
 - 候选窗位置异常/不可见：确认 `"Vertical Candidate List"` 为 `True`（键名含空格加引号、布尔值大写）；检查 XDG Portal 的 Settings 接口可用。
-- GNOME Wayland 下候选窗飞远/不跟随光标：GNOME 只实现 `text-input-v3` 无全局坐标，必须靠 kimpanel 链路。检查 fcitx5 的 kimpanel addon 未被禁用（`~/.config/fcitx5/config` 的 `[Behavior/DisabledAddons]` 不应含 kimpanel）；`host/base/input-method.nix` 已声明 `fcitx5.settings.globalOptions.Behavior.EnabledAddons = "kimpanel"` 防复发，且 GNOME kimpanel 扩展需启用。kimpanel 启用后候选窗由扩展绘制，ClassicUI 主题（mellow-matugen）不再作用于 GNOME 会话——GNOME 下候选窗跟随 Shell 主题（本机 Material-Gnome）。
 - 主题不跟随深浅色或重点色：执行 `darkman get` 确认状态，再运行 `theme-apply "$(darkman get)"`；确认 `~/.local/share/fcitx5/themes/mellow-matugen[-dark]/` 下的 `highlight.svg` 和 `theme.conf` 已更新。
 - GTK 应用内候选窗退回白色方框：检查用户主题的 `theme.conf` 是否包含 `[Metadata]`、`[InputPanel/Background]`、`Image=panel.svg` 和 `[InputPanel/Highlight]`。只有颜色字段的稀疏文件会遮蔽完整 Nix 主题并触发 GTK 默认样式。
 - 壁纸切换后候选窗仍是旧颜色：新壁纸会复制缓存中的两套 Fcitx 素材并重启服务；单纯深浅切换只 reload。检查 `systemctl --user status app-org.fcitx.Fcitx5@autostart.service`，必要时手动执行 `fcitx5-remote --check -r`。
@@ -194,7 +192,7 @@ SESSION["UWSM / niri-session / graphical-session.target"] --> IM
 
 ## 配置速查
 - 环境变量：`GTK_IM_MODULE`/`QT_IM_MODULE`/`XMODIFIERS`/`SDL_IM_MODULE` 指向 fcitx。
-- 插件与主题：`fcitx5-gtk`、`qt6Packages.fcitx5-chinese-addons`、HM 管理的 `both-blur` mellow-matugen、material/catppuccin 主题包。
+- 插件与主题：`fcitx5-gtk`、`qt6Packages.fcitx5-chinese-addons`、HM 管理的 `both-blur` mellow-matugen 与 NextKDE 的 mellow-kde。
 - Rime 数据：`rime-ice`、`rime-moegirl`、`rime-zhwiki`。
 - 候选窗：`"Vertical Candidate List" = "True"`。
 - 深浅色联动：`darkman set dark|light` 后由 `theme-apply` 从壁纸缓存激活当前模式、更新 GTK 客户端配置、reload Fcitx5，并同步 Settings portal；新壁纸未命中缓存时才重渲染两套 Fcitx5 重点色并重启服务。

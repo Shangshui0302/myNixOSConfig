@@ -2,12 +2,12 @@
 title: NextKDE 桌面变体
 category: 桌面
 tags: [nextkde, kos, plasma, sddm, specialisation]
-updated: 2026-10-31
+updated: 2026-11-02
 ---
 
 # NextKDE 桌面变体
 
-NextKDE 是独立的 NixOS specialisation，使用 Plasma Wayland、SDDM 和 KOS 桌面组件。它复用系统与用户基础配置，但不继承主桌面的 Hyprland/niri 或 Darkman；Matugen 仅作为 KDE 应用色板生成器使用。GNOME 变体仍独立保留。当前配置需要用户应用并在实际会话中验收。
+NextKDE 是独立的 NixOS specialisation，使用 Plasma Wayland、SDDM 和 KOS 桌面组件。它复用系统与用户基础配置，但不继承主桌面的 Hyprland/niri 或 Darkman；Matugen 仅作为 KDE 应用色板生成器使用。当前配置需要用户应用并在实际会话中验收。
 
 ## 构建和进入
 
@@ -27,7 +27,7 @@ sudo nixos-rebuild boot --flake path:.#MechRevo-NixOS
 
 ## 桌面与共享数据
 
-KOS 的服务随 Plasma 工作区启动和停止。会话集成统一引用本地补丁包，不再同时安装原版和补丁版 Shell；原生插件仍复用固定上游的构建。Shell 文件仅在来源包变化或部署不完整时重新复制，同一代次登录会跳过复制。需要恢复手动改坏的文件时可运行 `KOS_SYNC_FORCE=1 kos-ctl sync`，然后重新登录。控制中心和启动台已去掉上游的最低模糊限制；液态玻璃的模糊滑杆为 0 时，两者提交的 Gaussian sigma 也为 0，调高后仍按原比例增加。这依赖 KOS 的 `glass` 插件实际加载；普通 KWin `blur` 不处理该参数。Plasma shell 保留壁纸，KOS 负责面板、Dock 和桌面文件；KScreenLocker 使用 KOS 锁屏主题，认证机制不变。默认文件管理器是 Dolphin，Nautilus 仍可从菜单打开；Strata 仅在主桌面安装。输入法由 `kos-colors` 选择独立的 Mellow KDE 明暗色板，保留半透明但关闭候选框背景模糊；字体、词库及候选布局保持原设置。
+KOS 的服务随 Plasma 工作区启动和停止。会话集成统一引用本地补丁包，不再同时安装原版和补丁版 Shell；原生插件仍复用固定上游的构建。Shell 文件仅在来源包变化或部署不完整时重新复制，同一代次登录会跳过复制。需要恢复手动改坏的文件时可运行 `KOS_SYNC_FORCE=1 kos-ctl sync`，然后重新登录。控制中心和启动台已去掉上游的最低模糊限制；液态玻璃的模糊滑杆为 0 时，两者提交的 Gaussian sigma 也为 0，调高后仍按原比例增加。这依赖 KOS 的 `glass` 插件实际加载；普通 KWin `blur` 不处理该参数。Plasma shell 保留壁纸，KOS 负责面板、Dock 和桌面文件；KScreenLocker 使用 KOS 锁屏主题，认证机制不变。默认文件管理器是 Dolphin；Strata 仅在主桌面安装。输入法由 `kos-colors` 选择独立的 Mellow KDE 明暗色板，保留半透明但关闭候选框背景模糊；字体、词库及候选布局保持原设置。
 
 KDE 强调色与深浅模式驱动独立的应用颜色分发，缓存位于 `~/.cache/kos-colors/`，更新 Fcitx5、Neovim、Zellij、btop、Yazi 和 mpv。由 `kos-colors.path` 在 KDE 配置变化时触发 `kos-colors.service` 单次同步，登录也运行一次；无需额外常驻分发进程。KDE 启用“从当前壁纸获取强调色”后，KOS/Plasma 换壁纸会驱动更新。只更新应用色板，不改 KDE 全局主题、图标、装饰或 KOS 面板。完整边界见[深色模式与配色分发](darkmode.md#桌面变体的分发边界)。
 
@@ -39,11 +39,11 @@ KDE 强调色与深浅模式驱动独立的应用颜色分发，缓存位于 `~/
 - 终端：Foot，保留原有字体、Fish、滚动缓冲和 0.55 背景透明度；通知使用桌面通知接口，不调用 Hyprland 的聚焦命令。可从启动器打开或运行 `foot`。
 - 启动环境：KOS 服务使用完整的 NixOS profile 路径，并优先查找 `/run/wrappers/bin`；从 KOS 打开的应用和终端可以找到正常的 `sudo` 及用户安装的程序。
 - 台前调度：提供上游脚本需要的 `qdbus6` 兼容入口，指向 Nixpkgs 的 Qt 6 `qdbus`；`Meta+Y` 切换台前调度，插件按上游流程加载，不强制常驻启用。
-- 输入法：通过 `/etc/xdg/kwinrc` 的 `[Wayland] InputMethod[$i]` 固定选择 Fcitx 5 Wayland Launcher，由 KWin 提供原生输入法连接。该单键仅在 NextKDE 受 Nix 管理，虚拟键盘设置页不能覆盖；其他 KWin 设置仍可写，主桌面和 GNOME 不受影响。
-- Dolphin 配色：仅在 NextKDE 将应用配色固定为“跟随系统”，忽略主桌面留下的 `MaterialAdwMatugen` 应用级选择。KOS 深浅色切换使用 `WhiteSur` / `WhiteSurDark`，同时控制 Dolphin 的背景、交替行和文字；原有用户配置及主桌面的 Matugen 方案保留。
+- 输入法：通过 `/etc/xdg/kwinrc` 的 `[Wayland] InputMethod[$i]` 固定选择 Fcitx 5 Wayland Launcher，由 KWin 提供原生输入法连接。该单键仅在 NextKDE 受 Nix 管理，虚拟键盘设置页不能覆盖；其他 KWin 设置仍可写，主桌面不受影响。
+- Dolphin 配色：NextKDE 将应用配色固定为“跟随系统”。KOS 深浅色切换使用 `WhiteSur` / `WhiteSurDark`，同时控制 Dolphin 的背景、交替行和文字；`kos-colors` 同步 Kvantum 明暗主题，已运行 Qt 应用可能需要重启。
 - Qt 输入法：NextKDE 清空全局 `QT_IM_MODULE`，以 `QT_IM_MODULES=wayland;fcitx;ibus` 优先使用 KWin 原生输入通道。系统设置、搜索等 Qt 应用不再优先使用只读浅色 `Theme` 的客户端候选框，由 Fcitx 按系统 Portal 选择现有明暗主题；词库与用户设置不迁移。
 - 亮度调节：保留 KDE 接口，并提供 `brightnessctl` 回退。
-- 配套应用：日历、待办、计算器、天气，以及独立的 KMusic（命令 `kmusic`、启动器入口 KMusic）；KMusic 仅在 NextKDE 安装，支持本地音乐和在线音源，无自动启动服务。日历与待办共用 KOS PIM 服务，随 Plasma 登录启动，桌面卡片无需先手动打开应用即可读取数据。
+- 配套应用：日历、待办、计算器、天气，以及独立的 KMusic（命令 `kmusic`、启动器入口 KMusic）；KMusic 与主配置共享，支持本地音乐和在线音源，无自动启动服务。日历与待办共用 KOS PIM 服务，随 Plasma 登录启动，桌面卡片无需先手动打开应用即可读取数据。
 - 壁纸取色：启动前将有效的 `ShellPackage` 单键写入用户 `plasmashellrc`，让上游只能读取用户文件的取色器找到正确的壁纸配置；保留其他设置及用户显式选择。
 - 音频与文件操作：补齐 `pactl` 和 `gio`，供应用混音、音频设备切换、回收站与打开方式使用；音频服务仍使用现有 PipeWire。
 - 切换用户：将上游 LightDM 命令兼容到 KDE/SDDM 流程，先锁屏，再返回登录界面。

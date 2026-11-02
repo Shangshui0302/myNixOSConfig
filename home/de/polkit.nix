@@ -8,11 +8,10 @@
   systemd.user.services.hyprpolkitagent.Service = {
     Restart = "on-failure";
     RestartSec = 2;
-    # Qtct supplies the live Matugen palette. Kvantum retains its startup palette,
-    # so use Fusion for QApplication only; Qt Quick keeps org.hyprland.style.
+    # Qt Widgets 使用共享 WhiteSur/Kvantum；Qt Quick 保留 Hyprland 样式。
     Environment = [
       "QT_QPA_PLATFORMTHEME=qt6ct"
-      "QT_STYLE_OVERRIDE=Fusion"
+      "QT_STYLE_OVERRIDE=kvantum"
     ];
   };
 }

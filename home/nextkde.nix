@@ -11,10 +11,10 @@
     ./base.nix
     ./de/foot.nix
     ./theme/kde-runtime.nix
+    ./theme/qt-whitesur.nix
   ];
 
   home.packages = [
-    (pkgs.callPackage ../local-deriv/kmusic.nix { })
     inputs.plasma-manager.packages.${pkgs.stdenv.hostPlatform.system}.rc2nix
   ];
 
@@ -58,6 +58,7 @@
       # KDE global appearance defaults: sets WhiteSur light/dark package pair
       # to prevent login-time Breeze fallback while keeping user choices writable.
       "kdeglobals"."KDE" = {
+        widgetStyle = "kvantum";
         AutomaticLookAndFeel = true;
         LookAndFeelPackage = "com.github.vinceliuice.WhiteSur";
         DefaultLightLookAndFeel = "com.github.vinceliuice.WhiteSur";
@@ -116,6 +117,8 @@
         AutomountUnknownDevices = true;
       };
       "dolphinrc" = {
+        # Clear the main desktop's per-app palette; Plasma owns KDE colors.
+        UiSettings.ColorScheme = "";
         General.LockPanels = false;
         "KFileDialog Settings" = {
           "Places Icons Auto-resize" = false;

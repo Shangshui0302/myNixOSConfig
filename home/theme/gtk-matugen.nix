@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  materialAdwTheme,
   pkgs,
   materialGnomeTheme,
   ...
@@ -11,14 +10,21 @@ let
   matugenThemeName = "Material-Gnome-Matugen";
   matugenDarkThemeName = "${matugenThemeName}-Dark";
   matugenThemeDir = "${config.home.homeDirectory}/.themes/${matugenThemeName}";
-  qtAppearance = colorSchemePath: {
-    color_scheme_path = colorSchemePath;
-    custom_palette = true;
-    icon_theme = "Papirus-Matugen";
-    style = "kvantum";
-  };
 in
 {
+  imports = [ ./qt-whitesur.nix ];
+
+  # Qt keeps WhiteSur's own palette; GTK continues to follow Matugen.
+  qt = {
+    platformTheme.name = "qtct";
+    qt5ctSettings.Appearance = {
+      custom_palette = false;
+      icon_theme = "Papirus-Matugen";
+      style = "kvantum";
+    };
+    qt6ctSettings.Appearance = config.qt.qt5ctSettings.Appearance;
+  };
+
   home.packages = [
     # GTK portal .portal file has UseIn=gnome, which blocks it on Hyprland.
     # Provide our own .portal file with Hyprland added so the Settings
@@ -34,43 +40,9 @@ in
     '')
   ];
 
-  # qtct 同时提供 Qt5 和 Qt6 平台插件；Kvantum 负责 MaterialAdw 的控件形状，
-  # Matugen 生成的 QPalette 负责语义色。
-  qt = {
-    enable = true;
-    platformTheme.name = "qtct";
-    style.name = "kvantum";
-    qt5ctSettings.Appearance = qtAppearance "${config.home.homeDirectory}/.config/qt5ct/colors/matugen.conf";
-    qt6ctSettings.Appearance = qtAppearance "${config.home.homeDirectory}/.config/qt6ct/colors/matugen.conf";
-    kvantum = {
-      enable = true;
-      # 不使用 qt.kvantum.themes：Matugen 必须能写入用户目录中的动态副本。
-      settings.General.theme = "MaterialAdw";
-    };
-  };
-
-  # MaterialAdw 的 SVG/kvconfig 由固定 Nix 包提供初始副本；theme-apply 后续将
-  # Matugen 生成的可写版本放回同一目录。只在缺失时复制，避免 HM 激活覆盖当前配色。
-  home.activation.setupKvantumMaterialAdw = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    kvantum_theme_dir="$HOME/.config/Kvantum/MaterialAdw"
-    mkdir -p "$kvantum_theme_dir"
-    if [ ! -e "$kvantum_theme_dir/MaterialAdw.kvconfig" ]; then
-      cp ${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.kvconfig \
-        "$kvantum_theme_dir/MaterialAdw.kvconfig"
-    fi
-    if [ ! -e "$kvantum_theme_dir/MaterialAdw.svg" ]; then
-      cp ${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.svg \
-        "$kvantum_theme_dir/MaterialAdw.svg"
-    fi
-    # Nix store assets are read-only; Matugen replaces these files in place.
-    chmod u+rw "$kvantum_theme_dir/MaterialAdw.kvconfig" \
-      "$kvantum_theme_dir/MaterialAdw.svg"
-  '';
-
   dconf.settings."org/gnome/desktop/interface".icon-theme = lib.mkForce "Papirus-Matugen";
 
   # GTK4 在一个可写主题里常驻双 palette；GTK3 使用两个稳定主题目录。
-  # GNOME 变体不 import 本文件，用 gtk-static.nix 保持固定深色。
   home.activation.setupMatugenGtkTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     (
     # Share theme-apply's lock for the entire snapshot and directory replacement.

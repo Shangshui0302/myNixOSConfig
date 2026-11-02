@@ -2,7 +2,7 @@
 title: Token Monitor
 category: dev
 tags: [ai, token-monitor, distrobox, autostart]
-updated: 2026-10-28
+updated: 2026-11-02
 ---
 
 # Token Monitor
@@ -30,7 +30,7 @@ distrobox enter arch -- distrobox-export --app /home/lishangshui/distrobox/arch/
 Distrobox 生成宿主 `~/.local/share/applications/arch-token-monitor.desktop`，
 并复制应用自带的蓝底白色 Σ 图标到宿主用户图标目录。
 登录自启通过宿主 `~/.config/autostart/arch-token-monitor.desktop`
-链接到该导出文件，Hyprland 的 UWSM、原生 niri-session 与 GNOME 负责执行。
+链接到该导出文件，Hyprland 的 UWSM与原生 niri-session 负责执行。
 容器停止时由 Distrobox 启动；应用的账号、Hub 密钥和窗口设置继续保存在容器 home。
 
 若在托盘菜单中主动退出，可在桌面启动器搜索 **Token Monitor** 重新启动。

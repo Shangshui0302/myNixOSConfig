@@ -84,6 +84,7 @@ class RenderTests(unittest.TestCase):
         self.manifest = {"cacheRoot": str(self.root / "cache"), "matugen": str(self.command),
                          "templates": [], "fcitxAssets": {},
                          "kdeGlobals": str(self.root / "kdeglobals"),
+                         "kvantumConfig": str(self.root / "config" / "Kvantum" / "kvantum.kvconfig"),
                          "fcitxConfig": str(self.root / "config" / "classicui.conf"),
                          "fcitxReload": str(self.notifier), "btopReload": str(self.notifier)}
         for mode in kde.MODES:
@@ -108,11 +109,16 @@ class RenderTests(unittest.TestCase):
         config.parent.mkdir()
         config.write_text("Font=User 14\n[Extra]\nTheme=user-section\n")
         self.assertTrue(self.renderer.apply("#636d7c", "light"))
+        qt_selector = Path(self.manifest["kvantumConfig"])
+        self.assertEqual(qt_selector.read_text(), "[General]\ntheme=WhiteSur\n")
+        selector_inode = qt_selector.stat().st_ino
         cache = Path(self.manifest["cacheRoot"])
         first_generation = (cache / "current").resolve()
         self.assertEqual(len(self.calls()), 2)
         self.assertFalse(self.renderer.apply("#636d7c", "light"))
+        self.assertEqual(qt_selector.stat().st_ino, selector_inode)
         self.assertTrue(self.renderer.apply("#636d7c", "dark"))
+        self.assertEqual(qt_selector.read_text(), "[General]\ntheme=WhiteSurDark\n")
         self.assertEqual(len(self.calls()), 2, "mode change must reuse both palettes")
         self.assertEqual((cache / "current").resolve(), first_generation)
         self.assertEqual((cache / "selected").resolve(), first_generation / "dark")
@@ -124,6 +130,23 @@ class RenderTests(unittest.TestCase):
         self.assertEqual(len(self.calls()), 4)
         self.assertFalse(first_generation.exists(), "only the published generation is retained")
         self.assertEqual(len(list(cache.glob("generation-*"))), 1)
+
+    def test_shared_home_selector_reclaimed_and_reconciled(self):
+        selector = Path(self.manifest["kvantumConfig"])
+        selector.parent.mkdir(parents=True)
+        previous = self.root / "previous-selector"
+        previous.write_text("[General]\ntheme=MaterialAdw\n")
+        previous.chmod(0o444)
+        selector.symlink_to(previous)
+        self.assertTrue(self.renderer.apply("#636d7c", "dark"))
+        self.assertFalse(selector.is_symlink())
+        self.assertEqual(selector.read_text(), "[General]\ntheme=WhiteSurDark\n")
+        self.assertEqual(previous.read_text(), "[General]\ntheme=MaterialAdw\n")
+        # Main-desktop Darkman may have selected a different mode in shared HOME.
+        selector.write_text("[General]\ntheme=WhiteSur\n")
+        self.assertTrue(self.renderer.apply("#636d7c", "dark"))
+        self.assertEqual(selector.read_text(), "[General]\ntheme=WhiteSurDark\n")
+        self.assertEqual(len(self.calls()), 2, "selector reconciliation reuses palettes")
 
     def test_failure_keeps_published_outputs_and_selected_mode(self):
         self.renderer.apply("#636d7c", "light")

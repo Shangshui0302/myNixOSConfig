@@ -2,7 +2,6 @@
   config,
   inputs,
   lib,
-  materialAdwTheme,
   pkgs,
   ...
 }:
@@ -12,86 +11,6 @@ let
   defaultWallpaper = ../../assets/nixos_logo.png;
   # The upstream HM module owns the package and links selected templates here.
   fcitxTemplateRoot = "${homeDir}/.config/matugen/templates/fcitx5-matugen-theme";
-
-  # MaterialAdw's upstream config/SVG are data files, while Matugen needs a
-  # writable, recolored copy. Keep the source package immutable and derive
-  # templates by replacing only its palette literals with Matugen expressions.
-  materialAdwMatugenTemplates = pkgs.runCommand "material-adw-matugen-templates" { } ''
-    mkdir -p "$out"
-
-    ${pkgs.gnused}/bin/sed \
-      -e 's|#0F1416|__MATUGEN_SURFACE__|g' \
-      -e 's|#171C1E|__MATUGEN_SURFACE_LOW__|g' \
-      -e 's|#1B2022|__MATUGEN_SURFACE_CONTAINER__|g' \
-      -e 's|#252B2D|__MATUGEN_SURFACE_HIGH__|g' \
-      -e 's|#303638|__MATUGEN_OUTLINE_VARIANT__|g' \
-      -e 's|#84D2E7|__MATUGEN_PRIMARY__|g' \
-      -e 's|#BFC4EB|__MATUGEN_SECONDARY__|g' \
-      -e 's|#DDE1FF|__MATUGEN_TERTIARY_DIM__|g' \
-      -e 's|#DEE3E5|__MATUGEN_ON_SURFACE__|g' \
-      -e 's|#FFFFFF|__MATUGEN_ON_PRIMARY__|g' \
-      -e 's|#dfdfdf|__MATUGEN_ON_SURFACE__|g' \
-      -e 's|#ffffff|__MATUGEN_ON_SURFACE__|g' \
-      -e 's|=white|=__MATUGEN_ON_SURFACE__|g' \
-      -e 's|__MATUGEN_SURFACE__|{{colors.surface.default.hex}}|g' \
-      -e 's|__MATUGEN_SURFACE_LOW__|{{colors.surface_container_low.default.hex}}|g' \
-      -e 's|__MATUGEN_SURFACE_CONTAINER__|{{colors.surface_container.default.hex}}|g' \
-      -e 's|__MATUGEN_SURFACE_HIGH__|{{colors.surface_container_high.default.hex}}|g' \
-      -e 's|__MATUGEN_OUTLINE_VARIANT__|{{colors.outline_variant.default.hex}}|g' \
-      -e 's|__MATUGEN_PRIMARY__|{{colors.primary.default.hex}}|g' \
-      -e 's|__MATUGEN_SECONDARY__|{{colors.secondary.default.hex}}|g' \
-      -e 's|__MATUGEN_TERTIARY_DIM__|{{colors.tertiary_fixed_dim.default.hex}}|g' \
-      -e 's|__MATUGEN_ON_SURFACE__|{{colors.on_surface.default.hex}}|g' \
-      -e 's|__MATUGEN_ON_PRIMARY__|{{colors.on_primary.default.hex}}|g' \
-      "${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.kvconfig" \
-      > "$out/MaterialAdw.kvconfig"
-
-    ${pkgs.gnused}/bin/sed \
-      -e 's|#151B1E|__MATUGEN_SURFACE_LOWEST__|g' \
-      -e 's|#0F1416|__MATUGEN_SURFACE__|g' \
-      -e 's|#343A3C|__MATUGEN_SURFACE_LOWEST__|g' \
-      -e 's|#3F484B|__MATUGEN_SURFACE_CONTAINER_LOW__|g' \
-      -e 's|#84D2E7|__MATUGEN_PRIMARY__|g' \
-      -e 's|#B2CBD2|__MATUGEN_PRIMARY_CONTAINER__|g' \
-      -e 's|#BFC4EB|__MATUGEN_SECONDARY__|g' \
-      -e 's|#CEE7EF|__MATUGEN_SECONDARY_CONTAINER__|g' \
-      -e 's|#EFF0F1|__MATUGEN_SURFACE_BRIGHT__|g' \
-      -e 's|#eff0f1|__MATUGEN_SURFACE_BRIGHT__|g' \
-      -e 's|#FCFCFC|__MATUGEN_SURFACE_BRIGHT__|g' \
-      -e 's|#fcfcfc|__MATUGEN_SURFACE_BRIGHT__|g' \
-      -e 's|#DFDFDF|__MATUGEN_SURFACE_HIGH__|g' \
-      -e 's|#dfdfdf|__MATUGEN_ON_SURFACE_VARIANT__|g' \
-      -e 's|#C1C1C1|__MATUGEN_OUTLINE__|g' \
-      -e 's|#c1c1c1|__MATUGEN_OUTLINE__|g' \
-      -e 's|#989898|__MATUGEN_ON_SURFACE_VARIANT__|g' \
-      -e 's|#5a5a5a|__MATUGEN_ON_SURFACE_VARIANT__|g' \
-      -e 's|#646464|__MATUGEN_ON_SURFACE_VARIANT__|g' \
-      -e 's|#525252|__MATUGEN_OUTLINE__|g' \
-      -e 's|#666666|__MATUGEN_OUTLINE__|g' \
-      -e 's|#B6B6B6|__MATUGEN_OUTLINE__|g' \
-      -e 's|#b6b6b6|__MATUGEN_OUTLINE__|g' \
-      -e 's|#ACB1BC|__MATUGEN_ON_SURFACE_VARIANT__|g' \
-      -e 's|#acb1bc|__MATUGEN_ON_SURFACE_VARIANT__|g' \
-      -e 's|#FFB4AB|__MATUGEN_ERROR__|g' \
-      -e 's|#FFFFFF|__MATUGEN_ON_SURFACE__|g' \
-      -e 's|#ffffff|__MATUGEN_ON_SURFACE__|g' \
-      -e 's|#fff\b|__MATUGEN_ON_SURFACE__|g' \
-      -e 's|__MATUGEN_SURFACE_LOWEST__|{{colors.surface_container_lowest.default.hex}}|g' \
-      -e 's|__MATUGEN_SURFACE__|{{colors.surface.default.hex}}|g' \
-      -e 's|__MATUGEN_PRIMARY__|{{colors.primary.default.hex}}|g' \
-      -e 's|__MATUGEN_PRIMARY_CONTAINER__|{{colors.primary_container.default.hex}}|g' \
-      -e 's|__MATUGEN_SECONDARY__|{{colors.secondary.default.hex}}|g' \
-      -e 's|__MATUGEN_SECONDARY_CONTAINER__|{{colors.secondary_container.default.hex}}|g' \
-      -e 's|__MATUGEN_SURFACE_BRIGHT__|{{colors.surface_bright.default.hex}}|g' \
-      -e 's|__MATUGEN_SURFACE_HIGH__|{{colors.surface_container_high.default.hex}}|g' \
-      -e 's|__MATUGEN_OUTLINE__|{{colors.outline.default.hex}}|g' \
-      -e 's|__MATUGEN_ON_SURFACE_VARIANT__|{{colors.on_surface_variant.default.hex}}|g' \
-      -e 's|__MATUGEN_ERROR__|{{colors.error.default.hex}}|g' \
-      -e 's|__MATUGEN_SURFACE_CONTAINER_LOW__|{{colors.surface_container_low.default.hex}}|g' \
-      -e 's|__MATUGEN_ON_SURFACE__|{{colors.on_surface.default.hex}}|g' \
-      "${materialAdwTheme}/share/Kvantum/MaterialAdw/MaterialAdw.svg" \
-      > "$out/MaterialAdw.svg"
-  '';
 
   # Matugen exposes both light and dark values for one image.  Keep one source
   # template and derive the two mode-specific variants at build time so the
@@ -111,11 +30,7 @@ let
     niri = mkMatugenModeTemplate mode "niri-colors" ./matugen/niri-colors.kdl.tpl;
     modernz = mkMatugenModeTemplate mode "modernz" ./matugen/modernz.conf.tpl;
     zellij = mkMatugenModeTemplate mode "zellij-theme" ./matugen/zellij-theme.kdl.tpl;
-    qtct = mkMatugenModeTemplate mode "qtct-colors" ./matugen/qtct-colors.conf.tpl;
-    kdeColors = mkMatugenModeTemplate mode "material-adw-colors" ./matugen/material-adw-colors.colors.tpl;
     papirus = mkMatugenModeTemplate mode "papirus-color" ./matugen/papirus-color.tpl;
-    kvantumConfig = mkMatugenModeTemplate mode "material-adw-kvconfig" "${materialAdwMatugenTemplates}/MaterialAdw.kvconfig";
-    kvantumSvg = mkMatugenModeTemplate mode "material-adw-svg" "${materialAdwMatugenTemplates}/MaterialAdw.svg";
     # Strata has no dark/light variant inside one theme file, so light and dark
     # are rendered as separate files of the same id; theme-apply publishes the
     # current mode's file.  It reloads themes only at startup.
@@ -294,46 +209,6 @@ let
     input_path = '${../../local-deriv/material-gnome/gtk4-dual.tpl}'
     output_path = '${matugenOutputRoot}/dual/gtk4/colors.css'
 
-    [templates.qt5-light]
-    input_path = '${matugenModeTemplates.light.qtct}'
-    output_path = '${matugenOutputRoot}/light/qt5ct/colors/matugen.conf'
-
-    [templates.qt5-dark]
-    input_path = '${matugenModeTemplates.dark.qtct}'
-    output_path = '${matugenOutputRoot}/dark/qt5ct/colors/matugen.conf'
-
-    [templates.qt6-light]
-    input_path = '${matugenModeTemplates.light.qtct}'
-    output_path = '${matugenOutputRoot}/light/qt6ct/colors/matugen.conf'
-
-    [templates.qt6-dark]
-    input_path = '${matugenModeTemplates.dark.qtct}'
-    output_path = '${matugenOutputRoot}/dark/qt6ct/colors/matugen.conf'
-
-    [templates.kvantum-light-config]
-    input_path = '${matugenModeTemplates.light.kvantumConfig}'
-    output_path = '${matugenOutputRoot}/light/Kvantum/MaterialAdw/MaterialAdw.kvconfig'
-
-    [templates.kvantum-dark-config]
-    input_path = '${matugenModeTemplates.dark.kvantumConfig}'
-    output_path = '${matugenOutputRoot}/dark/Kvantum/MaterialAdw/MaterialAdw.kvconfig'
-
-    [templates.kvantum-light-svg]
-    input_path = '${matugenModeTemplates.light.kvantumSvg}'
-    output_path = '${matugenOutputRoot}/light/Kvantum/MaterialAdw/MaterialAdw.svg'
-
-    [templates.kvantum-dark-svg]
-    input_path = '${matugenModeTemplates.dark.kvantumSvg}'
-    output_path = '${matugenOutputRoot}/dark/Kvantum/MaterialAdw/MaterialAdw.svg'
-
-    [templates.kde-colors-light]
-    input_path = '${matugenModeTemplates.light.kdeColors}'
-    output_path = '${matugenOutputRoot}/light/color-schemes/MaterialAdwMatugen.colors'
-
-    [templates.kde-colors-dark]
-    input_path = '${matugenModeTemplates.dark.kdeColors}'
-    output_path = '${matugenOutputRoot}/dark/color-schemes/MaterialAdwMatugen.colors'
-
     [templates.papirus-folders-light]
     input_path = '${matugenModeTemplates.light.papirus}'
     output_path = '${matugenOutputRoot}/light/papirus-folder-color'
@@ -481,8 +356,8 @@ in
     "linkGeneration"
     "installFcitx5MatugenRuntimeThemes"
     "setupMatugenGtkTheme"
-    "setupKvantumMaterialAdw"
     "setupDarkmanMode"
+    "initializeWhiteSurQt"
   ] ''
     if [ -n "''${XDG_RUNTIME_DIR:-}" ] && [ -x "$HOME/.local/bin/theme-apply" ]; then
       mode="$(${pkgs.darkman}/bin/darkman get 2>/dev/null || true)"

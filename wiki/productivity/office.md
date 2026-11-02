@@ -2,7 +2,7 @@
 title: 办公软件套件
 category: 生产力
 tags: [office, libreoffice, onlyoffice, fonts, cjk, z-library, zotero]
-updated: 2026-10-29
+updated: 2026-11-02
 ---
 
 # 办公软件套件
@@ -29,7 +29,7 @@ updated: 2026-10-29
 Z-Library
 ```
 
-主桌面与 GNOME 变体共用这份应用列表。客户端版本跟随仓库锁定的 Nixpkgs，桌面入口由软件包提供。
+两个桌面变体共用这份应用列表。客户端版本跟随仓库锁定的 Nixpkgs，桌面入口由软件包提供。
 
 ## Zotero 文献管理
 
@@ -39,7 +39,7 @@ Z-Library
 zotero
 ```
 
-主桌面与 GNOME 变体共用此应用。当前锁定版本为 Zotero 10.0.4；其 Mozilla 运行时 Firefox ESR 140 已停止安全维护，Nixpkgs 默认拒绝评估。经用户选择，`host/base/nix.nix` 仅放行确切版本 `firefox-esr-140-bin-unwrapped-140.17.0esr`。更新 Nixpkgs 后若引擎已升级，应移除此例外；若仍因其他版本报错，重新核对依赖，不扩大全局放行范围。
+两个桌面变体共用此应用。当前锁定版本为 Zotero 10.0.4；其 Mozilla 运行时 Firefox ESR 140 已停止安全维护，Nixpkgs 默认拒绝评估。经用户选择，`host/base/nix.nix` 仅放行确切版本 `firefox-esr-140-bin-unwrapped-140.17.0esr`。更新 Nixpkgs 后若引擎已升级，应移除此例外；若仍因其他版本报错，重新核对依赖，不扩大全局放行范围。
 
 ## 分层结构
 

@@ -75,6 +75,7 @@ let
         light = "${fcitxThemes}/share/fcitx5/themes/mellow-matugen";
         dark = "${fcitxThemes}/share/fcitx5/themes/mellow-matugen-dark";
       };
+      kvantumConfig = "${config.xdg.configHome}/Kvantum/kvantum.kvconfig";
       fcitxConfig = "${config.xdg.configHome}/fcitx5/conf/classicui.conf";
       fcitxReload = "${pkgs.fcitx5}/bin/fcitx5-remote";
       btopReload = "${pkgs.procps}/bin/pkill";
@@ -138,6 +139,19 @@ in
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
+
+  home.activation.applyKdeColors = lib.hm.dag.entryAfter [
+    "writeBoundary"
+    "linkGeneration"
+    "initializeWhiteSurQt"
+    "configure-plasma"
+  ] ''
+    if [ -f ${lib.escapeShellArg kdeGlobals} ]; then
+      # A first Plasma login may not have populated the effective palette yet.
+      # Its session service/path will retry once KDE saves those colors.
+      ${synchronize} || echo "kos-colors: palette not ready; session service will retry" >&2
+    fi
+  '';
 
   # systemd already watches the file; no extra D-Bus client or polling daemon.
   # KOS forwards wallpaper accents to Plasma, which saves the resulting palette.

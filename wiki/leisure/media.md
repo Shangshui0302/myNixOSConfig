@@ -1,20 +1,20 @@
 ---
 title: 媒体播放
 category: 娱乐
-tags: [mpv, modernz, matugen, media, pipewire, ani-cli, kazumi, go-musicfox, obs, loupe]
-updated: 2026-10-30
+tags: [mpv, modernz, matugen, media, pipewire, ani-cli, kazumi, go-musicfox, obs]
+updated: 2026-11-02
 ---
 
 # 媒体播放
 
-用户级媒体环境：视频/图片查看、音乐播放、动漫客户端与在线流媒体。媒体应用在 `home/leisure/player.nix` 安装；文件管理器缩略图工具跟随 `home/productivity/files.nix`。音频与图形运行时由 `host/base/services.nix`（PipeWire）与 `host/base/hardware.nix`（amdgpu）支撑。
+用户级媒体环境：视频播放、音乐播放、动漫客户端与在线流媒体。媒体应用在 `home/leisure/player.nix` 安装；Yazi 的视频缩略图工具跟随 `home/productivity/files.nix`。音频与图形运行时由 `host/base/services.nix`（PipeWire）与 `host/base/hardware.nix`（amdgpu）支撑。
 
 ## 组件总览
 
 ```mermaid
 graph TB
 subgraph "用户层"
-P["player.nix<br/>mpv + ModernZ, loupe, go-musicfox, ani-cli, kazumi"]
+P["player.nix<br/>mpv + ModernZ, go-musicfox, ani-cli, kazumi"]
 B["browser.nix<br/>Firefox, Google Chrome"]
 end
 subgraph "本地派生"
@@ -36,21 +36,21 @@ N --> |"运行依赖"| H
 
 | 应用 | 用途 |
 | --- | --- |
+| `gwenview` | 图片查看器；主桌面单独安装，NextKDE 由 Plasma 提供 |
 | `mpv` + ModernZ | 通用视频/音频播放器；ModernZ 提供 Material 风格 OSC 控件 |
-| `loupe` | GNOME 图片查看器 |
 | `go-musicfox` | 终端网易云音乐播放器（附桌面入口 `foot -e musicfox`） |
 | `obs-studio` | 直播与本地录制 |
 | `ani-cli` | 命令行动漫搜索与播放，默认调用 mpv；使用 `ani-cli` 启动 |
 | Kazumi | 图形化动漫聚合播放器，支持自定义规则、字幕与弹幕；由 nixpkgs 提供桌面入口 |
 | 网易云网页版 | 本地派生 `local-deriv/netease-cloud-music-web-player.nix` Electron 打包 |
 
-NextKDE 额外通过 `home/nextkde.nix` 安装 [KMusic](https://github.com/NextKde/KMusic)，从启动器打开 KMusic 或运行 `kmusic`。它是独立的 Qt Quick 音乐应用，支持本地音乐库、在线音源及账户功能；具体音源可用性由提供方决定。包定义在 `local-deriv/kmusic.nix`，源码固定到 `ad0222d4404a166a1607e2967f3201cea64111c5`，不运行上游可变安装器，不添加后台常驻服务。主桌面和 GNOME 不新增此应用。
+主配置（Hyprland/niri）与 NextKDE 通过共享的 `home/leisure/player.nix` 安装 [KMusic](https://github.com/NextKde/KMusic)，从启动器打开 KMusic 或运行 `kmusic`。它是独立的 Qt Quick 音乐应用，支持本地音乐库、在线音源及账户功能；具体音源可用性由提供方决定。包定义在 `local-deriv/kmusic.nix`，源码固定到 `ad0222d4404a166a1607e2967f3201cea64111c5`，不运行上游可变安装器，不添加后台常驻服务。两个桌面共用同一包定义。
 
 独立构建命令为 `nix build path:.#kmusic --no-link`。Nix 构建与辅助程序检查不能替代应用界面、账户登录或实际播放验收；这些需要应用配置后另行检查。
 
 浏览器（Firefox、Google Chrome）在 `home/leisure/browser.nix`，用于访问 Netflix、YouTube、Bilibili 等在线流媒体。
 
-文件管理器的图片/视频缩略图由 `home/productivity/files.nix` 中的 `ffmpegthumbnailer` 与 `tumbler` 提供；它们属于文件管理支撑包，而不是播放器本身。
+Yazi 使用 `home/productivity/files.nix` 提供的 `ffmpegthumbnailer` 生成视频缩略图。
 
 ## 音频与硬件加速
 
@@ -91,7 +91,7 @@ Matugen 会把当前壁纸生成的 Material 3 语义色写入 `~/.config/mpv/sc
 - **流媒体无法播放**：确认浏览器已启用硬件加速与 DRM；检查网络与地区限制。
 - **ani-cli 找不到番剧或播放失败**：检查 AniDB/源站连通性；必要时直接运行 `ani-cli` 查看交互提示。
 - **Kazumi 源失效**：在应用内检查并更新自定义规则；Linux 版本依赖 WebKitGTK，规则站点变化时可能需要等待规则更新。
-- **缩略图不显示**：确认 `home/productivity/files.nix` 提供的 `ffmpegthumbnailer` 与 `tumbler` 已安装且正常工作。
+- **缩略图不显示**：Yazi 视频预览问题可检查 `home/productivity/files.nix` 提供的 `ffmpegthumbnailer`。
 - **日志定位**：结合 PipeWire 日志与 mpv 日志排查。
 
 ## 相关链接

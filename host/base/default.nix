@@ -5,7 +5,7 @@
   ...
 }:
 {
-  # 共享系统基础：被 main（Hyprland）与 host/gnome 变体共同 import。
+  # 共享系统基础：被主桌面（Hyprland/niri）与 NextKDE 共同 import。
   imports = [
     ../../hardware-configuration.nix
     ./boot.nix

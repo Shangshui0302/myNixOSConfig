@@ -1,13 +1,13 @@
 ---
 title: 文件管理器与归档工具
 category: 生产力
-tags: [nautilus, dolphin, strata, file-manager, archive, matugen]
-updated: 2026-10-29
+tags: [dolphin, strata, file-manager, archive, matugen]
+updated: 2026-11-02
 ---
 
 # 文件管理器与归档工具
 
-`home/productivity/files.nix` 提供三个图形文件管理器和一组归档/压缩工具。主 DE 默认使用 Strata，GNOME 变体默认使用 Nautilus，NextKDE 变体默认使用 Dolphin。
+`home/productivity/files.nix` 提供两个图形文件管理器和一组归档/压缩工具。主 DE 默认使用 Strata，NextKDE 变体默认使用 Dolphin。
 
 ## 目录
 
@@ -22,15 +22,14 @@ updated: 2026-10-29
 
 | 程序 | 启动 | 说明 |
 |------|------|------|
-| Nautilus + Sushi | 应用菜单 / `nautilus` | 三个桌面变体共用，Sushi 提供空格快速预览 |
 | Dolphin | 应用菜单 / `dolphin` | KDE 文件管理器及其依赖 |
 | Strata | 应用菜单 / `strata` | 主 DE 专用的 GTK4 文件管理器，来自固定提交的 nixpkgs fork |
 
-主 DE 安装 Strata、Nautilus 和 Dolphin，默认使用 Strata；GNOME 与 NextKDE 变体不安装 Strata，分别默认使用 Nautilus 和 Dolphin。其他文件管理器仍可从应用菜单手动启动。
+主 DE 安装 Strata 和 Dolphin，默认使用 Strata；NextKDE 默认使用 Dolphin，不安装 Strata。
 
 ### 文件夹默认打开方式
 
-使用系统默认打开方式的「打开文件夹」由目录 MIME 类型 `inode/directory` 选择默认程序。`host/base/desktop.nix` 使用 NixOS 原生 `xdg.mime.defaultApplications`，主 DE 设为 `io.github.lgse.Strata.desktop`，GNOME 变体设为 `org.gnome.Nautilus.desktop`，NextKDE 变体设为 `org.kde.dolphin.desktop`；应用配置后生成 `/etc/xdg/mimeapps.list`。用户的 `~/.config/mimeapps.list` 保持可写，其他文件类型的默认程序沿用现状；已有用户级目录关联会优先于系统默认值。
+使用系统默认打开方式的「打开文件夹」由目录 MIME 类型 `inode/directory` 选择默认程序。`host/base/desktop.nix` 使用 NixOS 原生 `xdg.mime.defaultApplications`，主 DE 设为 `io.github.lgse.Strata.desktop`，NextKDE 变体设为 `org.kde.dolphin.desktop`；应用配置后生成 `/etc/xdg/mimeapps.list`。用户的 `~/.config/mimeapps.list` 保持可写，其他文件类型的默认程序沿用现状；已有用户级目录关联会优先于系统默认值。
 
 应用配置后检查：
 
@@ -40,7 +39,7 @@ gio mime inode/directory
 xdg-open ~/Documents
 ```
 
-主 DE 前两项应显示 `io.github.lgse.Strata.desktop`，第三项应打开 Strata；GNOME 变体对应 Nautilus，NextKDE 变体对应 Dolphin。部分应用的「在文件管理器中显示」会走独立的 `org.freedesktop.FileManager1` D-Bus 接口，主 DE 的用户级服务由 Home Manager 链接到 Strata 包提供的模板。MIME 查询正确只能证明默认关联，仍需在原应用中验证实际打开行为。
+主 DE 前两项应显示 `io.github.lgse.Strata.desktop`，第三项应打开 Strata；NextKDE 变体对应 Dolphin。部分应用的「在文件管理器中显示」会走独立的 `org.freedesktop.FileManager1` D-Bus 接口，主 DE 的用户级服务由 Home Manager 链接到 Strata 包提供的模板。MIME 查询正确只能证明默认关联，仍需在原应用中验证实际打开行为。
 
 ## Strata
 
@@ -72,7 +71,7 @@ strata --version             # 打印版本
 
 ### 桌面集成
 
-主 DE 的文件夹默认打开、`Super + E`、Noctalia 启动器与 Dock 固定入口，以及 Caelestia 文件管理器入口均使用 Strata。GNOME 变体继续使用 Nautilus。
+主 DE 的文件夹默认打开、`Super + E`、Noctalia 启动器与 Dock 固定入口，以及 Caelestia 文件管理器入口均使用 Strata。
 
 `home/productivity/files.nix` 使用 `xdg.dataFile` 管理 `~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service`，直接引用 Strata 包中带绝对路径的模板，使「在文件管理器中显示」也能激活 Strata。若当前会话已有其他程序占用该 D-Bus 名称，重新登录后再验证。
 
@@ -108,25 +107,15 @@ Strata 用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、
 
 这些补丁与完整构建、上游测试和预览验证记录在 `~/Projects/nixpkgs-maintain/development/strata/`。升级先在该包开发目录集中修改和验证，再集成到 nixpkgs 投稿分支；未改变的 derivation 可复用既有构建证据。系统 dry-build 只验证集成，实际 GUI、媒体播放与 GVfs 访问仍以用户应用后的实测为准。
 
-### 回退
-
-要恢复 Nautilus，先把 `host/base/desktop.nix` 的主 DE 目录默认值改回 `org.gnome.Nautilus.desktop`，移除 `home/productivity/files.nix` 的 FileManager1 服务声明，并把主 DE 快捷键与面板入口改回 Nautilus。若同时卸载 Strata，再移除它的条件包声明；原有手动 `settings.toml` 留在原处。最后由用户手动应用：
-
-```bash
-cd ~/myNixOSConfig
-sudo nixos-rebuild switch --flake .
-```
-
 ## 归档与压缩工具
 
 | 程序 | 用途 |
 |------|------|
+| `ark` | 图形归档管理器；NextKDE 由 Plasma 提供，主桌面单独安装 |
 | `ouch` | 统一解压/压缩命令，Yazi 也复用 |
 | `p7zip` / `unzip` | 7z、zip 归档 |
-| `file-roller` | 图形归档管理器 |
 | `rich-cli` | 终端富文本渲染（Yazi 富预览依赖） |
 | `dragon-drop` | 拖拽文件到其他窗口 |
-| `tumbler` | 缩略图服务（D-Bus） |
 | `ffmpegthumbnailer` | 视频缩略图生成器，Yazi 也复用 |
 
 ## 故障排查
@@ -134,7 +123,6 @@ sudo nixos-rebuild switch --flake .
 - **应用打开文件夹却启动 VS Code**：先确认已应用配置，再查询 `xdg-mime query default inode/directory`；若仍不正确，检查 `~/.config/mimeapps.list` 或桌面专属 `*-mimeapps.list` 中是否有优先级更高的目录关联。
 - **宿主默认值正确，Lutris/Bottles 仍打开 VS Code**：两者的 FHS 环境默认看不到系统的 `/etc/xdg`。`home/leisure/gaming.nix` 已补上整个目录的只读映射，兼容通用和桌面专属关联，同时保留用户关联的优先级；手动 rebuild 后完全退出并重新启动相应应用，再测试原入口。详见[游戏平台](../leisure/gaming.md#故障排查)。
 - **默认关联是 Strata，但「在文件管理器中显示」仍打开别的程序**：该入口可能使用 FileManager1；确认上述用户级服务链接存在，重新登录释放旧服务的 D-Bus 名称后，再在原应用中测试。
-- **Nautilus 打开很慢**：分别尝试 `xdg-open ~/Documents` 和 `nautilus ~/Documents`，区分默认关联调用与 Nautilus 自身启动；「在文件管理器中显示」还需检查 FileManager1 激活。用 `journalctl --user -b --grep='Nautilus|nautilus|FileManager1|portal'` 查看是否有激活超时，不能仅凭 MIME 默认值正确就认定延迟已解决。
 - **Strata 预览报 `Unable to start the preview sandbox`**：先确认实际运行的是固定 input 中的 1.0.0 包；该包自带可信 `bwrap` 搜索路径，再检查用户命名空间权限与应用日志。
 - **Strata 缩略图/PDF/压缩包预览空白**：在 nixpkgs 任务 worktree 核对沙箱补丁及对应验证记录；沙箱内工具和 GStreamer 插件路径由包提供。
 - **应用菜单里没有 Strata 图标**：图标与 desktop entry 在 store 里，重新登录一次让桌面缓存刷新。

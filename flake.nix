@@ -70,13 +70,11 @@
         # Match the host policy for standalone packages such as Kiro Crew.
         config.allowUnfree = true;
       };
-      # 共享主题包：host（GNOME Shell 主题）+ home（GTK4 跟随）共用，参数集中在此一处。
+      # GTK3/4 主题基础供 Matugen 使用；不安装 GNOME Shell 主题。
       materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
         inherit pkgs;
         wallpaper = ./assets/nixos_logo.png;
-        shellLayout = "default"; # GNOME 原版实心通栏
       };
-      materialAdwTheme = import ./local-deriv/material-adw-kvantum.nix { inherit pkgs; };
       agentOrchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
     in
     {
@@ -110,7 +108,6 @@
         agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };
         opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
         material-gnome-theme = materialGnomeTheme;
-        material-adw-kvantum = materialAdwTheme;
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };
         scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
@@ -145,7 +142,7 @@
       nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit inputs materialGnomeTheme materialAdwTheme;
+          inherit inputs materialGnomeTheme;
         };
         modules = [
           ./host/default.nix

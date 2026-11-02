@@ -23,7 +23,6 @@ in
 {
   # 共享主题基础（两 DE）：指针光标、字体、图标主题、深浅色。
   # gtk-theme：主 DE 运行时由 runtime.nix 的 theme-apply 设 Material-Gnome-Matugen；
-  # GNOME 变体静态在 gtk-static.nix 设 Material-Gnome。
 
   # Pointer cursor
   home.pointerCursor = {
@@ -126,10 +125,9 @@ in
   # MS CJK 字体激活（字体域内聚；见文件头注释）
   home.activation.copyMsCjkFonts = copyMsCjkFonts;
 
-  # 共享图标主题（GTK 主题分属 gtk-matugen.nix 主 DE / gtk-static.nix GNOME 变体）
+  # 共享图标主题；主 DE 的 GTK 颜色由 gtk-matugen.nix 管理。
   home.packages = with pkgs; [
     papirus-icon-theme
-    gnome-themes-extra
   ];
 
   # GTK4/libadwaita apps need gsettings schemas to read color-scheme

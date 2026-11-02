@@ -2,7 +2,7 @@
 title: Wiki 首页
 category: 顶层
 tags: [index, moc]
-updated: 2026-10-25
+updated: 2026-11-02
 ---
 
 # Wiki — NixOS 配置操作手册
@@ -31,7 +31,6 @@ updated: 2026-10-25
 |------|------|
 | [Hyprland](desktop/hyprland.md) | 窗口管理器：按键、手势、工作流、滚动布局 |
 | [Niri](desktop/niri.md) | 滚动平铺合成器：uwsm 启动、窗口流 |
-| [GNOME](desktop/gnome.md) | 完整桌面：specialisation 变体，GDM 登录 |
 | [NextKDE](desktop/nextkde.md) | Plasma Wayland + KOS：specialisation 变体，SDDM 登录 |
 | [Fcitx5 输入法](desktop/fcitx5.md) | Rime 引擎、垂直候选窗、深浅色联动 |
 | [Noctalia Shell](desktop/noctalia.md) | 桌面面板：控制中心、壁纸、配色、锁屏 |
@@ -47,7 +46,7 @@ updated: 2026-10-25
 |------|------|
 | [办公软件套件](productivity/office.md) | LibreOffice、OnlyOffice、Obsidian、Markdown 编辑器 |
 | [图像与视频工具](productivity/graphics.md) | gThumb、GIMP、Kdenlive、Glaxnimate、Blender |
-| [文件管理器与归档工具](productivity/files.md) | Nautilus、Dolphin、Strata、归档与缩略图工具 |
+| [文件管理器与归档工具](productivity/files.md) | Dolphin、Strata、Ark、归档与缩略图工具 |
 | [Yazi 文件管理器](productivity/yazi.md) | 文件管理器：按键、插件、主题 |
 
 ## 开发与工具 `dev/`
@@ -68,7 +67,7 @@ updated: 2026-10-25
 | 文档 | 内容 |
 |------|------|
 | [游戏平台](leisure/gaming.md) | Steam、Lutris/Bottles、MangoHud、32-bit 图形库、Windows 虚拟机 |
-| [媒体播放](leisure/media.md) | mpv、网易云、OBS、loupe、ani-cli、Kazumi |
+| [媒体播放](leisure/media.md) | mpv、Gwenview、网易云、OBS、ani-cli、Kazumi |
 
 ## 网络与代理 `networking/`
 

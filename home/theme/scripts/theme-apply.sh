@@ -12,11 +12,13 @@
         dark)
           color_scheme=prefer-dark
           gtk_theme=Material-Gnome-Matugen-Dark
+          qt_theme=WhiteSurDark
           fcitx_theme=mellow-matugen-dark
           ;;
         light)
           color_scheme=prefer-light
           gtk_theme=Material-Gnome-Matugen
+          qt_theme=WhiteSur
           fcitx_theme=mellow-matugen
           ;;
         *)
@@ -71,16 +73,6 @@
       dual/gtk3-light/colors.css
       dual/gtk3-dark/colors.css
       dual/gtk4/colors.css
-      light/qt5ct/colors/matugen.conf
-      dark/qt5ct/colors/matugen.conf
-      light/qt6ct/colors/matugen.conf
-      dark/qt6ct/colors/matugen.conf
-      light/Kvantum/MaterialAdw/MaterialAdw.kvconfig
-      dark/Kvantum/MaterialAdw/MaterialAdw.kvconfig
-      light/Kvantum/MaterialAdw/MaterialAdw.svg
-      dark/Kvantum/MaterialAdw/MaterialAdw.svg
-      light/color-schemes/MaterialAdwMatugen.colors
-      dark/color-schemes/MaterialAdwMatugen.colors
       light/papirus-folder-color
       dark/papirus-folder-color
       light/fcitx5/mellow-matugen/highlight.svg
@@ -268,14 +260,14 @@
     # Strata scans ~/.config/strata/themes/*.toml only at startup (no watcher),
     # uses the file stem as the theme id, and owns settings.toml: it rewrites the
     # whole file on any preference change.  Republish the current mode's theme and
-    # rewrite the two top-level keys, the same way Dolphin's ColorScheme is forced
+    # rewrite the two top-level keys, the same way Dolphin's ColorScheme is selected
     # below.  The keys are rebuilt instead of patched in place, so a missing
     # trailing newline or duplicate top-level keys cannot survive; file shapes this
     # rewrite cannot handle safely (BOM, indented/quoted keys, indented table
     # headers, multi-line strings) are refused instead of mangled, and the file is
     # only replaced when the content actually differs.  The whole block runs in a
     # subshell so that a failure there cannot abort the rest of theme-apply
-    # (mpv/Qt/Kvantum/Dolphin/gsettings/Papirus run after this point).
+    # (mpv/Qt/Dolphin/gsettings/Papirus run after this point).
     copy_atomic "$cache_dir/$mode/strata/themes/matugen.toml" \
       "$HOME/.config/strata/themes/matugen.toml"
     strata_settings="$HOME/.config/strata/settings.toml"
@@ -331,35 +323,17 @@
       "$HOME/.config/zellij/themes/matugen.kdl"
     zellij_end="$(now_ms)"
     log "stage=zellij duration_ms=$((zellij_end - zellij_start)) mode=$mode"
-    qt_palette_changed=0
-    if ! @pkgs_diffutils@/bin/cmp -s "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
-      "$HOME/.config/qt5ct/colors/matugen.conf" || \
-      ! @pkgs_diffutils@/bin/cmp -s "$cache_dir/$mode/qt6ct/colors/matugen.conf" \
-        "$HOME/.config/qt6ct/colors/matugen.conf"; then
-      qt_palette_changed=1
-    fi
-    copy_atomic "$cache_dir/$mode/qt5ct/colors/matugen.conf" \
-      "$HOME/.config/qt5ct/colors/matugen.conf"
-    copy_atomic "$cache_dir/$mode/qt6ct/colors/matugen.conf" \
-      "$HOME/.config/qt6ct/colors/matugen.conf"
-    copy_atomic "$cache_dir/$mode/Kvantum/MaterialAdw/MaterialAdw.kvconfig" \
-      "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig"
-    copy_atomic "$cache_dir/$mode/Kvantum/MaterialAdw/MaterialAdw.svg" \
-      "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.svg"
-    # qtct watches its config directory, not the nested colors/ directory.
-    # Notify after both palettes and Kvantum assets are published so long-lived
-    # QApplication consumers (including hyprpolkitagent) update without restart.
-    if [ "$qt_palette_changed" -eq 1 ]; then
-      @pkgs_coreutils@/bin/touch "$HOME/.config/qt5ct" "$HOME/.config/qt6ct"
-    fi
-    copy_atomic "$cache_dir/$mode/color-schemes/MaterialAdwMatugen.colors" \
-      "$HOME/.local/share/color-schemes/MaterialAdwMatugen.colors"
+    # Kvantum owns Qt widget shapes and colors. Keep its selector writable so
+    # Darkman chooses the packaged WhiteSur pair without recoloring Qt assets.
+    # Kvantum reads this selection when an application creates its style.
+    printf -v kvantum_config '[General]\ntheme=%s' "$qt_theme"
+    write_atomic "$HOME/.config/Kvantum/kvantum.kvconfig" "$kvantum_config"
     copy_atomic "$cache_dir/$mode/papirus-folder-color" \
       "$cache_root/papirus-folder-color"
 
     # Dolphin consumes KDE semantic colors separately from the Qt palette.
     # Clear any leftover immutable entry from previous NextKDE sessions
-    # so kwriteconfig6 can set the Matugen scheme without aborting theme-apply.
+    # so kwriteconfig6 can set the WhiteSur scheme without aborting theme-apply.
     if [ -f "$HOME/.config/dolphinrc" ]; then
       @pkgs_gnused@/bin/sed -i 's/^ColorScheme\[\$i\]=/ColorScheme=/' "$HOME/.config/dolphinrc" 2>/dev/null || true
     fi
@@ -367,7 +341,7 @@
       --file "$HOME/.config/dolphinrc" \
       --group UiSettings \
       --key ColorScheme \
-      MaterialAdwMatugen
+      "$qt_theme"
 
     @pkgs_glib@/bin/gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
     @pkgs_glib@/bin/gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"

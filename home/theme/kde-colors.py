@@ -119,7 +119,7 @@ class Renderer:
             if not Path(template["input"]).is_absolute():
                 raise ValueError("template input must be absolute")
             outputs.add(output.as_posix())
-        for field in ("matugen", "fcitxConfig", "fcitxReload", "btopReload"):
+        for field in ("matugen", "fcitxConfig", "fcitxReload", "btopReload", "kvantumConfig"):
             if manifest.get(field) and not Path(manifest[field]).is_absolute():
                 raise ValueError(f"{field} must be absolute")
         for mode in MODES:
@@ -210,6 +210,17 @@ class Renderer:
                 atomic_link(self.root / "current", generation.name)
             if changed or mode != old_mode:
                 atomic_link(self.root / "selected", f"current/{mode}")
+            # KDE remains the mode authority. Kvantum reads this small selector
+            # when applications create their style; its packaged SVGs and colors
+            # remain unchanged, including when only the wallpaper accent changes.
+            qt_changed = False
+            if self.manifest.get("kvantumConfig"):
+                path = Path(self.manifest["kvantumConfig"])
+                theme = "WhiteSurDark" if mode == "dark" else "WhiteSur"
+                content = f"[General]\ntheme={theme}\n"
+                if not path.exists() or path.read_text() != content or path.is_symlink():
+                    atomic_text(path, content)
+                    qt_changed = True
             config_changed = False
             config = self.manifest.get("fcitxConfig")
             if config:
@@ -228,7 +239,7 @@ class Renderer:
                 for obsolete in self.root.glob("generation-*"):
                     if obsolete != current and obsolete.is_dir() and not obsolete.is_symlink():
                         shutil.rmtree(obsolete)
-            return changed or mode != old_mode or config_changed
+            return changed or mode != old_mode or config_changed or qt_changed
 
 
 def synchronize(manifest):

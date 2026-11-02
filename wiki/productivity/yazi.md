@@ -2,7 +2,7 @@
 title: Yazi 文件管理器
 category: 生产力
 tags: [yazi, file-manager, tui, ffmpeg, plugins]
-updated: 2026-10-30
+updated: 2026-11-02
 ---
 
 # Yazi 文件管理器
@@ -74,7 +74,7 @@ Yazi 是终端文件管理器，命令别名 `y`。配置了自定义主题、10
 
 ## 主题
 
-主 DE 和 NextKDE 使用 **matugen-runtime**（暗色）；主 DE 根据壁纸取色，NextKDE 根据 KDE 强调色生成。GNOME 使用静态 **myargonaut**，不运行动态配色分发。
+主 DE 和 NextKDE 使用 **matugen-runtime**（暗色）；主 DE 根据壁纸取色，NextKDE 根据 KDE 强调色生成。
 
 主 DE 的 Yazi 与 btop 一样保持深色底，因为 Foot 终端背景固定为深色；目录、重点、选中、边框、文件类型和错误颜色会随壁纸重点色更新。运行时 flavor 是用户可写文件，不会覆盖同目录下的 `myargonaut` 或 `noctalia`。
 

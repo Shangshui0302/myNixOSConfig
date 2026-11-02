@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-10-29
+updated: 2026-11-02
 ---
 
 # Noctalia Shell 使用指南
@@ -103,7 +103,7 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 ## 插件依赖与设置
 
 - **Screen Toolkit**：截图、OCR、二维码、录屏和翻译工具由 `home/productivity/graphics.nix` 提供；OCR 启用中、英、日、韩、俄五种模型，录屏后端使用 `wl-screenrec`。
-- **Phone Operate**：`adb`、scrcpy、SSHFS 由 `home/productivity/phone.nix` 提供；主桌面的 KDE Connect 与发现端口由 `host/base/desktop.nix` 管理，GNOME 变体继续使用 GSConnect。
+- **Phone Operate**：`adb`、scrcpy、SSHFS 由 `home/productivity/phone.nix` 提供；主桌面的 KDE Connect 与发现端口由 `host/base/desktop.nix` 管理。
 - **Obsidian**：Vault 指向 `~/Documents/MyVault`，日记目录与现有 Daily Notes 配置统一为 `05_Personal/Diary`。
 - **Translator**：默认翻译目标为中文；Google 模式没有本地命令依赖。
 
@@ -121,7 +121,7 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 ## 配色方案 (matugen)
 
-当前主题：**matugen**——waypaper 切壁纸后生成 `~/.config/noctalia/palettes/matugen.json`，由 `theme.custom_palette = "matugen"` 消费。模板全部禁用，Noctalia 只读取 Matugen 产物。主桌面的 GTK、Qt、Hyprland 与 niri 也由同一次 Matugen 运行更新；Foot 仍使用 `home/de/foot.nix` 定义的固定深色配色。Matugen 产物按壁纸内容缓存，回到已使用过的壁纸时不再重新取色；日志中的 `cache=hit source=wallpaper` 表示显式壁纸路径复用了已有产物。
+当前主题：**matugen**——waypaper 切壁纸后生成 `~/.config/noctalia/palettes/matugen.json`，由 `theme.custom_palette = "matugen"` 消费。模板全部禁用，Noctalia 只读取 Matugen 产物。主桌面的 GTK、Hyprland 与 niri 也由同一次 Matugen 运行更新；Foot 仍使用 `home/de/foot.nix` 定义的固定深色配色。Matugen 产物按壁纸内容缓存，回到已使用过的壁纸时不再重新取色；日志中的 `cache=hit source=wallpaper` 表示显式壁纸路径复用了已有产物。
 
 深浅模式由 Darkman 管理。Noctalia 启动时和每次 Darkman 切换后都会同步当前模式，但不会反向修改系统主题；使用 `Super + Shift + D` 或 `darkman toggle` 切换。`theme-apply` 在复制 palette 后立即发送 `theme-mode-set`，再处理可能耗时数秒的 Papirus 文件夹重着色；这样壁纸重点色不会等待图标处理完成。壁纸 palette 文件变化由 Noctalia 文件监听器负责 reload，不再重复发送 `config-reload`。
 

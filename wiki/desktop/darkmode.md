@@ -2,7 +2,7 @@
 title: 深色模式与动态配色
 category: desktop
 tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode, strata]
-updated: 2026-10-30
+updated: 2026-11-02
 ---
 
 # 深色模式与动态配色
@@ -14,7 +14,7 @@ darkman set/toggle
   ├─ XDG Settings portal → GTK4 双配色媒体查询、Firefox、浏览器、portal-aware 应用
   └─ theme-apply
       ├─ 壁纸变化：Matugen 一次生成深浅双套产物并写入按内容寻址的缓存
-      ├─ 模式变化：从缓存激活 Qt/Kvantum、Dolphin、Caelestia、Hyprland/niri
+      ├─ 模式变化：从缓存激活 Caelestia、Hyprland/niri，并选择 WhiteSur Qt 明暗主题
       ├─ btop 固定使用深色主题并发送 SIGUSR2 热重载
       ├─ Yazi 固定使用深色底并更新 Matugen flavor
       ├─ mpv ModernZ 固定使用深色 Material 3 OSC 配色
@@ -31,11 +31,11 @@ darkman set/toggle
 
 `kos-colors.path` 由已有的 systemd 监测 `~/.config/kdeglobals`，变化时运行一次 `kos-colors.service`；登录也同步一次。没有额外的常驻监听进程，不轮询壁纸，不依赖 Python D-Bus 模块。读取 `[General] AccentColor`，避免将 Portal 返回的选中背景色再次取色；未设置自定义强调色时回退到当前配色的选中背景。仅强调色或模板变化时重新生成明暗两套色板，单独切换深浅模式复用色板。输出完整后原子切换指针，只保留当前一代，不生成备份；配置尚未完整或渲染失败时保留已有输出，下一次变化或手动运行时重试。
 
-GNOME 不运行这两条动态分发链；btop 使用 `blackgolden`，Zellij 使用内置主题，Yazi 使用 `myargonaut`。主 DE 和 NextKDE 的 btop、Zellij、Yazi 分别使用 `matugen`、`matugen`、`matugen-runtime`。
+主 DE 和 NextKDE 的 btop、Zellij、Yazi 分别使用 `matugen`、`matugen`、`matugen-runtime`。
 
 NextKDE 分发 Fcitx5、Neovim、Zellij、btop、Yazi、mpv；后三者保持固定深色底色。应用现有配色入口由 Home Manager 指向本变体的缓存，切回主配置时恢复主分发链。Fcitx5 使用独立的 `mellow-kde` / `mellow-kde-dark` 目录，保留半透明但将 `EnableBlur` 设为 `False`，主桌面的 `mellow-matugen` 不被改写。切换只更新 ClassicUI 的主题选择键，保留字体、候选排列及其他字段。
 
-KDE 分发不写 GTK/Qt、Dolphin、KDE 配色、图标、装饰或 KOS 面板；这些仍由 KDE/KOS 管理。Matugen 由强调色派生完整语义色板，派生出的 primary 不承诺与 KDE 强调色逐值相同。VS Code、Obsidian 和 Foot 均不新增配色分发。
+KDE 分发仅选择 WhiteSur 的 Qt 明暗主题，不重着色 Qt 资源；GTK、Dolphin、KDE 配色、图标、装饰和 KOS 面板仍由 KDE/KOS 管理。Matugen 由强调色派生完整语义色板，派生出的 primary 不承诺与 KDE 强调色逐值相同。VS Code、Obsidian 和 Foot 均不新增配色分发。
 
 KDE 必须启用“从当前壁纸获取强调色”。KOS 换壁纸后会将取色结果交给 Plasma，Plasma 保存新配色后触发分发；如果两张壁纸的强调色相同，则不重复渲染。NextKDE 登录后可检查 `systemctl --user status kos-colors.path`；正常应为等待状态，`kos-colors.service` 单次完成后显示 inactive 是正常的。日志用 `journalctl --user -u kos-colors.service -n 40`，手动同步运行 `kos-colors`。Neovim 可用 `:MatugenReload` 重读；Yazi、mpv 通常需要重新打开，已有 Zellij 会话若未刷新可重新连接。
 
@@ -73,13 +73,12 @@ journalctl --user -u darkman -b
 - **GTK4**：`Material-Gnome-Matugen/gtk-4.0/colors.css` 始终同时包含浅色和深色变量，用 `@media (prefers-color-scheme: dark)` 选择。GTK4 收到 portal 模式事件时不再依赖 Matugen 写文件的先后顺序，因此不会读取上一轮颜色而反向。
 - **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`；壁纸色板变化后还会重启 `xdg-desktop-portal-gtk`，避免 VS Code/Codex 复用长驻文件选择器进程中的旧 CSS，普通深浅切换不重启。
 - **Flatpak GTK 应用**：继续通过 `$HOME/.themes:ro` 和固定 `GTK_THEME=Material-Gnome-Matugen` 读取主题。GTK4 4.20 及以上可使用双配色媒体查询；GTK3 Flatpak 暂不动态切换到 `-Dark` 目录。
-- **Qt5/Qt6**：Home Manager 的 `qtct` 同时管理两代平台插件，默认控件样式为 Kvantum；`MaterialAdw` 的 `kvconfig`/SVG 由 Matugen 写入 `~/.config/Kvantum/MaterialAdw/`，两代 `qtct` 分别读取 `~/.config/qt5ct/colors/matugen.conf` 与 `~/.config/qt6ct/colors/matugen.conf`。模板按 QPalette 顺序输出 22 个颜色角色（包含 NoRole 占位）；Qt5 读取前 21 个。色板变化后，`theme-apply` 通知 qtct 监听的配置根目录，约 3 秒后触发重读；具体应用能否热更新仍取决于其样式。
-- **认证窗口**：`hyprpolkitagent` 服务单独使用 `QT_STYLE_OVERRIDE=Fusion`，避免 Kvantum 保留启动时色板；Qt Quick 控件仍使用上游 `org.hyprland.style`。隔离测试已确认，同一个进程能跟随深浅模式与壁纸换色，无需为换色重启认证服务。配置已应用，活动 Qt5/Qt6 色板各组均为 22 色，代理进程的主题设置也已核对；实际弹窗换色仍待人工验收。
-- **Dolphin/KDE**：Matugen 另外生成 `~/.local/share/color-schemes/MaterialAdwMatugen.colors`，并将 `~/.config/dolphinrc` 的 `[UiSettings] ColorScheme` 指向 `MaterialAdwMatugen`。这样文件视图、选中态等 KDE 语义色与 Kvantum 控件保持同一套 M3 色板。
+- **Qt 与 Dolphin**：两个桌面共用 WhiteSur 的 Kvantum 明暗主题和 KDE 色板；主桌面由 `qtct` 提供 Qt5/Qt6 平台主题，Darkman 经 `theme-apply` 选择 `WhiteSur` 或 `WhiteSurDark`，并为 Dolphin 选择对应色板。NextKDE 保持 Plasma 平台和 KDE 色源，由 `kos-colors` 根据 KDE 模式选择相同的 Kvantum 主题。Qt 资源使用 WhiteSur 原始配色，不随壁纸重新着色；已运行的 Qt 应用可能需要重新启动才能采用新模式。
+- **认证窗口**：`hyprpolkitagent` 的 Qt Widgets 使用 qt6ct 与 Kvantum，Qt Quick 控件保留 Hyprland 样式；实际弹窗外观和模式切换仍需在应用配置后验收。
 - **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景。每次 `theme-apply` 都发送 `SIGUSR2` 让运行中的 btop 重读文件，只有壁纸变化才会改变重点色。
 - **Yazi**：`programs.yazi` 的 dark flavor 指向 `matugen-runtime`。由于 Foot 终端背景固定为深色，`theme-apply` 始终使用 Matugen 的深色语义色板，生成并复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`；浅色模式不改变 Yazi 背景。Yazi 26.9.1 虽支持 `app:theme`，但当前分发链不猜测外部实例 ID，运行中的实例需重新启动后读取新 flavor。
 - **mpv / ModernZ**：`home/leisure/player.nix` 关闭默认 OSC，安装 ModernZ Lua、Material 图标字体和中文 locale。Matugen 为 light/dark 各生成一份 ModernZ 配置，但 `theme-apply` 始终复制 dark 变体到 `~/.config/mpv/script-opts/modernz.conf`，把 `primary`、`surface_container`、`on_surface` 和 `outline_variant` 分别用于重点色、控件底色、文字/图标和边框；布局使用 ModernZ 的 `mini` 与 `small` 进度条。mpv 进程通常需要重新打开才能读取新配置。
-- **Strata**：本地源码构建的 GTK4 文件管理器（见 [文件管理器与归档工具](../productivity/files.md)）。它用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、零处引用系统 GTK/Adwaita 命名色，所以系统 GTK 主题决定不了它的配色。Matugen 通过 `home/theme/matugen/strata-theme.toml.tpl` 生成 `~/.config/strata/themes/matugen.toml`（文件名 stem 即主题 id），`theme-apply` 每次按当前模式复制 light 或 dark 变体，并把 `~/.config/strata/settings.toml` 的顶层 `theme`/`mode` 重写为 `matugen`/`theme`（文件不存在时创建最小文件；内容已一致则不写；畸形文件放弃改写并记 `settings-assert-failed`）。该文件由 Strata 全量重写，所以 UI 里换主题会在下次 apply 被改回，做法与 Dolphin 的 ColorScheme 相同。Strata 只在启动时扫描主题目录、不监听文件变化，所以换壁纸或深浅切换后需要重开 Strata；语法高亮色不写进模板，由 Strata 自己从 accent/text 推导（本机 scheme-content + saturation 常把 secondary/tertiary 收敛到 primary，显式写反而更差）。
+- **Strata**：本地源码构建的 GTK4 文件管理器（见 [文件管理器与归档工具](../productivity/files.md)）。它用自绘主题：`src/style.css` 只引用自己的 `@theme_*` 变量、零处引用系统 GTK/Adwaita 命名色，所以系统 GTK 主题决定不了它的配色。Matugen 通过 `home/theme/matugen/strata-theme.toml.tpl` 生成 `~/.config/strata/themes/matugen.toml`（文件名 stem 即主题 id），`theme-apply` 每次按当前模式复制 light 或 dark 变体，并把 `~/.config/strata/settings.toml` 的顶层 `theme`/`mode` 重写为 `matugen`/`theme`（文件不存在时创建最小文件；内容已一致则不写；畸形文件放弃改写并记 `settings-assert-failed`）。该文件由 Strata 全量重写，所以 UI 里换主题会在下次 apply 被改回。Strata 只在启动时扫描主题目录、不监听文件变化，所以换壁纸或深浅切换后需要重开 Strata；语法高亮色不写进模板，由 Strata 自己从 accent/text 推导（本机 scheme-content + saturation 常把 secondary/tertiary 收敛到 primary，显式写反而更差）。
 - **Zellij**：`programs.zellij` 使用固定主题名 `matugen`；`theme-apply` 按当前 Darkman 模式，将缓存中的 `light/zellij/theme.kdl` 或 `dark/zellij/theme.kdl` 原子复制到 `~/.config/zellij/themes/matugen.kdl`。Zellij 0.45.1 支持从 `CONFIG_DIR/themes` 加载主题并监视主题文件，运行中的会话通常可以直接刷新；若实例未刷新，重新连接会话即可。这里不依赖终端上报的 CSI 2031 色彩状态，因为 Darkman 才是主桌面的唯一模式源。
 - **Neovim**：`home/dev/nvim/init.lua` 读取 `~/.cache/matugen/nvim-colors.lua`，用它为 Snacks dashboard、状态栏和模式色提供重点色；`theme-apply` 按当前模式从壁纸缓存发布文件。壁纸或模式变化后重启 Neovim，或在运行中的实例执行 `:MatugenReload`。
 - **Foot**：由 `home/de/foot.nix` 定义固定深色配色，不随壁纸变化。
@@ -91,7 +90,7 @@ Obsidian 和 VS Code 已取消 Matugen 专属色板的生成、缓存校验及�
 
 ## 壁纸缓存与快速切换
 
-`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、Zellij 深浅两套主题、Neovim 深浅两套色板，以及 light/dark 两套 Qt、Kvantum、KDE、合成器、Fcitx 和 Strata 产物。
+`theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、Zellij 深浅两套主题、Neovim 深浅两套色板，以及 light/dark 两套合成器、Fcitx 和 Strata 产物。
 
 普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。显式换壁纸时，日志会记录 `cache=hit source=wallpaper` 或 `cache=miss`；回到已有壁纸不会重新取色。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，并在 Papirus 重着色前优先更新 Noctalia、Hyprland 等可见消费者。`copy_atomic` 和 Fcitx 配置会先比较内容，避免模式切换无意义地重写相同文件；btop 仅在壁纸色板变化时发送刷新信号。Papirus 文件夹颜色记录已应用颜色，并按 Papirus 版本/颜色缓存 GTK `icon-theme.cache`：换色仍需首次生成该颜色的索引，之后只更新链接并恢复约 3 MB 的缓存；目标颜色不变时跳过整个 Papirus 阶段。Papirus 缓存位于 `~/.cache/wallpaper-colors/papirus/`，可安全删除，缺失时自动回退到完整重建。
 
@@ -114,17 +113,12 @@ busctl --user call org.freedesktop.portal.Desktop \
 stat ~/.themes/Material-Gnome-Matugen/gtk-3.0/colors.css \
   ~/.themes/Material-Gnome-Matugen-Dark/gtk-3.0/colors.css \
   ~/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css \
-  ~/.config/qt5ct/colors/matugen.conf \
-  ~/.config/qt6ct/colors/matugen.conf \
   ~/.config/btop/themes/matugen.theme \
   ~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml \
   ~/.config/mpv/script-opts/modernz.conf \
   ~/.config/zellij/themes/matugen.kdl \
   ~/.config/strata/themes/matugen.toml \
   ~/.cache/matugen/nvim-colors.lua \
-  ~/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig \
-  ~/.config/Kvantum/MaterialAdw/MaterialAdw.svg \
-  ~/.local/share/color-schemes/MaterialAdwMatugen.colors \
   ~/.local/share/fcitx5/themes/mellow-matugen/theme.conf \
   ~/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf \
   ~/.local/share/fcitx5/themes/mellow-matugen/highlight.svg \
@@ -137,10 +131,6 @@ grep -nE '^\[Metadata\]|^\[InputPanel/Background\]|^Image=panel\.svg$' \
 # GTK4 产物应包含运行时深色分支
 grep -n 'prefers-color-scheme: dark' \
   ~/.themes/Material-Gnome-Matugen/gtk-4.0/colors.css
-
-# Dolphin 应使用 Matugen 生成的 KDE 语义色方案
-awk '/^\[UiSettings\]/{in_ui=1; next} /^\[/{in_ui=0} in_ui && /^ColorScheme=/{print}' \
-  ~/.config/dolphinrc
 
 # btop 应使用当前 Matugen 主题
 rg -n '^theme\[' ~/.config/btop/themes/matugen.theme

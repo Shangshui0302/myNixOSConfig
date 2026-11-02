@@ -194,11 +194,29 @@ if name == 'fcitx5-remote' and os.environ.get('REMOTE_FAIL') == '1': sys.exit(1)
 
         res = self.run_apply('dark')
         self.assertEqual(res.returncode, 0)
-        # Verify [$i] was cleared and real kwriteconfig6 successfully wrote ColorScheme=MaterialAdwMatugen
+        # Verify [$i] was cleared and the WhiteSur dark palette was selected.
         content = dolphinrc.read_text()
         self.assertNotIn('[$i]=', content)
-        self.assertIn('ColorScheme=MaterialAdwMatugen', content)
+        self.assertIn('ColorScheme=WhiteSurDark', content)
         # Verify subsequent stages were reached and executed (gsettings, etc.)
         self.assertTrue(any(x.startswith('gsettings ') and 'color-scheme' in x for x in self.calls()))
+
+    def test_qt_whitesur_tracks_mode_without_matugen_qt_assets(self):
+        selector = self.home / '.config/Kvantum/kvantum.kvconfig'
+        selector.parent.mkdir(parents=True)
+        old = self.root / 'old-selector'
+        old.write_text('[General]\ntheme=MaterialAdw\n')
+        selector.symlink_to(old)
+        self.assertEqual(self.run_apply('dark').returncode, 0)
+        self.assertFalse(selector.is_symlink())
+        self.assertEqual(selector.read_text(), '[General]\ntheme=WhiteSurDark\n')
+        self.assertEqual(old.read_text(), '[General]\ntheme=MaterialAdw\n')
+        self.log.unlink()
+        self.assertEqual(self.run_apply('light').returncode, 0)
+        self.assertEqual(selector.read_text(), '[General]\ntheme=WhiteSur\n')
+        self.assertIn('ColorScheme=WhiteSur\n', (self.home / '.config/dolphinrc').read_text())
+        self.assertFalse(any(x.startswith('matugen ') for x in self.calls()))
+        self.assertFalse((self.home / '.config/qt5ct/colors/matugen.conf').exists())
+        self.assertFalse((self.home / '.config/Kvantum/MaterialAdw').exists())
 
 if __name__ == '__main__': unittest.main()

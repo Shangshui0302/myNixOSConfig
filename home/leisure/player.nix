@@ -7,22 +7,17 @@
 
 let
   modernz = pkgs.callPackage ../../local-deriv/modernz.nix { };
-  terminalExec =
-    if osConfig.services.desktopManager.gnome.enable then
-      "kgx -e musicfox"
-    else
-      "foot -e musicfox";
 in
 {
   home.packages = with pkgs; [
-    loupe
     mpv
     ani-cli
     kazumi
     obs-studio
     (import ../../local-deriv/netease-cloud-music-web-player.nix { inherit pkgs; })
     go-musicfox
-  ];
+    (pkgs.callPackage ../../local-deriv/kmusic.nix { })
+  ] ++ lib.optionals (!osConfig.services.desktopManager.plasma6.enable) [ kdePackages.gwenview ];
 
   xdg.configFile."mpv/mpv.conf".text = ''
     osc=no
@@ -39,7 +34,7 @@ in
     name = "go-musicfox";
     genericName = "Terminal Music Player";
     comment = "网易云音乐命令行客户端";
-    exec = terminalExec;
+    exec = "foot -e musicfox";
     icon = "terminal";
     terminal = false;
     categories = [

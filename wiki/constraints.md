@@ -2,14 +2,14 @@
 title: 约束与惯例
 category: 顶层
 tags: [constraints, conventions, nix]
-updated: 2026-10-04
+updated: 2026-11-02
 ---
 
 # NixOS Config — 约束与惯例
 
 ### 包分类标准
 
-- 按主要用途单一归类：系统集成 `host/`，共享环境 `home/env/`，生产力 `home/productivity/`，开发 `home/dev/`，娱乐 `home/leisure/`，DE 专属放对应的 `host/de/`、`host/gnome/` 或 `home/de/`、`home/gnome.nix`。
+- 按主要用途单一归类：系统集成 `host/`，共享环境 `home/env/`，生产力 `home/productivity/`，开发 `home/dev/`，娱乐 `home/leisure/`，DE 专属放对应的 `host/de/`、`host/nextkde/` 或 `home/de/`、`home/nextkde.nix`。
 - 支撑包跟随实际消费者；公共系统能力放 `host/`，用户应用放 `home/`，禁止重复声明。
 - 新增包先检查已有声明和 nixpkgs；改动后同步导入关系与 Wiki 来源映射，并执行 parse 和 dry-build。
 - 新增、升级、修复或审查 `local-deriv/` 包必须使用 `$nix-packaging`；NixOS、Home Manager、服务、部署和恢复任务使用 `$nixos-ecosystem`；每个手工包在 `flake.nix` 暴露同名 package output。
@@ -22,10 +22,10 @@ flake.nix              # Entry point only — no inline package definitions
 local-deriv/
   *.nix                # Custom packages and font derivations
 home/
-  home.nix base.nix gnome.nix
+  home.nix base.nix nextkde.nix
   theme/ de/ env/ dev/ productivity/ leisure/  # Purpose-based subdirectories
 host/
-  base/ de/ gnome/     # base = shared; de = main-DE; gnome = GNOME variant
+  base/ de/ nextkde/   # base = shared; de = main-DE; nextkde = Plasma variant
 assets/                # Binary assets (wallpapers, tarballs, etc.)
 ```
 

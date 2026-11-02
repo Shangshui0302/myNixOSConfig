@@ -15,11 +15,6 @@
 
   # Main DE Fcitx5 theme addons & classicui fallback configuration
   i18n.inputMethod.fcitx5 = {
-    addons = with pkgs; [
-      fcitx5-mellow-themes
-      fcitx5-material-color
-      catppuccin-fcitx5
-    ];
     settings.addons.classicui.globalSection = {
       Theme = "mellow-matugen";
       DarkTheme = "mellow-matugen-dark";

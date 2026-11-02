@@ -2,7 +2,7 @@
 title: PAM — 可插拔认证模块
 category: 安全
 tags: [pam, authentication, security, login, sudo, keyring]
-updated: 2026-10-13
+updated: 2026-11-02
 ---
 # PAM — 可插拔认证模块
 
@@ -60,7 +60,7 @@ PAM 的核心思想是**分离策略和机制**：
 
 ## 我们的 PAM 配置
 
-主桌面会话还为 `polkit-1` 服务接入 Howdy。图形授权请求可先尝试人脸识别；`sufficient` 成功时认证通过，失败则继续到密码模块。此项位于 `host/de/sessions.nix`，不改变 GNOME specialisation 的登录认证配置。桌面认证提示由会话级 `hyprpolkitagent` 显示，见[系统服务](../services.md#权限与安全)和 [Hyprland](../desktop/hyprland.md)。
+主桌面会话还为 `polkit-1` 服务接入 Howdy。图形授权请求可先尝试人脸识别；`sufficient` 成功时认证通过，失败则继续到密码模块。此项位于 `host/de/sessions.nix`。桌面认证提示由会话级 `hyprpolkitagent` 显示，见[系统服务](../services.md#权限与安全)和 [Hyprland](../desktop/hyprland.md)。
 
 ### 登录 (`/etc/pam.d/login`)
 

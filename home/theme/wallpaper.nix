@@ -51,9 +51,7 @@ in
     lib.hm.dag.entryAfter [ "writeBoundary" "linkGeneration" "setupMatugenGtkTheme" "setupDarkmanMode" ]
       ''
             mkdir -p "$HOME/.local/bin" "$HOME/.config/waypaper" \
-              "$HOME/.config/qt5ct/colors" "$HOME/.config/qt6ct/colors" \
-              "$HOME/.config/Kvantum/MaterialAdw" "$HOME/.config/zellij/themes" \
-              "$HOME/.local/share/color-schemes"
+              "$HOME/.config/zellij/themes"
             cp ${wallpaperThemeScript} "$HOME/.local/bin/wallpaper-theme"
             chmod 755 "$HOME/.local/bin/wallpaper-theme"
 
@@ -69,11 +67,7 @@ in
             fi
 
             # 首次部署时生成完整双模式产物；之后由 theme-apply 按壁纸内容缓存复用。
-            if [ ! -f "$HOME/.config/qt5ct/colors/matugen.conf" ] \
-              || [ ! -f "$HOME/.config/qt6ct/colors/matugen.conf" ] \
-              || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.kvconfig" ] \
-              || [ ! -f "$HOME/.config/Kvantum/MaterialAdw/MaterialAdw.svg" ] \
-              || [ ! -f "$HOME/.local/share/color-schemes/MaterialAdwMatugen.colors" ] \
+            if [ ! -f "$HOME/.config/Kvantum/kvantum.kvconfig" ] \
               || [ ! -f "$HOME/.cache/matugen/nvim-colors.lua" ] \
               || [ ! -f "$HOME/.config/btop/themes/matugen.theme" ] \
               || [ ! -f "$HOME/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml" ] \
