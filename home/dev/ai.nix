@@ -31,6 +31,12 @@ in
     mcporter
   ];
 
+  # Start the desktop app once the graphical session processes XDG autostart.
+  xdg.autostart = {
+    enable = true;
+    entries = [ "${codexDesktop}/share/applications/codex-desktop.desktop" ];
+  };
+
   programs.yt-dlp.enable = true;
 
   # Keep the local workflow declarative; upstream's installer also installs tools

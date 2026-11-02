@@ -88,6 +88,8 @@ Agent Orchestrator 提供主代理派工、开发看板和审查流程，并通�
 
 当前 ai.nix 管理的工具：`codex`、`codex-desktop`，以及 Google Antigravity CLI 与 Antigravity 2.0 Agents 桌面端。Antigravity CLI 在终端用 `agy` 启动；Agents 界面在应用菜单选择 Antigravity，或运行 `antigravity`。这两个包来自锁定的 nixpkgs，未安装 `antigravity-ide`。首次使用时按应用提示完成登录。
 
+Codex 桌面端通过 Home Manager 的 XDG 自启动项在登录桌面后启动，复用包自带的 `codex-desktop.desktop`。它不是开机时运行的 CLI 服务；关闭窗口后不会由本配置强制拉起。取消自启动时，从 `home/dev/ai.nix` 的 `xdg.autostart.entries` 删除对应入口，再应用配置。
+
 另外提供以下 AI 工具；除表中标明的本地包和独立 input 外，版本跟随仓库锁定的 nixpkgs。登录与项目授权在首次启动后按各应用提示完成：
 
 | 工具 | 启动命令 | 包来源 |

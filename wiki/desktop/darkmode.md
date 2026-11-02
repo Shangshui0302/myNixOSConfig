@@ -33,7 +33,7 @@ darkman set/toggle
 
 主 DE 和 NextKDE 的 btop、Zellij、Yazi 分别使用 `matugen`、`matugen`、`matugen-runtime`。
 
-NextKDE 分发 Fcitx5、Neovim、Zellij、btop、Yazi、mpv；后三者保持固定深色底色。应用现有配色入口由 Home Manager 指向本变体的缓存，切回主配置时恢复主分发链。Fcitx5 使用独立的 `mellow-kde` / `mellow-kde-dark` 目录，保留半透明但将 `EnableBlur` 设为 `False`，主桌面的 `mellow-matugen` 不被改写。切换只更新 ClassicUI 的主题选择键，保留字体、候选排列及其他字段。
+NextKDE 分发 Fcitx5、Neovim、Zellij、btop、Yazi、mpv；后三者保持固定深色底色。应用现有配色入口由 Home Manager 指向本变体的缓存，切回主配置时恢复主分发链。Fcitx5 使用独立的 `mellow-kde` / `mellow-kde-dark` 目录，保留半透明并以 `EnableBlur=True` 请求合成器模糊，具体效果由 KOS/KWin 决定，主桌面的 `mellow-matugen` 不被改写。切换只更新 ClassicUI 的主题选择键，保留字体、候选排列及其他字段。
 
 KDE 分发仅选择 WhiteSur 的 Qt 明暗主题，不重着色 Qt 资源；GTK、Dolphin、KDE 配色、图标、装饰和 KOS 面板仍由 KDE/KOS 管理。Matugen 由强调色派生完整语义色板，派生出的 primary 不承诺与 KDE 强调色逐值相同。VS Code、Obsidian 和 Foot 均不新增配色分发。
 

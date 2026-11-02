@@ -10,16 +10,13 @@ let
   kdeGlobals = "${config.xdg.configHome}/kdeglobals";
   fcitxThemes = inputs.fcitx5-matugen-theme.packages.${pkgs.stdenv.hostPlatform.system}.both-blur;
   fcitxTemplates = "${fcitxThemes}/share/matugen/fcitx5-matugen-theme";
-  # Disable only the compositor request; retain the translucent Mellow assets.
+  # Request compositor blur for both KDE palettes. The compositor owns strength;
+  # keep KOS's existing low-strength setting rather than changing it globally.
   fcitxThemeTemplate =
     mode:
-    pkgs.runCommand "mellow-kde-${mode}-no-blur-template" { } ''
-      substitute \
-        ${fcitxTemplates}/${
-          if mode == "light" then "mellow-matugen" else "mellow-matugen-dark"
-        }/theme.conf.tpl \
-        "$out" --replace-fail 'EnableBlur=True' 'EnableBlur=False'
-    '';
+    "${fcitxTemplates}/${
+      if mode == "light" then "mellow-matugen" else "mellow-matugen-dark"
+    }/theme.conf.tpl";
   modeTemplate =
     mode: name: source:
     pkgs.runCommand "kos-${name}-${mode}-template" { } ''
