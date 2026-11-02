@@ -2,7 +2,7 @@
 title: NextKDE 桌面变体
 category: 桌面
 tags: [nextkde, kos, plasma, sddm, specialisation]
-updated: 2026-10-31
+updated: 2026-11-02
 ---
 
 # NextKDE 桌面变体
@@ -27,7 +27,7 @@ sudo nixos-rebuild boot --flake path:.#MechRevo-NixOS
 
 ## 桌面与共享数据
 
-KOS 的服务随 Plasma 工作区启动和停止。会话集成统一引用本地补丁包，不再同时安装原版和补丁版 Shell；原生插件仍复用固定上游的构建。Shell 文件仅在来源包变化或部署不完整时重新复制，同一代次登录会跳过复制。需要恢复手动改坏的文件时可运行 `KOS_SYNC_FORCE=1 kos-ctl sync`，然后重新登录。控制中心和启动台已去掉上游的最低模糊限制；液态玻璃的模糊滑杆为 0 时，两者提交的 Gaussian sigma 也为 0，调高后仍按原比例增加。这依赖 KOS 的 `glass` 插件实际加载；普通 KWin `blur` 不处理该参数。Plasma shell 保留壁纸，KOS 负责面板、Dock 和桌面文件；KScreenLocker 使用 KOS 锁屏主题，认证机制不变。默认文件管理器是 Dolphin，Nautilus 仍可从菜单打开；Strata 仅在主桌面安装。输入法由 `kos-colors` 选择独立的 Mellow KDE 明暗色板，保留半透明但关闭候选框背景模糊；字体、词库及候选布局保持原设置。
+KOS 的服务随 Plasma 工作区启动和停止。会话集成统一引用本地补丁包，不再同时安装原版和补丁版 Shell；原生插件仍复用固定上游的构建。Shell 文件仅在来源包变化或部署不完整时重新复制，同一代次登录会跳过复制。需要恢复手动改坏的文件时可运行 `KOS_SYNC_FORCE=1 kos-ctl sync`，然后重新登录。控制中心和启动台已去掉上游的最低模糊限制；液态玻璃的模糊滑杆为 0 时，两者提交的 Gaussian sigma 也为 0，调高后仍按原比例增加。这依赖 KOS 的 `glass` 插件实际加载；普通 KWin `blur` 不处理该参数。Plasma shell 保留壁纸，KOS 负责面板、Dock 和桌面文件；KScreenLocker 使用 KOS 锁屏主题，认证机制不变。默认文件管理器是 Dolphin，Nautilus 仍可从菜单打开；Strata 仅在主桌面安装。输入法由 `kos-colors` 选择独立的 Mellow KDE 明暗色板，保留半透明并请求候选框背景模糊，沿用 KOS 当前最低档的普通窗口模糊设置；主题本身没有独立强度参数，实际观感需在应用后确认；字体、词库及候选布局保持原设置。
 
 KDE 强调色与深浅模式驱动独立的应用颜色分发，缓存位于 `~/.cache/kos-colors/`，更新 Fcitx5、Neovim、Zellij、btop、Yazi 和 mpv。由 `kos-colors.path` 在 KDE 配置变化时触发 `kos-colors.service` 单次同步，登录也运行一次；无需额外常驻分发进程。KDE 启用“从当前壁纸获取强调色”后，KOS/Plasma 换壁纸会驱动更新。只更新应用色板，不改 KDE 全局主题、图标、装饰或 KOS 面板。完整边界见[深色模式与配色分发](darkmode.md#桌面变体的分发边界)。
 
@@ -108,7 +108,7 @@ Home Manager 不生成配置备份；切回主桌面时直接接管 GTK4 主题�
 - **效果、装饰或壁纸不符合预期**：检查上述两个用户配置文件是否已有覆盖项，并与 `/etc/xdg/` 中的默认值比较；按需自行调整。
 - **目录打开了其他程序**：用户的 `~/.config/mimeapps.list` 中已有目录关联可能优先于系统默认值。详见[文件管理器与归档工具](../productivity/files.md)。
 - **字体抗锯齿设置**：沿用已选的抗锯齿开启、RGB 子像素和 full hinting，由 `home/nextkde.nix` 中 HM 原生字体选项和 plasma-manager 管理。Plasma 6.8.1 的字体 GUI 可能选中 HM 的字体配置并将链接改写为普通文件，导致后续 HM 激活报 `would be clobbered`。允许继续在 GUI 中试调，满意后再把实际值同步回 Nix。若 GUI 把 HM 链接变成普通文件，核对差异并保留偏好后一次性移开冲突文件，由 HM 下次应用恢复管理；不设置只读标记、全局备份或长期强制覆盖。
-- **rebuild 后 Mellow 仍模糊或新配置未出现**：先检查 `systemctl status home-manager-lishangshui.service`。若 Home Manager 激活失败，系统代次更新不等于用户配置已安装。遇到 `would be clobbered` 时，先核对报错文件的内容和来源，再一次性备份移开该文件；不要为单个冲突启用全局覆盖或备份策略。激活成功并重新登录后应有 `~/.local/share/fcitx5/themes/mellow-kde{,-dark}`，且 `classicui.conf` 选择对应主题。用 `qdbus org.kde.KWin /Effects org.kde.kwin.Effects.loadedEffects` 检查运行效果：应有 `glass`，不应有独立的 `blur`；若仍只加载 `blur`，控制中心/启动台的零 sigma 不会由 KOS 插件处理，不能靠继续修改 QML 半径修复。
+- **rebuild 后 Mellow 模糊未生效或新配置未出现**：先检查 `systemctl status home-manager-lishangshui.service`。若 Home Manager 激活失败，系统代次更新不等于用户配置已安装。遇到 `would be clobbered` 时，先核对报错文件的内容和来源，再一次性备份移开该文件；不要为单个冲突启用全局覆盖或备份策略。激活成功并重新登录后应有 `~/.local/share/fcitx5/themes/mellow-kde{,-dark}`，且 `classicui.conf` 选择对应主题、主题文件中 `EnableBlur=True`。用 `qdbus org.kde.KWin /Effects org.kde.kwin.Effects.loadedEffects` 检查运行效果：应有 `glass`，不应有独立的 `blur`；若仍只加载 `blur`，控制中心/启动台的零 sigma 不会由 KOS 插件处理，不能靠继续修改 QML 半径修复。
 - **需要返回原桌面**：重启后在启动菜单选择普通主配置或旧 generation；用户家目录中的可写状态不会自动回退。
 
 ## 相关链接
