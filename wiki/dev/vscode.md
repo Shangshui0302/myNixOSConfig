@@ -2,7 +2,7 @@
 title: VS Code 集成
 category: 开发
 tags: [vscode, editor, home-manager, dev, matugen, darkman]
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # VS Code 集成
@@ -95,28 +95,18 @@ Codex 桌面端通过 Home Manager 的 XDG 自启动项在登录桌面后启动�
 | 工具 | 启动命令 | 包来源 |
 |------|----------|--------|
 | GitHub Copilot CLI | `copilot` | `github-copilot-cli` |
-| Kiro 编辑器 | `kiro` | `kiro` |
 | Kiro CLI | `kiro-cli` | `kiro-cli` |
-| Cursor 编辑器 | `cursor` | `code-cursor` |
-| Cursor CLI | `cursor-agent` | `cursor-cli` |
-| Grok Build | `grok` | `grok-build` |
 | Paseo CLI／服务端 | `paseo`、`paseo-server` | `paseo` |
 | Paseo 桌面端 | `paseo-desktop` | `paseo.desktop` |
 | Herdr 桌面版 | `herdr-app` | 本地打包官方发布物 0.1.11 |
 | Herdr 桌面运行核心 | `herdr-core`、`hc` | 本地打包官方发布物 0.1.16 |
 | Herdr 终端工作区 | `herdr` | `herdr` |
-| Kiro Crew | `kirocrew` | 本地打包官方发布物 |
-| Grok Bot | `grok-bot` | 固定提交的 `numtide/llm-agents.nix` |
 
 Paseo 和 Herdr 可以用于本地目录，无需为项目添加 GitHub remote。配置只安装程序，不注册常驻服务；Paseo 启动后的 daemon 和跨设备连接按应用内流程管理。Herdr 可在项目目录运行 `herdr`；Nix 包装的代理可能遇到[状态识别问题](https://github.com/herdrdev/herdr/issues/803)，应分别确认终端内代理运行和侧栏状态。
 
 Herdr 桌面版从应用菜单的 **Herdr** 或 `herdr-app` 启动，使用独立的 `herdr-core`，与原有 `herdr` 终端版并存。桌面版和核心由 Nix 更新；不运行应用内安装脚本。官方发布版默认开启使用统计，可在 Settings → Privacy 关闭。当前配置提供启动器和运行依赖，真实桌面启动与代理交互需在应用配置后验证。
 
-Kiro Crew 0.11.1 的官方桌面包未内置 CLI；本地包在同一个运行环境内连接 `kiro-cli-unwrapped`，默认设置绝对 `KIROCREW_KIRO_BIN`，避免重复嵌套运行环境。可通过该环境变量显式覆盖 CLI 路径。
-
-Grok Bot 使用 Cursor 账号，官方 Linux 下载同样由 Cursor 域名提供。社区包为规避上游 Electron webview 崩溃添加 `--no-sandbox`，意味着关闭 Electron 的进程沙箱；这不是系统级权限提升。Kiro Crew 与 Grok Bot 的桌面运行及登录需要在应用系统配置后验证。
-
-这些程序由 Nix 更新，不运行上游的自安装脚本。Grok Build 另带 `agent` 别名，建议使用明确的 `grok` 命令。
+这些程序由 Nix 更新，不运行上游的自安装脚本。
 
 同一模块还管理 Agent Reach、OpenCLI、mcporter，并启用 yt-dlp 与本机适配的 Agent Reach Skill。
 平台访问的首次连接和字幕提取见 [Agent Reach 与 OpenCLI](agent-reach.md)；Exa 暂不配置。
