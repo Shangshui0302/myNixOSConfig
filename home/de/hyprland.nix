@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   hyprctlFishCompletion = pkgs.runCommand "hyprctl-fish-completion" { } ''
@@ -22,8 +27,14 @@ let
         } > "$out"
   '';
 
-  scrolloverview = import ../../local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
-  dynamicCursors = import ../../local-deriv/hypr-dynamic-cursors.nix { inherit pkgs; };
+  scrolloverview = import ../../local-deriv/hyprland-scroll-overview.nix {
+    inherit pkgs;
+    src = inputs.scrolloverview-src;
+  };
+  dynamicCursors = import ../../local-deriv/hypr-dynamic-cursors.nix {
+    inherit pkgs;
+    src = inputs.hypr-dynamic-cursors-src;
+  };
   swappyWithOriginalDirectory =
     let
       swappyWrapper = pkgs.writeShellScriptBin "swappy" ''

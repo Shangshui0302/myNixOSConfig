@@ -2,6 +2,15 @@
   description = "MechRevo-NixOS configuration";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Track upstream sources without importing their separate Hyprland/toolchains.
+    scrolloverview-src = {
+      url = "github:yayuuu/hyprland-scroll-overview/main";
+      flake = false;
+    };
+    hypr-dynamic-cursors-src = {
+      url = "github:VirtCode/hypr-dynamic-cursors/main";
+      flake = false;
+    };
     nextkde = {
       # Includes the post-v0.1.1 Nix module/deployment fixes; upgrades are explicit.
       url = "github:NextKde/NextKde/3fa1d7006869bbd3404a05d362c6e6028e0fe3da";
@@ -111,18 +120,30 @@
         opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
         material-gnome-theme = materialGnomeTheme;
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };
-        hypr-dynamic-cursors = import ./local-deriv/hypr-dynamic-cursors.nix { inherit pkgs; };
-        scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
+        hypr-dynamic-cursors = import ./local-deriv/hypr-dynamic-cursors.nix {
+          inherit pkgs;
+          src = inputs.hypr-dynamic-cursors-src;
+        };
+        scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix {
+          inherit pkgs;
+          src = inputs.scrolloverview-src;
+        };
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
           inherit pkgs;
         };
         strata = inputs.strata-nixpkgs.legacyPackages.${system}.strata;
       };
 
-      checks.${system} = import ./checks {
-        inherit pkgs;
-        nextkdeSync = inputs.self.packages.${system}.nextkde-sync-shell;
-      };
+      checks.${system} =
+        (import ./checks {
+          inherit pkgs;
+          nextkdeSync = inputs.self.packages.${system}.nextkde-sync-shell;
+        })
+        // {
+          # Actual compilation catches plugin API drift when Hyprland is upgraded.
+          hyprland-scrolloverview = inputs.self.packages.${system}.scrolloverview;
+          hyprland-dynamic-cursors = inputs.self.packages.${system}.hypr-dynamic-cursors;
+        };
 
       formatter.${system} = pkgs.nixfmt;
 

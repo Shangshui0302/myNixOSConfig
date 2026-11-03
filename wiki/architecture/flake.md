@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # Flake 配置管理
@@ -26,6 +26,7 @@ updated: 2026-11-02
 `flake.nix` 的 `inputs` 部分声明了系统所需的全部外部来源：
 
 - `nixpkgs`：跟踪 `nixos-unstable` 频道，作为基础包集与 NixOS 模块来源。
+- `scrolloverview-src`、`hypr-dynamic-cursors-src`：跟踪两个 Hyprland 插件的上游 `main`，只获取源码（`flake = false`），不引入上游各自的 Hyprland 或工具链；本地包定义使用系统 Hyprland 构建。
 - `nextkde`：固定上游提交 `3fa1d7006869bbd3404a05d362c6e6028e0fe3da`，跟随根 `nixpkgs`，提供 KOS 模块和包。
 - `strata-nixpkgs`：临时固定 fork 提交，只消费其中的 Strata，包集与系统隔离；官方频道可用后移除。
 - `wetypex`：WeTypeX 上游 flake，提交由 `flake.lock` 固定，依赖跟随根 `nixpkgs`；`host/base/input-method.nix` 直接使用其包参数设置个人功能和主题选项。
@@ -83,6 +84,7 @@ nix fmt -- --check flake.nix
 | --- | --- |
 | `mihomo-config-sync` | 已有的 Python 同步器测试，不访问真实订阅或运行中的服务 |
 | `hyprland-policies` | `tests/` 目录中的 Lua 事件 mock，不启动或连接 Hyprland |
+| `hyprland-scrolloverview`、`hyprland-dynamic-cursors` | 实际编译两个插件，检查锁定源码与系统 Hyprland 的编译兼容性；不加载到桌面 |
 | `repository-structure` | Wiki 文档登记、来源路径存在性、home/host Nix 模块覆盖，以及重复 YAML key |
 
 单独运行一项：`nix build path:.#checks.x86_64-linux.repository-structure --no-link -L`。
@@ -104,6 +106,7 @@ nix develop path:.#checks.x86_64-linux.repository-structure -c \
 - **依赖跟随**：`home-manager`、`noctalia`、`sops-nix` 等通过 `follows` 复用根 `nixpkgs`，避免多份不同版本冲突。
 - **投稿包例外**：`strata-nixpkgs` 保留已验证 revision 的包集，只取 `strata`；不替换系统包集、不配置 `follows` 或本地 overlay。
 - **升级路径**：`nix flake update` 更新锁文件，配合 rebuild 验证；失败可回退到上一代次。
+- **Hyprland 插件**：可用 `nix flake update scrolloverview-src hypr-dynamic-cursors-src` 单独更新源码，无需手改 `rev` 或哈希。更新 nixpkgs 或插件后都要实际构建两个插件；最新提交并不保证兼容性，具体步骤见 [Hyprland 插件更新](../desktop/hyprland.md#光标)。
 
 ```mermaid
 graph LR

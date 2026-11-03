@@ -199,6 +199,23 @@
         "type": "github"
       }
     },
+    "hypr-dynamic-cursors-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791235474,
+        "narHash": "sha256-PSt/SRtemvsoGYNFJ7YLiXGxT8EJe3AhmGwt5Vt79aA=",
+        "owner": "VirtCode",
+        "repo": "hypr-dynamic-cursors",
+        "rev": "2a8d0b735328d874a78ca93b2f201649f712a74a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "VirtCode",
+        "ref": "main",
+        "repo": "hypr-dynamic-cursors",
+        "type": "github"
+      }
+    },
     "llm-agents": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -368,16 +385,35 @@
         "codex-desktop-linux": "codex-desktop-linux",
         "fcitx5-matugen-theme": "fcitx5-matugen-theme",
         "home-manager": "home-manager",
+        "hypr-dynamic-cursors-src": "hypr-dynamic-cursors-src",
         "llm-agents": "llm-agents",
         "nextkde": "nextkde",
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
         "plasma-manager": "plasma-manager",
+        "scrolloverview-src": "scrolloverview-src",
         "shell-switcher": "shell-switcher",
         "sops-nix": "sops-nix",
         "strata-nixpkgs": "strata-nixpkgs",
         "wetypex": "wetypex"
+      }
+    },
+    "scrolloverview-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793659737,
+        "narHash": "sha256-9O8ZP4/oCdmY76y2Dws7j+9EiHNsPjiF2RCDNDf9G2U=",
+        "owner": "yayuuu",
+        "repo": "hyprland-scroll-overview",
+        "rev": "289198d7709ed20d68c63d2c9feba1ae2130b9c8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "yayuuu",
+        "ref": "main",
+        "repo": "hyprland-scroll-overview",
+        "type": "github"
       }
     },
     "shell-switcher": {

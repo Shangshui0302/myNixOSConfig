@@ -49,9 +49,21 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 `Super + G` 或 `Super + Tab` 打开或关闭 ScrollOverview。四指上下滑动使用同一插件的 overview 手势；它以纵向缩略图显示工作区，选择窗口后返回当前布局。插件由 Nix 随 Hyprland 加载，不需要手动运行 `hyprpm`。
 
+插件源码通过 `scrolloverview-src` input 跟踪上游 `main`，具体提交由 `flake.lock` 锁定，`local-deriv/hyprland-scroll-overview.nix` 使用系统的 Hyprland 构建。旧版插件出现 `m_renderPass` 或 `KeybindManager.hpp` 等编译错误时，应核对插件与 Hyprland 的版本匹配；上游已提供 [Hyprland 0.57 适配](https://github.com/yayuuu/hyprland-scroll-overview/pull/88)。
+
 ### 光标
 
-启用 `hypr-dynamic-cursors` 的 shake-to-find：快速摇动鼠标即可放大光标。已关闭旋转、倾斜和拉伸效果，只保留找光标功能。插件通过 `local-deriv/hypr-dynamic-cursors.nix` 固定到适配 Hyprland 0.57 渲染上下文与日志接口的上游提交 `2a8d0b7`。可用 `nix build path:.#hypr-dynamic-cursors --no-link` 单独验证构建；升级 Hyprland 后仍需检查插件兼容性，实际加载及摇鼠标效果需在应用配置后验证。
+启用 `hypr-dynamic-cursors` 的 shake-to-find：快速摇动鼠标即可放大光标。已关闭旋转、倾斜和拉伸效果，只保留找光标功能。插件源码通过 `hypr-dynamic-cursors-src` input 跟踪上游 `main`，具体提交由 `flake.lock` 锁定，`local-deriv/hypr-dynamic-cursors.nix` 复用 nixpkgs 的插件构建器。
+
+两个插件可一起更新并验证，无需手改包定义中的提交和源码哈希：
+
+```bash
+nix flake update scrolloverview-src hypr-dynamic-cursors-src
+nix build path:.#scrolloverview path:.#hypr-dynamic-cursors --no-link
+nixos-rebuild dry-build --flake path:.
+```
+
+普通 rebuild 使用锁定版本；执行 `nix flake update` 才获取新提交。最新源码不保证兼容当前 Hyprland，更新 nixpkgs 后也必须实际编译两个插件；完整 `nix flake check` 已包含这两项编译检查，`--no-build` 和 dry-build 不执行编译。实际加载、总览、手势及摇鼠标效果仍需在应用配置并重新登录 Hyprland 后验证。
 
 ---
 

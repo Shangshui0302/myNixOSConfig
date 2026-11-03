@@ -111,5 +111,6 @@ nix fmt -- --check flake.nix
 - 修改、生成、发布、三端更新和加密恢复见 [Mihomo 配置修改与分发](wiki/networking/mihomo-distribution.md)；本机服务的打开、恢复与停止见[本机 Sub-Store](wiki/networking/sub-store.md)。
 - 任务分支使用 `feature/`、`fix/`、`docs/` 等用途前缀，禁止工具名称前缀。
 - 投稿包在 `~/Projects/nixpkgs-maintain` 开发。Strata 1.0.0 暂用独立 `strata-nixpkgs` input 跟随 fork 的 `feature/strata` 分支，由 `flake.lock` 固定每次更新的版本；个人 Matugen 链保留在 `home/theme/`，官方频道可用后移除临时 input。
+- Hyprland 的 ScrollOverview 与 Dynamic Cursors 通过源码 inputs 跟踪上游 main，由 `flake.lock` 锁定，统一使用系统 Hyprland 构建；更新和实际编译检查见 [插件维护](wiki/desktop/hyprland.md#光标)。
 
 浏览器与凭据：Hyprland/niri 和 NextKDE 共用 KWallet，Chrome 固定使用 `kwallet6`。更新后需重新登录图形会话；使用与验证见 [共享凭据存储](wiki/desktop/keyring.md)。

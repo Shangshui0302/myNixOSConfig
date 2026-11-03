@@ -34,7 +34,7 @@ docs:
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve, greetd-tuigreet-tty]
 
   desktop/hyprland.md:
-    sources: [home/de/hyprland.nix, home/de/hyprland/scrolling-policy.lua, home/de/hyprland/token-monitor-size.lua, home/de/polkit.nix, host/de/sessions.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/hypr-dynamic-cursors.nix, home/de/default.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/gtk-matugen.nix, host/base/boot.nix, home/theme/runtime.nix]
+    sources: [flake.nix, flake.lock, home/de/hyprland.nix, home/de/hyprland/scrolling-policy.lua, home/de/hyprland/token-monitor-size.lua, home/de/polkit.nix, host/de/sessions.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/hypr-dynamic-cursors.nix, home/de/default.nix, home/de/noctalia.nix, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/foot.nix, home/theme/wallpaper.nix, home/theme/gtk-matugen.nix, host/base/boot.nix, home/theme/runtime.nix]
     memory:  [hyprland-056-blur-amd, hyprland-scrolloverview-plugin, mechrevo-amd-backlight-curve, mechrevo-wujie14xa-fn-input, matugen-wallpaper-theming, foot-color-nohash, desktop-environment-host-hm-boundary]
   desktop/niri.md:
     sources: [home/de/niri.nix, host/de/sessions.nix, host/de/greeter.nix]

@@ -1,19 +1,14 @@
-{ pkgs }:
+{ pkgs, src }:
 
 let
-  version = "0-unstable-2026-08-08";
+  version = "0-unstable-${src.shortRev}";
 in
 pkgs.hyprlandPlugins.mkHyprlandPlugin {
   pluginName = "scrolloverview";
   inherit version;
 
-  # The main branch matches the stable Hyprland 0.56 API in nixpkgs.
-  src = pkgs.fetchFromGitHub {
-    owner = "yayuuu";
-    repo = "hyprland-scroll-overview";
-    rev = "f9248ab6bee770e9d68813b48cc6ca12b3271254";
-    hash = "sha256-SEa8XQtrNg90AUeZFE9+lGvYEWd0T2ht/+sKx+kWUak=";
-  };
+  # flake.lock pins the source; the builder uses the host Hyprland and compiler.
+  inherit src;
 
   buildInputs = [ pkgs.lua5_4 ];
   enableParallelBuilding = true;
