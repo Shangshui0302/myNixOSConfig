@@ -4,24 +4,26 @@
   ...
 }:
 {
-  # Install both Qt engines and the immutable WhiteSur light/dark assets. The
-  # desktop's runtime owns only kvantum.kvconfig, selecting the appropriate mode.
+  # Qt installs both engines; static theme data and runtime selection have
+  # separate owners. Do not enable qt.kvantum's declarative selector module.
   qt = {
     enable = true;
     style.name = "kvantum";
-    kvantum = {
-      enable = true;
-      themes = [ pkgs.whitesur-kde ];
-    };
   };
 
   # Dolphin and other KDE consumers select these semantic palettes by name.
-  xdg.dataFile = lib.genAttrs [ "WhiteSur" "WhiteSurDark" ] (name: {
-    # Reclaim legacy user copies so they cannot block the entire HM activation.
-    force = true;
-    target = "color-schemes/${name}.colors";
-    source = "${pkgs.whitesur-kde}/share/color-schemes/${name}.colors";
-  });
+  xdg.dataFile =
+    (lib.genAttrs [ "WhiteSur" "WhiteSurDark" ] (name: {
+      # Reclaim legacy user copies so they cannot block the entire HM activation.
+      force = true;
+      target = "color-schemes/${name}.colors";
+      source = "${pkgs.whitesur-kde}/share/color-schemes/${name}.colors";
+    }))
+    // {
+      # nixpkgs' Qt5/Qt6 Kvantum supports XDG data locations. Both variants live
+      # here; the writable selector stays in XDG config.
+      "Kvantum/WhiteSur".source = "${pkgs.whitesur-kde}/share/Kvantum/WhiteSur";
+    };
 
   home.activation.initializeWhiteSurQt = lib.hm.dag.entryAfter [ "writeBoundary" "linkGeneration" ] ''
     selector="$HOME/.config/Kvantum/kvantum.kvconfig"
