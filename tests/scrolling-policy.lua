@@ -192,13 +192,19 @@ assert(left.layout.column.width == 0.8, "edge move does not resize the column")
 commands = {}
 state.active = right
 right.at.x = 1200
-right.size.x = 700
-event("window.active")
-runDelay(16)
-assert(count("layout") == 1 and last("layout").message == "move +13.000",
-    "right edge aligns against monitor width, reserved area, gap, and border")
-assert(state.fit == 0 and last("config").fit == 0, "right edge move restores focus_fit_method")
-assert(right.layout.column.width == 0.8, "right edge move preserves column width")
+-- Model geometry after each Super+Ctrl+1-9/0 width preset. Neither a focus
+-- event nor deferred rule reconciliation may pull the last column rightward.
+for preset = 1, 10 do
+    right.size.x = 192 * preset
+    right.layout.column.width = preset / 10
+    event("window.active")
+    runDelay(16)
+    event("window.update_rules")
+    runDelay(60)
+    assert(#commands == 0, "last column receives no policy commands after width preset " .. preset)
+    assert(state.active == right and state.fit == 0, "last column retains focus and focus-fit mode")
+    assert(right.layout.column.width == preset / 10, "last column retains preset width")
+end
 
 commands = {}
 left.at.x = 10

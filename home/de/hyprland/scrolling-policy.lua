@@ -53,41 +53,34 @@ local function updateSingleWindows()
     end
 end
 
-local function alignEdgeColumn()
+local function alignFirstColumn()
     local window = hl.get_active_window()
     if not window or window.floating or window.fullscreen ~= 0 or not window.workspace then return end
     local layout = window.layout
     if not layout or layout.name ~= "scrolling" or not layout.column then return end
 
-    local first, last, count, seen = math.huge, -math.huge, 0, {}
+    local first, count, seen = math.huge, 0, {}
     for _, other in ipairs(hl.get_windows({ workspace = window.workspace, floating = false })) do
         local otherLayout = other.layout
         if not other.hidden and otherLayout and otherLayout.name == "scrolling" and otherLayout.column then
             local index = otherLayout.column.index
             if not seen[index] then
                 seen[index] = true
-                first, last, count = math.min(first, index), math.max(last, index), count + 1
+                first, count = math.min(first, index), count + 1
             end
         end
     end
     -- A lone column retains its full-width slot, including stacked windows.
-    if count < 2 or not window.monitor then return end
+    -- Other columns retain native scrolling, including the last column.
+    if count < 2 or not window.monitor or layout.column.index ~= first then return end
 
-    local monitor, index = window.monitor, layout.column.index
+    local monitor = window.monitor
     local gaps, border = hl.get_config("general:gaps_out"), hl.get_config("general:border_size")
-    local width = monitorSize(monitor)
-    local delta
-    if index == first then
-        delta = monitor.x + monitor.reserved.left + gaps.left + border - window.at.x
-    elseif index == last then
-        delta = monitor.x + width - monitor.reserved.right - gaps.right - border - window.at.x - window.size.x
-    else
-        return
-    end
+    local delta = monitor.x + monitor.reserved.left + gaps.left + border - window.at.x
     if math.abs(delta) <= 1 then return end
 
     -- Native scrolling move refocuses the column under the viewport center.
-    -- Temporarily use fit mode so that refocus cannot recenter the edge column;
+    -- Temporarily use fit mode so that refocus cannot recenter the first column;
     -- restore the original focus too when a manually narrowed column is < 50%.
     local previousFit = hl.get_config("scrolling:focus_fit_method")
     hl.config({ scrolling = { focus_fit_method = 1 } })
@@ -110,7 +103,7 @@ local function schedule(delay, updateSingles)
         busy = true
         local ok, err = pcall(function()
             if updateSingles then updateSingleWindows() end
-            alignEdgeColumn()
+            alignFirstColumn()
         end)
         busy = false
         if not ok then error(err) end
