@@ -42,20 +42,19 @@ in
           capsule = true;
           capsule_opacity = 0.8;
           center = [
-            ("activity_2")
-            ("widget_4")
-            ("workspaces")
-            ("status_3")
-            ("nix_monitor_2")
+            "bar"
+            "bar_2"
+            "workspaces"
+            "github"
           ];
           end = [
-            ("group:g5")
-            ("group:g6")
-            ("tray")
-            ("group:g2")
-            ("group:g4")
-            ("status_4")
-            ("group:g1")
+            "group:g5"
+            "tray"
+            "group:g2"
+            "group:g4"
+            "status_4"
+            "group:g6"
+            "group:g1"
           ];
           font_weight = 400;
           margin_edge = 0;
@@ -67,9 +66,8 @@ in
           scale = 1.1000000089406967;
           shadow = false;
           start = [
-            ("launcher")
-            ("clock")
-            ("group:g3")
+            "group:g7"
+            "group:g8"
           ];
           thickness = 42;
           widget_spacing = 6;
@@ -79,87 +77,107 @@ in
             };
           };
           capsule_group = [
-            ({
+            {
               accordion = false;
               accordion_direction = "end";
+              border_width = 1.0;
               enabled = true;
-              fill = "surface_variant";
+              fill = "surface_container";
               id = "g1";
               members = [
-                ("battery")
-                ("session")
+                "battery"
+                "session"
               ];
-              opacity = 0.80000001192092896;
+              opacity = 0.800000011920929;
               padding = 6.0;
-            })
-            ({
+            }
+            {
               accordion = false;
               accordion_direction = "end";
+              border_width = 1.0;
               enabled = true;
-              fill = "surface_variant";
+              fill = "surface_container";
               id = "g2";
               members = [
-                ("clipboard")
-                ("widget_5")
-                ("notifications")
-                ("widget_6")
+                "clipboard"
+                "widget_5"
+                "notifications"
+                "widget_6"
               ];
-              opacity = 0.80000001192092896;
+              opacity = 0.800000011920929;
               padding = 6.0;
-            })
-            ({
+            }
+            {
               accordion = false;
               accordion_direction = "end";
+              border_width = 1.0;
               enabled = true;
-              fill = "surface_variant";
-              id = "g3";
-              members = [
-                ("sysmon")
-                ("network_tx")
-                ("network_rx")
-              ];
-              opacity = 0.80000001192092896;
-              padding = 6.0;
-            })
-            ({
-              accordion = false;
-              accordion_direction = "end";
-              enabled = true;
-              fill = "surface_variant";
+              fill = "surface_container";
               id = "g5";
               members = [
-                ("media")
-                ("audio_visualizer")
+                "media"
+                "audio_visualizer"
               ];
-              opacity = 0.80000001192092896;
+              opacity = 0.800000011920929;
               padding = 6.0;
-            })
-            ({
+            }
+            {
               accordion = false;
               accordion_direction = "end";
+              border_width = 1.0;
               enabled = true;
-              fill = "surface_variant";
+              fill = "surface_container";
               id = "g6";
               members = [
-                ("volume")
-                ("brightness")
-                ("network")
+                "volume"
+                "brightness"
+                "network"
               ];
-              opacity = 0.80000001192092896;
+              opacity = 0.800000011920929;
               padding = 6.0;
-            })
-            ({
+            }
+            {
               accordion = false;
               accordion_direction = "end";
+              border_width = 1.0;
               enabled = true;
-              fill = "surface_variant";
+              fill = "surface_container";
               id = "g4";
               members = [
-                ("privacy")
+                "privacy"
               ];
-              opacity = 0.80000001192092896;
+              opacity = 0.800000011920929;
               padding = 6.0;
-            })
+            }
+            {
+              accordion = false;
+              accordion_direction = "end";
+              border_width = 1.0;
+              enabled = true;
+              fill = "surface_container";
+              id = "g7";
+              members = [
+                "launcher"
+                "nix_monitor_2"
+                "sysmon"
+              ];
+              opacity = 0.800000011920929;
+              padding = 6.0;
+            }
+            {
+              accordion = false;
+              accordion_direction = "end";
+              border_width = 1.0;
+              enabled = true;
+              fill = "surface_container";
+              id = "g8";
+              members = [
+                "clock"
+                "weather"
+              ];
+              opacity = 0.800000011920929;
+              padding = 6.0;
+            }
           ];
         };
       };
@@ -179,21 +197,24 @@ in
         sidebar_section = "full";
         width = 900;
         shortcuts = [
-          ({
+          {
             type = "wifi";
-          })
-          ({
+          }
+          {
             type = "bluetooth";
-          })
-          ({
+          }
+          {
             type = "nightlight";
-          })
-          ({
+          }
+          {
             type = "power_profile";
-          })
-          ({
+          }
+          {
             type = "clipboard";
-          })
+          }
+          {
+            type = "caffeine";
+          }
         ];
       };
       desktop_widgets = {
@@ -204,6 +225,7 @@ in
           major_interval = 4;
           visible = true;
         };
+        widget = { };
       };
       dock = {
         auto_hide = false;
@@ -216,9 +238,11 @@ in
         magnification_scale = 1.2000000029802322;
         margin_edge = 10;
         pinned = [
-          ("io.github.lgse.Strata")
-          ("codex-desktop")
-          ("google-chrome")
+          "io.github.lgse.Strata"
+          "codex-desktop"
+          "google-chrome"
+          "code"
+          "foot"
         ];
         position = "bottom";
         radius = 20;
@@ -279,16 +303,18 @@ in
         auto_locate = false;
       };
       lockscreen = {
-        blur_intensity = 0.6;
+        blur_intensity = 0.7999999821186066;
         blurred_desktop = true;
         enabled = true;
         tint_intensity = 0.0;
+        allow_empty_password = true;
       };
       lockscreen_widgets = {
         enabled = true;
         schema_version = 2;
         widget_order = [
-          ("lockscreen-login-box@eDP-1")
+          "lockscreen-login-box@HDMI-A-1"
+          "lockscreen-login-box@eDP-1"
         ];
         grid = {
           cell_size = 8;
@@ -307,12 +333,39 @@ in
             rotation = 0.0;
             type = "login_box";
             settings = {
-              background_color = "surface_variant";
+              background_color = "surface_container";
               background_opacity = 1.0;
               background_radius = 32.0;
               center_password_text = false;
               input_opacity = 1.0;
               input_radius = 32.0;
+              layout = "regular";
+              show_caps_lock = true;
+              show_keyboard_layout = true;
+              show_login_button = true;
+              show_media = true;
+              show_session_buttons = true;
+              show_unlock_hint = true;
+              show_weather = true;
+            };
+          };
+          "lockscreen-login-box@HDMI-A-1" = {
+            box_height = 196.0;
+            box_width = 810.0;
+            cx = 960.0;
+            cy = 898.0;
+            output = "HDMI-A-1";
+            placement_height = 1080.0;
+            placement_width = 1920.0;
+            rotation = 0.0;
+            type = "login_box";
+            settings = {
+              background_color = "surface_container";
+              background_opacity = 0.88;
+              background_radius = 12.0;
+              center_password_text = false;
+              input_opacity = 1.0;
+              input_radius = 6.0;
               layout = "regular";
               show_caps_lock = true;
               show_keyboard_layout = true;
@@ -340,23 +393,14 @@ in
         position_vertical = "center_right";
       };
       plugin_settings = {
-        "alexmnrs/github-activity" = {
-          calendar_placement = "floating";
-        };
         "avivbintangaringga/nix-monitor" = {
           panel_placement = "floating";
-          update_command = "nix flake update --flake ${config.home.homeDirectory}/myNixOSConfig/";
+          update_command = "sudo nix flake update --flake ~/myNixOSConfig/";
         };
         "alexander/screen-toolkit" = {
-          "screenshot-path" = "${config.home.homeDirectory}/Pictures/Screenshots";
           "video-path" = "${config.home.homeDirectory}/Videos";
           "selected-ocr-lang" = "eng+chi_sim+jpn+kor+rus";
           "panel-mode" = "standard";
-        };
-        "davemhammer/obsidian" = {
-          vault_path = "${config.home.homeDirectory}/Documents/MyVault";
-          daily_folder = "05_Personal/Diary";
-          daily_format = "%Y-%m-%d";
         };
         "icefish/phone-operate" = {
           language = "zh-Hans";
@@ -364,33 +408,70 @@ in
         "noctalia/translator" = {
           target_lang = "zh";
         };
+        # 插件密钥仅保留在本机 settings.toml，不写入 Nix store。
+        "mdj2812/mihomo-control" = {
+          panel-attached_placement = "floating";
+        };
+        "mirei124/bangumi-progress" = {
+          appearance_density = "compact";
+          collection_row_style = "cards";
+          library_open_near_click = true;
+          library_position = "auto";
+          show_profile_avatar = true;
+          show_profile_bio = true;
+          show_profile_identity = true;
+          show_progress_bar = true;
+          timeline_default_range = "week";
+          timeline_density = "standard";
+        };
+        "shangshui0302/github-kanban" = {
+          following_hide_bots = true;
+          kanban_placement = "floating";
+          notification_default_filter = "all";
+          notification_sync_mode = "synced";
+          repositories_layout = "grid";
+        };
+        "shangshui0302/token-monitor" = {
+          bar_style = "value";
+          panel_placement = "floating";
+          auto_discover_credentials = true;
+          auto_refresh = true;
+          credentials_file = "/home/lishangshui/distrobox/arch/.config/Token Monitor/credentials.json";
+          hub_url = "http://127.0.0.1:17321";
+          refresh_interval_seconds = 60;
+        };
       };
       plugins = {
         enabled = [
-          ("noctalia/kaomoji")
-          ("noctalia/translator")
-          ("icefish/phone-operate")
-          ("kenn/keybind-cheatsheet")
-          ("mdj2812/mihomo-control")
-          ("avivbintangaringga/nix-monitor")
-          ("davemhammer/obsidian")
-          ("alexmnrs/github-activity")
-          ("tphilippot/git_companion")
-          ("alexander/screen-toolkit")
-          ("weinguyen/shell-command")
-          ("notfinaldev/web-search")
+          "noctalia/kaomoji"
+          "noctalia/translator"
+          "weinguyen/shell-command"
+          "alexander/screen-toolkit"
+          "avivbintangaringga/nix-monitor"
+          "mdj2812/mihomo-control"
+          "kenn/keybind-cheatsheet"
+          "notfinaldev/web-search"
+          "icefish/phone-operate"
+          "mirei124/bangumi-progress"
+          "shangshui0302/token-monitor"
+          "shangshui0302/github-kanban"
         ];
         source = [
-          ({
+          {
+            kind = "git";
+            location = "https://github.com/Shangshui0302/community-plugins";
+            name = "token-monitor-fork";
+          }
+          {
             kind = "git";
             location = "https://github.com/noctalia-dev/official-plugins";
             name = "official";
-          })
-          ({
+          }
+          {
             kind = "git";
             location = "https://github.com/noctalia-dev/community-plugins";
             name = "community";
-          })
+          }
         ];
       };
       shell = {
@@ -417,7 +498,9 @@ in
         launcher = {
           app_grid = true;
           pinned = [
-            ("io.github.lgse.Strata")
+            "org.gnome.Nautilus"
+            "code"
+            "arch"
           ];
           show_app_actions = true;
           providers = {
@@ -500,17 +583,11 @@ in
         unit = "metric";
       };
       widget = {
-        activity = {
-          type = "alexmnrs/github-activity:activity";
-        };
-        activity_2 = {
-          type = "alexmnrs/github-activity:activity";
-        };
         audio_visualizer = {
           bands = 128;
-          centered = false;
+          centered = true;
           color_2 = "secondary";
-          mirrored = false;
+          mirrored = true;
           width = 80;
         };
         active_window = {
@@ -579,14 +656,8 @@ in
         privacy = {
           hide_inactive = false;
         };
-        status = {
-          type = "davemhammer/obsidian:status";
-        };
         status_2 = {
           type = "icefish/phone-operate:status";
-        };
-        status_3 = {
-          type = "davemhammer/obsidian:status";
         };
         status_4 = {
           type = "icefish/phone-operate:status";
@@ -604,17 +675,11 @@ in
         volume = {
           show_label = true;
         };
-        widget = {
-          type = "tphilippot/git_companion:widget";
-        };
         widget_2 = {
           type = "mdj2812/mihomo-control:widget";
         };
         widget_3 = {
           type = "alexander/screen-toolkit:widget";
-        };
-        widget_4 = {
-          type = "tphilippot/git_companion:widget";
         };
         widget_5 = {
           type = "alexander/screen-toolkit:widget";
@@ -630,6 +695,16 @@ in
           labels_only_when_occupied = true;
           show_all_outputs = true;
           show_labels = false;
+        };
+        bar = {
+          count_mode = "none";
+          type = "mirei124/bangumi-progress:bar";
+        };
+        bar_2 = {
+          type = "shangshui0302/token-monitor:bar";
+        };
+        github = {
+          type = "shangshui0302/github-kanban:github";
         };
       };
     };

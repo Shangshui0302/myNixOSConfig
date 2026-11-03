@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # Noctalia Shell 使用指南
@@ -33,10 +33,10 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 | 区域 | Widget | 说明 |
 |------|--------|------|
-| 左 | 启动器、时钟 | 启动器打开应用；时钟显示 `HH:mm ddd, MMM dd` |
-| 左 | 系统组 | CPU 监视器与上传/下载速率 |
-| 中 | GitHub Activity、Git Companion | GitHub 活动与待处理事项 |
-| 中 | 工作区、Obsidian、Nix Monitor | 工作区状态、Vault 状态与更新状态 |
+| 左 | 启动器、Nix Monitor、CPU | 应用入口、更新状态与系统负载 |
+| 左 | 时钟、天气 | 日期时间与天气 |
+| 中 | Bangumi Progress、Token Monitor、GitHub Kanban | 追番进度、用量与 GitHub 看板 |
+| 中 | 工作区 | 显示工作区状态 |
 | 右 | 媒体 / 音频可视化 | 播放时显示进度和可视化效果 |
 | 右 | 音量、亮度、网络 | 悬停展开或打开对应控制中心面板 |
 | 右 | 剪贴板、Screen Toolkit、通知、Mihomo | 常用面板与状态入口 |
@@ -104,15 +104,19 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 
 ## 插件依赖与设置
 
-- **Screen Toolkit**：截图、OCR、二维码、录屏和翻译工具由 `home/productivity/graphics.nix` 提供；OCR 启用中、英、日、韩、俄五种模型，录屏后端使用 `wl-screenrec`。
+- **Screen Toolkit**：截图、OCR、二维码、录屏和翻译工具由 `home/productivity/graphics.nix` 提供；OCR 启用中、英、日、韩、俄五种模型，录屏后端使用 `wl-screenrec`。截图目录由 Noctalia 的 `shell.screenshot.directory` 统一管理，插件不再支持 `screenshot-path`。
 - **Phone Operate**：`adb`、scrcpy、SSHFS 由 `home/productivity/phone.nix` 提供；主桌面的 KDE Connect 与发现端口由 `host/base/desktop.nix` 管理。
-- **Obsidian**：Vault 指向 `~/Documents/MyVault`，日记目录与现有 Daily Notes 配置统一为 `05_Personal/Diary`。
 - **Translator**：默认翻译目标为中文；Google 模式没有本地命令依赖。
+
+- **插件来源**：个人 `Shangshui0302/community-plugins` fork 排在 official、community 之前，与界面覆盖中的顺序一致。
+- **GitHub Kanban**：通知已读状态采用 `synced`，仓库使用网格布局。
+- **Token Monitor**：使用本机 `127.0.0.1:17321`，每 60 秒刷新；凭据文件仅引用容器目录路径，内容不进入 Nix。
+- **配置同步**：界面覆盖位于 `~/.local/state/noctalia/settings.toml`，优先于 Nix 生成的 `~/.config/noctalia/config.toml`。2026-11-03 已把非敏感偏好及额外 TOML 的 Token Monitor 设置同步到 `home/de/noctalia.nix`；本地覆盖仍保留。Nix 中已清理停用的 GitHub Activity、Obsidian、Git Companion 定义及顶栏占位；本机覆盖中的旧定义仍需通过设置界面清除。Mihomo 密钥、当前主题模式和壁纸状态不纳入此次同步。
 
 ## Dock
 
 - **位置**：底部；关闭强制自动隐藏，启用智能自动隐藏
-- **固定应用**：Strata、Codex Desktop、Google Chrome
+- **固定应用**：Strata、Codex Desktop、Google Chrome、VS Code、Foot
 - **启动器图标**：使用发行版 Logo
 - **分组**：同一应用窗口合并，圆点指示器，点击列表切换
 - **行为**：仅显示当前屏幕的应用
@@ -135,7 +139,7 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 | 自动锁定 | 660 秒（11 分钟） | 屏幕关闭后 60 秒 |
 | 自动休眠 | 1800 秒（30 分钟） | 锁定后 19 分钟 |
 
-- 锁屏：模糊背景 (0.6)，显示时钟 + 密码输入
+- 锁屏：模糊背景约 0.8，内屏与 HDMI-A-1 各自保存登录框布局；允许提交空密码给认证后端（不会跳过认证）
 - 倒计时 10 秒，显示会话按钮（锁屏/休眠/重启/关机/注销）
 - 锁屏媒体控件：已启用
 
