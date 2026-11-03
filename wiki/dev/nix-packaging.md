@@ -169,7 +169,7 @@ sudo nixos-rebuild switch --flake .
 
 | 包 | 独立构建入口 | 说明 |
 | --- | --- | --- |
-| ScrollOverview | `nix build path:.#scrolloverview` | `scrolloverview-src` 跟踪上游 main，源码由 `flake.lock` 锁定并使用系统 Hyprland 构建；见 [工作区总览](../desktop/hyprland.md#工作区总览-scrolloverview) |
+| ScrollOverview | `nix build path:.#scrolloverview` | `scrolloverview-src` 暂时固定上游 `a8dcca6`，避开 Hyprland 0.57 的装饰钩子崩溃；无本地 C++ 补丁，使用系统 Hyprland 构建；见 [工作区总览](../desktop/hyprland.md#工作区总览-scrolloverview) |
 | Hypr Dynamic Cursors | `nix build path:.#hypr-dynamic-cursors` | `hypr-dynamic-cursors-src` 跟踪上游 main，源码由 `flake.lock` 锁定并复用 nixpkgs 插件构建器；[更新流程](../desktop/hyprland.md#光标) |
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |

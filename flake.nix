@@ -4,7 +4,9 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     # Track upstream sources without importing their separate Hyprland/toolchains.
     scrolloverview-src = {
-      url = "github:yayuuu/hyprland-scroll-overview/main";
+      # Keep the last revision before decoration hooks: Hyprland 0.57
+      # misrelocates renderRect's short branch and crashes in the new hook.
+      url = "github:yayuuu/hyprland-scroll-overview/a8dcca6fe3ddc2164774cb6925bc67c0b974a78f";
       flake = false;
     };
     hypr-dynamic-cursors-src = {
