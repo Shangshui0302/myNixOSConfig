@@ -2,7 +2,7 @@
 title: 深色模式与动态配色
 category: desktop
 tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode, strata]
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # 深色模式与动态配色
@@ -74,6 +74,7 @@ journalctl --user -u darkman -b
 - **GTK3**：同时维护 `Material-Gnome-Matugen` 和 `Material-Gnome-Matugen-Dark` 两个完整主题。Matugen 先渲染两套颜色，再由 `theme-apply` 写入当前 `gtk-theme`。主桌面文件选择器改由 Strata Portal 提供，不再为文件选择器重启 GTK Portal。
 - **Flatpak GTK 应用**：继续通过 `$HOME/.themes:ro` 和固定 `GTK_THEME=Material-Gnome-Matugen` 读取主题。GTK4 4.20 及以上可使用双配色媒体查询；GTK3 Flatpak 暂不动态切换到 `-Dark` 目录。
 - **Qt 与 Dolphin**：两个桌面共用 WhiteSur 的 Kvantum 明暗主题和 KDE 色板；主桌面由 `qtct` 提供 Qt5/Qt6 平台主题，Darkman 经 `theme-apply` 选择 `WhiteSur` 或 `WhiteSurDark`，并为 Dolphin 选择对应色板。NextKDE 保持 Plasma 平台和 KDE 色源，由 `kos-colors` 根据 KDE 模式选择相同的 Kvantum 主题。Qt 资源使用 WhiteSur 原始配色，不随壁纸重新着色；已运行的 Qt 应用可能需要重新启动才能采用新模式。
+- **Kvantum 资源与状态**：Home Manager 将 WhiteSur 明暗资源安装到 `~/.local/share/Kvantum/WhiteSur/`，锁定的 Qt5/Qt6 Kvantum 从 XDG 数据目录发现主题；`~/.config/Kvantum/kvantum.kvconfig` 只由运行时脚本选择明暗，保留可写状态。不启用 HM 的静态 `qt.kvantum` 配置模块，避免再次激活时报 `would be clobbered`；无需删除当前选择文件或设置全局备份后缀。
 - **认证窗口**：`hyprpolkitagent` 的 Qt Widgets 使用 qt6ct 与 Kvantum，Qt Quick 控件保留 Hyprland 样式；实际弹窗外观和模式切换仍需在应用配置后验收。
 - **btop**：`programs.btop` 使用 `matugen` 主题名；由于 Foot 终端背景固定为深色，`theme-apply` 始终将 Matugen 的深色语义色板复制到 `~/.config/btop/themes/matugen.theme`，浅色模式也不切换 btop 背景。每次 `theme-apply` 都发送 `SIGUSR2` 让运行中的 btop 重读文件，只有壁纸变化才会改变重点色。
 - **Yazi**：`programs.yazi` 的 dark flavor 指向 `matugen-runtime`。由于 Foot 终端背景固定为深色，`theme-apply` 始终使用 Matugen 的深色语义色板，生成并复制到 `~/.config/yazi/flavors/matugen-runtime.yazi/flavor.toml`；浅色模式不改变 Yazi 背景。Yazi 26.9.1 虽支持 `app:theme`，但当前分发链不猜测外部实例 ID，运行中的实例需重新启动后读取新 flavor。
