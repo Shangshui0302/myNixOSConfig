@@ -2,7 +2,7 @@
 title: 桌面 Shell 切换
 category: desktop
 tags: [shell-switcher, shell, noctalia, caelestia, systemd]
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # 桌面 Shell 切换指南
@@ -83,17 +83,17 @@ Caelestia 会自动保存 `~/.config/caelestia/shell.json`，而 Home Manager �
 
 ## 快捷键兼容层
 
-Hyprland 的 shell 相关快捷键统一调用 `desktop-shell-action`，它按当前 active service 分发到对应 shell，因此切换后无需更换快捷键。工作区总览快捷键由各 compositor 原生处理，不经过此兼容层：
+Hyprland 和 niri 的常用 shell 相关快捷键统一调用 `desktop-shell-action`，它按当前 active service 分发到对应 shell，因此切换后无需更换快捷键。工作区总览快捷键由各 compositor 原生处理，不经过此兼容层：
 
 - `Super + Space`：打开启动器
 - `Super + Alt + K`：打开控制中心（Caelestia 的 utilities drawer）
 - `Super + ,`：打开设置（Caelestia 的 Nexus）
 - `Super + C`：剪贴板历史 —— Noctalia 面板；Caelestia 用 `caelestia clipboard`（`cliphist` + `fuzzel`）
-- `Super + Shift + C`：删除剪贴板条目 —— Noctalia `clipboard-clear`；Caelestia `caelestia clipboard -d`
+- `Super + Shift + C`：删除剪贴板历史 —— Noctalia `clipboard-clear` 清空历史；Caelestia `caelestia clipboard -d` 选择条目删除
 - `Super + Shift + L`：锁屏 —— Noctalia `session lock`；Caelestia `shell lock lock`
-- `Super + Shift + Print`：区域截图并复制 —— Noctalia `screenshot-region`；Caelestia AreaPicker
+- `Super + Shift + Print`：区域截图 —— Hyprland 使用 Noctalia `screenshot-region` 或 Caelestia AreaPicker；niri 使用原生区域截图
 - 媒体键（`XF86AudioPlay/Next/Prev/Stop`）：Noctalia `media <action>`；Caelestia `shell mpris <fn>`
-- `Super + Tab`：Hyprland 使用 ScrollOverview；niri 使用原生 `toggle-overview`
+- `Super + Tab`：Hyprland 使用 ScrollOverview；niri 使用原生 `toggle-overview`（`Super + G` 也可打开）
 - 亮度键：两套 shell 都按 5% 步进
 
 Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无响应）：`dashboard`、`sidebar`、`session`、`showall`、`record`。
@@ -119,6 +119,7 @@ Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无�
 | 切换后双顶栏 / 通知异常 | 某 shell 未被 stop。`systemctl --user status noctalia caelestia` 查，手动 `systemctl --user stop <卡住的>` |
 | 切换失败自动回退 noctalia | `systemctl --user status <目标>` 看日志（`journalctl --user -u <service> -e`） |
 | rebuild 构建 `caelestia-cli` 时出现 `setuptools-scm was unable to detect version` | `home/de/caelestia-shell.nix` 已为 CLI 显式导出构建版本变量，并同步替换 Shell 内置的 CLI 依赖。应用修正后的 Nix 配置即可；后续的 fish 补全、Home Manager 等依赖失败会随首个构建错误解决 |
+| Caelestia 报 `Unknown option "services.useFahrenheit"` 等旧字段 | 新版使用 `weatherUnits`、`sensorUnits` 和 `clockFormat` 枚举；Nix 配置已迁移为 `Celsius`、`Celsius`、`TwentyFourHour`。应用后重启 Caelestia，保持摄氏度和 24 小时制 |
 | Caelestia 报 `failed to write config` | 执行一次 HM/NixOS rebuild，再用 `shell-switcher set noctalia`、`shell-switcher set caelestia` 重启目标 service；无需手动删除备份文件，若仍失败检查 `systemctl --user status caelestia` 和 `journalctl --user -u caelestia -e` |
 | fish 补全出现 `KeyError: 'variant'` 或查找 `schemes/matugen` 失败 | Matugen 生成的 `~/.local/state/caelestia/scheme.json` 必须含 CLI 支持的 `name=dynamic`、`flavour=default`、`variant=content` 和当前深浅 `mode`。应用修正后的 Nix 配置，再运行 `~/.local/bin/theme-apply "$(darkman get)"` 重新生成；用 `caelestia scheme list -f`、`caelestia scheme list -m` 检查 |
 | 想清理 current 标记 | 删 `~/.config/shell-switcher/current`（下次统一启动入口默认选择 Noctalia） |

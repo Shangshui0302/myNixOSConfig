@@ -236,9 +236,9 @@ in
 
       services = {
         weatherLocation = "Chengdu, China";
-        useFahrenheit = false;
-        useFahrenheitPerformance = false;
-        useTwelveHourClock = false;
+        weatherUnits = "Celsius";
+        sensorUnits = "Celsius";
+        clockFormat = "TwentyFourHour";
         audioIncrement = 0.02;
         brightnessIncrement = 0.05;
         maxVolume = 1.0;

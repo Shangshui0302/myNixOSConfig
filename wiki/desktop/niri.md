@@ -2,12 +2,12 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-10-29
+updated: 2026-11-03
 ---
 
 # Niri 使用指南
 
-Niri 是滚动平铺 Wayland 合成器（scrollable-tiling window layout），窗口沿一条无限纵向流排列，通过滚动切换窗口而非工作区。与 Hyprland 平级；greetd 菜单中的 `niri.desktop` 由原生 `niri-session` 启动，Hyprland 则使用 UWSM 会话入口。
+Niri 是滚动平铺 Wayland 合成器（scrollable-tiling window layout），每个工作区中的窗口列沿水平方向滚动，工作区沿垂直方向排列。与 Hyprland 平级；greetd 菜单中的 `niri.desktop` 由原生 `niri-session` 启动，Hyprland 则使用 UWSM 会话入口。
 
 ## 启动与切换
 
@@ -30,29 +30,42 @@ Hyprland ↔ niri 切换：注销当前 compositor 回到 greetd → 选择另�
 - **输入**：xkb `us` + `caps:escape`，触摸板 `natural-scroll`
 - **圆角**：全局 `geometry-corner-radius 15` + `clip-to-geometry true`，focus-ring 跟随圆角（与 Hyprland `decoration.rounding = 15` 一致，都对 Caelestia 屏幕边框内圆角 25−10）
 - **无 CSD**：`prefer-no-csd`，foot 等去掉标题栏，用 focus-ring 标焦点
-- **Noctalia**：由 Home Manager 声明的 user service 随图形会话启动；不在 niri 配置中重复 `spawn-at-startup`
+- **桌面 Shell**：由 shell-switcher 在图形会话启动时恢复所选 Shell；不在 niri 配置中重复启动
 
 ## 键位（Mod = Super）
 
 | 键位 | 功能 |
 |------|------|
 | Mod+W / E / B / N / O | foot / strata / chrome / nvim / obsidian |
-| Mod+Space / C / K / Shift+Comma | Noctalia launcher / 剪贴板 / 控制中心 / 设置 |
-| Mod+Tab | Niri 原生工作区总览 (`toggle-overview`) |
+| Mod+Space / C / Alt+K / Comma | 启动器 / 剪贴板 / 控制中心 / 设置（按当前 Shell 分发） |
+| Mod+Shift+C / Shift+L | 删除剪贴板历史 / 锁屏；Noctalia 清空历史，Caelestia 选择条目删除 |
+| Mod+D / A / Alt+L / Shift+W | Caelestia 的 dashboard / sidebar / session / 面板总开关；Noctalia 不响应 |
+| Mod+G / Tab | niri 原生工作区总览 |
 | Mod+Shift+D | Darkman 切换深浅模式 |
-| Mod+Q / F / V / Shift+M / Shift+W | 关闭 / 全屏 / 浮动 / 退出 / tabbed-display |
-| Mod+方向键 | 聚焦（列/窗口） |
-| Mod+Ctrl+方向键 | 移动（列/窗口） |
-| Mod+1..0 | 工作区（Ctrl 移动） |
-| Mod+滚轮 | 切工作区 |
+| Mod+Q / F / Shift+F / V / Shift+M | 关闭 / 全屏 / 最大化列 / 浮动 / 退出 |
+| Mod+Ctrl+Shift+W | 切换列的标签式显示 |
+| Mod+H/J/K/L 或方向键 | 聚焦相邻列或列内窗口 |
+| Mod+Shift+方向键 | 移动列或列内窗口（左右移动整列） |
+| Mod+Alt+方向键 | 左右交换窗口位置，上下移动列内窗口 |
+| Mod+Ctrl+方向键 | 调整窗口宽度或高度，每次 50 像素 |
+| Mod+1..0 | 切换到当前编号的工作区；再次按相同编号回到上一个工作区 |
+| Mod+Shift+1..0 | 将当前窗口移到对应编号的工作区 |
+| Mod+Ctrl+1..0 | 将窗口宽度设置为 10%..100% |
+| Mod+滚轮 | 切换工作区 |
 | Mod+Minus/Equal | 列宽 ±10%（Shift 为窗口高度） |
 | Mod+R / Ctrl+Shift+R | 循环预设列宽 / 窗口高度 |
 | Mod+Ctrl+F | 扩展列到可用宽度 |
-| Mod+BracketLeft/Right | consume/expel 窗口出入列 |
-| Print / Shift+Print | 截取当前屏幕 / 打开 niri 原生区域截图界面 |
-| XF86 音量/亮度 | PipeWire / Noctalia |
+| Mod+BracketLeft/Right | 将窗口并入或移出相邻列 |
+| Mod+Ctrl+Comma / Period | 将窗口并入当前列 / 从当前列移出 |
+| Mod+Shift+Slash | niri 原生快捷键帮助 |
+| Print / Shift+Print / Mod+Shift+Print | 当前屏幕 / niri 原生区域截图 / 原生区域截图 |
+| XF86 音量、亮度与媒体键 | 音量、亮度及播放控制 |
 
 截图保存到 `~/Pictures/Screenshots/`，并复制到剪贴板；区域截图使用 niri 自带选择界面。
+
+默认列宽为 67%，可循环预设 33%、50%、67%、81%、96%；单列始终居中，多列在溢出时居中。窗口聚焦时不透明度为 0.88，未聚焦时为 0.82；Polkit 窗口浮动且不透明度为 0.96。工作区保持动态，数字键索引当前显示器已有工作区的排列顺序，并非固定 ID。
+
+窗口开启动画为 410ms、关闭为 149ms、移动及缩放为 479ms，使用接近 Hyprland 的原生贝塞尔曲线（关闭为线性）。横向视口滚动、工作区切换及总览保留 niri 默认弹簧，三指横向滚动、三指纵向切工作区、四指纵向总览均为原生手势。
 
 ## 配色（静态回退 + Matugen 动态）
 
@@ -67,7 +80,10 @@ config.kdl 末尾 `include` wallpaper-colors.kdl，覆盖前面的静态回退�
 
 ## 已知差异（vs Hyprland）
 
-- **blur 不是实时**：niri 默认 x-ray blur 只模糊壁纸一次（静态），窗口背后动态内容不实时模糊。Noctalia bar 的 blur 强制关闭（`layer-rule`），因为 x-ray blur 会错误模糊 bar 的透明部分
+- **布局与尺寸记忆**：单列原生居中不等于 Hyprland 的单窗口 75% 宽高伪平铺；不额外模拟首列对齐、特殊工作区、token-monitor 跨窗口重开尺寸记忆，也不引入常驻脚本或自定义动画着色器。`Super+P`、`Super+S` 和触摸板切换键未迁移。
+- **截图与帮助**：保留 niri 原生截图和快捷键帮助；区域截图不会进入 Swappy，快捷键帮助不依赖当前 Shell。Shell 独有面板仍只在对应 Shell 下有效。
+- **Noctalia 模糊区域**：bar、dock、panel、attached-panel 和 OSD 使用 `xray false`，由 Noctalia 通过 `ext-background-effect` 提交精确区域；不要额外设置 `blur true`，否则客户端撤销区域时仍可能模糊整个 layer 矩形。当前 Noctalia 默认启用 bar/dock 的 `compositor_blur`，dock 自身动画也会更新区域。参见[上游 niri 配置说明](https://github.com/noctalia-dev/noctalia-shell/blob/490d327d7ecc2dc350649b78dca2143e93209f3d/docs/user/compositor-settings/niri.mdx#L185-L195)。
+- **实时模糊的动画限制**：foot/Obsidian 仍使用强制实时模糊。niri 26.04 的 non-xray 模糊会在窗口开合及拖动平铺窗口期间暂时消失，[当前文档](https://niri-wm.github.io/niri/Window-Effects.html#non-xray-effects-experimental)仍列出此限制，上游重构任务 [#3834](https://github.com/niri-wm/niri/issues/3834) 截至 2026-11-03 尚未完成；不能据此断言所有 Shell 动画都存在同一限制。换成 xray 会改变为只采样壁纸，无法保留相同的背景窗口模糊效果。
 - **focus-ring 颜色** 由 Matugen 动态覆盖，不是 Hyprland 的 border
 - **epic-mouse sensitivity**：niri 无逐设备等价项，未迁移
 

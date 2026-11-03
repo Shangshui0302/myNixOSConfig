@@ -9,7 +9,7 @@ updated: 2026-11-03
 
 > **目录**
 > 1. [面板布局](#面板布局)
-> 2. [快捷键（与 Hyprland 绑定）](#快捷键与-hyprland-绑定)
+> 2. [快捷键](#快捷键)
 > 3. [鼠标操作](#鼠标操作)
 > 4. [应用启动器](#应用启动器)
 > 5. [控制中心](#控制中心)
@@ -47,17 +47,18 @@ Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用
 
 > **维护**：2026-08-13 清理 `noctalia config validate` 的 4 个 warning（`home/de/noctalia.nix`）：bongocat 宠物插件、launcher session 搜索因新版不再识别已移除；网络指示器字段更新为新版（`visualization/show_value/show_glyph`）。现有功能（上传/下载速率等）保持不变。
 
-## 快捷键（与 Hyprland 绑定）
+## 快捷键
 
-niri 的控制中心仍使用 `Super + K`。
+Hyprland 和 niri 的 Shell 操作通过 `desktop-shell-action` 分发给当前 Shell。
 
 | 按键 | 功能 |
 |------|------|
 | `Super + Space` | 应用启动器 |
 | `Super + Alt + K` | 控制中心 |
 | `Super + ,` | 设置面板 |
-| `Super + ?` | Keybind Cheatsheet（Hyprland / niri） |
+| `Super + ?` | Hyprland 的 Keybind Cheatsheet；niri 显示原生快捷键帮助 |
 | `Super + Tab` | Hyprland 的 ScrollOverview；niri 使用原生 `toggle-overview`，不经过 Noctalia |
+| `Super + C` / `Super + Shift + C` | 剪贴板面板 / 清空 Noctalia 剪贴板历史 |
 
 Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下角热角保留为自定义 ScrollOverview 命令。
 

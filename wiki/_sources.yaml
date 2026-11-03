@@ -49,7 +49,7 @@ docs:
     sources: [home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/productivity/graphics.nix, home/productivity/phone.nix, host/base/desktop.nix, home/theme/runtime.nix, host/de/greeter.nix]
     memory:  [darkman-theme-authority, matugen-wallpaper-theming]
   desktop/shell-switcher.md:
-    sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix, home/theme/runtime.nix, home/theme/matugen/caelestia-scheme.json.tpl]
+    sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/matugen/caelestia-scheme.json.tpl]
     memory:  [shell-switcher-generic]
   desktop/shell.md:
     sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/de/foot.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
