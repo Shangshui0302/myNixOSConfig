@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 # Nix 手工打包
 
@@ -169,6 +169,7 @@ sudo nixos-rebuild switch --flake .
 
 | 包 | 独立构建入口 | 说明 |
 | --- | --- | --- |
+| Hypr Dynamic Cursors | `nix build path:.#hypr-dynamic-cursors` | 固定适配 Hyprland 0.57 的上游提交，复用 nixpkgs 插件构建器；见 [Hyprland 光标](../desktop/hyprland.md#光标) |
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
 | Agent Orchestrator | `nix build path:.#agent-orchestrator-distrobox` | 官方 AppImage 解包后适配 Nix 动态库，附 Arch DSH 桥；原始桌面包为 `agent-orchestrator`，见 [AO](agent-orchestrator.md) |

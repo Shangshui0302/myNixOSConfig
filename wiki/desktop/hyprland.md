@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # Hyprland 使用指南
@@ -51,7 +51,7 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 ### 光标
 
-启用 `hypr-dynamic-cursors` 的 shake-to-find：快速摇动鼠标即可放大光标。已关闭旋转、倾斜和拉伸效果，只保留找光标功能。由于 Hyprland 0.56.2 的 hook 变化，插件固定到上游对应提交以保持 ABI 匹配。
+启用 `hypr-dynamic-cursors` 的 shake-to-find：快速摇动鼠标即可放大光标。已关闭旋转、倾斜和拉伸效果，只保留找光标功能。插件通过 `local-deriv/hypr-dynamic-cursors.nix` 固定到适配 Hyprland 0.57 渲染上下文与日志接口的上游提交 `2a8d0b7`。可用 `nix build path:.#hypr-dynamic-cursors --no-link` 单独验证构建；升级 Hyprland 后仍需检查插件兼容性，实际加载及摇鼠标效果需在应用配置后验证。
 
 ---
 

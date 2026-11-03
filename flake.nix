@@ -111,6 +111,7 @@
         opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
         material-gnome-theme = materialGnomeTheme;
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };
+        hypr-dynamic-cursors = import ./local-deriv/hypr-dynamic-cursors.nix { inherit pkgs; };
         scrolloverview = import ./local-deriv/hyprland-scroll-overview.nix { inherit pkgs; };
         netease-cloud-music-web-player = import ./local-deriv/netease-cloud-music-web-player.nix {
           inherit pkgs;
