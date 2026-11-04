@@ -40,7 +40,7 @@ pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
 
     makeWrapper ${pkgs.electron}/bin/electron "$out/bin/${finalAttrs.pname}" \
       --add-flags "$out/lib/${finalAttrs.pname}/app.asar" \
-      --add-flags "--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --password-store=basic" \
+      --add-flags "--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --password-store=kwallet6" \
       --set-default ELECTRON_FORCE_IS_PACKAGED 1
     runHook postInstall
   '';

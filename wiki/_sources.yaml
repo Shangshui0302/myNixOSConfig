@@ -58,7 +58,7 @@ docs:
     sources: [flake.nix, home/theme/kde-runtime.nix, home/theme/kde-colors.py, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/qt-whitesur.nix, home/theme/runtime.nix, home/theme/scripts/theme-apply.sh, tests/test_theme_apply.py, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/vscode.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, home/de/polkit.nix]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
-    sources: [home/de/default.nix, host/base/desktop.nix, host/base/services.nix, host/de/sessions.nix, host/nextkde/desktop.nix, home/leisure/browser.nix]
+    sources: [home/de/default.nix, host/base/desktop.nix, host/base/services.nix, host/de/sessions.nix, host/nextkde/desktop.nix, home/leisure/browser.nix, local-deriv/netease-cloud-music-web-player.nix]
     memory:  []
 
   productivity/office.md:

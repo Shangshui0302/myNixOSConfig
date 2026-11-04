@@ -4,6 +4,8 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 
 两个桌面变体复用通用应用与字体，桌面服务和配色入口分别管理；共用用户目录中的可写状态仍可能跨变体保留。字体仅在源内容变化时同步，NextKDE 的 Shell 仅在包版本变化或需要修复时重新部署。
 
+Chrome 与网易云网页版固定使用共享 KWallet 保存加密存储密钥；保留人脸登录，新会话首次使用钱包时手动解锁，详见 [KWallet](wiki/desktop/keyring.md)。
+
 ## 当前系统
 
 | 项目 | 配置 |

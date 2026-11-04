@@ -2,7 +2,7 @@
 title: KWallet 共享凭据存储
 category: desktop
 tags: [keyring, kwallet, libsecret, pam, electron, secret-service]
-updated: 2026-11-02
+updated: 2026-11-04
 ---
 
 # KWallet 共享凭据存储
@@ -43,6 +43,8 @@ Chrome 的 Cookie 数据库位于用户 HOME，桌面变体不会为它各保存
 ### 应用侧
 
 `home/leisure/browser.nix` 为 Chrome 包统一加入 `--password-store=kwallet6`，菜单、默认浏览器和终端入口一致。应用后可在 `chrome://version` 核对命令行。
+
+网易云网页版的本地包也固定 `kwallet6`，其默认 Chromium 会话存储由同一钱包提供密钥；应用说明与登录验收见[媒体播放](../leisure/media.md)。
 
 其他 Electron 应用并未统一修改启动参数；通过 Secret Service 访问凭据的客户端会使用 KWallet。以前保存在 GNOME Keyring 的应用凭据不会自动迁移，必要时需重新登录。Firefox 的登录存储不能直接等同于 Chrome。
 
