@@ -2,7 +2,7 @@
 title: 约束与惯例
 category: 顶层
 tags: [constraints, conventions, nix]
-updated: 2026-11-02
+updated: 2026-11-04
 ---
 
 # NixOS Config — 约束与惯例
@@ -102,9 +102,10 @@ user service. The manual `systemd.user.services.onedrive` block in
 
 ### Sudo rules
 
-`host/users.nix` NOPASSWD rules for `nix`, `nixos-rebuild`, `tee`, `chmod`, `chown`,
-`install`, `mv`, `cp`, `rm` are **deliberate** on this single-user laptop.
-Do not remove or restrict them.
+`host/base/users.nix` keeps NOPASSWD only for
+`/run/current-system/sw/bin/nixos-rebuild`, as explicitly requested by the user.
+This entry still permits full system administration. `nix`, `tee`, `chmod`,
+`chown`, `install`, `mv`, `cp`, and `rm` use normal sudo authentication.
 
 ---
 

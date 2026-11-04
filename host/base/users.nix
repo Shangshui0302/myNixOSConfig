@@ -5,7 +5,12 @@
     isNormalUser = true;
     description = "Li Shangshui";
     linger = true;
-    extraGroups = [ "wheel" "networkmanager" "video" "dialout" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "video"
+      "dialout"
+    ];
   };
 
   security.sudo.extraConfig = ''
@@ -16,15 +21,11 @@
     {
       users = [ "lishangshui" ];
       commands = [
-        { command = "/run/current-system/sw/bin/nixos-rebuild"; options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/nix";           options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/tee";           options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/chmod";         options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/chown";         options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/install";       options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/mv";            options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/cp";            options = [ "NOPASSWD" ]; }
-        { command = "/run/current-system/sw/bin/rm";            options = [ "NOPASSWD" ]; }
+        # 保留用户明确需要的系统重建入口；它仍授予完整的系统维护能力。
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = [ "NOPASSWD" ];
+        }
       ];
     }
   ];

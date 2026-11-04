@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, sub-store, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-11-02
+updated: 2026-11-04
 ---
 
 # 系统服务
@@ -177,7 +177,7 @@ TLP 源码 `func.d/10-tlp-func-cpu` 的判断是 `[ -n "$maxfreq" ] && [ "$maxfr
 
 ### 会话层动作（`power-actions`）
 
-档位变化时由用户侧 `power-profile-actions.timer`（每 30s，挂 `graphical-session.target`）执行 `home/env/power-actions.nix`（外置脚本实现见 `home/env/scripts/power-actions.sh`）：
+用户侧 `power-profile-actions.timer` 每 30s 执行一次档位检查，配置在 `home/env/power-actions.nix`，外置脚本实现见 `home/env/scripts/power-actions.sh`。定时器由 `graphical-session.target` 启动，定时器与动作服务都通过 `PartOf` 随图形会话停止；动作服务还用 `Requisite` 要求图形会话已启动，避免 linger 用户管理器在注销后继续执行策略。
 
 | 进入 `power-saver` | 离开 `power-saver` |
 | --- | --- |
@@ -185,7 +185,8 @@ TLP 源码 `func.d/10-tlp-func-cpu` 的判断是 `[ -n "$maxfreq" ] && [ "$maxfr
 | 关闭阴影与动画（`decoration:shadow:enabled`、`animations:enabled`）、把窗口透明 `decoration:active_opacity` / `inactive_opacity` → `1.0`；模糊**不关**，改成便宜参数（`decoration:blur:size` → `5`、`decoration:blur:passes` → `2`） | 按进入时保存的**原值**恢复（本机透明 `0.88` / `0.82`、模糊 `15` / `4`，来自 `home/de/hyprland.nix`） |
 | 暂停 `pauseUserUnits`（默认 `onedrive`）里本来就 active 的单元 | 启动之前停掉的单元 |
 
-- 只在**档位变化**时动手（state 文件记上次档位）：`darkman set` 会触发 theme-apply（Matugen 重渲染 + 重启 fcitx5），不能每 30s 跑。
+- 深色切换与用户单元暂停在**进入省电档**时执行，失败项写入 state，后续轮询只重试未完成项；成功后不重复执行，避免 `darkman set` 每 30s 触发 theme-apply（Matugen 重渲染 + 重启 fcitx5）。Hyprland 特效仍每轮检查并纠正漂移。
+- 离开省电档或执行 `revert` 时取消未完成的深色切换，恢复进入时原本 active 的单元（即使暂停命令曾报错）；恢复失败的条目保留到下轮重试。`revert` 后暂停会话动作，直至档位变化或显式 `mode` / `apply`。
 - 关/开特效与透明走 `hyprctl eval 'hl.config({…})'`：0.56 的 Lua 解析器下旧的 `hyprctl keyword` **不生效但退出码仍是 0**，所以脚本按输出是否为 `ok` 判定成败；读值仍用 `hyprctl -j getoption`（bool 型是 `"bool": true`，int 型是 `"int": N`，float 型是 `"float": 0.88`，要按类型解析）。
 - **省电档为什么不关模糊、而是调便宜**：`foot`（`alpha=0.8`）、Noctalia 的 bar/panel、fcitx5 候选窗都是**应用自己画的半透明**，把 `decoration:blur:enabled` 关掉后它们就直接透出桌面（观感像"变透明"），比留着模糊更难看。成本模型（源码 `blurFramebufferWithDamage`）：强度 ≈ `size × 2^passes`，开销 ≈ `2 × passes` 次全分辨率 draw（**与 `size` 几乎无关**），硬上限 `size ≤ 40`、`passes ≤ 8`（超了会被 clamp）。本机原值 `15 / 4`（半径 240、8 次 draw）→ 省电档 `5 / 2`（半径 20、4 次 draw，模糊开销减半）。想更"挡"先加 `size`（几乎免费），不够再加 `passes`。
 - 排障顺序：`power-actions status` → `journalctl --user -u power-profile-actions -n 20` → `power-actions revert`。
@@ -213,7 +214,7 @@ Howdy 专用的 OpenCV 保留 GTK 测试窗口与 V4L2 摄像头支持，只关�
 - 图形程序请求管理员授权时，由主桌面会话中的 `hyprpolkitagent` 显示认证窗口；它属于 `graphical-session.target`，Noctalia 与 Caelestia 切换时继续由同一个会话服务提供提示。Noctalia 自带的 polkit agent 已关闭，避免重复弹窗。
 - polkit-1 的 PAM 服务在主桌面变体接入 Howdy：人脸识别成功可直接授权，识别失败时继续显示密码认证。此设置不等同于 sudo 的认证规则。
 - `security.rtkit` 启用，提升实时音频任务优先级。
-- 普通用户的 sudo 白名单在 `host/base/users.nix`，仅放行必要的 rebuild 与文本处理命令，遵循最小权限。
+- 普通用户的 sudo 免密白名单在 `host/base/users.nix`，仅保留 `/run/current-system/sw/bin/nixos-rebuild`；`nix` 与通用文件操作使用常规 sudo 认证。重建入口仍有完整系统维护能力，作为用户明确保留的例外。
 
 配置已于 2026-10-13 构建并应用到第 697 代；已核验 hyprpolkitagent 正常运行、Noctalia 内置代理关闭、活动 PAM 的 Howdy 为 sufficient。真实交互仍需人工回归：注销并重新登录，再检查会话中只有一个 polkit agent；分别测试 Noctalia 与 Caelestia 切换后发起 GUI 授权、人脸识别失败后的密码回退、正确/错误密码、取消授权，以及深浅主题变化。认证窗口中的密码应由用户亲自输入；不要把真实认证或密码输入作为自动化检查。
 

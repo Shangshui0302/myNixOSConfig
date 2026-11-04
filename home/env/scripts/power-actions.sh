@@ -303,14 +303,20 @@ effects_sync() { # 省电档下把特效对齐到期望值；原值只在「首�
 }
 
 session_enter() { # 进入省电档：darkman + 特效 + 用户单元
-  local cur u
-  if [ "$dark_mode" = "true" ]; then
+  local retry_only="${1:-false}" cur u saved
+  # 同档位轮询只重试失败项，避免重复触发 theme-apply 或覆盖用户后续手动操作。
+  if [ "$dark_mode" = "true" ] &&
+    { [ "$retry_only" = "false" ] || [ "$(state_get darkman || true)" = "pending" ]; }; then
+    state_set darkman pending
     cur="$(darkman get || true)"
-    if [ "$cur" != "dark" ]; then
+    if [ "$cur" = "dark" ]; then
+      state_del darkman
+    else
       if darkman set dark >/dev/null; then
+        state_del darkman
         log "darkman: ${cur:-未知} -> dark"
       else
-        warn "darkman: set dark 失败（darkman 没在跑？）"
+        warn "darkman: set dark 失败（darkman 没在跑？），下轮重试"
       fi
     fi
   fi
@@ -319,13 +325,19 @@ session_enter() { # 进入省电档：darkman + 特效 + 用户单元
 
   for u in $pause_units; do
     [ -n "$u" ] || continue
-    state_get "unit:$u" >/dev/null 2>&1 && continue
-    if unit_active "$u"; then
+    saved="$(state_get "unit:$u" || true)"
+    [ "$saved" = "stopped" ] && continue
+    if [ "$retry_only" = "true" ] && [ "$saved" != "stop-pending" ]; then
+      continue
+    fi
+    if [ "$saved" = "stop-pending" ] || unit_active "$u"; then
+      # 先保存原本 active 的事实：stop 报错时也可能已经停掉服务，离开时仍需恢复。
+      state_set "unit:$u" stop-pending
       if systemctl --user stop "$u"; then
         state_set "unit:$u" stopped
         log "已暂停用户单元 $u"
       else
-        warn "用户单元 $u 暂停失败"
+        warn "用户单元 $u 暂停失败，下轮重试"
       fi
     fi
   done
@@ -336,6 +348,8 @@ session_leave() { # 离开省电档：按原值恢复特效与用户单元（dar
   # 否则一次 hyprctl/systemctl 抖动就会把原值记录抹掉，原值再也回不来。
   local sig kw key val orig u lines
   [ -f "$state_file" ] || return 0
+  # 离开或 revert 后不再补做深色切换；用户单元仍按进入前的 active 状态恢复。
+  state_del darkman
   lines="$(cat "$state_file")"
 
   if [ "$effects_enabled" = "true" ] && sig="$(hypr_sig)"; then
@@ -359,7 +373,7 @@ session_leave() { # 离开省电档：按原值恢复特效与用户单元（dar
     key="${line%%=*}"
     val="${line#*=}"
     u="${key#unit:}"
-    [ "$val" = "stopped" ] || continue
+    case "$val" in stopped|stop-pending) ;; *) continue ;; esac
     if systemctl --user start "$u"; then
       state_del "$key"
       log "已恢复用户单元 $u"
@@ -447,7 +461,7 @@ session_step() { # 读当前档位 → 对齐 darkman/特效/用户单元
     session_dispatch "$profile"
     return 0
   fi
-  # 档位没变：darkman 与用户单元按设计不动（避免 theme-apply 抖动）。
+  # 档位没变：已成功的 darkman 与用户单元动作不重复，失败项继续重试。
   if [ "$profile" = "$power_saver_profile" ]; then
     if [ "$(state_get session || true)" = "paused" ]; then
       # revert 之后是「暂停会话层」：不施加、也不做漂移纠正；
@@ -457,8 +471,8 @@ session_step() { # 读当前档位 → 对齐 darkman/特效/用户单元
       fi
       return 0
     fi
-    # 省电档下只把 Hyprland 特效值做一次漂移纠正
-    effects_sync
+    # 重试进入时失败的动作，并继续纠正 Hyprland 特效漂移。
+    session_enter true
     return 0
   fi
   # 非省电档：上一轮离开时恢复失败的条目还留着 → 本轮继续重试（成功一条删一条）

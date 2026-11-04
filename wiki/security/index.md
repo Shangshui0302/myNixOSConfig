@@ -2,7 +2,7 @@
 title: 安全与隐私总览
 category: 安全
 tags: [security, sops, pam, howdy, firewall, polkit, keyring]
-updated: 2026-11-02
+updated: 2026-11-04
 ---
 
 # 安全与隐私总览
@@ -81,7 +81,7 @@ SS-->>S : 提供 /run/secrets/* 或环境变量
 `host/base/services.nix` 启用 Howdy 并将 `pam_howdy.so` 注入通用 sudo/su/login 的 PAM 链，主 DE 专属的 greetd/noctalia 由 `host/de/greeter.nix` 注入，控制位 `sufficient` 实现「扫脸即过」。由于 Howdy 短路了密码输入，`pam_kwallet5.so` 拿不到登录密码，kdewallet 不会自动解锁——首次需要 keyring 的应用会弹出解锁提示，输入一次登录密码即可，每次新会话是否需要输入取决于钱包是否已解锁。PAM 链路与 Keyring 的行为细节见 [pam.md](./pam.md)、[../desktop/keyring.md](../desktop/keyring.md)。
 
 ## 用户权限与访问控制
-`host/base/users.nix` 中普通用户 `lishangshui` 加入 `wheel`、`networkmanager`、`video`、`dialout` 组；并通过 `security.sudo.extraRules` 授予部分命令 NOPASSWD 权限（`nixos-rebuild`、`nix`、`tee`、`chmod`、`chown`、`install`、`mv`、`cp`、`rm`），便于自动化运维。Polkit 在 `host/base/services.nix` 中启用，并允许 wheel 组执行特定动作。建议定期审查 sudo 规则，遵循最小权限原则。
+`host/base/users.nix` 中普通用户 `lishangshui` 加入 `wheel`、`networkmanager`、`video`、`dialout` 组。`security.sudo.extraRules` 仅对 `/run/current-system/sw/bin/nixos-rebuild` 保留 NOPASSWD；`nix`、`tee`、`chmod`、`chown`、`install`、`mv`、`cp`、`rm` 使用常规 sudo 认证。保留的重建入口可以选择并应用系统配置，仍授予完整系统维护能力，是用户明确保留的例外。Polkit 在 `host/base/services.nix` 中启用，并允许 wheel 组执行特定动作。
 
 ## 防火墙与网络安全
 `host/base/network.nix` 启用 nftables 与 `networking.firewall`，仅开放必要端口（如 TCP/UDP 53317），配置 `trustedInterfaces` 与 `checkReversePath`；启用 IPv4/IPv6 转发以支撑 Mihomo 的 TUN 模式；启用 OpenSSH（当前允许密码认证，生产建议改密钥）。代理相关见 [../networking/mihomo.md](../networking/mihomo.md)。

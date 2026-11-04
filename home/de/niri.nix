@@ -5,7 +5,7 @@
     enable = true;
     package = pkgs.niri;
     portalPackage = null;
-    xwaylandSatellitePackage = null;
+    xwaylandSatellitePackage = pkgs.xwayland-satellite;
     checkConfig = true;
     extraConfig = ''
       // ===== Output =====

@@ -88,6 +88,8 @@ if cmd == 'systemctl':
             sys.exit(1)
         active.discard(unit)
         active_file.write_text('\\n'.join(sorted(active)) + ('\\n' if active else ''))
+        if os.environ.get('SYSTEMCTL_STOP_FAIL_AFTER_STOP') == '1':
+            sys.exit(1)
         sys.exit(0)
     elif action == 'start':
         if os.environ.get('SYSTEMCTL_START_FAIL') == '1':
@@ -355,6 +357,66 @@ if cmd == 'hyprctl':
         self.assertEqual(res.returncode, 0)
         self.assertTrue(any("start onedrive" in c for c in self.calls()))
         self.assertNotIn("unit:onedrive", state_file.read_text() if state_file.exists() else "")
+
+    def test_session_enter_retries_only_failed_actions(self):
+        self.set_battery(capacity=30, ac=False)
+        res = self.run_cmd("run", DARKMAN_FAIL="1", SYSTEMCTL_STOP_FAIL="1")
+        self.assertEqual(res.returncode, 0)
+        self.assertEqual((self.state_dir / "darkman").read_text(), "light")
+        self.assertIn("onedrive", (self.state_dir / "units_active").read_text().splitlines())
+
+        # Recover the unit first while darkman is still unavailable.
+        self.clear_calls()
+        res = self.run_cmd("run", DARKMAN_FAIL="1")
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("systemctl --user stop onedrive", self.calls())
+        self.assertNotIn("onedrive", (self.state_dir / "units_active").read_text().splitlines())
+        self.assertEqual((self.state_dir / "darkman").read_text(), "light")
+
+        # Recover darkman without repeating the successful stop.
+        self.clear_calls()
+        res = self.run_cmd("run")
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("darkman set dark", self.calls())
+        self.assertEqual((self.state_dir / "darkman").read_text(), "dark")
+        self.assertFalse(any(c.startswith("systemctl ") for c in self.calls()))
+
+        # Once successful, a later manual theme/unit change remains untouched.
+        (self.state_dir / "darkman").write_text("light")
+        (self.state_dir / "units_active").write_text("onedrive\n")
+        self.clear_calls()
+        res = self.run_cmd("run")
+        self.assertEqual(res.returncode, 0)
+        self.assertEqual((self.state_dir / "darkman").read_text(), "light")
+        self.assertIn("onedrive", (self.state_dir / "units_active").read_text().splitlines())
+        self.assertFalse(any(c.startswith(("darkman ", "systemctl ")) for c in self.calls()))
+
+    def test_leaving_or_reverting_cancels_failed_entry(self):
+        for command in [("mode", "balanced"), ("revert",)]:
+            with self.subTest(command=command):
+                self.set_battery(capacity=30, ac=False)
+                (self.state_dir / "units_active").write_text("onedrive\n")
+                # A failed stop can still have stopped the unit: preserve its
+                # original active state even if the command reports failure.
+                res = self.run_cmd("mode", "power-saver", DARKMAN_FAIL="1",
+                                   SYSTEMCTL_STOP_FAIL_AFTER_STOP="1")
+                self.assertEqual(res.returncode, 0)
+                self.assertNotIn("onedrive", (self.state_dir / "units_active").read_text().splitlines())
+
+                self.clear_calls()
+                res = self.run_cmd(*command)
+                self.assertEqual(res.returncode, 0)
+                self.assertIn("onedrive", (self.state_dir / "units_active").read_text().splitlines())
+                self.assertFalse(any(c.startswith("darkman ") for c in self.calls()))
+
+                # Avoid a new battery-policy edge; only retry behavior is under test.
+                (self.runtime_dir / "power-actions" / "band").write_text("saver\n")
+                self.clear_calls()
+                res = self.run_cmd("run")
+                self.assertEqual(res.returncode, 0)
+                self.assertEqual((self.state_dir / "darkman").read_text(), "light")
+                self.assertIn("onedrive", (self.state_dir / "units_active").read_text().splitlines())
+                self.assertFalse(any(c.startswith(("darkman ", "systemctl ")) for c in self.calls()))
 
     def test_session_enter_and_leave_semantics(self):
         state_file = self.runtime_dir / "power-actions" / "state"

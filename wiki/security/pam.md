@@ -2,7 +2,7 @@
 title: PAM — 可插拔认证模块
 category: 安全
 tags: [pam, authentication, security, login, sudo, keyring]
-updated: 2026-11-02
+updated: 2026-11-04
 ---
 # PAM — 可插拔认证模块
 
@@ -87,7 +87,7 @@ auth       sufficient   pam_unix.so   likeauth try_first_pass
 auth       sufficient   pam_rootok.so
 ```
 
-NOPASSWD 规则（`host/base/users.nix`）绕过了密码质询，但 PAM 栈仍然跑。
+`host/base/users.nix` 仅对 `/run/current-system/sw/bin/nixos-rebuild` 保留 NOPASSWD。`nix` 和通用文件操作使用常规 sudo 认证，包括已配置的 Howdy 与密码回退。
 
 ### 人脸登录与 keyring 的矛盾
 
@@ -145,7 +145,7 @@ journalctl -b | grep -i pam
 
 ### 忘记密码
 
-如果是单用户机器，可以用 NixOS live USB 启动 → mount 硬盘 → `passwd` 改密码。但 `chmod u+s` 也放了，正常操作不需要。
+可以使用 NixOS live USB 挂载系统后恢复密码；若磁盘加密，仍需先解锁磁盘。通用文件操作已取消 sudo 免密，不再依赖 `chmod u+s` 绕过认证。
 
 ### keyring 没自动解锁
 

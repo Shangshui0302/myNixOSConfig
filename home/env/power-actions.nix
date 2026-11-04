@@ -34,10 +34,10 @@
 #
 # 触发：user timer 每 pollSeconds 跑一次 `run`，一次做两件事 —— 先跑电量策略
 # （可能要 tlpctl set），再对齐会话层。会话层里只有 Hyprland 特效值每轮都做
-# 「漂移纠正」（主题重载会把值改回去）；darkman 只在本轮真的要进/离省电档时才调
+# 「漂移纠正」（主题重载会把值改回去）；darkman 只在进入省电档或重试失败动作时才调
 # （每轮调 `darkman set` 会连带触发 theme-apply：Matugen 重渲染 + 重启 fcitx5）。
-# 用户单元在档位变化时动，另外在档位未变但 state 里还有「上次没恢复成功」的记录时
-# 也会重试恢复（见 session_step）；`revert` 之后到下次档位变化之前，会话层整体暂停。
+# 用户单元在档位变化时动，进入/离开时失败的动作保留记录，下轮只重试未完成项；
+# `revert` 取消尚未完成的进入动作，之后到下次档位变化之前，会话层整体暂停。
 
 let
   cfg = config.powerActions;
@@ -63,30 +63,31 @@ let
       ]
       ++ lib.optional cfg.hyprlandEffects.enable pkgs.hyprland
       ++ lib.optional cfg.darkMode pkgs.darkman;
-    text = builtins.replaceStrings
-      [
-        "@power_saver_profile@"
-        "@dark_mode@"
-        "@effects_enabled@"
-        "@policy_enabled@"
-        "@power_saver_below@"
-        "@balanced_above@"
-        "@pause_units@"
-        "@effects_values@"
-        "@power_supply_dir@"
-      ]
-      [
-        cfg.powerSaverProfile
-        (lib.boolToString cfg.darkMode)
-        (lib.boolToString cfg.hyprlandEffects.enable)
-        (lib.boolToString cfg.policy.enable)
-        (toString cfg.policy.powerSaverBelow)
-        (toString cfg.policy.balancedAbove)
-        units
-        effectValues
-        "/sys/class/power_supply"
-      ]
-      (builtins.readFile ./scripts/power-actions.sh);
+    text =
+      builtins.replaceStrings
+        [
+          "@power_saver_profile@"
+          "@dark_mode@"
+          "@effects_enabled@"
+          "@policy_enabled@"
+          "@power_saver_below@"
+          "@balanced_above@"
+          "@pause_units@"
+          "@effects_values@"
+          "@power_supply_dir@"
+        ]
+        [
+          cfg.powerSaverProfile
+          (lib.boolToString cfg.darkMode)
+          (lib.boolToString cfg.hyprlandEffects.enable)
+          (lib.boolToString cfg.policy.enable)
+          (toString cfg.policy.powerSaverBelow)
+          (toString cfg.policy.balancedAbove)
+          units
+          effectValues
+          "/sys/class/power_supply"
+        ]
+        (builtins.readFile ./scripts/power-actions.sh);
   };
 
   # writeShellApplication 的产物在 $out/bin/power-actions；这里落成**单文件** store 路径：
@@ -200,6 +201,9 @@ in
     systemd.user.services.power-profile-actions = {
       Unit = {
         Description = "TLP 档位：电量阈值策略 + 会话层动作（darkman/Hyprland/用户单元）";
+        After = [ "graphical-session.target" ];
+        Requisite = [ "graphical-session.target" ];
+        PartOf = [ "graphical-session.target" ];
       };
       Service = {
         Type = "oneshot";
@@ -210,13 +214,14 @@ in
     systemd.user.timers.power-profile-actions = {
       Unit = {
         Description = "轮询 TLP 档位与电量（每 ${pollSeconds}s）";
+        PartOf = [ "graphical-session.target" ];
       };
       Timer = {
         OnBootSec = "30s";
         OnUnitActiveSec = "${pollSeconds}s";
         AccuracySec = "5s";
       };
-      # 挂在图形会话上：带 linger 的用户管理器在无会话时不会乱跑
+      # WantedBy 负责登录时启动，PartOf 负责注销时停止；服务另外拒绝无图形会话时启动。
       Install = {
         WantedBy = [ "graphical-session.target" ];
       };

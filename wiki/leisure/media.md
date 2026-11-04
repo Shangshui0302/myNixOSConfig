@@ -2,7 +2,7 @@
 title: 媒体播放
 category: 娱乐
 tags: [mpv, modernz, matugen, media, pipewire, ani-cli, kazumi, go-musicfox, obs]
-updated: 2026-11-02
+updated: 2026-11-04
 ---
 
 # 媒体播放
@@ -43,6 +43,8 @@ N --> |"运行依赖"| H
 | `ani-cli` | 命令行动漫搜索与播放，默认调用 mpv；使用 `ani-cli` 启动 |
 | Kazumi | 图形化动漫聚合播放器，支持自定义规则、字幕与弹幕；由 nixpkgs 提供桌面入口 |
 | 网易云网页版 | 本地派生 `local-deriv/netease-cloud-music-web-player.nix` Electron 打包 |
+
+网易云网页版基于上游 1.6.1 的 `app.asar`，使用锁定的 nixpkgs Electron。构建时补上首次启动缺失的窗口缩放默认值，避免没有 `window-state.json` 时窗口初始化失败；不覆盖已有窗口状态。启动器保留 Electron 默认沙箱，不注入 `--no-sandbox` 或 `--disable-gpu-sandbox`。独立构建：`nix build path:.#netease-cloud-music-web-player --no-link -L`；构建和隔离启动检查不替代登录与实际播放验收。
 
 主配置（Hyprland/niri）与 NextKDE 通过共享的 `home/leisure/player.nix` 安装 [KMusic](https://github.com/NextKde/KMusic)，从启动器打开 KMusic 或运行 `kmusic`。它是独立的 Qt Quick 音乐应用，支持本地音乐库、在线音源及账户功能；具体音源可用性由提供方决定。包定义在 `local-deriv/kmusic.nix`，源码固定到 `ad0222d4404a166a1607e2967f3201cea64111c5`，不运行上游可变安装器，不添加后台常驻服务。两个桌面共用同一包定义。
 

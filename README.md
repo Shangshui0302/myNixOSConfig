@@ -72,6 +72,8 @@ nix-instantiate --parse <file>
 nixos-rebuild dry-build --flake path:.
 ```
 
+sudo 免密仅保留 `/run/current-system/sw/bin/nixos-rebuild`；`nix` 和通用文件操作恢复常规 sudo 认证。保留的重建入口仍具有完整系统维护权限，详见[安全说明](wiki/security/index.md#用户权限与访问控制)。
+
 统一检查由 `checks/default.nix` 维护，运行时依赖跟随 `flake.lock`：
 
 - `mihomo-config-sync`：已有的 Python 同步器测试，不读取真实订阅或操作运行中的代理。

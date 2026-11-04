@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-11-03
+updated: 2026-11-04
 ---
 
 # Niri 使用指南
@@ -31,6 +31,7 @@ Hyprland ↔ niri 切换：注销当前 compositor 回到 greetd → 选择另�
 - **圆角**：全局 `geometry-corner-radius 15` + `clip-to-geometry true`，focus-ring 跟随圆角（与 Hyprland `decoration.rounding = 15` 一致，都对 Caelestia 屏幕边框内圆角 25−10）
 - **无 CSD**：`prefer-no-csd`，foot 等去掉标题栏，用 focus-ring 标焦点
 - **桌面 Shell**：由 shell-switcher 在图形会话启动时恢复所选 Shell；不在 niri 配置中重复启动
+- **X11 应用**：Home Manager 的 `xwaylandSatellitePackage` 安装 `xwayland-satellite`，由 niri 按需启动，支持微信等 X11 客户端。更新后重新登录 niri 会话；排障时先确认 `command -v xwayland-satellite` 可找到程序，再查看 `journalctl --user -u niri.service -b`。
 
 ## 键位（Mod = Super）
 
