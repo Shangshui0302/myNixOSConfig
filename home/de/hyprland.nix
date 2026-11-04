@@ -246,6 +246,12 @@ in
           };
         };
 
+        # Temporary diagnostics for Lua runtime errors; restore after debugging.
+        debug = {
+          disable_logs = false;
+          disable_time = false;
+        };
+
         general = {
           gaps_in = 5;
           gaps_out = 5;

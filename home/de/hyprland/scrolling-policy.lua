@@ -21,22 +21,25 @@ local function updateSingleWindows()
     local counts, windows = {}, {}
     for _, window in ipairs(hl.get_windows({ mapped = true, floating = false })) do
         local workspace, layout = window.workspace, window.layout
-        if workspace and not window.hidden and layout and layout.name == "scrolling" then
+        -- 0.57's id is nil for named/special workspaces. The addressable name
+        -- identifies all workspace kinds without merging their namespaces.
+        local workspaceKey = workspace and workspace.addressable_name
+        if workspaceKey and not window.hidden and layout and layout.name == "scrolling" then
             windows[window.address] = window
-            counts[workspace.id] = (counts[workspace.id] or 0) + 1
+            counts[workspaceKey] = (counts[workspaceKey] or 0) + 1
         end
     end
 
     for address, window in pairs(singleWindows) do
         local current = windows[address]
-        if not current or counts[current.workspace.id] ~= 1 then
+        if not current or counts[current.workspace.addressable_name] ~= 1 then
             if window.mapped then setPseudo(window, false) end
             singleWindows[address] = nil
         end
     end
 
     for address, window in pairs(windows) do
-        if counts[window.workspace.id] == 1 and not singleWindows[address]
+        if counts[window.workspace.addressable_name] == 1 and not singleWindows[address]
             and window.fullscreen == 0 and window.monitor then
             local width, height = monitorSize(window.monitor)
             singleWindows[address] = window
@@ -56,6 +59,7 @@ end
 local function alignFirstColumn()
     local window = hl.get_active_window()
     if not window or window.floating or window.fullscreen ~= 0 or not window.workspace then return end
+    if not window.workspace.addressable_name then return end
     local layout = window.layout
     if not layout or layout.name ~= "scrolling" or not layout.column then return end
 

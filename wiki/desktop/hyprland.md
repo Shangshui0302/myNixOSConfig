@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-11-03
+updated: 2026-11-04
 ---
 
 # Hyprland 使用指南
@@ -253,19 +253,39 @@ Foot 背景不透明度为 `alpha = 0.55`，并启用客户端 `blur` 请求；H
 
 ## 故障排查
 
-```
-# 离线验证配置文件语法（不加载第三方插件）
-hyprland --verify-config
+先记录提示出现的时间和触发动作，再按组件查日志；不要先重载，以免丢失现场。
 
-# 运行中的 Hyprland：重载并检查活动配置（configerrors 应无输出）
-hyprctl reload
+```bash
+# 当前配置解析错误；空输出不代表运行时 Lua 回调一定正常
 hyprctl configerrors
 
-# 查看 Hyprland 日志
-cat /tmp/hypr/$(ls -t /tmp/hypr/ | head -1)/hyprland.log
+# 先查日志开关：true 表示禁用了日志
+hyprctl getoption debug:disable_logs
+
+# 日志已启用时持续查看；Ctrl+C 只停止查看
+hyprctl rollinglog -f
+
+# 当前实例的日志文件（在 Hyprland 会话终端运行）
+tail -n 100 "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/hyprland.log"
+
+# 启动、退出和服务状态相关日志
+journalctl --user -b -u wayland-wm@hyprland.desktop.service -n 80 --no-pager
+
+# 顶栏/启动器等 Shell 问题；Caelestia 改为 caelestia.service
+journalctl --user -b -u noctalia.service --since "5 minutes ago" --no-pager
+
+# 桌面崩溃后，核对报告时间是否对应本次故障
+ls -lt ~/.cache/hyprland/hyprlandCrashReport*
+coredumpctl list --since today
 ```
 
-`hyprland --verify-config` 是离线解析；含第三方插件的配置可能在这里报告插件键不存在。实际会话应以 `hyprctl configerrors` 无输出为准。
+`--user` 指用户服务，`-b` 指本次开机，`-u` 选择服务，`-n` 限制行数。日志按“时间 → 组件 → 第一条相关错误 → 后续是否恢复”阅读；单条 `WARN` 或 `ERR` 不一定意味着崩溃。离线解析、配置加载和事件触发后的运行检查是不同层次。
+
+Hyprland 0.57 默认 `debug.disable_logs = true`，关闭文件和滚动日志；运行时 Lua 错误仍会弹出约 5 秒的内置通知，不加入配置解析错误列表。需要持续取证时，在 Nix 的 Hyprland settings 中临时设置 `debug.disable_logs = false`，由用户应用后再复现，结束后恢复。禁用期间的错误无法从日志补回，先截图或记下提示文字。
+
+当前配置为本次排障临时设置了 `debug.disable_logs = false` 和 `debug.disable_time = false`，应用后应记录带时间的日志。排障结束后删除 `home/de/hyprland.nix` 中这两个临时设置并重新应用，恢复默认关闭。锁定的 0.57.0 源码只在配置重载事件中刷新日志器开关，因此不能仅凭 `hyprctl eval` 后的选项值认定日志已启停，应检查日志是否实际增长。
+
+例如 `Runtime error in lua: hl.timer callback: …scrolling-policy.lua:109: …scrolling-policy.lua:26: table index is nil`：定时回调在运行时失败，109 行是转报错误的位置，26 行才是具体失败操作。2026-11-04 的原因是 Hyprland 0.57 对命名/特殊工作区返回 `workspace.id = nil`；滚动策略改用带命名空间的 `addressable_name` 计数，保留 scratchpad 的单窗伪平铺策略。数字、命名、特殊和失效工作区已覆盖回归测试；应用后仍需实际触发开关/移动窗口验收。
 
 ### WUJIE14XA 触控板 Fn 键
 

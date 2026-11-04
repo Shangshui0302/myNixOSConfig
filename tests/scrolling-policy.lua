@@ -15,7 +15,8 @@ local function reset()
             for _, window in ipairs(state.windows) do
                 if (not options or options.mapped == false or window.mapped)
                     and (not options or options.floating ~= false or not window.floating)
-                    and (not options or not options.workspace or window.workspace.id == options.workspace.id) then
+                    and (not options or not options.workspace
+                        or window.workspace.addressable_name == options.workspace.addressable_name) then
                     result[#result + 1] = window
                 end
             end
@@ -87,7 +88,7 @@ end
 local function window(address, index, x, width)
     return {
         address = address, mapped = true, hidden = false, floating = false,
-        fullscreen = 0, workspace = { id = 1 }, monitor = monitor(),
+        fullscreen = 0, workspace = { id = 1, addressable_name = "1" }, monitor = monitor(),
         at = { x = x or 7, y = 42 }, size = { x = width or 600, y = 800 },
         layout = { name = "scrolling", column = { index = index, width = 0.8 } },
     }
@@ -240,5 +241,45 @@ local ok, err = pcall(function() runDelay(60) end)
 assert(not ok and tostring(err):match("mock move failed"), "move errors are propagated from the timer callback")
 assert(state.fit == 0 and count("config") == 2 and last("config").fit == 0,
     "focus_fit_method is restored even when move dispatch fails")
+
+-- Hyprland 0.57 only exposes id for numbered workspaces. Namespaced
+-- addressable names keep numbered, named and special workspaces separate.
+reset()
+local numbered = window("numbered", 0)
+local named = window("named", 0)
+named.workspace = { name = "1", addressable_name = "name:1" }
+local special = window("special", 0)
+special.workspace = { name = "1", addressable_name = "special:1" }
+state.windows = { numbered, named, special }
+state.active = special
+event("config.reloaded")
+runDelay(60)
+assert(count("pseudo") == 3 and count("resize") == 6,
+    "numbered, named and special solo windows are sized independently without nil IDs")
+local specialSecond = window("special-second", 1)
+specialSecond.workspace = { name = "1", addressable_name = "special:1" }
+state.windows[#state.windows + 1] = specialSecond
+event("window.open")
+runDelay(60)
+assert(count("pseudo") == 4 and last("pseudo").args.window == special
+    and last("pseudo").args.action == "disable",
+    "a second special-workspace window only disables that workspace's solo sizing")
+specialSecond.mapped = false
+event("window.close")
+runDelay(60)
+assert(count("pseudo") == 5 and last("pseudo").args.window == special
+    and last("pseudo").args.action == "enable", "special workspace returns to solo sizing")
+
+reset()
+local expired = window("expired-workspace", 0)
+expired.workspace = {} -- An expired Lua workspace object returns nil properties.
+state.windows, state.active = { expired }, expired
+event("window.open")
+runDelay(60)
+assert(#commands == 0, "windows without a usable workspace identity are skipped")
+expired.workspace = { addressable_name = "special:magic" }
+event("window.move_to_workspace")
+runDelay(60)
+assert(count("pseudo") == 1, "a later valid workspace event is still reconciled")
 
 print("Scrolling policy mocked event checks passed")
