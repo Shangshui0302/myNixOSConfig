@@ -6,6 +6,8 @@ MechRevo-NixOS 的 NixOS flakes + Home Manager 配置。
 
 Chrome 与网易云网页版固定使用共享 KWallet 保存加密存储密钥；保留人脸登录，新会话首次使用钱包时手动解锁，详见 [KWallet](wiki/desktop/keyring.md)。
 
+SSH 使用登录时启动的 OpenSSH agent，首次解锁后在代理运行期间复用密钥；见 [SSH 私钥解锁](wiki/desktop/keyring.md#ssh-私钥解锁)。
+
 ## 当前系统
 
 | 项目 | 配置 |

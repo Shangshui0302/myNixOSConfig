@@ -2,7 +2,7 @@
 title: KWallet 共享凭据存储
 category: desktop
 tags: [keyring, kwallet, libsecret, pam, electron, secret-service]
-updated: 2026-11-04
+updated: 2026-11-08
 ---
 
 # KWallet 共享凭据存储
@@ -53,6 +53,26 @@ Chrome 的 Cookie 数据库位于用户 HOME，桌面变体不会为它各保存
 密码登录时，PAM 收集密码并启动钱包进程；进入图形会话后 `pam_kwallet_init` 传递会话环境。自动解锁要求使用兼容的 `kdewallet`，且钱包密码与登录密码一致。
 
 人脸登录没有提供钱包密码，首次需要凭据时可能弹出解锁提示。用 KWalletManager 解锁，或在应用请求时输入钱包密码；不要为了免提示改用浏览器 `basic` 后端。
+
+## SSH 私钥解锁
+
+KWallet 的 Secret Service 不提供 SSH agent。`host/base/desktop.nix` 单独启用
+`programs.ssh.startAgent`，由 NixOS 在用户登录时启动 `ssh-agent.service`，监听
+`$XDG_RUNTIME_DIR/ssh-agent`。现有个人 SSH 配置的 `AddKeysToAgent yes` 会在首次
+输入私钥口令后将密钥加入代理；同一代理运行期间无需每次连接都解锁。
+
+应用配置后注销并重新登录，让终端和桌面程序获得新的 `SSH_AUTH_SOCK`。检查：
+
+```bash
+systemctl --user status ssh-agent
+ssh-add ~/.ssh/id_ed25519
+ssh-add -l
+ssh mylabwin
+```
+
+首次 `ssh-add` 仍需要私钥口令；代理重启或用户会话结束后需重新添加。该配置不会
+将口令写入配置文件，也不提供跨重启自动解锁。若程序未继承代理环境，可显式传递
+`SSH_AUTH_SOCK=/run/user/1000/ssh-agent`（此用户 UID 为 1000）；不要为每个终端另起代理。
 
 ## 应用与桌面切换
 

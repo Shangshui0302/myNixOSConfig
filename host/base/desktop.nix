@@ -15,6 +15,9 @@ in
   # Both desktop variants share one wallet; desktop detection must not choose
   # a different encryption key for the same browser profile.
   services.gnome.gnome-keyring.enable = false;
+  # KWallet provides Secret Service, not an SSH agent. Cache unlocked keys
+  # in the native per-user OpenSSH agent for both desktop variants.
+  programs.ssh.startAgent = true;
   services.dbus.packages = [
     pkgs.kdePackages.kwallet
     # KWallet 6.31 ships org.kde.secretservicecompat, but generic libsecret
