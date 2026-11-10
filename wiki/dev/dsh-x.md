@@ -35,7 +35,7 @@ DSH-X 的默认目录与现有 profile 相关位置如下；共享目录不等�
 ## 打包要点
 
 [dsh-x.nix](../../local-deriv/dsh-x.nix) 走 `appimageTools.extract` + `autoPatchelfHook` + `makeWrapper`，
-与 [agent-orchestrator.nix](../../local-deriv/agent-orchestrator.nix) 同一范式。四个非显然的处理：
+与 [agent-orchestrator.nix](../../local-deriv/agent-orchestrator.nix) 同一范式。运行时约定如下：
 
 - **`/usr/bin/tar` 硬编码**：`shell/core-fetch.mjs` 的 `tarCommand()` 在非 Windows 分支
   返回字面量 `/usr/bin/tar`，NixOS 没有该路径，核心包解压会失败。用 `substituteInPlace`
@@ -45,16 +45,23 @@ DSH-X 的默认目录与现有 profile 相关位置如下；共享目录不等�
   它们（`ldd` 主程序无相关项），用 `autoPatchelfIgnoreMissingDeps` 忽略。
 - **pnpm 与 node 必须进 wrapper PATH**：`shell/env.mjs` 从用户 PATH 找 node，而
   `dsh plugin` 把参数转发给 pnpm 在 profile 目录内执行。AppImage 不自带 pnpm，
-  所以 wrapper 里 `--prefix PATH` 补上 `nodejs_24` 与 `pnpm`。
-- **libstdc++ 必须进 `LD_LIBRARY_PATH`**：dsh 的原生插件（`node-addon-require-builtin`、
-  `node-pty`、`@img/sharp`、`koffi`、`sherpa-onnx`）都 NEEDED `libstdc++.so.6`，
-  而 Electron 二进制自身只链 `libgcc_s`，所以 `runtimeDependencies` 里加
-  `stdenv.cc.cc.lib` 只让 RUNPATH 出现该路径——不够。`.node` 自身没有 RUNPATH，
-  glibc 的 `dlopen` 只按主程序 RUNPATH 解析**主程序的直接依赖**，不递归到被 dlopen
-  的对象。症状是启动时报
+  所以 wrapper 里 `--prefix PATH` 补上专用 Node 24 与 `pnpm`。
+- **原生插件的 libstdc++**：部分下载到用户目录的原生插件没有自己的库搜索路径，
+  主程序的 RUNPATH 不能传递给这些插件的依赖。缺失时启动会报
   `No usable native binding found for node-addon-require-builtin-linux-x64-gnu (auto)`
   （内层 cause 是 `libstdc++.so.6: cannot open shared object file`）。
-  wrapper 里 `--prefix LD_LIBRARY_PATH` 才是有效修复。
+  wrapper 通过 `LD_LIBRARY_PATH` 提供 `libstdc++`，由核心和子进程继承。
+- **DSH 核心固定使用专用 Node 24**：wrapper 设置 `DSH_RUNTIME_NODE` 为 Nix 的绝对路径，
+  外壳仍由 Electron 运行。该变量优先于启动器设置里的运行时选择；只把 node 放进 PATH
+  不会改变核心默认使用 Electron 的行为。这样可避开
+  [Electron 与 sharp 的 GLib 符号冲突](https://sharp.pixelplumbing.com/install/#electron-and-linux)。
+  核心及其生成的 dsh 命令行入口跟随这个运行时。
+
+[dsh-x-node.nix](../../local-deriv/dsh-x-node.nix) 固定封装 Node 官方 Linux x64 24.21.0
+二进制，哈希与官方 `SHASUMS256.txt` 一致。DSH 的 `node-addon-require-builtin` 会探测
+Node/V8 私有机器码布局；当前 Nixpkgs 的同版本构建未通过该插件的 getter 探测。
+专用包保留官方符号，只修补解释器路径，通过 wrapper 提供 C++ 库；当前自动重写
+RUNPATH 会导致这个非 PIE 二进制在加载器中崩溃。该运行时仅供 DSH-X 使用。
 
 `--unset APPIMAGE` / `--unset APPDIR` 让 electron-updater 的 AppImageUpdater 失效，
 避免它试图替换 store 路径；核心层仍可经 npm 更新到可写的 `~/.config/DSH`。
@@ -76,6 +83,7 @@ DSH-X 的默认目录与现有 profile 相关位置如下；共享目录不等�
 
 ```bash
 nix build path:.#dsh-x -L --no-link --print-out-paths
+nix build path:.#dsh-x-node -L --no-link --print-out-paths
 nix build path:.#mnemon -L --no-link --print-out-paths
 nix flake check path:. --no-build
 nixos-rebuild dry-build --flake path:.
@@ -83,6 +91,11 @@ nixos-rebuild dry-build --flake path:.
 
 `dsh-x --version` 可能触发核心下载，因此并非无副作用的版本检查；本次未运行该命令。
 核心下载成功后，安装版使用 `~/.config/DSH/core/current`。
+
+原生依赖验证应包含 sharp 的 PNG 编码、元数据读取、`node-pty` 的终端读写，以及
+`node-addon-require-builtin` 的内部模块读取；
+仅验证 `require('sharp')` 成功不足以排除后台线程崩溃。上述构建和 dry-build 不应用配置，
+完整桌面与会话行为需在手动应用、彻底退出旧启动器并重新启动后确认。
 
 ## 与容器版的关系
 
@@ -97,6 +110,7 @@ nixos-rebuild dry-build --flake path:.
 | 找不到启动器或 Mnemon | 确认已手动应用配置；先用上面的独立构建命令检查包 |
 | 下载核心失败 | 检查网络与用户目录写权限；不要尝试写入 Nix store |
 | 原生 Node 插件加载失败 | 核对插件二进制与宿主运行环境是否兼容，保留容器回退；不要同时启动同一 profile |
+| sharp 在图像元数据读取时崩溃 | 确认已使用修复后的包并彻底重启启动器；核心应由 Nix 的 `node` 运行，而非 `lib/dsh-x/DSH`；升级后重做原生 sharp 测试 |
 | 找不到语言服务器 | 确认新配置已应用，并从宿主终端检查对应命令是否在 PATH |
 
 ## 相关链接

@@ -112,6 +112,7 @@
         herdr-app = pkgs.callPackage ./local-deriv/herdr-app.nix { };
         herdr-core = pkgs.callPackage ./local-deriv/herdr-core.nix { };
         dsh-x = pkgs.callPackage ./local-deriv/dsh-x.nix { };
+        dsh-x-node = inputs.self.packages.${system}.dsh-x.runtimeNode;
         mnemon = pkgs.callPackage ./local-deriv/mnemon.nix { };
         agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };
         opencli = pkgs.callPackage ./local-deriv/opencli.nix { };

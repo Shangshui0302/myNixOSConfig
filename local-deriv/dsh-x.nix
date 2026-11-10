@@ -2,6 +2,7 @@
   lib,
   stdenv,
   stdenvNoCC,
+  callPackage,
   fetchurl,
   appimageTools,
   autoPatchelfHook,
@@ -11,9 +12,7 @@
   wrapGAppsHook3,
   imagemagick,
   alsa-lib,
-  at-spi2-atk,
   at-spi2-core,
-  atk,
   cairo,
   cups,
   dbus,
@@ -34,7 +33,6 @@
   libxrandr,
   nspr,
   nss,
-  nodejs_24,
   pango,
   pnpm,
   systemd,
@@ -43,6 +41,7 @@
 let
   pname = "dsh-x";
   version = "0.1.26-rc.5";
+  runtimeNode = callPackage ./dsh-x-node.nix { };
 
   src = fetchurl {
     url = "https://github.com/yyh-001/DSH-X/releases/download/v${version}/DSH-X-${version}-x86_64.AppImage";
@@ -78,9 +77,7 @@ stdenvNoCC.mkDerivation {
   # compatibility libraries.
   buildInputs = [
     alsa-lib
-    at-spi2-atk
     at-spi2-core
-    atk
     cairo
     cups
     dbus
@@ -103,15 +100,10 @@ stdenvNoCC.mkDerivation {
     libxcb
   ];
 
-  # Chromium keyring backend, ANGLE's libGL.so.1 dlopen target, and libstdc++.
-  # The last one is not a NEEDED entry of the Electron binary itself (it links
-  # only libgcc_s), but dsh's native addons — node-addon-require-builtin and
-  # friends, loaded into the Electron process — do need libstdc++.so.6. Without
-  # it in the RUNPATH those addons fail with "No usable native binding found".
+  # Chromium keyring backend and ANGLE's libGL.so.1 dlopen target.
   runtimeDependencies = [
     libsecret
     libGL
-    stdenv.cc.cc.lib
   ];
 
   # The AppImage bundles a GTK2-era AppIndicator compatibility layer
@@ -176,24 +168,29 @@ stdenvNoCC.mkDerivation {
     # the user's PATH for node and pnpm; dsh plugin forwards to pnpm inside the
     # profile directory, so both must be reachable from the wrapper.
     #
-    # LD_LIBRARY_PATH carries libstdc++ for the native addons. RUNPATH alone is
-    # not enough: the .node files have no RUNPATH of their own, so dlopen
-    # resolves their NEEDED entries against the main program's RUNPATH only for
-    # that program's own direct dependencies — not transitively for a
-    # dlopen'd object. Without this, loading node-addon-require-builtin fails
-    # with "libstdc++.so.6: cannot open shared object file".
+    # Some downloaded native addons have no library search path. Pass
+    # libstdc++ through the inherited environment: the main executable's
+    # RUNPATH does not cover those addons' transitive dependencies.
+    #
+    # Electron's system GLib conflicts with sharp's bundled GLib on Linux.
+    # Use upstream's runtime override so the DSH core and its generated shims
+    # run under ordinary Node, while the desktop shell stays in Electron.
+    # https://sharp.pixelplumbing.com/install/#electron-and-linux
     makeWrapper "$out/lib/${pname}/DSH" "$out/bin/${pname}" \
       "''${gappsWrapperArgs[@]}" \
       --prefix PATH : ${
         lib.makeBinPath [
-          nodejs_24
+          runtimeNode
           pnpm
         ]
       } \
+      --set DSH_RUNTIME_NODE ${lib.getExe runtimeNode} \
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ stdenv.cc.cc.lib ]} \
       --unset APPIMAGE \
       --unset APPDIR
   '';
+
+  passthru.runtimeNode = runtimeNode;
 
   meta = {
     description = "Desktop launcher for DeepSeek Harness: launch entries, versions, plugins, MCP and skills";

@@ -30,7 +30,7 @@ in
     # DSH-X launcher: provides a host-native alternative to the Arch container.
     # It reads the same ~/.dsh (DSH_HOME) and web profile, and its
     # core layer updates through npm into ~/.config/DSH, so the store stays
-    # read-only. pnpm and nodejs_24 are in the wrapper PATH because
+    # read-only. Its wrapper provides a compatible Node runtime and pnpm;
     # `dsh plugin` forwards to pnpm inside the profile directory.
     dsh-x
     mnemon
