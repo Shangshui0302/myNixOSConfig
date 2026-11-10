@@ -62,7 +62,7 @@ docs:
     memory:  []
 
   productivity/office.md:
-    sources: [host/base/input-method.nix, home/productivity/office.nix, host/base/nix.nix, flake.lock]
+    sources: [host/base/input-method.nix, home/productivity/office.nix, host/base/nix.nix, flake.lock, flake.nix, local-deriv/agentero.nix]
     memory:  []
   productivity/graphics.md:
     sources: [home/productivity/graphics.nix, home/leisure/player.nix]
