@@ -33,6 +33,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     runHook preInstall
 
     install -Dm755 bin/node "$out/libexec/node"
+    mkdir -p "$out/lib/node_modules"
+    cp -a lib/node_modules/npm "$out/lib/node_modules/"
     install -Dm644 LICENSE "$out/share/licenses/${finalAttrs.pname}/LICENSE"
 
     runHook postInstall
@@ -41,12 +43,20 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   postFixup = ''
     patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} "$out/libexec/node"
     makeWrapper "$out/libexec/node" "$out/bin/node" \
+      --prefix PATH : "$out/bin" \
       --prefix LD_LIBRARY_PATH : ${
         lib.makeLibraryPath [
           stdenv.cc.cc.lib
           stdenv.cc.cc.libgcc
         ]
       }
+
+    # The generated dsh entrypoint also runs this wrapper outside DSH-X.
+    # Keep npm/npx and their lifecycle scripts on the same Node runtime.
+    makeWrapper "$out/bin/node" "$out/bin/npm" \
+      --add-flags "$out/lib/node_modules/npm/bin/npm-cli.js"
+    makeWrapper "$out/bin/node" "$out/bin/npx" \
+      --add-flags "$out/lib/node_modules/npm/bin/npx-cli.js"
   '';
 
   # Catch loader failures in the packaged executable, after interpreter fixup.
@@ -54,6 +64,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   installCheckPhase = ''
     runHook preInstallCheck
     "$out/bin/node" --version
+    "$out/bin/npm" --version
+    "$out/bin/npx" --version
     runHook postInstallCheck
   '';
 

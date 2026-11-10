@@ -134,6 +134,30 @@ stdenvNoCC.mkDerivation {
     substituteInPlace "$out/lib/${pname}/resources/app/shell/core-fetch.mjs" \
       --replace-fail "return '/usr/bin/tar'" "return '${lib.getExe' gnutar "tar"}'"
 
+    install -m644 ${./dsh-x/runtime-hooks.mjs} \
+      "$out/lib/${pname}/resources/app/shell/nix-runtime.mjs"
+    substituteInPlace "$out/lib/${pname}/resources/app/shell/main.mjs" \
+      --replace-fail "import './env.mjs'" \
+        "import './env.mjs'
+    import { installCoreRuntimeHooks } from './nix-runtime.mjs'" \
+      --replace-fail '  let core
+      try {' \
+        "  const runtimeHooks = installCoreRuntimeHooks(coreDir, '$out/bin/${pname}')
+      let core
+      try {" \
+      --replace-fail '    // 用户目录里的核心坏到加载不了' \
+        "    if (error?.code === 'DSH_NIX_RUNTIME_INCOMPATIBLE') {
+          showStartupError('Nix 运行时适配失败', '请更新 DSH-X 的 Nix 包后重试。', error.message)
+          return
+        }
+        // 用户目录里的核心坏到加载不了" \
+      --replace-fail '  }
+      server = core' \
+        '  } finally {
+        runtimeHooks.deregister()
+      }
+      server = core'
+
     # The AppImage only ships 512x512; install indexed sizes for the panel and
     # launcher, which do not read arbitrary hicolor sizes on every shell.
     for size in 16 32 48 64 128 256; do
@@ -191,6 +215,17 @@ stdenvNoCC.mkDerivation {
   '';
 
   passthru.runtimeNode = runtimeNode;
+
+  doInstallCheck = true;
+  nativeInstallCheckInputs = [ runtimeNode ];
+  installCheckPhase = ''
+    runHook preInstallCheck
+    node --check "$out/lib/${pname}/resources/app/shell/main.mjs"
+    DSH_NIX_RUNTIME_HOOKS="$out/lib/${pname}/resources/app/shell/nix-runtime.mjs" \
+      DSH_NIX_SHELL_MAIN="$out/lib/${pname}/resources/app/shell/main.mjs" \
+      node --test ${./dsh-x/runtime-hooks.test.mjs}
+    runHook postInstallCheck
+  '';
 
   meta = {
     description = "Desktop launcher for DeepSeek Harness: launch entries, versions, plugins, MCP and skills";
