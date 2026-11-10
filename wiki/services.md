@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, sub-store, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-11-04
+updated: 2026-11-10
 ---
 
 # 系统服务
@@ -66,11 +66,14 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 
 `host/base/services.nix`：
 
-- `services.pipewire` 启用，并开 PulseAudio 兼容、ALSA（含 32 位）与 JACK，作为统一音频后端。
+- `services.pipewire` 启用，并开 PulseAudio 兼容与 ALSA（含 32 位），作为统一音频后端。
+- JACK 程序用 `pw-jack <程序> [参数]` 启动，仅为该进程及其子进程设置兼容库路径；
+  不再使用已弃用的 `services.pipewire.jack.enable` 注入全局 `LD_LIBRARY_PATH`。
+  应用配置后重新登录，让旧会话中的全局库路径退出环境。
 - `hardware.bluetooth` 启用且 `powerOnBoot`，开机自动上电。
 - `services.printing`（CUPS）提供系统级打印。
 - `services.gvfs` 启用虚拟文件系统，配合 `ntfs3g` 挂载 NTFS。udiskie 仅在主 DE 启用；NextKDE 使用原生设备挂载机制。
-- `environment.systemPackages` 提供 `ntfs3g`。Strata 的 `bubblewrap` 和工具搜索路径由独立包提供，不再要求系统额外安装。
+- `environment.systemPackages` 提供 `ntfs3g` 和当前 PipeWire 包的 `jack` 输出（`pw-jack`）。Strata 的 `bubblewrap` 和工具搜索路径由独立包提供，不再要求系统额外安装。
 - `services.flatpak.enable` 提供用户级 Flatpak 的系统运行时；具体应用仍按主要用途放在对应的 Home Manager 模块。
 
 ## 电源与存储维护

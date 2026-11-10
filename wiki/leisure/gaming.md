@@ -2,7 +2,7 @@
 title: 游戏平台
 category: 娱乐
 tags: [steam, proton, gaming, amdgpu, libvirtd, flatpak, mangohud, bottles, wine]
-updated: 2026-11-02
+updated: 2026-11-10
 ---
 
 # 游戏平台
@@ -29,7 +29,7 @@ A --> H["home/leisure/player.nix<br/>OBS"]
 | Bottles（wineprefix） | `home/leisure/gaming.nix` | `bottles`（去沙箱警告弹窗） |
 | 32 位图形 + 视频加速 | `host/base/hardware.nix` | `enable32Bit` + `libva-vdpau-driver`、`libvdpau-va-gl` |
 | AMD GPU 驱动 | `host/base/hardware.nix` | amdgpu 内核模块与显示驱动 |
-| 音频/蓝牙手柄 | `host/base/services.nix` | PipeWire（Pulse/ALSA/JACK）+ 蓝牙开机自启 |
+| 音频/蓝牙手柄 | `host/base/services.nix` | PipeWire（Pulse/ALSA）+ 按需 `pw-jack` + 蓝牙开机自启 |
 | Flatpak 运行时 | `host/base/services.nix` | 为用户级 Flatpak 应用提供系统运行时 |
 | Windows 虚拟机 | `host/base/virtualization.nix` | libvirtd + 用户加入 `libvirtd` 组 |
 | 性能叠加 / 录制 | `home/leisure/gaming.nix`、`home/leisure/player.nix` | mangohud、obs-studio |
@@ -56,7 +56,7 @@ A --> H["home/leisure/player.nix<br/>OBS"]
 
 ## 音频与手柄
 
-- PipeWire 作为统一后端，兼容 PulseAudio、ALSA（含 32 位）与 JACK，覆盖大多数游戏与录音场景。
+- PipeWire 作为统一后端，兼容 PulseAudio 与 ALSA（含 32 位）；使用 JACK 的录音程序通过 `pw-jack <程序>` 启动。
 - 蓝牙 `powerOnBoot`，便于无线手柄开机即连。
 - Steam 内置「控制器配置」可完成按键映射与校准，支持 Xbox、PlayStation、Switch Pro 等通用 HID 手柄。
 

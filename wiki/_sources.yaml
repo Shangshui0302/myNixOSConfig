@@ -30,7 +30,7 @@ docs:
     sources: [flake.nix, flake.lock, host/base/input-method.nix, checks/default.nix, scripts/check-repo-structure.py, tests, host/base/nix.nix, host/base/home-manager.nix, host/default.nix]
     memory:  [flake-unstable-strategy]
   architecture/host.md:
-    sources: [host/default.nix, host/base/default.nix, host/de/sessions.nix, host/base/boot.nix, host/base/hardware.nix, host/base/compat.nix, host/de/greeter.nix, host/base/users.nix, host/base/locale.nix]
+    sources: [host/default.nix, host/base/default.nix, host/de/sessions.nix, host/base/boot.nix, host/base/hardware.nix, host/base/compat.nix, host/de/greeter.nix, host/base/users.nix, host/base/locale.nix, host/base/services.nix]
     memory:  [amd-kernel-stay-lts, mechrevo-amd-backlight-curve, greetd-tuigreet-tty]
 
   desktop/hyprland.md:
@@ -106,7 +106,7 @@ docs:
     sources: [host/base/gaming.nix, host/base/hardware.nix, host/base/services.nix, host/base/virtualization.nix, home/dev/containers.nix, home/leisure/gaming.nix, home/leisure/player.nix]
     memory:  [wine-frontends-nixpkgs-fhs]
   leisure/media.md:
-    sources: [home/leisure/player.nix, local-deriv/kmusic.nix, local-deriv/modernz.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/modernz.conf.tpl, local-deriv/netease-cloud-music-web-player.nix, home/leisure/browser.nix, home/leisure/default.nix]
+    sources: [home/leisure/player.nix, local-deriv/kmusic.nix, local-deriv/modernz.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/modernz.conf.tpl, local-deriv/netease-cloud-music-web-player.nix, home/leisure/browser.nix, home/leisure/default.nix, host/base/services.nix]
     memory:  []
 
   networking/mihomo.md:

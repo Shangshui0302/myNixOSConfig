@@ -2,7 +2,7 @@
 title: 媒体播放
 category: 娱乐
 tags: [mpv, modernz, matugen, media, pipewire, ani-cli, kazumi, go-musicfox, obs]
-updated: 2026-11-04
+updated: 2026-11-10
 ---
 
 # 媒体播放
@@ -22,7 +22,7 @@ N["netease-cloud-music-web-player.nix<br/>Electron 包装"]
 M["modernz.nix<br/>v0.3.3 数据/字体包"]
 end
 subgraph "系统服务"
-S["services.nix<br/>PipeWire(Pulse/ALSA/JACK), 蓝牙, gvfs"]
+S["services.nix<br/>PipeWire(Pulse/ALSA), pw-jack, 蓝牙, gvfs"]
 H["hardware.nix<br/>amdgpu"]
 end
 P --> N
@@ -58,7 +58,7 @@ Yazi 使用 `home/productivity/files.nix` 提供的 `ffmpegthumbnailer` 生成�
 
 ## 音频与硬件加速
 
-- PipeWire 是统一音频后端，兼容 PulseAudio、ALSA 与 JACK；蓝牙设备配对后可作为输出端。开箱即用，无需额外配置。
+- PipeWire 是统一音频后端，兼容 PulseAudio 与 ALSA；JACK 程序按需用 `pw-jack <程序>` 启动。蓝牙设备配对后可作为输出端。
 - 视频解码依赖 amdgpu 驱动与 VA-API。mpv 中可启用 `hwdec=auto` 走 GPU 硬件解码，遇黑屏/卡顿再回退软件解码对比测试。
 - 音效增强建议交由 PipeWire 插件（equalizer、spatializer）统一处理，关闭播放器内置音效以免冲突。
 

@@ -19,6 +19,7 @@ SSH 使用登录时启动的 OpenSSH agent，首次解锁后在代理运行期�
 | 变体 | NextKDE specialisation（Plasma Wayland + SDDM） |
 | Shell | fish、bash/ble.sh、Starship、zellij |
 | 终端 | Foot，由 Home Manager 管理，半透明背景与合成器模糊 |
+| 音频 | PipeWire（PulseAudio/ALSA）；JACK 程序按需通过 `pw-jack` 启动 |
 | 文件夹默认打开 | 主桌面 Strata；NextKDE 变体 Dolphin |
 | AI 工具 | Codex、Copilot CLI、Kiro CLI 与 Antigravity CLI、Antigravity 2.0 Agents 界面；Paseo 跨设备工作区、Herdr 桌面版与终端代理管理；AO 自主开发协作与 Arch DSH 桥接；Agentero AI 文档工作区；Agent Reach 与 OpenCLI 平台访问工具；Token Monitor 由 Arch 安装并通过 Distrobox 导出 |
 | 电子书与资料 | Zotero 文献管理 |

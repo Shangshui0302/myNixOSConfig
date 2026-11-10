@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   security.rtkit.enable = true;
@@ -11,7 +11,6 @@
     pulse.enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
-    jack.enable = true;
   };
 
   hardware.bluetooth = {
@@ -57,7 +56,11 @@
 
   services.gvfs.enable = true;
 
-  environment.systemPackages = with pkgs; [ ntfs3g ];
+  environment.systemPackages = [
+    pkgs.ntfs3g
+    # Scope JACK's library path to clients launched with pw-jack.
+    config.services.pipewire.package.jack
+  ];
 
   boot.kernel.sysctl."fs.inotify.max_user_watches" = 524288;
 }
