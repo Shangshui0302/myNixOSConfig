@@ -4,6 +4,8 @@ let
   codexDesktop = inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop;
   agentReach = pkgs.callPackage ../../local-deriv/agent-reach.nix { };
   opencli = pkgs.callPackage ../../local-deriv/opencli.nix { };
+  dsh-x = pkgs.callPackage ../../local-deriv/dsh-x.nix { };
+  mnemon = pkgs.callPackage ../../local-deriv/mnemon.nix { };
 in
 {
   imports = [
@@ -25,6 +27,13 @@ in
     agentReach
     opencli
     mcporter
+    # DSH-X launcher: provides a host-native alternative to the Arch container.
+    # It reads the same ~/.dsh (DSH_HOME) and web profile, and its
+    # core layer updates through npm into ~/.config/DSH, so the store stays
+    # read-only. pnpm and nodejs_24 are in the wrapper PATH because
+    # `dsh plugin` forwards to pnpm inside the profile directory.
+    dsh-x
+    mnemon
   ];
 
   # Start the desktop app once the graphical session processes XDG autostart.

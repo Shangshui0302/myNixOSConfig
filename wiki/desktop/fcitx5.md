@@ -2,7 +2,7 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, wetypex, 输入法, wayland, 深色模式]
-updated: 2026-11-02
+updated: 2026-11-09
 ---
 
 # Fcitx5 输入法框架
@@ -58,7 +58,7 @@ journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
 
 ### WeTypeX 首次使用
 
-[WeTypeX](https://github.com/panxuc/fcitx5-wetypex) 是社区兼容层。本仓库通过 `wetypex` flake input 使用上游包定义，具体提交由 `flake.lock` 锁定，当前版本为 `2.2.3.657-13`。仅支持 Linux x86_64；本机 Ryzen 7 8845HS 满足要求。本机选项在 `host/base/input-method.nix` 中通过上游包的 `.override` 设置，不再维护本地包定义或补丁。`nix build path:.#fcitx5-wetypex` 构建上游默认包；系统实际使用的包包含本机的选项覆盖。
+[WeTypeX](https://github.com/panxuc/fcitx5-wetypex) 是社区兼容层。本仓库通过 `wetypex` flake input 使用上游包定义，`flake.lock` 锁定提交 `f930cd3`，包版本为 `2.2.3.657-17`。上游 `v2.2.3.657-17` 包含 [#56](https://github.com/panxuc/fcitx5-wetypex/pull/56)（默认关闭的中英/数字自动加空格）、[#60](https://github.com/panxuc/fcitx5-wetypex/pull/60)（V 前缀输入、日期候选顺序与输入状态反馈修复）和 [#61](https://github.com/panxuc/fcitx5-wetypex/pull/61)（五笔自动上屏与混输修复）；[#65](https://github.com/panxuc/fcitx5-wetypex/pull/65) 的 GNOME Wayland/IBus 成对标点光标修复在该标签之后合入，包修订号未再递增。仅支持 Linux x86_64；本机 Ryzen 7 8845HS 满足要求。本机选项在 `host/base/input-method.nix` 中通过上游包的 `.override` 设置，不再维护本地包定义或补丁。`nix build path:.#fcitx5-wetypex` 构建上游默认包；系统实际使用的包包含本机的选项覆盖。
 
 Nix 安装 Fcitx5 插件、设置界面和引擎宿主。腾讯原版引擎、词典和界面资源由用户在首次使用时获取，初始化器会校验固定版本与哈希。先由用户应用包含该包的 NixOS 配置，再在本人接受微信输入法上游许可后执行：
 
