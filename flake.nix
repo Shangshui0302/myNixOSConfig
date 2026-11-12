@@ -109,6 +109,7 @@
           inherit agentOrchestrator;
         };
         agentero = pkgs.callPackage ./local-deriv/agentero.nix { };
+        digup = pkgs.callPackage ./local-deriv/digup.nix { };
         herdr-app = pkgs.callPackage ./local-deriv/herdr-app.nix { };
         herdr-core = pkgs.callPackage ./local-deriv/herdr-core.nix { };
         dsh-x = pkgs.callPackage ./local-deriv/dsh-x.nix { };

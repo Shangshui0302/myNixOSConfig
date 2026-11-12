@@ -21,6 +21,7 @@ in
       unzip
       ffmpegthumbnailer
       dragon-drop
+      (pkgs.callPackage ../../local-deriv/digup.nix { })
     ]
     ++ lib.optionals mainDesktop [
       kdePackages.dolphin
