@@ -29,9 +29,9 @@ Hyprland 的 shell 相关快捷键经 `desktop-shell-action` 按 active service 
 
 ### 图形授权窗口
 
-需要管理员授权的图形操作由 `hyprpolkitagent` 提示。认证窗口作为浮动窗口居中显示，并使用 Hyprland 窗口圆角、缩放与淡入淡出动画。agent 随图形会话常驻，切换 Noctalia / Caelestia 时不随 Shell 停止；认证由 PAM 处理，人脸失败后应回退到密码提示。认证窗口的 Qt Widgets 使用 WhiteSur/Kvantum，Qt Quick 控件保留上游 Hyprland 样式；实际弹窗外观、动画与认证交互仍需人工验收，见[系统服务](../services.md#权限与安全)。
+需要管理员授权的图形操作由 KDE 官方 `polkit-kde-agent-1` 提示。认证窗口浮动居中，保留 Hyprland 圆角和入场动画；`plasma-polkit-agent.service` 随图形会话常驻，切换 Noctalia / Caelestia 不会停止它。Howdy/PAM 继续提供扫脸与密码回退，提示消息由标准认证库解码。外观使用现有 Qt/Kirigami 主题，不再生成 hyprtoolkit 专属配色或维护代理源码补丁。实际缩放、中文提示和认证交互仍需 rebuild 后人工验收，见[系统服务](../services.md#权限与安全)。
 
-窗口规则精确匹配标题 `Hyprland Polkit Agent`。锁定的 Qt 6.11.2 会从 Nix 包隐藏可执行文件名推导出空 app_id，不能用猜测的 class 匹配；上游显式设置的应用名则会成为 Wayland 标题。升级 agent 或 Qt 后应重新核对。新增规则与现有动画曲线已通过 Hyprland 0.56.2 的独立配置校验；完整配置在该校验模式下缺少插件注册项，因此此结果不代表整个桌面的运行验证。
+窗口规则精确匹配 KDE 应用标识 `org.kde.polkit-kde-authentication-agent-1`。完整配置依赖插件注册项，独立候选规则校验不代表整个桌面的运行验证。
 
 ## 基本概念
 

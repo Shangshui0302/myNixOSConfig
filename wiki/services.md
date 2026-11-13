@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, sub-store, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-11-10
+updated: 2026-11-13
 ---
 
 # 系统服务
@@ -207,21 +207,24 @@ TLP 日志里那句 `Setting battery charge thresholds...done.` 是通用输出�
 
 ## 生物识别 Howdy
 
-`services.howdy` 启用 IR 红外人脸解锁，摄像头设备 `/dev/video2`，格式 `v4l2`，`dark_threshold = 100`。基础层通过 `security.pam.services` 以 `sufficient` 控制集成到 sudo / su / login，主 DE 专属的 greetd / noctalia 由 `host/de/greeter.nix` 接入。PAM 细节见 [PAM 认证](security/pam.md)。
+`services.howdy` 启用 IR 红外人脸解锁，摄像头使用稳定路径 `/dev/v4l/by-path/pci-0000:64:00.4-usb-0:1:1.2-video-index0`，格式 `v4l2`，`dark_threshold = 100`。路径配置在 `settings.video.device_path`；本机 RGB 与 IR 接口共享 `by-id` 名称，因此使用区分接口的 `by-path`。基础层通过 `security.pam.services` 以 `sufficient` 控制集成到 sudo / su / login，主 DE 专属的 greetd / noctalia 由 `host/de/greeter.nix` 接入。PAM 细节见 [PAM 认证](security/pam.md)。
 
 Howdy 专用的 OpenCV 保留 GTK 测试窗口与 V4L2 摄像头支持，只关闭未使用的 VTK 三维可视化依赖。此设置位于 `host/base/services.nix` 的 `services.howdy.package`，不改变其他应用使用的 OpenCV，也不改变 PAM 认证规则。
 
 ## 权限与安全
 
 - `security.polkit` 启用，主 DE 会话在 `host/de/greeter.nix` 添加规则允许 `wheel` 组用户应用 Noctalia 外观（`org.noctalia.greeter.apply-appearance`）。
-- 图形程序请求管理员授权时，由主桌面会话中的 `hyprpolkitagent` 显示认证窗口；它属于 `graphical-session.target`，Noctalia 与 Caelestia 切换时继续由同一个会话服务提供提示。Noctalia 自带的 polkit agent 已关闭，避免重复弹窗。
-- polkit-1 的 PAM 服务在主桌面变体接入 Howdy：人脸识别成功可直接授权，识别失败时继续显示密码认证。此设置不等同于 sudo 的认证规则。
+- 图形程序请求管理员授权时，由官方 `polkit-kde-agent-1` 显示认证窗口。Home Manager 在 `home/de/polkit.nix` 定义 `plasma-polkit-agent.service`，随 `graphical-session.target` 启停；Noctalia 与 Caelestia 切换不影响它。Noctalia 内置代理保持关闭，同一会话只运行一个认证代理。
+- polkit-1 的 PAM 服务继续接入 Howdy：先尝试人脸，失败后回退到密码。`core.detection_notice` 保留识别过程提示；KDE 代理通过标准 PolkitQt/libpolkit-agent 接收并解码 PAM 消息，界面使用 KDE 自带翻译，不自定义认证文案或扫脸动画。
+- 外观沿用主桌面的 Qt/Kirigami 主题，使用现有 qtct/Kvantum 与 WhiteSur 深浅配置；代理仅在自己的服务中取消 `QT_STYLE_OVERRIDE`（它的优先级高于 Qt Quick 设置），再通过官方环境变量 `QT_QUICK_CONTROLS_STYLE=org.kde.desktop` 明确选择 KDE 的 Qt Quick 控件样式，避免把 QWidget 的 `kvantum` 当作 QML 模块加载；设置仅作用于该服务，最终外观需登录后检查。窗口由上游布局决定，Hyprland/niri 按 `org.kde.polkit-kde-authentication-agent-1` 匹配浮动规则。使用官方包，不维护代理源码补丁。
+- 主桌面的 polkit 认证辅助服务允许访问上述红外摄像头：关闭会隐藏摄像头的私有设备目录，保留上游严格设备白名单及其他保护，仅追加 Howdy 使用的设备读写权限。普通用户执行 `systemctl restart` 等受保护操作时，也会走这个授权入口。
+- 日常需要 root shell 时使用 `sudo -i`，验证当前用户，可使用其人脸模型；`su` 默认验证 root，没有 root 模型时输入 root 密码。sudo 与 polkit 的认证缓存相互独立。
 - `security.rtkit` 启用，提升实时音频任务优先级。
 - 普通用户的 sudo 免密白名单在 `host/base/users.nix`，仅保留 `/run/current-system/sw/bin/nixos-rebuild`；`nix` 与通用文件操作使用常规 sudo 认证。重建入口仍有完整系统维护能力，作为用户明确保留的例外。
 
-配置已于 2026-10-13 构建并应用到第 697 代；已核验 hyprpolkitagent 正常运行、Noctalia 内置代理关闭、活动 PAM 的 Howdy 为 sufficient。真实交互仍需人工回归：注销并重新登录，再检查会话中只有一个 polkit agent；分别测试 Noctalia 与 Caelestia 切换后发起 GUI 授权、人脸识别失败后的密码回退、正确/错误密码、取消授权，以及深浅主题变化。认证窗口中的密码应由用户亲自输入；不要把真实认证或密码输入作为自动化检查。
+2026-11-13 的摄像头路径与设备访问配置已在真实请求中记录 Howdy `Login approved`；随后观察到旧 hyprpolkitagent 的崩溃、分数缩放文字截断和中文 PAM 提示未解码问题，因此改用 KDE 官方代理。PAM 认证策略与 sudo 规则保持原样。KDE 代理应用后，15:02 的真实请求已确认扫脸超时、中文密码提示解码及密码回退授权成功；KDE 代理下的扫脸成功、取消和主题切换仍需分别验收。
 
-当前已通过 Nix 解析、flake 结构检查、完整系统构建、dry-activate 与 switch；应用后系统和用户服务均无失败单元。隔离 libpam 测试使用模拟的人脸/密码结果，确认人脸失败后正确密码可通过、两者失败则拒绝；这不等于摄像头或真实密码认证已经验收。当前 polkit 管理员身份来自 `wheel` 组，通常提示输入 `lishangshui` 的用户密码，具体以窗口显示的认证身份为准。
+配置切换后检查 `systemctl --user status plasma-polkit-agent`，确认旧 hyprpolkitagent 已退出；若旧会话未完成服务交接，注销并重新登录。手动测试 `pkexec /run/current-system/sw/bin/true` 的扫脸成功、遮挡摄像头后的密码回退、取消授权，以及 1.5 倍缩放下的中文提示和长说明。密码必须由用户亲自输入；静态验证不等于真实认证验收。当前管理员身份来自 `wheel` 组，具体认证账户以弹窗显示为准。
 
 ## 常用命令
 
@@ -241,7 +244,10 @@ nmcli device status               # 网络连接状态
 - **蓝牙不可用**：确认蓝牙启用且 `powerOnBoot`，检查设备节点与权限。
 - **电源管理异常**：`tlp-stat -s` 看模式与电源、`tlp-stat -c` 看有效配置，`systemctl status tlp` 看服务；`upower` 只管电池状态。
 - **Howdy 无法识别**：确认视频设备路径、PAM 集成与摄像头可用性。
-- **GUI 授权没有认证窗口**：确认当前图形会话中 `hyprpolkitagent` 正在运行，并检查 PAM 的 `polkit-1` 服务；shell 切换不应停止该会话服务。
+- **sudo 扫脸正常，GUI 只要求密码**：检查 `journalctl -b -t pam_howdy`；若出现 `not possible to open camera`，检查 `systemctl cat polkit-agent-helper@.service` 的设备隔离及放行路径，并确认 `/etc/howdy/config.ini` 的 `[video]` 指向同一个红外设备。无需重新录入人脸来处理设备访问失败。
+- **扫脸成功却报 `Not authorized`**：同时检查 `journalctl -b -t pam_howdy` 和 `journalctl --user -b -u plasma-polkit-agent`。若仍看到旧 hyprpolkitagent 弹窗或其崩溃日志，先确认配置已应用、旧代理已退出；不要以放宽授权规则处理界面故障。
+- **KDE 代理报 `module "kvantum" is not installed`**：这是 Qt Quick 样式选择错误，弹窗加载失败可导致代理崩溃和 `Not authorized`，请求尚未进入人脸认证。检查 `systemctl --user show plasma-polkit-agent -p Environment` 是否包含 `QT_QUICK_CONTROLS_STYLE=org.kde.desktop`，并用 `systemctl --user show plasma-polkit-agent -p UnsetEnvironment` 确认排除了 `QT_STYLE_OVERRIDE`；修改由 Home Manager 管理的服务配置并应用，不要修改 PAM 或授权规则。
+- **GUI 授权没有认证窗口**：确认当前图形会话中 `plasma-polkit-agent.service` 正在运行，并检查 PAM 的 `polkit-1` 服务；shell 切换不应停止该会话服务。
 - **构建 Howdy 时 VTK 报 `Could not find the PEGTL external dependency`**：Howdy 的包定制关闭其不需要的 VTK 依赖以避开此故障；无需在宿主机额外安装 PEGTL。后续升级 nixpkgs 时，先验证默认包能否构建，再决定是否移除此定制。检查时构建实际服务包：`nix build path:.#nixosConfigurations.MechRevo-NixOS.config.services.howdy.package --no-link -L`。
 
 ## 相关链接

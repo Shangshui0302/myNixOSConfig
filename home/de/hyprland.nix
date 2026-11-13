@@ -356,10 +356,8 @@ in
           opacity = "1 override 1 override";
         }
         {
-          name = "hyprpolkitagent-dialog";
-          # Qt 6 derives an empty app_id from Nix's hidden wrapped executable.
-          # Its Wayland title falls back to the agent's explicit application name.
-          match.title = "^Hyprland Polkit Agent$";
+          name = "kde-polkit-dialog";
+          match.class = "^org\\.kde\\.polkit-kde-authentication-agent-1$";
           float = true;
           center = true;
           rounding = 15;

@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   ...
@@ -35,6 +36,13 @@
   security.pam.services.polkit-1.howdy = {
     enable = true;
     control = "sufficient";
+  };
+
+  # Polkit 127 isolates physical devices from PAM helpers. Expose Howdy's IR
+  # camera while retaining the upstream strict device policy and other hardening.
+  systemd.services."polkit-agent-helper@".serviceConfig = {
+    PrivateDevices = false;
+    DeviceAllow = [ "${config.services.howdy.settings.video.device_path} rw" ];
   };
 
   xdg.portal = {

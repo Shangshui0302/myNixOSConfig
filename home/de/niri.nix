@@ -108,7 +108,7 @@
       }
       // 新浮动窗口默认居中；不复制 Hyprland 专有的 animation/override 语法。
       window-rule {
-          match title="^Hyprland Polkit Agent$"
+          match app-id="^org\\.kde\\.polkit-kde-authentication-agent-1$"
           open-floating true
           opacity 0.96
       }
