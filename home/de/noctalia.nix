@@ -484,7 +484,7 @@ in
         font_family = "Source Serif 4";
         launch_apps_as_systemd_services = true;
         password_style = "random";
-        # A session-owned hyprpolkitagent also serves Caelestia after switching.
+        # The session-owned KDE polkit agent also serves Caelestia after switching.
         polkit_agent = false;
         screen_time_enabled = true;
         settings_show_advanced = true;

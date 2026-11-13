@@ -2,7 +2,7 @@
 title: PAM — 可插拔认证模块
 category: 安全
 tags: [pam, authentication, security, login, sudo, keyring]
-updated: 2026-11-04
+updated: 2026-11-13
 ---
 # PAM — 可插拔认证模块
 
@@ -60,7 +60,11 @@ PAM 的核心思想是**分离策略和机制**：
 
 ## 我们的 PAM 配置
 
-主桌面会话还为 `polkit-1` 服务接入 Howdy。图形授权请求可先尝试人脸识别；`sufficient` 成功时认证通过，失败则继续到密码模块。此项位于 `host/de/sessions.nix`。桌面认证提示由会话级 `hyprpolkitagent` 显示，见[系统服务](../services.md#权限与安全)和 [Hyprland](../desktop/hyprland.md)。
+主桌面会话还为 `polkit-1` 服务接入 Howdy。图形授权请求可先尝试人脸识别；`sufficient` 成功时认证通过，失败则继续到密码模块。此项位于 `host/de/sessions.nix`。桌面认证提示由会话级 KDE 官方代理 `polkit-kde-agent-1` 显示，见[系统服务](../services.md#权限与安全)和 [Hyprland](../desktop/hyprland.md)。
+
+`host/base/services.nix` 开启 Howdy 的 `core.detection_notice`，通过 PAM 文本消息提示正在识别人脸；该全局设置也会让 sudo 等终端认证显示提示。KDE 代理通过 PolkitQt/libpolkit-agent 处理 PAM 会话与转义消息；密码回退仍由原有 PAM 链决定。
+
+`host/de/sessions.nix` 为 polkit 的认证辅助服务放行 Howdy 使用的红外摄像头，解决 polkit 127 私有设备目录导致的摄像头不可见问题。设备路径统一引用 `services.howdy.settings.video.device_path`，保留严格设备白名单与其余保护。
 
 ### 登录 (`/etc/pam.d/login`)
 
@@ -80,14 +84,17 @@ session    optional    pam_kwallet5.so force_run
 | `pam_systemd.so` (session)                  | 注册 systemd user session        |
 | `pam_kwallet5.so force_run` (session) | 为 TTY 会话启动钱包；图形会话仍需初始化助手      |
 
-### sudo (`/etc/pam.d/sudo`, NixOS 默认)
+### sudo (`/etc/pam.d/sudo`)
 
 ```text
+auth       sufficient   pam_howdy.so
 auth       sufficient   pam_unix.so   likeauth try_first_pass
-auth       sufficient   pam_rootok.so
+auth       required     pam_deny.so
 ```
 
 `host/base/users.nix` 仅对 `/run/current-system/sw/bin/nixos-rebuild` 保留 NOPASSWD。`nix` 和通用文件操作使用常规 sudo 认证，包括已配置的 Howdy 与密码回退。
+
+需要 root shell 时使用 `sudo -i`，认证对象是当前用户；`su` 默认认证目标账户 root，未录入 root 人脸时使用 root 密码。普通用户直接运行受保护的 `systemctl` 操作走 polkit，其授权状态不与 sudo 缓存共享。
 
 ### 人脸登录与 keyring 的矛盾
 
@@ -153,7 +160,11 @@ journalctl -b | grep -i pam
 
 ### polkit 人脸失败后没有密码提示
 
+若 KDE 代理日志报 `module "kvantum" is not installed`，先按[系统服务排查](../services.md#故障排查)修正 Qt Quick 样式；这属于弹窗加载故障，尚未进入 PAM。
+
 确认 `/etc/pam.d/polkit-1` 含 Howdy 与密码认证模块，并确认当前会话的 polkit agent 正常运行。更新配置后应重新登录完成回归验证；检查时由用户在授权窗口亲自输入密码。
+
+若 sudo 能扫脸而 polkit 只能使用密码，先查看 `journalctl -b -t pam_howdy`。`not possible to open camera` 表示摄像头访问失败：核对 `systemctl cat polkit-agent-helper@.service` 的 `PrivateDevices` 和 `DeviceAllow`，以及 `/etc/howdy/config.ini` 的 `[video] device_path`，不应把它当作人脸不匹配。2026-11-13 的修复需要在手动应用系统配置后验证真实扫脸及密码回退。
 
 ## 注意事项
 

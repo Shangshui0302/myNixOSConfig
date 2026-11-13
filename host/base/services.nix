@@ -38,10 +38,11 @@
       };
     };
     settings = {
-      core = {
-        device_path = "/dev/video2";
-      };
+      # PAM_TEXT_INFO lets polkit show face authentication before requesting a password.
+      core.detection_notice = true;
       video = {
+        # RGB and IR share a by-id name; by-path selects the internal IR interface.
+        device_path = "/dev/v4l/by-path/pci-0000:64:00.4-usb-0:1:1.2-video-index0";
         dark_threshold = 100;
         device_format = "v4l2";
       };
