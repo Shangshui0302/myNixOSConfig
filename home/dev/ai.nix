@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   codexDesktop = inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop;
@@ -11,6 +16,9 @@ in
   imports = [
     ./agent-orchestrator.nix
   ];
+
+  # DSH-X generates its CLI entry point outside the Nix store.
+  home.sessionPath = [ "${config.xdg.configHome}/DSH/bin" ];
 
   home.packages = with pkgs; [
     codex

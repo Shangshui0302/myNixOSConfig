@@ -1,5 +1,58 @@
 { pkgs, ... }:
 
+let
+  # Both shells read the same versioned DSH store without copying secrets into Nix.
+  dshApiKey =
+    pkgs.writers.writePython3 "dsh-api-key"
+      {
+        libraries = [ pkgs.python3Packages.ruamel-yaml ];
+      }
+      ''
+        import os
+        from pathlib import Path
+        import sys
+        import warnings
+
+        from ruamel.yaml import YAML
+        from ruamel.yaml.error import YAMLError
+
+        home = Path(os.environ.get("DSH_HOME") or Path.home() / ".dsh")
+        try:
+            stream = (home / ".credentials.yaml").open(encoding="utf-8")
+        except FileNotFoundError:
+            sys.exit(0)
+        except OSError:
+            sys.exit("DSH: cannot open credentials file; API key not exported.")
+
+        try:
+            with stream:
+                if os.fstat(stream.fileno()).st_mode & 0o077:
+                    raise ValueError("credentials permissions are not owner-only")
+                with warnings.catch_warnings():
+                    warnings.simplefilter("error")
+                    data = YAML(typ="safe").load(stream)
+            if data is None or data == {}:
+                sys.exit(0)
+            if not isinstance(data, dict) or type(data.get("version")) is not int:
+                raise ValueError("invalid credentials document")
+            if data["version"] != 1:
+                raise ValueError("unsupported credentials version")
+            refs = data.get("refs")
+            if refs is None:
+                sys.exit(0)
+            if not isinstance(refs, dict):
+                raise ValueError("invalid credential references")
+            if "DEEPSEEK_API_KEY" not in refs:
+                sys.exit(0)
+            key = refs["DEEPSEEK_API_KEY"]
+            if not isinstance(key, str) or not key or any(c in key for c in "\0\r\n"):
+                raise ValueError("invalid API key")
+        except (OSError, UnicodeError, YAMLError, ValueError, Warning):
+            # Parser messages may contain the secret-bearing source line.
+            sys.exit("DSH: cannot read credentials; check YAML and mode 600.")
+        print(key, end="")
+      '';
+in
 {
   programs.eza = {
     enable = true;
@@ -198,6 +251,14 @@
         export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
       fi
 
+      # headless profile 使用启动环境；保留用户已设置的值（包括空值）。
+      if [ -z "''${DEEPSEEK_API_KEY+x}" ]; then
+        if _dsh_key=$(${dshApiKey}) && [ -n "$_dsh_key" ]; then
+          export DEEPSEEK_API_KEY="$_dsh_key"
+        fi
+        unset _dsh_key
+      fi
+
       # ble.sh — 语法高亮、自动补全、Fish 风格建议
       source ${pkgs.blesh}/share/blesh/ble.sh
     '';
@@ -249,6 +310,13 @@
       # fish 问候
       set -g fish_greeting
 
+      # 与 Bash 共用凭据解析，保留已有环境变量。
+      if not set -q DEEPSEEK_API_KEY
+        set -l _dsh_key (${dshApiKey})
+        if test $status -eq 0; and test -n "$_dsh_key"
+          set -gx DEEPSEEK_API_KEY $_dsh_key
+        end
+      end
     '';
   };
 }

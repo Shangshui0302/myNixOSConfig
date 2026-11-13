@@ -84,7 +84,7 @@ docs:
     sources: [flake.nix, flake.lock, local-deriv/herdr-app.nix, local-deriv/herdr-core.nix, host/base/input-method.nix, home/dev/vscode.nix, home/dev/tools.nix, home/dev/ai.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
     memory:  [ai-tools-source]
   dev/dsh-x.md:
-    sources: [flake.nix, local-deriv/dsh-x.nix, local-deriv/dsh-x, local-deriv/dsh-x-node.nix, local-deriv/mnemon.nix, home/dev/ai.nix, home/dev/tools.nix]
+    sources: [flake.nix, local-deriv/dsh-x.nix, local-deriv/dsh-x, local-deriv/dsh-x-node.nix, local-deriv/mnemon.nix, home/dev/ai.nix, home/dev/tools.nix, home/env/shell/programs.nix]
     memory:  []
   dev/agent-orchestrator.md:
     sources: [flake.nix, flake.lock, home/dev/ai.nix, home/dev/agent-orchestrator.nix, local-deriv/agent-orchestrator.nix, local-deriv/agent-orchestrator, local-deriv/agent-orchestrator-distrobox.nix]

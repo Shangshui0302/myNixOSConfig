@@ -2,7 +2,7 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-11-02
+updated: 2026-11-13
 ---
 
 # Shell 环境指南
@@ -12,6 +12,9 @@ updated: 2026-11-02
 宿主和 Distrobox 容器共用 Fish 配置目录。`$HOME/.local/bin` 通过
 `fish_add_path --path` 加入当前进程的 PATH，避免将某个容器的路径持久写入
 共用的 `fish_user_paths`；详见 [Distrobox 的 Shell 配置](../dev/distrobox.md#shell-与-neovim-配置)。
+
+新的交互式 Bash/Fish 会为 DSH headless 读取已保存的 API key，保留已有环境变量，
+具体来源、权限要求和刷新方式见 [DSH 终端凭据](../dev/dsh-x.md#终端凭据)。
 
 ## Shell 选择
 

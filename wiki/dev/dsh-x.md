@@ -2,7 +2,7 @@
 title: DSH-X 桌面启动器
 category: 开发与工具
 tags: [dsh, electron, mnemon, lsp, nix]
-updated: 2026-11-10
+updated: 2026-11-13
 ---
 
 # DSH-X（DSH 桌面启动器）
@@ -15,6 +15,21 @@ Electron 启动器（[yyh-001/DSH-X](https://github.com/yyh-001/DSH-X)），负�
 
 手动应用包含本次改动的配置后，在应用启动器搜索 **DSH-X**，或运行 `dsh-x`。
 首次获取核心需要网络；本仓库不自动启动应用，也不迁移现有 profile 的原生依赖。
+
+`~/.config/DSH/bin` 由 Home Manager 加入用户 PATH，无须手改 Bash 或 Fish 配置。
+在 DSH-X 中启用「把 dsh 加到系统 PATH」以生成命令入口；应用 Nix 配置并重新登录后，
+运行 `command -v dsh` 检查是否指向该目录。仅配置 PATH 不会创建 `dsh` 文件。
+
+### 终端凭据
+
+当前 DSH 的 headless profile 使用启动环境中的凭据。新的交互式 Bash/Fish 会在
+`DEEPSEEK_API_KEY` 未设置时，从 `$DSH_HOME/.credentials.yaml`（默认
+`~/.dsh/.credentials.yaml`）读取 `version: 1` 下的 `refs.DEEPSEEK_API_KEY`，
+导出到当前终端及其后续子进程；已有值（包括显式空值）保持不变。
+
+凭据文件仅在运行时读取，不写入 Nix store 或 Git。文件须仅允许所有者访问（通常为
+`0600`）；文件或目标键不存在时跳过，权限、格式或读取错误会给出不含密钥的提示。
+修改已保存的密钥后打开新终端；现有终端的环境变量不会自动刷新。
 
 ## 宿主运行的边界
 

@@ -9,6 +9,7 @@ Chrome 与网易云网页版固定使用共享 KWallet 保存加密存储密钥�
 SSH 使用登录时启动的 OpenSSH agent，首次解锁后在代理运行期间复用密钥；见 [SSH 私钥解锁](wiki/desktop/keyring.md#ssh-私钥解锁)。
 
 [DSH-X](wiki/dev/dsh-x.md) 的桌面外壳使用 Electron，DSH 核心固定使用 Nix 提供的 Node 24（含 npm/npx），以避开 Linux 上 Electron 与 sharp 的 GLib 冲突。
+其命令入口目录 `~/.config/DSH/bin` 由 Home Manager 加入用户 PATH。
 登录自启和核心更新重启使用 Nix 启动入口，诊断卸载助手跟随专用 Node；适配不兼容时保留核心并明确报错。
 
 ## 当前系统
