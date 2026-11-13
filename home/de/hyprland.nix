@@ -338,6 +338,24 @@ in
 
       window_rule = [
         {
+          name = "digup-search-panel";
+          # The patched shell distinguishes the compact panel from the results window.
+          match = {
+            class = "^digup-shell$";
+            title = "^DigUp Search$";
+          };
+          float = true;
+          center = true;
+          # Let the client grow the panel with its results and draw its own corners.
+          border_size = 0;
+          rounding = 0;
+          no_shadow = true;
+          # CSS draws rounded corners; blurring the rectangular Wayland surface
+          # would leave blurred wedges in the transparent pixels outside them.
+          no_blur = true;
+          opacity = "1 override 1 override";
+        }
+        {
           name = "hyprpolkitagent-dialog";
           # Qt 6 derives an empty app_id from Nix's hidden wrapped executable.
           # Its Wayland title falls back to the agent's explicit application name.
@@ -662,6 +680,7 @@ in
       hl.bind("SUPER + SHIFT + PRINT", hl.dsp.exec_cmd("desktop-shell-action screenshot"), { description = "区域截图并复制" })
       hl.bind("SUPER + N", hl.dsp.exec_cmd("foot -e nvim"), { description = "Neovim（foot）" })
       hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"), { description = "Obsidian" })
+      hl.bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("digup-shell --toggle"), { description = "DigUp 内容搜索" })
       hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("desktop-shell-action launcher"), { description = "应用启动器" })
       hl.bind("SUPER + ALT + K", hl.dsp.exec_cmd("desktop-shell-action control"), { description = "控制中心" })
       hl.bind("SUPER + comma", hl.dsp.exec_cmd("desktop-shell-action settings"), { description = "设置面板" })

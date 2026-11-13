@@ -2,6 +2,10 @@
   lib,
   stdenv,
   fetchurl,
+  fetchFromGitHub,
+  rustPlatform,
+  pkg-config,
+  openssl,
   dpkg,
   autoPatchelfHook,
   wrapGAppsHook3,
@@ -18,12 +22,37 @@
   xdg-utils,
 }:
 
-# The release contains the Swift helper, patched llama.cpp, PDFium and FFmpeg.
-# Reuse that tested bundle; the upstream source build needs Swift 6.4 and several
-# separately vendored builds. GTK/WebKit and system libraries come from nixpkgs.
+let
+  version = "0.7.0-beta.3";
+  # Only the Rust/HTML interface needs the compositor patch. Keep the official
+  # Swift helper, llama.cpp, PDFium and FFmpeg from the matching release below.
+  shell = rustPlatform.buildRustPackage {
+    pname = "digup-shell";
+    inherit version;
+    src = fetchFromGitHub {
+      owner = "ARahim3";
+      repo = "DigUp";
+      tag = "v${version}";
+      hash = "sha256-KXMIA/eMLJrhPf31BwCj+RY3Rod9LbMG1wCmiLbsDGc=";
+    };
+    cargoRoot = "shell/src-tauri";
+    buildAndTestSubdir = "shell/src-tauri";
+    cargoHash = "sha256-k0ijjdZzwWb3M+Qbj5+ozQrzTOMljgz1RBGj4hCJL0E=";
+    patches = [ ./digup-compositor-panel.patch ];
+    buildFeatures = [ "tauri/custom-protocol" ];
+    nativeBuildInputs = [ pkg-config ];
+    buildInputs = [
+      gtk3
+      webkitgtk_4_1
+      openssl
+      libX11
+      libXi
+    ];
+  };
+in
 stdenv.mkDerivation (finalAttrs: {
   pname = "digup";
-  version = "0.7.0-beta.3";
+  inherit version;
 
   src = fetchurl {
     url = "https://github.com/ARahim3/DigUp/releases/download/v${finalAttrs.version}/DigUp_${finalAttrs.version}_amd64.deb";
@@ -61,6 +90,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
     mkdir -p $out
     cp -r usr/bin usr/lib usr/share $out/
+    install -m755 ${shell}/bin/digup-shell $out/bin/digup-shell
     substituteInPlace $out/share/applications/DigUp.desktop \
       --replace-fail 'Exec=digup-shell' "Exec=$out/bin/digup-shell"
     runHook postInstall
@@ -75,7 +105,10 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://github.com/ARahim3/DigUp";
     changelog = "https://github.com/ARahim3/DigUp/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
-    sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
+    sourceProvenance = [
+      lib.sourceTypes.fromSource
+      lib.sourceTypes.binaryNativeCode
+    ];
     platforms = [ "x86_64-linux" ];
     mainProgram = "digup-shell";
   };

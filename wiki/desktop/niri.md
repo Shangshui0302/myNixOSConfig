@@ -2,7 +2,7 @@
 title: Niri
 category: desktop
 tags: [wm, wayland, niri, scrolling-layout]
-updated: 2026-11-04
+updated: 2026-11-13
 ---
 
 # Niri 使用指南
@@ -38,6 +38,7 @@ Hyprland ↔ niri 切换：注销当前 compositor 回到 greetd → 选择另�
 | 键位 | 功能 |
 |------|------|
 | Mod+W / E / B / N / O | foot / strata / chrome / nvim / obsidian |
+| Mod+Shift+Space | DigUp 内容搜索（小面板浮动，大结果窗口平铺） |
 | Mod+Space / C / Alt+K / Comma | 启动器 / 剪贴板 / 控制中心 / 设置（按当前 Shell 分发） |
 | Mod+Shift+C / Shift+L | 删除剪贴板历史 / 锁屏；Noctalia 清空历史，Caelestia 选择条目删除 |
 | Mod+D / A / Alt+L / Shift+W | Caelestia 的 dashboard / sidebar / session / 面板总开关；Noctalia 不响应 |

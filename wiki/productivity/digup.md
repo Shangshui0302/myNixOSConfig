@@ -2,7 +2,7 @@
 title: DigUp 本地语义文件搜索
 category: 生产力
 tags: [digup, search, documents, wayland]
-updated: 2026-11-12
+updated: 2026-11-13
 ---
 
 # DigUp 本地语义文件搜索
@@ -35,11 +35,19 @@ digup-shell
 | 预览选中结果 | Space |
 | 在文件管理器显示 | Ctrl + Enter |
 | 打开较大的搜索窗口 | Ctrl + O |
-| 显示或隐藏搜索面板 | `digup-shell --toggle` |
+| 显示或隐藏搜索面板 | `Super + Shift + Space`（Hyprland / niri）；命令 `digup-shell --toggle` |
 
-Hyprland 和 niri 不由应用自动注册全局快捷键；需要时把 `digup-shell --toggle` 绑定到桌面快捷键。
-本次安装不修改现有按键。应用设置里显示的可执行路径也应使用公开的 `digup-shell` 入口，
-避免指向 Nix 包内部的隐藏程序，绕过 GTK 和媒体插件环境。
+Hyprland 和 niri 共用 `Super + Shift + Space`，直接调用公开的 `digup-shell --toggle` 入口，
+不依赖当前选择的 Noctalia / Caelestia。`Super + Space` 仍打开应用启动器，`Super + E` 仍打开 Strata。
+
+搜索面板单独浮动、初始居中，宽高由应用按搜索内容调整；不叠加桌面边框、圆角裁切和整窗透明度。
+Hyprland 关闭该面板的额外背景模糊，避免应用圆角外的透明区域出现方形模糊残影。
+`Ctrl + O` 打开的大结果窗口仍正常平铺。在主桌面中，`Ctrl + Enter` 通过 FileManager1 交给 Strata 定位文件。
+
+本地界面补丁把小面板标题设为 `DigUp Search`，与大窗口 `DigUp` 区分。
+Hyprland / niri 下由桌面规则定位紧凑面板，应用的“居中面板”设置不会再创建最大化透明载体；
+其他桌面继续沿用应用设置。不要给所有 DigUp 窗口统一添加浮动规则。
+配置及包更新后须退出旧 DigUp 进程再启动，新补丁才生效。
 
 Linux 与 Mac 的功能不完全相同；上游目前仅为 Mac 明确承诺截图文字 OCR 检索。
 PDF 的页码跳转、媒体的时间点跳转还取决于对应默认查看器是否支持。
@@ -62,7 +70,7 @@ Nix 包提供 Vulkan 加载库，GPU 驱动沿用本机系统配置。
 | 应用数据 | `~/.local/share/com.abdurrahim.DigUp/` |
 
 设置与数据由应用维护，不声明成 Home Manager 只读文件。
-本包复用官方 `.deb` 的程序、助手、图标和许可证，通过 Nix 修正加载路径；不运行 Debian 安装脚本。
+本包从同版本源码构建带窗口适配补丁的 Rust/HTML 界面；索引助手、模型运行库、图标和许可证复用官方 `.deb`，通过 Nix 修正加载路径，不运行 Debian 安装脚本。
 主程序使用锁定 nixpkgs 的 GTK、WebKit 和媒体插件，不需要 AppImage/FHS 环境。
 
 `.deb` 构建的应用内更新入口只提供新版本提示和发布页，不替换 Nix store 文件。

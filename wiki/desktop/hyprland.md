@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-11-04
+updated: 2026-11-13
 ---
 
 # Hyprland 使用指南
@@ -73,7 +73,7 @@ nixos-rebuild dry-build --flake path:.
 
 > `Super` = Win/Command 键
 
-**所有 91 条 `hl.bind` 都带 `{ description = "..." }`**：Noctalia 的键位速查面板读 `hyprctl binds` 的 `description` 字段，缺了就只有键位、没有功能说明。新增绑定时要保持这个习惯（`hl.bind(键, 动作, { description = "说明" })`；函数型写 `end, { description = "..." })`；已有 options 就合并进去，例如 `{ mouse = true, description = "..." }`）。
+**所有 `hl.bind` 都带 `{ description = "..." }`**：Noctalia 的键位速查面板读 `hyprctl binds` 的 `description` 字段，缺了就只有键位、没有功能说明。新增绑定时要保持这个习惯（`hl.bind(键, 动作, { description = "说明" })`；函数型写 `end, { description = "..." })`；已有 options 就合并进去，例如 `{ mouse = true, description = "..." }`）。
 自检：`hyprctl -j binds | jq '[.[] | select(.description)] | length'` 应等于绑定总数。
 
 ### 启动应用
@@ -85,6 +85,7 @@ nixos-rebuild dry-build --flake path:.
 | `Super + C` | 剪贴板历史（Noctalia 面板 / Caelestia 用 `cliphist`+`fuzzel`） |
 | `Super + Shift + C` | 删除剪贴板条目（Noctalia 清空历史 / Caelestia `cliphist delete`） |
 | `Super + Space` | 应用启动器（Noctalia / Caelestia） |
+| `Super + Shift + Space` | DigUp 内容搜索（小面板浮动，大结果窗口平铺） |
 | `Super + Alt + K` | 控制中心（Noctalia / Caelestia utilities） |
 | `Super + ,` | 设置面板（Noctalia / Caelestia Nexus） |
 | `Super + D` | dashboard（仅 Caelestia；Noctalia 下无响应） |

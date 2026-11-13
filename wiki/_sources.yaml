@@ -74,7 +74,7 @@ docs:
     sources: [home/productivity/yazi.nix, home/productivity/graphics.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/yazi-flavor.toml.tpl]
     memory:  []
   productivity/digup.md:
-    sources: [flake.nix, flake.lock, local-deriv/digup.nix, home/productivity/files.nix]
+    sources: [flake.nix, flake.lock, local-deriv/digup.nix, local-deriv/digup-compositor-panel.patch, home/productivity/files.nix, home/de/hyprland.nix, home/de/niri.nix]
     memory:  []
 
   dev/nvim.md:

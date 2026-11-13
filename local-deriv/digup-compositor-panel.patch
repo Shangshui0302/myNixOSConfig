@@ -1,0 +1,42 @@
+--- a/shell/src-tauri/src/main.rs
++++ b/shell/src-tauri/src/main.rs
+@@ -209,9 +209,20 @@
+         self.model_state.lock().unwrap()["state"] == "ready"
+     }
+ 
++    /// Tiling compositors place the compact panel through window rules instead of
++    /// a maximized transparent carrier. Hide the inapp centering option there too.
++    fn can_center_panel(&self) -> bool {
++        let compositor_places_panel = std::env::var("XDG_CURRENT_DESKTOP").is_ok_and(|desktops| {
++            desktops.split(':').any(|desktop| {
++                desktop.eq_ignore_ascii_case("Hyprland") || desktop.eq_ignore_ascii_case("niri")
++            })
++        });
++        self.wayland && !compositor_places_panel
++    }
++
+     /// The panel sits centered in a window that fills the screen (Settings, on Wayland only).
+     fn centers_panel(&self) -> bool {
+-        self.wayland && self.settings.lock().unwrap().center_panel
++        self.can_center_panel() && self.settings.lock().unwrap().center_panel
+     }
+ 
+     /// A dev run: its own index, folders or settings file. It leaves alone what an installed DigUp keeps outside its
+@@ -975,7 +986,7 @@
+ fn make_panel(app: &AppHandle, centered: bool) -> tauri::Result<()> {
+     let (label, page) = if centered { (CENTERED_PANEL, "index.html?fills") } else { (PANEL, "index.html") };
+     let panel = WebviewWindowBuilder::new(app, label, WebviewUrl::App(page.into()))
+-        .title("DigUp")
++        .title("DigUp Search")
+         .inner_size(PANEL_WIDTH, FIELD_HEIGHT)
+         .decorations(false)
+         .transparent(true)
+@@ -1223,7 +1234,7 @@
+         // Windows' tray reports clicks (Linux's open the menu, a Mac's too).
+         "canChooseTrayClick": cfg!(windows),
+         "trayClick": if settings.tray_click == "panel" { "panel" } else { "window" },
+-        "canCenter": shell.wayland,
++        "canCenter": shell.can_center_panel(),
+         "hotkey": shell.hotkey_text(),
+         "shortcut": {"method": shell.shortcut.name(), "command": hotkey::toggle_command()},
+         "folders": shell.folders(),

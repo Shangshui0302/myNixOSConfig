@@ -114,6 +114,22 @@
       }
 
 
+      // Only the compact search panel floats; the main results window stays tiled.
+      window-rule {
+          match app-id="^digup-shell$" title="^DigUp Search$"
+          open-floating true
+          open-focused true
+          // Keep client-requested size, including height changes as results arrive.
+          default-column-width {}
+          default-window-height {}
+          opacity 1.0
+          geometry-corner-radius 0
+          clip-to-geometry false
+          border { off; }
+          focus-ring { off; }
+          shadow { off; }
+      }
+
       // Noctalia 通过 ext-background-effect 提交随形状/动画变化的模糊区域。
       // 只选择 realtime (non-xray)；不要强制 blur true，否则客户端撤销区域后
       // niri 仍会模糊整个 layer 矩形（例如隐藏中的 dock）。
@@ -145,6 +161,7 @@
           Mod+O  { spawn "obsidian"; }
 
           // ---- Shell 公共动作 ----
+          Mod+Shift+Space repeat=false hotkey-overlay-title="DigUp 内容搜索" { spawn "digup-shell" "--toggle"; }
           Mod+Space hotkey-overlay-title="应用启动器" { spawn "desktop-shell-action" "launcher"; }
           Mod+C hotkey-overlay-title="剪贴板历史" { spawn "desktop-shell-action" "clipboard"; }
           Mod+Shift+C hotkey-overlay-title="剪贴板删除（Noctalia 清空历史）" { spawn "desktop-shell-action" "clipboard-delete"; }
