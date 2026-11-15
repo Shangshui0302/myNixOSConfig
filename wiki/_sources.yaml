@@ -112,6 +112,9 @@ docs:
     sources: [home/leisure/player.nix, local-deriv/kmusic.nix, local-deriv/modernz.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/modernz.conf.tpl, local-deriv/netease-cloud-music-web-player.nix, home/leisure/browser.nix, home/leisure/default.nix, host/base/services.nix]
     memory:  []
 
+  networking/tailscale.md:
+    sources: [host/base/network.nix, host/base/default.nix, host/base/mihomo.nix, host/mihomo-config.yaml.in, host/default.nix, host/nextkde/default.nix, flake.lock]
+    memory:  []
   networking/mihomo.md:
     sources: [host/base/network.nix, host/base/mihomo.nix, host/base/sub-store.nix, host/base/sops.nix, host/mihomo-config.yaml.in, host/mihomo-config-sync.py, host/secrets/mihomo-gist.yaml]
     memory:  [mihomo-tun-stack]

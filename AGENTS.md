@@ -2,7 +2,7 @@
 
 本仓库是 lishangshui 的 NixOS flakes + Home Manager 配置。主机 MechRevo-NixOS 使用 Ryzen 7 8845HS、Radeon 780M、2560×1600；主桌面为 greetd/tuigreet 启动的 Hyprland（UWSM）和 niri（原生 session）。NextKDE 使用 `host/nextkde/`、`home/nextkde.nix`，是 Plasma Wayland + SDDM + KOS 独立变体，不继承主桌面配置。
 
-主桌面以 Darkman 为唯一深浅状态源，Matugen 渲染颜色；NextKDE 以 `kdeglobals` 为源，由 systemd 触发 `kos-colors` 分发，不写 KDE 主题。两条链的缓存和 Fcitx5 主题目录独立。Shell 为 fish + bash/ble.sh，终端 Foot，输入法 fcitx5，代理 mihomo TUN，主机发现 Avahi mDNS。
+主桌面以 Darkman 为唯一深浅状态源，Matugen 渲染颜色；NextKDE 以 `kdeglobals` 为源，由 systemd 触发 `kos-colors` 分发，不写 KDE 主题。两条链的缓存和 Fcitx5 主题目录独立。Shell 为 fish + bash/ble.sh，终端 Foot，输入法 fcitx5，代理 mihomo TUN，主机发现 Avahi mDNS；Tailscale 为共享系统客户端，首次手动登录，不接管 DNS。
 
 ## 配置与包分类
 

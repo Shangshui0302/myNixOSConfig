@@ -2,7 +2,7 @@
 title: Wiki 首页
 category: 顶层
 tags: [index, moc]
-updated: 2026-11-12
+updated: 2026-11-15
 ---
 
 # Wiki — NixOS 配置操作手册
@@ -78,6 +78,7 @@ updated: 2026-11-12
 | [Mihomo 代理](networking/mihomo.md) | TUN 代理：架构、WebUI、故障排查、nix 下载慢 |
 | [Mihomo 配置修改与分发](networking/mihomo-distribution.md) | Gist 模板修改、节点生成、三端更新、服务职责与加密恢复 |
 | [本机 Sub-Store](networking/sub-store.md) | 本机独立服务：订阅生成与消费、管理边界、恢复、手动发布与回退 |
+| [Tailscale](networking/tailscale.md) | 私有组网：首次登录、设备互联、DNS 边界与排障 |
 
 ## 安全与隐私 `security/`
 

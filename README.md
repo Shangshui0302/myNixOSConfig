@@ -24,12 +24,12 @@ Noctalia 启动器保留该 PATH，供桌面应用继承。路径修改需应用
 | 终端 | Foot，由 Home Manager 管理，半透明背景与合成器模糊 |
 | 音频 | PipeWire（PulseAudio/ALSA）；JACK 程序按需通过 `pw-jack` 启动 |
 | 文件夹默认打开 | 主桌面 Strata；NextKDE 变体 Dolphin |
-| AI 工具 | Codex、Copilot CLI、Kiro CLI 与 Antigravity CLI、Antigravity 2.0 Agents 界面；Paseo 跨设备工作区、Herdr 桌面版与终端代理管理；AO 自主开发协作与 Arch DSH 桥接；Agentero AI 文档工作区；Agent Reach 与 OpenCLI 平台访问工具；Token Monitor 由 Arch 安装并通过 Distrobox 导出 |
+| AI 工具 | Codex、Pi、Copilot CLI、Kiro CLI 与 Antigravity CLI、Antigravity 2.0 Agents 界面；Paseo 跨设备工作区、Herdr 桌面版与终端代理管理；AO 自主开发协作与 Arch DSH 桥接；Agentero AI 文档工作区；Agent Reach 与 OpenCLI 平台访问工具；Token Monitor 由 Arch 安装并通过 Distrobox 导出 |
 | 电子书与资料 | Zotero 文献管理；[DigUp](wiki/productivity/digup.md) 本地语义文件搜索（主桌面 `Super+Shift+Space`） |
 | 面板 | Noctalia，可切换 Caelestia |
 | 深浅模式 | Darkman 状态/portal + Matugen 运行时配色 |
 | 输入法 | fcitx5 + Rime / WeTypeX（上游 flake，配置见 `host/base/input-method.nix`） |
-| 网络 | mihomo TUN（本机 Sub-Store 生成与有效快照）+ Gist 模板分发 + nftables + Avahi mDNS 主机发现 |
+| 网络 | mihomo TUN（本机 Sub-Store 生成与有效快照）+ Gist 模板分发 + nftables + Avahi mDNS 主机发现 + Tailscale |
 | 配置方式 | NixOS + Home Manager，禁止手改生成配置 |
 
 ## 目录
@@ -61,6 +61,8 @@ memory/                   # 本地决策卡与硬件约束（不进 Git）
 ```
 
 本机 Sub-Store 操作说明：[`wiki/networking/sub-store.md`](wiki/networking/sub-store.md)。
+
+Tailscale 首次登录与连通性检查：[`wiki/networking/tailscale.md`](wiki/networking/tailscale.md)。本机 Mihomo 对 Tailscale 公共服务域名返回真实 IP，避免登录连接绕过 TUN 后访问 Fake-IP 超时。
 
 Hyprland 滚动布局的单窗默认居中占显示器逻辑尺寸的 75%，多窗列宽默认约为三分之二；详见 [Hyprland 使用指南](wiki/desktop/hyprland.md#滚动布局-scrolling-layout)。
 

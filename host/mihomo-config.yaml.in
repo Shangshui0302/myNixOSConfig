@@ -38,6 +38,9 @@ dns:
   fake-ip-filter:
     - "+.lan"
     - "+.local"
+    # tailscaled bypasses the TUN, so its control/DERP/log endpoints need real IPs.
+    - "+.tailscale.com"
+    - "+.tailscale.io"
     - "time.*.com"
     - "ntp.*.com"
     - "+.market.xiaomi.com"

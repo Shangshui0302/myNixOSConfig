@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-10-25
+updated: 2026-11-15
 ---
 
 # Mihomo 代理
@@ -123,6 +123,14 @@ nftables 已启用，核心规则：
 - IPv4/IPv6 转发已开启
 
 ## 故障排查
+
+### 与 Tailscale 共存
+
+本机模板将 `+.tailscale.com` 和 `+.tailscale.io` 加入 `dns.fake-ip-filter`，为 Tailscale 公共服务返回真实地址。`tailscaled` 的连接通过带标记的路由绕过 Mihomo TUN；若 DNS 返回 `198.18.*`，连接会把假地址发往物理网关而超时，表现为 `tailscale up` 长时间没有登录链接。
+
+修改模板后手动 rebuild/switch，让启动配置重新生成并重启 Mihomo；用 `getent ahostsv4 controlplane.tailscale.com` 确认不再返回 Fake-IP，然后重启 `tailscaled` 并重新登录。完整步骤见 [Tailscale](tailscale.md)。
+
+### 服务与防火墙检查
 
 ```bash
 # 查看 Mihomo 日志

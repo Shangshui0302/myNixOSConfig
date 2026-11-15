@@ -2,7 +2,7 @@
 title: VS Code 集成
 category: 开发
 tags: [vscode, editor, home-manager, dev, matugen, darkman]
-updated: 2026-11-03
+updated: 2026-11-15
 ---
 
 # VS Code 集成
@@ -94,6 +94,7 @@ Codex 桌面端通过 Home Manager 的 XDG 自启动项在登录桌面后启动�
 
 | 工具 | 启动命令 | 包来源 |
 |------|----------|--------|
+| Pi 编程代理 | `pi` | `pi-coding-agent` |
 | GitHub Copilot CLI | `copilot` | `github-copilot-cli` |
 | Kiro CLI | `kiro-cli` | `kiro-cli` |
 | Paseo CLI／服务端 | `paseo`、`paseo-server` | `paseo` |
@@ -105,6 +106,8 @@ Codex 桌面端通过 Home Manager 的 XDG 自启动项在登录桌面后启动�
 Paseo 和 Herdr 可以用于本地目录，无需为项目添加 GitHub remote。配置只安装程序，不注册常驻服务；Paseo 启动后的 daemon 和跨设备连接按应用内流程管理。Herdr 可在项目目录运行 `herdr`；Nix 包装的代理可能遇到[状态识别问题](https://github.com/herdrdev/herdr/issues/803)，应分别确认终端内代理运行和侧栏状态。
 
 Herdr 桌面版从应用菜单的 **Herdr** 或 `herdr-app` 启动，使用独立的 `herdr-core`，与原有 `herdr` 终端版并存。桌面版和核心由 Nix 更新；不运行应用内安装脚本。官方发布版默认开启使用统计，可在 Settings → Privacy 关闭。当前配置提供启动器和运行依赖，真实桌面启动与代理交互需在应用配置后验证。
+
+Pi 使用 `~/.pi/agent/` 中的设置和登录状态；安装程序不会覆盖已有文件。进入项目目录后运行 `pi` 即可启动。程序版本跟随 `flake.lock`，不使用 `pi update` 更新 Nix 安装的程序。
 
 这些程序由 Nix 更新，不运行上游的自安装脚本。
 

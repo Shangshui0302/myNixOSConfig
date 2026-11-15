@@ -4,6 +4,13 @@
   networking.hostName = "MechRevo-NixOS";
   networking.networkmanager.enable = true;
 
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+    # Keep DNS under the existing Mihomo/NetworkManager setup.
+    extraSetFlags = [ "--accept-dns=false" ];
+  };
+
   # Advertise this host on the LAN so peer SSH configs can use
   # MechRevo-NixOS.local instead of a DHCP-dependent address.
   services.avahi = {

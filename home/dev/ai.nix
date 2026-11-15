@@ -23,6 +23,7 @@ in
   home.packages = with pkgs; [
     codex
     codexDesktop
+    pi-coding-agent
     github-copilot-cli
     kiro-cli
     paseo
