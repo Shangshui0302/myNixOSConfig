@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-11-03
+updated: 2026-11-15
 ---
 
 # Noctalia Shell 使用指南
@@ -79,6 +79,10 @@ Noctalia 自带的 `window_switcher` 不再作为总览入口；Hyprland 左下�
 - **排序**：按使用频率排序
 - **视图模式**：列表，显示分类
 - **终端命令**：foot
+
+启动器继承 systemd 用户会话的 PATH，不再用固定目录列表覆盖。`gdbus` 由用户
+profile 提供，保留手机操作功能；从菜单启动的 Paseo 等应用也能找到 Home Manager
+配置的 DSH 和用户命令目录。
 
 ## 控制中心
 
@@ -193,6 +197,10 @@ Super + Alt + K → Media/Sysmon 卡片  # 详细信息
 ```
 
 ## 故障排查
+
+若终端能找到命令、菜单启动的应用却找不到，先比较 `systemctl --user show-environment`
+中的 PATH 与目标进程的 PATH。应用此修复后重新登录，再启动 Paseo；
+`paseo provider diagnostic deepseek-harness` 可检查 dsh 是否被发现。
 
 ```bash
 # 重启 Noctalia Shell

@@ -46,13 +46,13 @@ docs:
     sources: [flake.nix, flake.lock, host/base/default.nix, host/base/input-method.nix, host/de/sessions.nix, home/home.nix, home/de/default.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff, greetd-tuigreet-tty]
   desktop/noctalia.md:
-    sources: [home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/productivity/graphics.nix, home/productivity/phone.nix, host/base/desktop.nix, home/theme/runtime.nix, host/de/greeter.nix]
+    sources: [home/de/noctalia.nix, home/env/shell/default.nix, home/dev/ai.nix, home/de/hyprland.nix, home/de/niri.nix, home/productivity/graphics.nix, home/productivity/phone.nix, host/base/desktop.nix, home/theme/runtime.nix, host/de/greeter.nix]
     memory:  [darkman-theme-authority, matugen-wallpaper-theming]
   desktop/shell-switcher.md:
     sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/matugen/caelestia-scheme.json.tpl]
     memory:  [shell-switcher-generic]
   desktop/shell.md:
-    sources: [home/env/shell/default.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/de/foot.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
+    sources: [home/env/shell/default.nix, home/dev/ai.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/de/foot.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
     memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
     sources: [flake.nix, home/theme/kde-runtime.nix, home/theme/kde-colors.py, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/qt-whitesur.nix, home/theme/runtime.nix, home/theme/scripts/theme-apply.sh, tests/test_theme_apply.py, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/vscode.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, home/de/polkit.nix]
@@ -99,7 +99,7 @@ docs:
     sources: [flake.nix, flake.lock, local-deriv/herdr-app.nix, local-deriv/herdr-core.nix, host/base/input-method.nix, local-deriv/hyprland-scroll-overview.nix, local-deriv/hypr-dynamic-cursors.nix, local-deriv/material-gnome-theme.nix, local-deriv/modernz.nix, local-deriv/kmusic.nix, local-deriv/netease-cloud-music-web-player.nix, local-deriv/agent-reach.nix, local-deriv/opencli.nix, local-deriv/agent-orchestrator.nix, local-deriv/agent-orchestrator-distrobox.nix, local-deriv/dsh-x.nix, local-deriv/dsh-x-node.nix, local-deriv/digup.nix]
     memory:  [nix-package-runtime-freshness]
   dev/distrobox.md:
-    sources: [home/dev/containers.nix, home/dev/container-images/arch.Containerfile, home/dev/container-images/fedora.Containerfile, home/dev/container-images/ubuntu.Containerfile, home/dev/container-images/manage.sh, home/dev/nvim.nix, home/dev/nvim/init.lua, home/env/shell/programs.nix, host/base/containers.nix]
+    sources: [home/dev/containers.nix, home/dev/container-images/arch.Containerfile, home/dev/container-images/fedora.Containerfile, home/dev/container-images/ubuntu.Containerfile, home/dev/container-images/manage.sh, home/dev/nvim.nix, home/dev/nvim/init.lua, home/env/shell/default.nix, home/env/shell/programs.nix, host/base/containers.nix]
     memory:  []
   dev/bottles-offline-workaround.md:
     sources: []

@@ -2,16 +2,17 @@
 title: Shell 环境
 category: desktop
 tags: [shell, fish, bash, starship, zellij]
-updated: 2026-11-13
+updated: 2026-11-15
 ---
 
 # Shell 环境指南
 
 本机使用 fish 作为默认 shell，bash 作为备选（带 ble.sh 增强），starship 作为统一提示符。
 
-宿主和 Distrobox 容器共用 Fish 配置目录。`$HOME/.local/bin` 通过
-`fish_add_path --path` 加入当前进程的 PATH，避免将某个容器的路径持久写入
-共用的 `fish_user_paths`；详见 [Distrobox 的 Shell 配置](../dev/distrobox.md#shell-与-neovim-配置)。
+宿主的 `~/.local/bin` 由 Home Manager 的 `xdg.localBinInPath` 加入会话 PATH，
+供 Bash、Fish 和桌面应用共用。Distrobox 内仍优先使用容器的 `$HOME/.local/bin`
+和发行版命令目录，只修改当前进程的 PATH，不写共用的 `fish_user_paths`；
+详见 [Distrobox 的 Shell 配置](../dev/distrobox.md#shell-与-neovim-配置)。
 
 新的交互式 Bash/Fish 会为 DSH headless 读取已保存的 API key，保留已有环境变量，
 具体来源、权限要求和刷新方式见 [DSH 终端凭据](../dev/dsh-x.md#终端凭据)。
@@ -178,7 +179,9 @@ fish 和 bash 均已配置：当命令执行超过 10 秒时，完成后自动�
 
 系统 secrets 通过 sops-nix + age 加密管理（`host/secrets/secrets.yaml`），rebuild 时解密到 `/run/secrets/`。
 
-**Distrobox**：`~/.local/bin` 加入 fish PATH（`fish_add_path`），承载 `distrobox-export` 导出的容器内 CLI 工具，宿主机可直接调用。
+**用户命令目录**：`~/.local/bin` 和 `~/.config/DSH/bin` 由 Home Manager 加入会话 PATH，
+分别承载用户脚本／Distrobox 导出命令与 DSH 命令入口。应用配置后重新登录，
+让桌面启动器及其子进程继承新环境；只打开新终端不会更新已运行的桌面应用。
 
 ## 常用工作流
 

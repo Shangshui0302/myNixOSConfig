@@ -7,6 +7,9 @@
     ./completions.nix
   ];
 
+  # Share user commands with login shells and desktop applications.
+  xdg.localBinInPath = true;
+
   home.packages = with pkgs; [
     fzf bat fd blesh
   ];
