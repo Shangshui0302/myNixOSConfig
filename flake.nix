@@ -1,7 +1,13 @@
 {
   description = "MechRevo-NixOS configuration";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # stable：冻结在上一版配置验证过的 nixpkgs 提交；系统、HM 和默认包集都用它。
+    # 推进时只改这里的 rev，等于一次受控的整体升级。
+    nixpkgs.url = "github:nixos/nixpkgs/f9a75f41be3a74eab55d3a7679d34ad6cc0da977";
+    # latest：跟随官方 HEAD，只供需要单包取新时使用，不参与系统装配。
+    nixpkgs-latest.url = "github:nixos/nixpkgs/nixos-unstable";
+    # 官方 stable 频道，作为个别包的兜底来源。
+    nixpkgs-release.url = "github:nixos/nixpkgs/nixos-26.05";
     # Track upstream sources without importing their separate Hyprland/toolchains.
     scrolloverview-src = {
       # Keep the last revision before decoration hooks: Hyprland 0.57
@@ -25,19 +31,21 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # 桌面 shell 与 AI 工具跟随 latest，compositor 留在 stable。
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-latest";
     };
     caelestia = {
       url = "github:caelestia-dots/shell";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-latest";
     };
-
     nix-flatpak.url = "github:gmodena/nix-flatpak";
+    # ChatGPT/Codex 桌面端：社区 flake 打包 OpenAI 官方 Linux .deb，版本比
+    # nixpkgs 的 chatgpt 包更新。确认保留这个源，不切换到 nixpkgs 官方打包。
     codex-desktop-linux = {
       url = "github:ilysenko/codex-desktop-linux";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-latest";
     };
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -45,7 +53,7 @@
     };
     shell-switcher = {
       url = "github:Shangshui0302/shell-switcher";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-latest";
     };
     fcitx5-matugen-theme = {
       url = "github:Shangshui0302/fcitx5-mellow-themes-matugen";
@@ -71,10 +79,15 @@
     { nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
+      mkPkgs =
+        src:
+        import src {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      pkgs = mkPkgs nixpkgs;
+      pkgsLatest = mkPkgs inputs.nixpkgs-latest;
+      pkgsRelease = mkPkgs inputs.nixpkgs-release;
       # GTK3/4 主题基础供 Matugen 使用；不安装 GNOME Shell 主题。
       materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
         inherit pkgs;
@@ -108,15 +121,15 @@
         agent-orchestrator-distrobox = pkgs.callPackage ./local-deriv/agent-orchestrator-distrobox.nix {
           inherit agentOrchestrator;
         };
-        agentero = pkgs.callPackage ./local-deriv/agentero.nix { };
+        agentero = pkgsLatest.callPackage ./local-deriv/agentero.nix { };
         digup = pkgs.callPackage ./local-deriv/digup.nix { };
         herdr-app = pkgs.callPackage ./local-deriv/herdr-app.nix { };
         herdr-core = pkgs.callPackage ./local-deriv/herdr-core.nix { };
-        dsh-x = pkgs.callPackage ./local-deriv/dsh-x.nix { };
+        dsh-x = pkgsLatest.callPackage ./local-deriv/dsh-x.nix { };
         dsh-x-node = inputs.self.packages.${system}.dsh-x.runtimeNode;
-        mnemon = pkgs.callPackage ./local-deriv/mnemon.nix { };
-        agent-reach = pkgs.callPackage ./local-deriv/agent-reach.nix { };
-        opencli = pkgs.callPackage ./local-deriv/opencli.nix { };
+        mnemon = pkgsLatest.callPackage ./local-deriv/mnemon.nix { };
+        agent-reach = pkgsLatest.callPackage ./local-deriv/agent-reach.nix { };
+        opencli = pkgsLatest.callPackage ./local-deriv/opencli.nix { };
         material-gnome-theme = materialGnomeTheme;
         modernz-mpv = pkgs.callPackage ./local-deriv/modernz.nix { };
         hypr-dynamic-cursors = import ./local-deriv/hypr-dynamic-cursors.nix {
@@ -165,7 +178,12 @@
       nixosConfigurations."MechRevo-NixOS" = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit inputs materialGnomeTheme;
+          inherit
+            inputs
+            materialGnomeTheme
+            pkgsLatest
+            pkgsRelease
+            ;
         };
         modules = [
           ./host/default.nix

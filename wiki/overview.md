@@ -2,7 +2,7 @@
 title: 项目概述
 category: 顶层
 tags: [nixos, home-manager, flake, hyprland, overview]
-updated: 2026-11-02
+updated: 2026-11-18
 ---
 
 # 项目概述
@@ -33,7 +33,7 @@ myNixOSConfig 是一套为机械革命（MechRevo）笔记本定制的 NixOS + H
 
 仓库采用模块化组织：
 
-- `flake.nix`：Flake 入口，定义 inputs（`nixpkgs-unstable`、`home-manager`、`noctalia`、`sops-nix` 等）与 outputs（NixOS 系统配置与 Home Manager 用户配置）。
+- `flake.nix`：Flake 入口，定义 inputs（冻结的 `nixpkgs` stable、`nixpkgs-latest`、`nixpkgs-release`、`home-manager`、`noctalia`、`sops-nix` 等）与 outputs（NixOS 系统配置与 Home Manager 用户配置）。
 - `host/`：系统级模块，含启动、硬件、网络、服务、桌面、Greeter、游戏、容器与安全（SOPS）。
 - `home/`：用户级模块，按 `env`/`dev`/`productivity`/`leisure` 划分职责，并集成 Flatpak。
 - `local-deriv/`：对本地构建补充包；单点修补使用模块内 `overrideAttrs`。

@@ -1,6 +1,8 @@
 {
   inputs,
   materialGnomeTheme,
+  pkgsLatest,
+  pkgsRelease,
   ...
 }:
 {
@@ -9,6 +11,13 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = { inherit inputs materialGnomeTheme; };
+    extraSpecialArgs = {
+      inherit
+        inputs
+        materialGnomeTheme
+        pkgsLatest
+        pkgsRelease
+        ;
+    };
   };
 }

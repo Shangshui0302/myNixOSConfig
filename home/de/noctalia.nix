@@ -8,7 +8,7 @@
 let
   darkmanSync = pkgs.writeShellScript "noctalia-darkman-sync" ''
     mode="$(${pkgs.darkman}/bin/darkman get)"
-    exec ${pkgs.noctalia}/bin/noctalia msg theme-mode-set "$mode"
+    exec ${config.programs.noctalia.package}/bin/noctalia msg theme-mode-set "$mode"
   '';
 in
 {

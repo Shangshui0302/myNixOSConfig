@@ -1,16 +1,18 @@
 {
   config,
   pkgs,
+  pkgsLatest,
   inputs,
   ...
 }:
 
 let
-  codexDesktop = inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop;
-  agentReach = pkgs.callPackage ../../local-deriv/agent-reach.nix { };
-  opencli = pkgs.callPackage ../../local-deriv/opencli.nix { };
-  dsh-x = pkgs.callPackage ../../local-deriv/dsh-x.nix { };
-  mnemon = pkgs.callPackage ../../local-deriv/mnemon.nix { };
+  codexDesktop =
+    inputs.codex-desktop-linux.packages.${pkgsLatest.stdenv.hostPlatform.system}.codex-desktop;
+  agentReach = pkgsLatest.callPackage ../../local-deriv/agent-reach.nix { };
+  opencli = pkgsLatest.callPackage ../../local-deriv/opencli.nix { };
+  dsh-x = pkgsLatest.callPackage ../../local-deriv/dsh-x.nix { };
+  mnemon = pkgsLatest.callPackage ../../local-deriv/mnemon.nix { };
 in
 {
   imports = [
@@ -20,7 +22,7 @@ in
   # DSH-X generates its CLI entry point outside the Nix store.
   home.sessionPath = [ "${config.xdg.configHome}/DSH/bin" ];
 
-  home.packages = with pkgs; [
+  home.packages = with pkgsLatest; [
     codex
     codexDesktop
     pi-coding-agent

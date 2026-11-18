@@ -17,7 +17,7 @@ Noctalia 启动器保留该 PATH，供桌面应用继承。路径修改需应用
 
 | 项目 | 配置 |
 | --- | --- |
-| 系统 | NixOS 26.05，nixos-unstable |
+| 系统 | NixOS 26.05，nixpkgs stable 固定提交 + latest 单包取新 |
 | 主桌面 | Hyprland（UWSM）+ niri（niri-session），greetd + tuigreet TTY |
 | 变体 | NextKDE specialisation（Plasma Wayland + SDDM） |
 | Shell | fish、bash/ble.sh、Starship、zellij |

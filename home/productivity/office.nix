@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, pkgsLatest, ... }:
 
 {
   home.packages = with pkgs; [
@@ -8,6 +8,6 @@
     zettlr
     kdePackages.ghostwriter
     zotero
-    (pkgs.callPackage ../../local-deriv/agentero.nix { })
+    (pkgsLatest.callPackage ../../local-deriv/agentero.nix { })
   ];
 }

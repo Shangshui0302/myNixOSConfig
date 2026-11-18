@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-11-03
+updated: 2026-11-18
 ---
 
 # Flake 配置管理
@@ -25,7 +25,9 @@ updated: 2026-11-03
 
 `flake.nix` 的 `inputs` 部分声明了系统所需的全部外部来源：
 
-- `nixpkgs`：跟踪 `nixos-unstable` 频道，作为基础包集与 NixOS 模块来源。
+- `nixpkgs`：冻结在上一版配置验证过的固定提交（当前 `f9a75f4`，2026-11-05），作为系统、Home Manager 与默认包集来源；推进时只改这里的 rev。
+- `nixpkgs-latest`：跟踪 `nixos-unstable`，只用于个别包单独取新，不参与系统装配。
+- `nixpkgs-release`：跟踪官方 `nixos-26.05` 稳定频道，作为个别包的兜底来源。
 - `scrolloverview-src`、`hypr-dynamic-cursors-src`：跟踪两个 Hyprland 插件的上游 `main`，只获取源码（`flake = false`），不引入上游各自的 Hyprland 或工具链；本地包定义使用系统 Hyprland 构建。
 - `nextkde`：固定上游提交 `3fa1d7006869bbd3404a05d362c6e6028e0fe3da`，跟随根 `nixpkgs`，提供 KOS 模块和包。
 - `strata-nixpkgs`：临时固定 fork 提交，只消费其中的 Strata，包集与系统隔离；官方频道可用后移除。
@@ -36,7 +38,7 @@ updated: 2026-11-03
 - `nix-flatpak`：Flatpak 集成。
 - `codex-desktop-linux`：Codex Desktop 的桌面发行来源。
 
-多数输入通过 `inputs.nixpkgs.follows = "nixpkgs"` 复用根 `nixpkgs`，避免多份版本碎片化。
+多数输入通过 `inputs.nixpkgs.follows = "nixpkgs"` 复用冻结的稳定源，保持 Home Manager、桌面模块与系统包集版本一致；`nixpkgs-latest` 和 `nixpkgs-release` 只通过 `specialArgs` 暴露为 `pkgsLatest`/`pkgsRelease`，按包引用。
 
 ## outputs：系统装配
 
@@ -48,7 +50,7 @@ updated: 2026-11-03
 - `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。
 
 - `system` 指定为 `x86_64-linux`。
-- `specialArgs` 将 `inputs`、`materialGnomeTheme` 传入系统模块。
+- `specialArgs` 将 `inputs`、`materialGnomeTheme`、`pkgsLatest`、`pkgsRelease` 传入系统模块。
 - `modules` 列表组合本地 `host/default.nix`、sops-nix、Home Manager 与公共设置 `host/base/home-manager.nix`；NextKDE 入口也复用同一份公共设置。上游模块保持原来的导入层级，避免改变列表合并顺序。
 - Home Manager 公共设置集中在 `host/base/home-manager.nix`：开启 `useGlobalPkgs`/`useUserPackages`，传递共享参数 `inputs` 与 `materialGnomeTheme`。不设置全局备份后缀；与未受管理的同名文件发生冲突时会阻止激活，显式设置 `force = true` 的文件会直接覆盖，且不生成备份。
 - `host/default.nix` 选择 `home/home.nix`，`host/nextkde/default.nix` 选择 `home/nextkde.nix`，保持两个桌面用户入口独立。
@@ -103,9 +105,9 @@ nix develop path:.#checks.x86_64-linux.repository-structure -c \
 ## 依赖锁定与跟随
 
 - **依赖锁定**：`flake.lock` 记录所有直接与间接依赖的版本、提交哈希与来源，确保构建可重现。
-- **依赖跟随**：`home-manager`、`noctalia`、`sops-nix` 等通过 `follows` 复用根 `nixpkgs`，避免多份不同版本冲突。
+- **依赖跟随**：`home-manager`、`sops-nix` 等通过 `follows` 复用根 `nixpkgs`（stable）；桌面 shell（`noctalia`、`caelestia`、`shell-switcher`）与 AI 工具（`codex-desktop-linux`）跟随 `nixpkgs-latest`；compositor、内核和系统服务留在 stable。
 - **投稿包例外**：`strata-nixpkgs` 保留已验证 revision 的包集，只取 `strata`；不替换系统包集、不配置 `follows` 或本地 overlay。
-- **升级路径**：`nix flake update` 更新锁文件，配合 rebuild 验证；失败可回退到上一代次。
+- **升级路径**：`nix flake update nixpkgs-latest nixpkgs-release` 单独推进最新源；推进整机时改 `nixpkgs` 的固定 rev 并 `nix flake update nixpkgs`，配合 rebuild 验证，失败可回退上一个 rev。
 - **Hyprland 插件**：可用 `nix flake update scrolloverview-src hypr-dynamic-cursors-src` 单独更新源码，无需手改 `rev` 或哈希。更新 nixpkgs 或插件后都要实际构建两个插件；最新提交并不保证兼容性，具体步骤见 [Hyprland 插件更新](../desktop/hyprland.md#光标)。
 
 ```mermaid
