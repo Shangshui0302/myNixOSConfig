@@ -2,7 +2,7 @@
 title: Tailscale
 category: networking
 tags: [tailscale, vpn, networking]
-updated: 2026-11-15
+updated: 2026-11-18
 ---
 
 # Tailscale
@@ -60,7 +60,7 @@ ssh <用户名>@<对方的Tailscale-IP>
 
 本机继续使用现有 Mihomo TUN 和 DNS。Tailscale 的 DNS 偏好由 Nix 管理，服务启动时重新设置；首次 `up` 也显式带上同一参数。
 
-Mihomo 的 `fake-ip-filter` 排除 `+.tailscale.com` 与 `+.tailscale.io`，使控制服务器、DERP 和日志服务域名返回真实 IP。`tailscaled` 的带标记连接优先查物理网络路由，绕过 Mihomo；若拿到 `198.18.*` 假地址，会直接发往物理网关并超时。此排除项不等于启用 MagicDNS，也不改变其他域名的代理分流。
+远端共享 Mihomo 模板的 `fake-ip-filter` 排除 `+.tailscale.com` 与 `+.tailscale.io`，使控制服务器、DERP 和日志服务域名返回真实 IP。`tailscaled` 的带标记连接优先查物理网络路由，绕过 Mihomo；若拿到 `198.18.*` 假地址，会直接发往物理网关并超时。此排除项不等于启用 MagicDNS，也不改变其他域名的代理分流。
 
 配置检查通过不代表两套 TUN 已实测互通。应用并登录后，应同时检查 Tailscale 对端连接与日常网页访问。
 
@@ -77,7 +77,7 @@ tailscale netcheck
 
 - **找不到命令或服务**：确认已成功 switch 到包含本次配置的系统代际。
 - **服务启动但未连接**：运行 `tailscale status`，按提示登录或完成设备审批。
-- **`tailscale up` 长时间不输出登录链接**：检查日志中的连接超时及 `getent ahostsv4 controlplane.tailscale.com`；若返回 `198.18.*`，先应用包含上述 Fake-IP 排除项的系统配置。Mihomo 重载后重启 `tailscaled` 清除旧解析状态，再重新运行登录命令。
+- **`tailscale up` 长时间不输出登录链接**：检查日志中的连接超时及 `getent ahostsv4 controlplane.tailscale.com`；若返回 `198.18.*`，先运行 `sudo systemctl start mihomo-config-update.service`，应用包含上述 Fake-IP 排除项的共享配置（首次升级完整配置消费仍需 rebuild）。Mihomo 重载后重启 `tailscaled` 清除旧解析状态，再重新运行登录命令。
 - **IP 可用、名称不可用**：本机关闭了 Tailscale DNS 接管，先用 IP；需要 MagicDNS 时再设计与 Mihomo 的分域解析。
 - **对端不可达**：检查双方在线状态、tailnet 访问策略、防火墙及上面的路由输出。
 - **需要日志**：运行 `journalctl -b -u tailscaled -u tailscaled-set --no-pager`。

@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-11-15
+updated: 2026-11-18
 ---
 
 # Mihomo 代理
@@ -19,20 +19,24 @@ updated: 2026-11-15
 > 7. [nix 下载慢](#nix-下载慢大文件极慢--挂起--curl-正常-nix-卡死)
 > 8. [相关链接](#相关链接)
 
-Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。本机模板保留 DNS、TUN、嗅探和控制端设置；从本机 Sub-Store 生成的 YAML 仅提取 `proxies`、`proxy-groups`、`rule-providers`、`rules` 四项共享配置。
+Mihomo（原 Clash Meta）以 TUN 模式运行，配合 nftables 防火墙实现全局透明代理。本机消费 Sub-Store 生成的完整 YAML，DNS、TUN、端口和路由规则统一由远端模板提供；仅覆盖本机控制端地址和密钥，不再维护本地配置模板。
 
 共享配置由 Sub-Store 管理：Secret Gist 的 `mihomo-template.yaml` 是保留注释的人工编辑源；本机更新器每 6 小时请求本机 Sub-Store，重新获取模板和 IKUUU、PPVPN 节点，生成成品供本机消费。只编辑模板，不手改会被生成覆盖的成品；修改后可立即运行本机更新服务。需要分发给订阅 Gist 的其他客户端时，再手动发布 `mihomo-dual.yaml`。
 
 共享配置保留模板中的策略组及节点原名，组数随模板修改：`🤖 AI/Dev`、`🐙 GitHub` 默认使用 `🏠 PPVPN 住宅`，可选 `🏢 PPVPN 机房`；`📦 大流量` 只列 IKUUU 节点，地区组仅保留美国。下载分流按目标域名判断，不按传输大小自动切换；Nix 缓存、容器镜像、包和模型下载已有专门规则。各设备独立保存具体节点选择。
 
-更新器按配置内容验证节点、组成员、引用、循环和规则目标，并检查热加载后的实际组成员；不依赖组名或 `IK-`、`PP-` 节点前缀。旧 bootstrap 仍可读取，无需改写 SOPS；网络或候选校验失败保留上次有效快照。
+PPVPN 住宅、机房组均可选择对应的自动测速组或具体节点。`🪙 欧易` 可选择自动、`DIRECT` 或两家机场的任意节点；自动池包含直连及全部机场节点，不按地区排除。三个自动组使用 `url-test`，每 300 秒检测、切换容差为 50 毫秒，均设为 `hidden: true` 并排列在分组列表末尾。已有设备会保留原来的选择，刷新订阅后可在原分组中手动选中自动项。
+
+腾讯、阿里、字节、百度、网易、国内影音、电商与社区统一使用 `🇨🇳 国内网站`；`🌏 爱奇艺&哔哩哔哩` 保留独立选择。Steam 登录/下载与商店/社区继续按各自独立组分流。
+
+更新器按配置内容验证节点、组成员、引用、循环和规则目标，并检查热加载后的实际组成员；不依赖组名或 `IK-`、`PP-` 节点前缀。bootstrap 需包含启用的 DNS 和 TUN，无需为日常更新改写 SOPS；网络或候选校验失败保留上次有效快照。
 
 ## 架构
 
 ```
-首次启动：从 SOPS bootstrap 生成共享快照，与当前本机模板及 Secret 合成 /var/lib/mihomo-config/active.yaml
+首次启动：从完整 SOPS bootstrap 生成共享快照，注入本机控制端及 Secret，保存为 /var/lib/mihomo-config/active.yaml
 后续启动：从共享快照重新合成、校验；systemd 将 root-only active.yaml 作为 credential 交给 DynamicUser，离线也可启动
-定时更新：每 6h 请求本机 Sub-Store（最新 Gist 模板 + 机场节点）→ 白名单合并 → Mihomo 校验 → 控制端 API 热重载并核对运行策略组 → 原子发布共享快照及启动配置；失败回滚
+定时更新：每 6h 请求本机 Sub-Store（最新 Gist 模板 + 机场节点）→ 注入本机控制端及密钥 → Mihomo 校验 → 控制端 API 热重载并核对运行策略组 → 原子发布共享快照及启动配置；失败回滚
 rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 ```
 
@@ -43,6 +47,7 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 - 特定服务分流：
   - **AI 与开发服务**（OpenAI、Claude、Gemini、Copilot、Cursor 等）：路由至 `🤖 AI/Dev`，默认 PPVPN 住宅，可选择 PPVPN 机房或具体 PPVPN 节点。
   - **GitHub**：单独路由至 `🐙 GitHub` 选择组，避免与其他常规流量共用默认节点。
+  - **欧易**：使用 `geosite-okx` 社区域名集合，路由至 `🪙 欧易`；自动测速比较直连与两家机场全部节点，使用欧易公开时间接口检查连通性，手选仍可指定 `DIRECT` 或具体节点。
   - **Slack**：使用 `geosite-slack` 社区规则集，直接路由至 `🇺🇸 美国节点`，优先于通用国外流量规则；具体美国节点可在 WebUI 中选择。
   - **流媒体与常规服务**（Netflix, YouTube, Bilibili, Bahamut, Telegram 等）：按区域或默认走选择节点。
 
@@ -59,8 +64,7 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 | `host/base/network.nix` | 主机网络、转发和防火墙设置 |
 | `host/base/mihomo.nix` | Mihomo 原生服务、启动快照与六小时间隔更新 |
 | `host/base/sub-store.nix` | 本机 Sub-Store 常驻服务与持久状态；只在更新时参与生成，不阻塞 Mihomo 启动 |
-| `host/mihomo-config.yaml.in` | 本机配置模板，保留控制端 Secret 占位符 |
-| `host/mihomo-config-sync.py` | 下载、白名单合并、校验和原子发布 |
+| `host/mihomo-config-sync.py` | 读取完整生成配置、注入本机控制端及密钥、校验和原子发布 |
 | `host/secrets/mihomo-gist.yaml` | 沿用现有 SOPS 密文中的 `mihomo_bootstrap`；旧 Gist URL 已不部署、不消费 |
 | `/run/secrets/mihomo_bootstrap` | sops-nix 在系统激活的 systemd 阶段解密的首次引导配置，root-only |
 | `/var/lib/mihomo-config/` | systemd 管理的 `0700` 状态目录，保存 `0600` 的共享快照与 active 配置；失败时保留旧版，不自动回写 SOPS |
@@ -126,9 +130,9 @@ nftables 已启用，核心规则：
 
 ### 与 Tailscale 共存
 
-本机模板将 `+.tailscale.com` 和 `+.tailscale.io` 加入 `dns.fake-ip-filter`，为 Tailscale 公共服务返回真实地址。`tailscaled` 的连接通过带标记的路由绕过 Mihomo TUN；若 DNS 返回 `198.18.*`，连接会把假地址发往物理网关而超时，表现为 `tailscale up` 长时间没有登录链接。
+远端共享模板将 `+.tailscale.com` 和 `+.tailscale.io` 加入 `dns.fake-ip-filter`，为 Tailscale 公共服务返回真实地址。`tailscaled` 的连接通过带标记的路由绕过 Mihomo TUN；若 DNS 返回 `198.18.*`，连接会把假地址发往物理网关而超时，表现为 `tailscale up` 长时间没有登录链接。
 
-修改模板后手动 rebuild/switch，让启动配置重新生成并重启 Mihomo；用 `getent ahostsv4 controlplane.tailscale.com` 确认不再返回 Fake-IP，然后重启 `tailscaled` 并重新登录。完整步骤见 [Tailscale](tailscale.md)。
+切换到完整配置消费后，修改远端模板并运行 `sudo systemctl start mihomo-config-update.service` 即可生成和应用；用 `getent ahostsv4 controlplane.tailscale.com` 确认不再返回 Fake-IP，然后重启 `tailscaled` 并重新登录。完整步骤见 [Tailscale](tailscale.md)。
 
 ### 服务与防火墙检查
 
@@ -136,7 +140,7 @@ nftables 已启用，核心规则：
 # 查看 Mihomo 日志
 journalctl -u mihomo -f
 
-# 重启核心（先运行 seed，从有效共享快照和本机模板准备配置）
+# 重启核心（先运行 seed，从完整有效快照和本机密钥准备配置）
 sudo systemctl restart mihomo
 
 # 检查 WebUI 是否可访问
@@ -153,7 +157,7 @@ sudo nft list ruleset
 | 无法访问外网 | Mihomo 未运行 | `sudo systemctl start mihomo` |
 | WebUI 打不开 | zashboard 路径不对 | 检查 `systemctl status mihomo` |
 | 部分应用不走代理 | TUN 路由问题 | 检查 `ip route` 和 `Meta` 接口状态 |
-| 配置文件不生效 | 修改后未重载 | `sudo systemctl restart mihomo` |
+| 共享配置不生效 | 修改后未重新生成 | `sudo systemctl start mihomo-config-update.service` |
 | 规则未生效 | rule-provider 下载失败 | 检查 WebUI → Providers 面板；确认 jsdelivr CDN 可访问 |
 | nix 下载大文件极慢/挂起 | TUN 默认 mtu 9000 + system 栈 | 见下方「nix 下载慢」排查 |
 
@@ -174,7 +178,7 @@ mihomo TUN 的两个默认值对 nix 的下载器不友好：
 
 ### 修复（2026-08-05 已验证）
 
-`host/mihomo-config.yaml.in`：
+原本地模板中的以下设置已移入 Gist `mihomo-template.yaml`，维持本机既有 TUN 行为：
 
 ```yaml
 tun:
@@ -186,7 +190,7 @@ tun:
   ...
 ```
 
-配套：`sniffer` 去掉 TLS 443/8443 嗅探（每条连接缓存包嗅探是纯开销，16 个 geosite 规则集已足够分流）。
+共享模板不启用嗅探；删除了本地 HTTP 嗅探、TFO、额外 GeoData 下载设置以及与默认上游相同的单域 DNS policy，不将未证实有益的设备差异继续维护为第二份配置。
 
 ### 验证
 

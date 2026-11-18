@@ -1,4 +1,4 @@
-"""Isolated source/merge checks; no real subscriptions, controller or secrets."""
+"""Isolated full-source and lifecycle checks; no real subscriptions, controller or secrets."""
 
 from contextlib import contextmanager, redirect_stdout
 import importlib.util
@@ -20,6 +20,9 @@ SPEC.loader.exec_module(sync)
 
 def shared_fixture(name="synthetic-node"):
     return {
+        "tun": {"enable": True, "device": "Meta", "stack": "gvisor", "mtu": 1500},
+        "dns": {"enable": True, "enhanced-mode": "fake-ip", "nameserver": ["1.1.1.1"]},
+        "mixed-port": 7890,
         "proxies": [{"name": name, "type": "ss", "server": "example.invalid", "port": 443,
                      "cipher": "aes-128-gcm", "password": "synthetic-only"}],
         "proxy-groups": [{"name": "Select", "type": "select", "proxies": [name, "DIRECT"]}],
@@ -179,18 +182,14 @@ class StateTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.state = self.root / "state"
         self.state.mkdir()
-        self.template = self.root / "template.yaml"
-        self.local = {"tun": {"enable": True}, "dns": {"enable": True, "enhanced-mode": "fake-ip"},
-                      "external-controller": "127.0.0.1:9090", "secret": "placeholder",
-                      "mixed-port": 7890, "rules": ["MATCH,DIRECT"]}
-        self.template.write_bytes(sync.yaml_bytes(self.local))
+        self.controller = "http://127.0.0.1:9090"
         self.shared = sync.yaml_bytes(shared_fixture())
-        self.active = sync.compose(self.template, shared_fixture(), "old-synthetic-secret")
+        self.active = sync.compose(shared_fixture(), "old-synthetic-secret", self.controller)
         (self.state / "shared-lastgood.yaml").write_bytes(self.shared)
         (self.state / "active.yaml").write_bytes(self.active)
 
     def invoke(self, mode, extra=()):
-        argv = ["mihomo-config-sync", mode, "--template", str(self.template),
+        argv = ["mihomo-config-sync", mode,
                 "--state-dir", str(self.state), "--mihomo", "unused-core", *extra]
         with patch("sys.argv", argv), patch.dict(os.environ, {"MIHOMO_SECRET": "new-synthetic-secret"}), redirect_stdout(io.StringIO()):
             sync.main()
@@ -230,20 +229,70 @@ class StateTests(unittest.TestCase):
                 self.invoke("seed")
             source.assert_not_called()
 
-    def test_update_merges_only_shared_fields_and_retains_local_controls(self):
+    def test_update_consumes_full_source_with_local_management_only(self):
         remote = shared_fixture("fresh-synthetic-node")
-        remote.update({"tun": {"enable": False}, "dns": {"enable": False},
-                       "secret": "remote-secret", "mixed-port": 1,
-                       "external-controller": "0.0.0.0:1"})
+        remote["tun"]["mtu"] = 1400
+        remote["dns"]["fake-ip-filter"] = ["+.tailscale.com", "+.tailscale.io"]
+        remote.update({"secret": "remote-secret", "mixed-port": 7891,
+                       "external-controller": "0.0.0.0:9090",
+                       "external-controller-tls": "0.0.0.0:9443",
+                       "external-controller-unix": "/tmp/remote.sock",
+                       "external-controller-pipe": "remote-pipe",
+                       "sniffer": {"enable": True}})
         with server(sync.yaml_bytes(remote)) as (url, _), patch.object(sync, "validate") as validate, patch.object(sync, "reload_config") as reload, patch.object(sync, "verify_running") as verify:
             self.invoke("update", ["--sub-store-url", url])
             validate.assert_called_once()
             reload.assert_called_once()
             verify.assert_called_once()
-        expected = dict(self.local, secret="new-synthetic-secret")
-        expected.update({key: remote[key] for key in sync.SHARED_KEYS})
+        expected = dict(remote, secret="new-synthetic-secret", **{"external-controller": "127.0.0.1:9090"})
+        for key in ("external-controller-tls", "external-controller-unix", "external-controller-pipe"):
+            del expected[key]
         self.assertEqual(sync.read_yaml((self.state / "active.yaml").read_bytes()), expected)
-        self.assertEqual(set(sync.read_yaml((self.state / "shared-lastgood.yaml").read_bytes())), set(sync.SHARED_KEYS))
+        self.assertEqual(sync.read_yaml((self.state / "shared-lastgood.yaml").read_bytes()), remote)
+        # A restart must retain the complete source, not just its routing keys.
+        with patch.object(sync, "fetch_sub_store") as source, patch.object(sync, "validate"), patch.object(sync, "reload_config") as reload:
+            self.invoke("seed")
+            source.assert_not_called()
+            reload.assert_not_called()
+        self.assertEqual(sync.read_yaml((self.state / "active.yaml").read_bytes()), expected)
+
+    def test_incomplete_or_disabled_network_source_is_rejected(self):
+        for key in ("tun", "dns"):
+            for value in (None, {}, {"enable": False}):
+                remote = shared_fixture()
+                remote[key] = value
+                with self.subTest(key=key, value=value), patch.object(sync, "fetch_sub_store", return_value=sync.yaml_bytes(remote)), patch.object(sync, "reload_config") as reload:
+                    with self.assertRaisesRegex(ValueError, "source must include enabled"):
+                        self.invoke("update", ["--sub-store-url", "unused"])
+                    reload.assert_not_called()
+                self.assertEqual((self.state / "active.yaml").read_bytes(), self.active)
+                self.assertEqual((self.state / "shared-lastgood.yaml").read_bytes(), self.shared)
+
+    def test_old_routing_only_snapshot_keeps_active_until_update(self):
+        old = sync.yaml_bytes({key: shared_fixture()[key] for key in sync.ROUTING_KEYS})
+        (self.state / "shared-lastgood.yaml").write_bytes(old)
+        with patch.object(sync, "fetch_sub_store") as source, patch.object(sync, "validate") as validate, patch("sys.stderr", new_callable=io.StringIO) as stderr:
+            self.invoke("seed")
+            source.assert_not_called()
+            validate.assert_not_called()
+            self.assertIn("retained existing active config", stderr.getvalue())
+        self.assertEqual((self.state / "active.yaml").read_bytes(), self.active)
+        self.assertEqual((self.state / "shared-lastgood.yaml").read_bytes(), old)
+        with patch.object(sync, "fetch_sub_store", return_value=self.shared), patch.object(sync, "validate"), patch.object(sync, "reload_config"), patch.object(sync, "verify_running"):
+            self.invoke("update", ["--sub-store-url", "unused"])
+        self.assertEqual((self.state / "shared-lastgood.yaml").read_bytes(), self.shared)
+        self.assertEqual(sync.read_yaml((self.state / "active.yaml").read_bytes())["dns"], shared_fixture()["dns"])
+
+    def test_failed_verification_rolls_back_full_config_and_snapshot(self):
+        remote = shared_fixture("fresh-synthetic-node")
+        remote["dns"]["nameserver"] = ["8.8.8.8"]
+        with patch.object(sync, "fetch_sub_store", return_value=sync.yaml_bytes(remote)), patch.object(sync, "validate"), patch.object(sync, "reload_config") as reload, patch.object(sync, "verify_running", side_effect=[RuntimeError("verification failed"), None]):
+            with self.assertRaisesRegex(RuntimeError, "verification failed"):
+                self.invoke("update", ["--sub-store-url", "unused"])
+            self.assertEqual(reload.call_count, 2)
+            self.assertEqual(reload.call_args.args, (self.controller, self.active, "new-synthetic-secret"))
+        self.assertEqual((self.state / "active.yaml").read_bytes(), self.active)
+        self.assertEqual((self.state / "shared-lastgood.yaml").read_bytes(), self.shared)
 
     def test_update_without_local_source_fails_before_snapshot_changes(self):
         with patch("sys.stderr", new_callable=io.StringIO) as stderr, patch.object(sync, "fetch_sub_store") as source:

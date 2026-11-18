@@ -2,7 +2,7 @@
 title: 本机 Sub-Store
 category: networking
 tags: [sub-store, mihomo, gist, backup, systemd]
-updated: 2026-10-25
+updated: 2026-11-18
 ---
 
 # 本机 Sub-Store
@@ -55,11 +55,11 @@ journalctl -u sub-store.service -n 50 --no-pager
 
 | 管理位置 | 负责内容 |
 | --- | --- |
-| Gist `mihomo-template.yaml` | 策略组、规则、规则集和节点分组指令；节点由 Sub-Store 填入 |
+| Gist `mihomo-template.yaml` | 完整公共配置，包括 TUN、DNS、端口、策略组、规则、规则集和节点分组指令；节点由 Sub-Store 填入 |
 | Sub-Store | 机场订阅地址、生成脚本、发布与备份设置；状态保存在持久目录 |
-| NixOS | 服务、更新周期、本机 TUN/DNS/端口及控制密钥；合并和校验生成结果 |
+| NixOS | 服务、更新周期、网络权限、本机控制端及密钥；校验完整生成结果 |
 
-NixOS 更新器只替换 `proxies`、`proxy-groups`、`rule-providers`、`rules`，不重写 Sub-Store 数据库或 Gist 模板。正常 rebuild 保留 Sub-Store 中的订阅编辑；日常改模板和订阅无需 rebuild。不要手改运行快照，也不要在 Sub-Store 中维护本机 TUN/DNS，否则这些字段不会进入本机配置。
+NixOS 更新器消费完整生成配置，只覆盖回环控制端和本机密钥，移除其他控制入口，不重写 Sub-Store 数据库或 Gist 模板。正常 rebuild 保留 Sub-Store 中的订阅编辑；日常改模板和订阅无需 rebuild。DNS/TUN 在远端共享模板维护，生成后进入本机配置；其他设备可通过 GUI 覆盖。不要手改运行快照。
 
 Gist 成品发布与加密备份仍为手动任务。本机更新仅生成、读取和应用配置，不上传 Gist；其他订阅 Gist 成品的客户端仍需先发布再刷新。
 

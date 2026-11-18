@@ -2,25 +2,28 @@
 title: Mihomo 配置修改与分发
 category: networking
 tags: [mihomo, sub-store, gist, sops, backup]
-updated: 2026-10-25
+updated: 2026-11-18
 ---
 
 # Mihomo 配置修改与分发
 
-日常规则与策略组只在 Secret Gist 的 `mihomo-template.yaml` 修改。各实例的 Sub-Store 读取同一模板和两家最新节点生成成品；本机 NixOS 直接消费本机生成结果，订阅 Gist 的 Windows 和 Android 客户端消费已发布的 `mihomo-dual.yaml`。本机更新触发生成但不上传；Gist 发布与其他客户端刷新仍是两步。
+日常规则、策略组、DNS 与 TUN 只在 Secret Gist 的 `mihomo-template.yaml` 修改。各实例的 Sub-Store 读取同一模板和两家最新节点生成成品；本机 NixOS 直接消费本机生成结果，订阅 Gist 的 Windows 和 Android 客户端消费已发布的 `mihomo-dual.yaml`。本机更新触发生成但不上传；Gist 发布与其他客户端刷新仍是两步。
 
 ## 哪一份负责什么
 
 | 位置 | 内容与维护入口 |
 | --- | --- |
-| Secret Gist：`mihomo-template.yaml` | 人工维护的共同规则、策略组及生成指令；保留注释和分段，节点数组保留 `proxies: []` |
+| Secret Gist：`mihomo-template.yaml` | 人工维护的完整公共配置，包括 TUN、DNS、端口、规则、策略组及生成指令；保留注释、分段及内置 Tailscale 节点；机场节点由生成器追加 |
 | Sub-Store 原始订阅：`IKUUU`、`PPVPN` | 两家机场订阅地址；URL 变化时在这里修改，不写入模板或仓库 |
 | Sub-Store 文件：「双机场」（`dual-provider-mihomo`） | 唯一正式 Mihomo 配置，远程来源读取上述模板，脚本操作 `main(config)` 负责获取节点和填充组成员 |
 | Sub-Store 同步：`mihomo-dual.yaml` | 生成并上传 Gist 成品；本机保留手动发布，订阅 Gist 的客户端使用不固定 revision 的 raw HTTPS 地址 |
-| NixOS：`host/mihomo-config.yaml.in` | 本机 TUN、DNS、嗅探、端口等设备设置；与共享配置合成 |
-| NixOS：`host/base/mihomo.nix`、`host/mihomo-config-sync.py` | 服务和更新逻辑；修改这些实现后需要正常 rebuild |
+| NixOS：`host/base/mihomo.nix`、`host/mihomo-config-sync.py` | 服务和更新逻辑，仅注入回环控制端及本机密钥；修改实现后需要正常 rebuild |
 | NixOS：`host/base/sub-store.nix` | 本机 Sub-Store 服务；恢复数据后可手动发布，也可作为自动发布端 |
 | 设备本地策略选择 | 具体节点选择各设备分别保存，不作为共享模板的当前选择上传 |
+
+三端共用同一份 `mihomo-dual.yaml`，不再生成手机专用成品。「Tailscale 内网」组默认选 `DIRECT`：Windows/NixOS 保持该选择，使用系统 Tailscale；手机改选 `Tailscale`，使用 Mihomo 内置出站。各端通过 `profile.store-selected` 保存选择，不按 User-Agent 或系统类型自动分流。Tailscale 网段规则放在私有地址规则前，内置节点不加入普通机场策略组。
+
+生成脚本需要保留模板中的固定节点，并仅用机场节点填充 `x-sub-store-source` 策略组；Windows 与 NixOS 的 Sub-Store 均已同步该逻辑。手机使用 Clash Meta 时关闭“绕过私有网络”，首次连接电脑后从日志中的链接登录；内置出站主要用于手机主动访问电脑。
 
 模板与成品分开，发布任务只写成品。不要编辑成品里的节点或规则：下一次生成会替换它。Sub-Store 中的 `content` 保存模板备份快照，远程来源且关闭合并时不参与生成。
 
@@ -36,7 +39,7 @@ flowchart TD
   O --> W[Windows Clash Party]
   O --> A[Android Clash Meta]
   V -->|本机回环生成接口| N[NixOS 更新服务]
-  L[NixOS 本机模板与 SOPS 密钥] --> N
+  L[NixOS 控制端与 SOPS 密钥] --> N
   N --> C[Mihomo 校验、热加载、核对与快照]
 ```
 
@@ -46,10 +49,10 @@ Windows Clash Party 内置 Sub-Store 当前已经在使用。NixOS 的独立本�
 
 本机 Sub-Store 的打开、恢复、手动发布和停止方式见[本机 Sub-Store](sub-store.md)。
 
-## 修改规则或策略组
+## 修改共享配置
 
 1. 在自己的 Gist 打开并编辑 `mihomo-template.yaml`，保存。模板入口可从 Sub-Store「文件 → 双机场」的远程 URL 找到；本机受限目录另有 `template-edit-url.txt`。
-2. 按规则顺序修改 `rules`、`rule-providers` 或 `proxy-groups`。下载域名特例放在通用 GitHub、Google 等大类前面；规则按顺序匹配。
+2. DNS、TUN、监听端口等公共默认值也在此模板维护，GUI 客户端可以覆盖。NixOS 使用启用的 TUN 和 DNS；`tun.device` 保持 `Meta`，与本机防火墙信任接口一致。规则变更按顺序修改 `rules`、`rule-providers` 或 `proxy-groups`。下载域名特例放在通用 GitHub、Google 等大类前面；规则按顺序匹配。
 3. 组名更改时同步修改规则目标和其他组的引用。自动填节点的组保留 `x-sub-store-source`；需要节点优先排列时使用 `x-sub-store-nodes-first`。这些是生成器指令，成品中会移除。
 4. 本机 NixOS 运行下文更新服务，或等六小时更新任务；它请求本机 Sub-Store 生成并应用，无需先发布。确认组成员和实际节点选择。
 5. 要分发给订阅 Gist 的客户端，到 Sub-Store「同步」执行 `mihomo-dual.yaml`，或等唯一自动发布端的计划，确认成功后再刷新这些客户端。
@@ -65,6 +68,12 @@ Sub-Store 关闭「合并来源」、关闭缓存，远程文件失败时报错�
 机场只是增删节点时不必改模板：每次生成会重新获取两家订阅。机场 URL 变化时编辑对应原始订阅，再刷新本机或发布 Gist 成品；修改 `IKUUU` 或 `PPVPN` 这两个内部订阅名称时，必须同步调整生成脚本的来源名称。
 
 当前分类约定是：AI/Dev 只提供 PPVPN；GitHub 默认住宅；大流量只列 IKUUU；地区只保留美国，PPVPN 只保留住宅与机房分类。原名中的住宅/机房标记用于分类，分类不明确时停止生成，不静默改走另一家。策略组数量由共享模板决定，不是核心固定限制。
+
+`🏠 PPVPN 住宅` 与 `🏢 PPVPN 机房` 均以对应的自动测速项为首选，随后保留全部同类节点供手选；两个自动组分别使用 `pp-residential` 与 `pp-datacenter` 来源。腾讯、阿里、字节、百度、网易、国内影音、电商与社区的细分组统一归入 `🇨🇳 国内网站`，爱奇艺与哔哩哔哩继续共用独立组；Steam 的两组、规则目标和匹配顺序保持独立。
+
+`🪙 欧易` 使用 [geosite-okx](https://github.com/MetaCubeX/meta-rules-dat/blob/meta/geo/geosite/okx.list) 社区域名集合，在广告和国外总集合之前匹配。组内首选 `🪙 欧易自动`，随后为 `DIRECT` 和两家机场的全部节点。自动组使用现有 `all` 来源并加入 `DIRECT`，不按国家排除，按可用性与响应延迟选择出口；连接检测不验证账户业务权限。币安没有专属分组或规则集，按通用规则分流。
+
+三个自动组均使用 `url-test`，每 300 秒检测一次、超时 5000 毫秒、切换容差 50 毫秒；PPVPN 测试 `https://www.gstatic.com/generate_204` 并要求状态码 204，欧易测试 `https://www.okx.com/api/v5/public/time` 并要求状态码 200。三个组均设为 `hidden: true` 并放在分组列表最后，原手动组仍提供自动项和具体出口。各设备分别保存选择，已有设备刷新订阅后仍沿用原选择，需要使用自动模式时在对应原组中选中自动项。生成脚本不需要为这些组增加专用来源。
 
 大流量是域名分类，不是按速度或累计流量自动检测。同域 HTTPS 网页、Git clone 与大文件可能无法分开；下载特例覆盖容器、包、模型、Nix 缓存和若干发行版域名，但第三方镜像与重定向域名仍需按实际连接补充。MetaCubeX 社区规则集由各端 Mihomo 按 `rule-providers` 的 24 小时间隔更新，与六小时成品发布独立。
 
@@ -89,21 +98,21 @@ journalctl -u mihomo-config-update.service -n 30 --no-pager
 | 单元 / 文件 | 职责 |
 | --- | --- |
 | `mihomo.service` | 常驻核心；系统级单元，通过动态用户 `mihomo` 和网络能力运行 TUN |
-| `mihomo-config-seed.service` | 核心启动前，使用最后有效共享快照或 SOPS bootstrap；合成并校验启动配置后退出，不联网获取 |
-| `mihomo-config-update.service` | 请求本机 Sub-Store 生成，仅取 `proxies`、`proxy-groups`、`rule-providers`、`rules`；合成本机模板及控制密钥，内核校验、热加载并核对成员，成功后更新快照 |
+| `mihomo-config-seed.service` | 核心启动前，使用最后有效完整快照或 SOPS bootstrap；注入控制端和密钥、校验启动配置后退出，不联网获取 |
+| `mihomo-config-update.service` | 请求本机 Sub-Store 生成完整配置，仅覆盖本机控制端及密钥，内核校验、热加载并核对成员，成功后更新快照 |
 | `mihomo-config-update.timer` | 开机后 15 分钟首次触发，随后按距上次启动更新任务 6 小时触发；不为更新唤醒休眠笔记本 |
 | `host/base/mihomo.nix` | 上述单元的声明、依赖和命令参数；配置交付沿用 NixOS 原生 Mihomo 模块 |
 | `host/mihomo-config-sync.py` | 同一 Python 程序的 `seed` / `update` 模式；校验不依赖组名或节点前缀 |
 | `host/base/sops.nix`、`.sops.yaml` | SOPS 机密来源、接收者规则及 root-only 权限 |
 | `host/secrets/mihomo-gist.yaml` | 沿用密文内的 bootstrap，沿用 SSH host key 作为解密依据；旧 Gist URL 不部署 |
-| `/var/lib/mihomo-config/` | systemd 管理的 root 私有运行状态；`shared-lastgood.yaml` 是共享快照，`active.yaml` 是合成本机设置后的完整配置 |
+| `/var/lib/mihomo-config/` | systemd 管理的 root 私有运行状态；`shared-lastgood.yaml` 保存完整生成配置，`active.yaml` 是注入本机控制端和密钥后的启动配置 |
 | `/var/lib/sub-store/` | systemd 管理的 Sub-Store 私有数据库；包含订阅、脚本及发布/备份设置 |
 
-seed 与 update 都是 root 执行的 oneshot，平时没有更新脚本常驻；Mihomo 核心不以 root 常驻。系统级管理用于全机 TUN、登录前代理和系统级 SOPS；核心通过 systemd credential 接收有效配置，不直接读取原始 SOPS 文件。设计取舍见文末决策卡。
+seed 与 update 都是 root 执行的 oneshot，平时没有更新脚本常驻；Mihomo 核心不以 root 常驻。系统级管理用于全机 TUN、登录前代理和系统级 SOPS；核心通过 systemd credential 接收有效配置，不直接读取原始 SOPS 文件。共享配置不应携带本机密钥；更新器固定回环控制端，并移除共享来源中的额外 TLS、Unix socket 和 named pipe 控制入口。
 
-新单元使用 `mihomo-config-*`。只有 update 请求 Sub-Store；seed 只读快照/bootstrap，避免启动时等待需要代理联网的生成服务。本机已完成旧状态迁移并移除兼容逻辑；新机器应恢复 Sub-Store 加密备份，并用 bootstrap 引导。本机更新失败保留旧配置。Gist 模板管策略组与规则，Sub-Store 管机场来源和生成，NixOS 管本机网络设置；rebuild 不重写 Sub-Store 数据库。
+新单元使用 `mihomo-config-*`。只有 update 请求 Sub-Store；seed 只读快照/bootstrap，避免启动时等待需要代理联网的生成服务。从旧四字段快照升级时，seed 会明确记录源校验失败并保留现有 active 配置；首次 update 成功后写入完整快照，随后可离线启动。新机器应恢复 Sub-Store 加密备份，并用包含启用的 DNS/TUN 的完整 bootstrap 引导。本机更新失败保留旧配置。Gist 模板管完整公共配置，Sub-Store 管机场来源和生成，NixOS 管服务、网络权限与本机控制端密钥；rebuild 不重写 Sub-Store 数据库。
 
-日常规则、策略组与节点更新不需要 rebuild。修改本机 TUN/DNS、服务或更新脚本时，编辑仓库源文件，完成验证后由用户正常应用：
+日常 DNS、TUN、规则、策略组与节点更新不需要 rebuild，修改远端模板后执行 update 即可。首次切换到完整配置消费，或修改服务与更新脚本时，编辑仓库源文件，完成验证后由用户正常应用：
 
 ```bash
 cd ~/myNixOSConfig
@@ -142,5 +151,5 @@ Sub-Store 的 `substore-full-backup` 在本机手动运行；唯一自动发布�
 - [Mihomo 代理与本机排障](mihomo.md)
 - [本机 Sub-Store](sub-store.md)
 - [SOPS 机密管理](../security/sops.md)
-- [模板与成品分离决策](../../memory/cards/mihomo-template-distribution.md)（本机决策库，不进 Git）
+- [模板与成品分离决策](../../memory/cards/mihomo-template-distribution.md)（历史决策；其中四字段合并方案已由本文的完整配置消费替代）
 - [Wiki 首页](../README.md)

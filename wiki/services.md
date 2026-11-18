@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, sub-store, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-11-15
+updated: 2026-11-18
 ---
 
 # 系统服务
@@ -53,7 +53,7 @@ Note over Proxy,Desktop : 流量经TUN走代理，桌面应用通过系统代理
 - `services.tailscale` 在主桌面与 NextKDE 启动客户端及 `tailscaled` 服务，放行 UDP 41641；首次手动登录，保留现有 DNS。操作见 [Tailscale](networking/tailscale.md)。
 - `host/base/mihomo.nix` 使用原生 `services.mihomo` 以 `tunMode` 运行，WebUI 使用 `zashboard`。
 - Mihomo 由 `mihomo-config-seed.service` 准备启动配置，更新由 `mihomo-config-update.service` 处理；敏感凭据通过 systemd credential 传递，运行状态保存在 `/var/lib/mihomo-config/`。
-- seed 从快照或 bootstrap 合成并校验启动配置；update 每 6 小时请求本机 Sub-Store，用最新 Gist 模板和机场节点生成成品，合成本机设置、校验并热加载。仅 update 启动并等待 Sub-Store，Mihomo 启动不依赖它。模板和运行时流程见 [Mihomo 配置修改与分发](networking/mihomo-distribution.md)。
+- seed 从快照或 bootstrap 合成并校验启动配置；update 每 6 小时请求本机 Sub-Store，用最新 Gist 模板和机场节点生成成品，消费完整结果，仅注入本机控制端和密钥，校验并热加载。仅 update 启动并等待 Sub-Store，Mihomo 启动不依赖它。模板和运行时流程见 [Mihomo 配置修改与分发](networking/mihomo-distribution.md)。
 - 开启 IPv4/IPv6 转发，启用 `nftables` 防火墙，仅放行必要端口（TCP/UDP 53317，信任 `Meta` 接口）。
 - 附带网络诊断工具：`dnsutils`、`iputils`、`tcpdump`、`mtr`、`nmap`、`iperf3`、`ethtool`、`iptables`。
 

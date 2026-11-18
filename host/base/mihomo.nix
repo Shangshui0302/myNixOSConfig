@@ -7,7 +7,6 @@ let
     "${python}/bin/python3"
     "${../mihomo-config-sync.py}"
     mode
-    "--template" "${../mihomo-config.yaml.in}"
     "--state-dir" stateDir
     "--mihomo" (lib.getExe config.services.mihomo.package)
   ] ++ (if mode == "seed" then [
@@ -38,7 +37,7 @@ in
   systemd.services.mihomo = {
     requires = [ "mihomo-config-seed.service" ];
     after = [ "mihomo-config-seed.service" ];
-    restartTriggers = [ ../mihomo-config.yaml.in ];
+    restartTriggers = [ ../mihomo-config-sync.py ];
   };
 
   systemd.services.mihomo-config-seed = {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep a validated shared snapshot and a locally composed Mihomo config."""
+"""Keep a validated full Sub-Store snapshot with private local controller settings."""
 
 import argparse
 import errno
@@ -19,7 +19,7 @@ import urllib.request
 import yaml
 
 
-SHARED_KEYS = ("proxies", "proxy-groups", "rule-providers", "rules")
+ROUTING_KEYS = ("proxies", "proxy-groups", "rule-providers", "rules")
 BUILTIN_POLICIES = {"DIRECT", "REJECT", "REJECT-DROP", "PASS", "COMPATIBLE", "GLOBAL"}
 MAX_BYTES = 10 * 1024 * 1024
 
@@ -138,11 +138,11 @@ def validate_rules(rules, providers, policies):
             raise ValueError("rule references an unknown rule provider")
 
 
-def shared_fields(raw):
+def source_config(raw):
     source = read_yaml(raw)
-    if any(key not in source for key in SHARED_KEYS):
+    if any(key not in source for key in ROUTING_KEYS):
         raise ValueError("shared YAML is incomplete")
-    proxies, groups, providers, rules = (source[key] for key in SHARED_KEYS)
+    proxies, groups, providers, rules = (source[key] for key in ROUTING_KEYS)
     if not isinstance(proxies, list) or not proxies or not isinstance(groups, list) or not groups or not isinstance(providers, dict) or not providers or not isinstance(rules, list) or not rules:
         raise ValueError("shared YAML fields must have valid types and be non-empty")
 
@@ -166,7 +166,13 @@ def shared_fields(raw):
         raise ValueError("rule providers are invalid")
     group_members(proxies, groups)
     validate_rules(rules, providers, set(proxy_names) | set(group_names) | BUILTIN_POLICIES)
-    return {key: source[key] for key in SHARED_KEYS}
+    # This host provides transparent proxying and DNS. Older snapshots contain
+    # only routing fields; seed keeps the previous active config until update
+    # obtains a complete source, rather than silently disabling TUN or DNS.
+    for key in ("tun", "dns"):
+        if not isinstance(source.get(key), dict) or source[key].get("enable") is not True:
+            raise ValueError("source must include enabled " + key)
+    return source
 
 
 def yaml_bytes(value):
@@ -229,14 +235,17 @@ def fetch_sub_store(url):
     return body
 
 
-def compose(template, shared, secret):
+def compose(source, secret, controller):
     if not secret:
         raise ValueError("MIHOMO_SECRET is empty")
-    local = read_yaml(template.read_bytes())
-    local["secret"] = secret
-    local.pop("proxy-providers", None)
-    local.update(shared)
-    return yaml_bytes(local)
+    config = dict(source)
+    # Keep management on the service-owned endpoint even if a shared template
+    # contains controller settings intended for a different client.
+    for key in ("external-controller-tls", "external-controller-unix", "external-controller-pipe"):
+        config.pop(key, None)
+    config["external-controller"] = urllib.parse.urlsplit(controller).netloc
+    config["secret"] = secret
+    return yaml_bytes(config)
 
 
 def atomic_write(path, data):
@@ -312,7 +321,6 @@ def verify_running(controller, shared, auth_secret):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("mode", choices=("seed", "update"))
-    p.add_argument("--template", type=Path, required=True)
     p.add_argument("--bootstrap", type=Path, help="optional local shared-config snapshot used only by seed")
     p.add_argument("--state-dir", type=Path, required=True)
     p.add_argument("--mihomo", required=True)
@@ -333,15 +341,15 @@ def main():
         try:
             if args.mode == "seed":
                 if previous_shared is not None:
-                    shared = shared_fields(previous_shared)
+                    shared = source_config(previous_shared)
                 elif args.bootstrap is not None and args.bootstrap.is_file():
-                    shared = shared_fields(args.bootstrap.read_bytes())
+                    shared = source_config(args.bootstrap.read_bytes())
                 else:
                     raise RuntimeError("no shared snapshot available for seed; provide --bootstrap")
             else:
-                shared = shared_fields(fetch_sub_store(args.sub_store_url))
+                shared = source_config(fetch_sub_store(args.sub_store_url))
             shared_data = yaml_bytes(shared)
-            candidate = compose(args.template, shared, os.environ["MIHOMO_SECRET"])
+            candidate = compose(shared, os.environ["MIHOMO_SECRET"], args.controller)
         except Exception:
             if args.mode == "seed" and previous is not None:
                 print("Mihomo seed retained existing active config after source failure", file=sys.stderr)
@@ -362,7 +370,7 @@ def main():
         if args.mode == "seed":
             atomic_write(shared_path, shared_data)
             atomic_write(active_path, candidate)
-            print("Mihomo startup config composed from current local template")
+            print("Mihomo startup config prepared from complete snapshot and local credentials")
             return
 
         if previous is None:
@@ -384,11 +392,11 @@ def main():
             if not rejected_without_apply:
                 try:
                     reload_config(args.controller, previous, new_secret)
-                    verify_running(args.controller, shared_fields(previous), old_secret)
+                    verify_running(args.controller, source_config(previous), old_secret)
                 except Exception:
                     try:
                         reload_config(args.controller, previous, old_secret)
-                        verify_running(args.controller, shared_fields(previous), old_secret)
+                        verify_running(args.controller, source_config(previous), old_secret)
                     except Exception as rollback_error:
                         raise RuntimeError("controller rollback could not be verified; active file was retained") from rollback_error
             if previous_shared is not None and shared_path.read_bytes() != previous_shared:
