@@ -2,7 +2,7 @@
 title: VS Code 集成
 category: 开发
 tags: [vscode, editor, home-manager, dev, matugen, darkman]
-updated: 2026-11-15
+updated: 2026-11-18
 ---
 
 # VS Code 集成
@@ -84,28 +84,29 @@ VS-->>Dev : 展示结果
 
 VS Code 常搭配 AI 辅助扩展（补全、对话）使用。本仓库的 AI CLI 工具集中在 `home/dev/ai.nix`，走统一来源与安全审查流程，见反链的 memory 卡；扩展本身在 VS Code 商店安装，与 Nix 管理的 CLI 工具互不冲突。
 
-Agent Orchestrator 提供主代理派工、开发看板和审查流程，并通过专用桥接使用 Arch DSH，试用方式见 [Agent Orchestrator](agent-orchestrator.md)。
-
-当前 ai.nix 管理的工具：`codex`、`codex-desktop`，以及 Google Antigravity CLI 与 Antigravity 2.0 Agents 桌面端。Antigravity CLI 在终端用 `agy` 启动；Agents 界面在应用菜单选择 Antigravity，或运行 `antigravity`。这两个包来自锁定的 nixpkgs，未安装 `antigravity-ide`。首次使用时按应用提示完成登录。
-
-Codex 桌面端通过 Home Manager 的 XDG 自启动项在登录桌面后启动，复用包自带的 `codex-desktop.desktop`。它不是开机时运行的 CLI 服务；关闭窗口后不会由本配置强制拉起。取消自启动时，从 `home/dev/ai.nix` 的 `xdg.autostart.entries` 删除对应入口，再应用配置。
-
-另外提供以下 AI 工具；除表中标明的本地包和独立 input 外，版本跟随仓库锁定的 nixpkgs。登录与项目授权在首次启动后按各应用提示完成：
+当前列出的 AI 工具；除注明外均跟随 `nixpkgs-latest`，登录与项目授权在首次启动后按各应用提示完成：
 
 | 工具 | 启动命令 | 包来源 |
 |------|----------|--------|
+| Codex CLI | `codex` | `codex` |
+| Codex 桌面端 | `codex-desktop` | `codex-desktop-linux` input（latest） |
 | Pi 编程代理 | `pi` | `pi-coding-agent` |
-| GitHub Copilot CLI | `copilot` | `github-copilot-cli` |
-| Kiro CLI | `kiro-cli` | `kiro-cli` |
 | Paseo CLI／服务端 | `paseo`、`paseo-server` | `paseo` |
 | Paseo 桌面端 | `paseo-desktop` | `paseo.desktop` |
-| Herdr 桌面版 | `herdr-app` | 本地打包官方发布物 0.1.11 |
-| Herdr 桌面运行核心 | `herdr-core`、`hc` | 本地打包官方发布物 0.1.16 |
-| Herdr 终端工作区 | `herdr` | `herdr` |
+| Antigravity CLI | `agy` | `antigravity-cli` |
+| Antigravity Agents | `antigravity` | `antigravity-hub` |
+| Agent Reach | `agent-reach` | 本地包 |
+| OpenCLI | `opencli` | 本地包 |
+| mcporter | `mcporter` | `mcporter` |
+| DSH-X | `dsh-x` | 本地包 |
+| Mnemon | `mnemon` | 本地包 |
+| Agentero | `agentero` | 本地包（`office.nix`） |
 
-Paseo 和 Herdr 可以用于本地目录，无需为项目添加 GitHub remote。配置只安装程序，不注册常驻服务；Paseo 启动后的 daemon 和跨设备连接按应用内流程管理。Herdr 可在项目目录运行 `herdr`；Nix 包装的代理可能遇到[状态识别问题](https://github.com/herdrdev/herdr/issues/803)，应分别确认终端内代理运行和侧栏状态。
+Antigravity CLI 在终端用 `agy` 启动；Agents 界面在应用菜单选择 Antigravity，或运行 `antigravity`。未安装 `antigravity-ide`。
 
-Herdr 桌面版从应用菜单的 **Herdr** 或 `herdr-app` 启动，使用独立的 `herdr-core`，与原有 `herdr` 终端版并存。桌面版和核心由 Nix 更新；不运行应用内安装脚本。官方发布版默认开启使用统计，可在 Settings → Privacy 关闭。当前配置提供启动器和运行依赖，真实桌面启动与代理交互需在应用配置后验证。
+Codex 桌面端通过 Home Manager 的 XDG 自启动项在登录桌面后启动，复用包自带的 `codex-desktop.desktop`。它不是开机时运行的 CLI 服务；关闭窗口后不会由本配置强制拉起。取消自启动时，从 `home/dev/ai.nix` 的 `xdg.autostart.entries` 删除对应入口，再应用配置。
+
+Paseo 可以用于本地目录，无需为项目添加 GitHub remote。配置只安装程序，不注册常驻服务；Paseo 启动后的 daemon 和跨设备连接按应用内流程管理。
 
 Pi 使用 `~/.pi/agent/` 中的设置和登录状态；安装程序不会覆盖已有文件。进入项目目录后运行 `pi` 即可启动。程序版本跟随 `flake.lock`，不使用 `pi update` 更新 Nix 安装的程序。
 

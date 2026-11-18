@@ -113,17 +113,6 @@ in
       'create destroy exec list list-generations login mount run show-ip start stop'
     complete -c nixos-container -a '(__fish_bash_missing_help_options)'
 
-    complete -c copilot -n '__fish_use_subcommand' -a \
-      'completion help init login mcp plugin plugins skill update version'
-    complete -c copilot -l model -x
-    complete -c copilot -l effort -x -a 'low medium high xhigh'
-    complete -c copilot -l reasoning-effort -x -a 'low medium high xhigh'
-    complete -c copilot -l prompt -r
-    complete -c copilot -l resume -r
-    complete -c copilot -l share
-    complete -c copilot -l output-format -x -a 'text json'
-    complete -c copilot -l mode -x -a 'interactive autopilot plan'
-
     complete -c npm -n '__fish_use_subcommand' -a \
       'access adduser audit bugs cache ci completion config dedupe deprecate diff \
       dist-tag docs doctor edit exec explain explore find-dupes fund get help \

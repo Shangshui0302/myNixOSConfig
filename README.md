@@ -24,7 +24,7 @@ Noctalia 启动器保留该 PATH，供桌面应用继承。路径修改需应用
 | 终端 | Foot，由 Home Manager 管理，半透明背景与合成器模糊 |
 | 音频 | PipeWire（PulseAudio/ALSA）；JACK 程序按需通过 `pw-jack` 启动 |
 | 文件夹默认打开 | 主桌面 Strata；NextKDE 变体 Dolphin |
-| AI 工具 | Codex、Pi、Copilot CLI、Kiro CLI 与 Antigravity CLI、Antigravity 2.0 Agents 界面；Paseo 跨设备工作区、Herdr 桌面版与终端代理管理；AO 自主开发协作与 Arch DSH 桥接；Agentero AI 文档工作区；Agent Reach 与 OpenCLI 平台访问工具；Token Monitor 由 Arch 安装并通过 Distrobox 导出 |
+| AI 工具 | Codex、Pi、Antigravity CLI/Agents、Paseo、Agentero、Agent Reach、OpenCLI、mcporter、DSH-X、Mnemon；Token Monitor 由 Arch 安装并通过 Distrobox 导出 |
 | 电子书与资料 | Zotero 文献管理；[DigUp](wiki/productivity/digup.md) 本地语义文件搜索（主桌面 `Super+Shift+Space`） |
 | 面板 | Noctalia，可切换 Caelestia |
 | 深浅模式 | Darkman 状态/portal + Matugen 运行时配色 |
@@ -110,7 +110,6 @@ nix fmt -- --check flake.nix
 - [Memory 索引](memory/INDEX.md)：查询非显而易见的配置决策。
 - [项目约束](wiki/constraints.md)：包管理、变体、secrets 和验证规则。
 - [Nix 手工打包](wiki/dev/nix-packaging.md)：`$nix-packaging`、本地派生和验证流程。
-- [Agent Orchestrator](wiki/dev/agent-orchestrator.md)：Nix 安装、Arch DSH 接入与隔离试用。
 - [Agent Reach 与 OpenCLI](wiki/dev/agent-reach.md)：平台访问、Chrome 扩展连接与字幕提取。
 - [Token Monitor](wiki/dev/token-monitor.md)：Arch desktop 与 Distrobox 导出、登录自启、托盘弹窗与 Noctalia 连接。
 - [Distrobox](wiki/dev/distrobox.md)：容器镜像、持久化 home、共用 Fish 配置与各环境独立的 PATH，以及 Home Manager 管理的容器启动器入口。

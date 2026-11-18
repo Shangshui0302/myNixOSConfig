@@ -15,10 +15,6 @@ let
   mnemon = pkgsLatest.callPackage ../../local-deriv/mnemon.nix { };
 in
 {
-  imports = [
-    ./agent-orchestrator.nix
-  ];
-
   # DSH-X generates its CLI entry point outside the Nix store.
   home.sessionPath = [ "${config.xdg.configHome}/DSH/bin" ];
 
@@ -26,13 +22,8 @@ in
     codex
     codexDesktop
     pi-coding-agent
-    github-copilot-cli
-    kiro-cli
     paseo
     paseo.desktop
-    herdr
-    (pkgs.callPackage ../../local-deriv/herdr-app.nix { })
-    (pkgs.callPackage ../../local-deriv/herdr-core.nix { })
     antigravity-cli
     antigravity-hub
     agentReach

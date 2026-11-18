@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-11-12
+updated: 2026-11-18
 ---
 # Nix 手工打包
 
@@ -173,9 +173,6 @@ sudo nixos-rebuild switch --flake .
 | Hypr Dynamic Cursors | `nix build path:.#hypr-dynamic-cursors` | `hypr-dynamic-cursors-src` 跟踪上游 main，源码由 `flake.lock` 锁定并复用 nixpkgs 插件构建器；[更新流程](../desktop/hyprland.md#光标) |
 | Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
 | OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
-| Agent Orchestrator | `nix build path:.#agent-orchestrator-distrobox` | 官方 AppImage 解包后适配 Nix 动态库，附 Arch DSH 桥；原始桌面包为 `agent-orchestrator`，见 [AO](agent-orchestrator.md) |
-| Herdr 桌面版 | `nix build path:.#herdr-app` | 固定官方 Linux 0.1.11 发布物；包装器提供 `herdr-core`，使用说明见 [AI 工具](vscode.md#ai-辅助扩展) |
-| Herdr 核心 | `nix build path:.#herdr-core` | 固定官方 Linux 0.1.16 静态可执行文件，提供 `herdr-core` 与 `hc` |
 | DigUp | `nix build path:.#digup` | 固定官方 Linux 0.7.0-beta.3 `.deb`，修正动态库路径并保留 Vulkan 后端；见 [DigUp 本地搜索](../productivity/digup.md) |
 | DSH-X | `nix build path:.#dsh-x` | 固定 0.1.26-rc.5 AppImage，解包并适配 Nix 动态库及 tar 路径，见 [DSH-X](dsh-x.md) |
 | DSH-X 专用 Node | `nix build path:.#dsh-x-node` | 固定官方 Node 24.21.0 及同包 npm/npx，仅供 DSH-X 使用；保留私有模块探测需要的符号，运行时边界见 [DSH-X](dsh-x.md#打包要点) |

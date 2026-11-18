@@ -93,7 +93,6 @@
         inherit pkgs;
         wallpaper = ./assets/nixos_logo.png;
       };
-      agentOrchestrator = pkgs.callPackage ./local-deriv/agent-orchestrator.nix { };
     in
     {
       packages.${system} = {
@@ -117,14 +116,8 @@
         kmusic = pkgs.callPackage ./local-deriv/kmusic.nix { };
         # Upstream defaults; host/base/input-method.nix selects this host's options.
         fcitx5-wetypex = inputs.wetypex.packages.${system}.fcitx5-wetypex;
-        agent-orchestrator = agentOrchestrator;
-        agent-orchestrator-distrobox = pkgs.callPackage ./local-deriv/agent-orchestrator-distrobox.nix {
-          inherit agentOrchestrator;
-        };
         agentero = pkgsLatest.callPackage ./local-deriv/agentero.nix { };
         digup = pkgs.callPackage ./local-deriv/digup.nix { };
-        herdr-app = pkgs.callPackage ./local-deriv/herdr-app.nix { };
-        herdr-core = pkgs.callPackage ./local-deriv/herdr-core.nix { };
         dsh-x = pkgsLatest.callPackage ./local-deriv/dsh-x.nix { };
         dsh-x-node = inputs.self.packages.${system}.dsh-x.runtimeNode;
         mnemon = pkgsLatest.callPackage ./local-deriv/mnemon.nix { };

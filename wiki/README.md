@@ -2,7 +2,7 @@
 title: Wiki 首页
 category: 顶层
 tags: [index, moc]
-updated: 2026-11-15
+updated: 2026-11-18
 ---
 
 # Wiki — NixOS 配置操作手册
@@ -56,7 +56,6 @@ updated: 2026-11-15
 |------|------|
 | [Neovim](dev/nvim.md) | 编辑器：按键、插件、LSP、工作流 |
 | [VS Code](dev/vscode.md) | VS Code 集成、AI 工具、扩展 |
-| [Agent Orchestrator](dev/agent-orchestrator.md) | 自主开发协作、任务看板与 Arch DSH 接入 |
 | [DSH-X](dev/dsh-x.md) | 宿主 DSH 启动器、Mnemon 后端与 LSP 工具 |
 | [Agent Reach 与 OpenCLI](dev/agent-reach.md) | 平台检索、Chrome 扩展连接、YouTube 字幕 |
 | [Token Monitor](dev/token-monitor.md) | 容器内登录自启、托盘弹窗、Noctalia Hub 连接 |

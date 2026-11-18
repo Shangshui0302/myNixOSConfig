@@ -2,7 +2,7 @@
 title: DSH-X 桌面启动器
 category: 开发与工具
 tags: [dsh, electron, mnemon, lsp, nix]
-updated: 2026-11-13
+updated: 2026-11-18
 ---
 
 # DSH-X（DSH 桌面启动器）
@@ -49,8 +49,7 @@ DSH-X 的默认目录与现有 profile 相关位置如下；共享目录不等�
 
 ## 打包要点
 
-[dsh-x.nix](../../local-deriv/dsh-x.nix) 走 `appimageTools.extract` + `autoPatchelfHook` + `makeWrapper`，
-与 [agent-orchestrator.nix](../../local-deriv/agent-orchestrator.nix) 同一范式。运行时约定如下：
+[dsh-x.nix](../../local-deriv/dsh-x.nix) 走 `appimageTools.extract` + `autoPatchelfHook` + `makeWrapper`。运行时约定如下：
 
 - **`/usr/bin/tar` 硬编码**：`shell/core-fetch.mjs` 的 `tarCommand()` 在非 Windows 分支
   返回字面量 `/usr/bin/tar`，NixOS 没有该路径，核心包解压会失败。用 `substituteInPlace`
