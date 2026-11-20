@@ -2,7 +2,7 @@
 title: Mihomo 代理
 category: networking
 tags: [mihomo, tun, proxy, nftables, vpn]
-updated: 2026-11-18
+updated: 2026-11-20
 ---
 
 # Mihomo 代理
@@ -74,10 +74,10 @@ rule-providers (type: http, MRS): 每 24h 自动更新社区规则集
 
 ```bash
 cd ~/myNixOSConfig
-sudo nixos-rebuild switch --flake path:.#MechRevo-NixOS
+sudo nixos-rebuild switch --flake .#MechRevo-NixOS
 ```
 
-`path:.` 使尚未加入 Git 的新文件也参与本次构建；应用会包含当前仓库的其他已有修改。无需额外运行安装脚本。系统配置会自动启用更新定时器，后续不必手动刷新。每次 rebuild 不保证立即重新生成订阅。
+这里使用 Git flake；若更改依赖新文件，先按[候选源码流程](../architecture/flake.md#未跟踪文件的候选源码)验证，再正常纳入 Git 后应用。无需额外运行安装脚本。系统配置会自动启用更新定时器，后续不必手动刷新。每次 rebuild 不保证立即重新生成订阅。
 
 更新服务为 `Type=oneshot`，执行完即退出，两次任务之间没有同步脚本常驻。定时器在开机后 15 分钟、随后距上次启动更新服务 6 小时触发；未启用 `WakeSystem`，不会为更新唤醒休眠中的笔记本，单调计时在挂起期间暂停。候选配置不变时跳过核心校验与热加载；有变化才运行校验并更新。网络异常可能延长等待，但不是持续占用 CPU。
 

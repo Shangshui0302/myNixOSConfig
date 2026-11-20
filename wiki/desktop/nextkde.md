@@ -2,7 +2,7 @@
 title: NextKDE 桌面变体
 category: 桌面
 tags: [nextkde, kos, plasma, sddm, specialisation]
-updated: 2026-11-02
+updated: 2026-11-20
 ---
 
 # NextKDE 桌面变体
@@ -14,13 +14,13 @@ NextKDE 是独立的 NixOS specialisation，使用 Plasma Wayland、SDDM 和 KOS
 NextKDE 上游提交固定在 `3fa1d7006869bbd3404a05d362c6e6028e0fe3da`，使用根 flake 的 nixpkgs。该开发提交的上游版本字段仍为 `0.1.0-dev`，实际身份以完整 revision 为准。可单独构建包：
 
 ```bash
-nix build path:.#nextkde -L --no-link --print-out-paths
+nix build .#nextkde -L --no-link --print-out-paths
 ```
 
 在修改尚未合并前，以下命令须在本任务 worktree 中执行；确认希望安装候选配置后，由用户手动运行：
 
 ```bash
-sudo nixos-rebuild boot --flake path:.#MechRevo-NixOS
+sudo nixos-rebuild boot --flake .#MechRevo-NixOS
 ```
 
 然后重启，在启动菜单选择该代的 `nextkde` 变体，进入 SDDM 并登录 Plasma。`boot` 为下次启动准备配置，不会在当前会话切换显示管理器。返回主桌面时重启并选择普通主配置；也可选择旧 generation。具体菜单名称以实际显示为准。
@@ -56,7 +56,7 @@ KDE 强调色与深浅模式驱动独立的应用颜色分发，缓存位于 `~/
 独立构建入口：
 
 ```bash
-nix build path:.#nextkde-shell path:.#nextkde-sync-shell path:.#nextkde-apps path:.#nextkde-spatial-models path:.#kmusic --no-link
+nix build .#nextkde-shell .#nextkde-sync-shell .#nextkde-apps .#nextkde-spatial-models .#kmusic --no-link
 ```
 
 `Meta+Space` 打开启动器，`Meta+B` 打开控制中心；这些快捷键由 KOS 注册。Dock 与外观保留当前选择，可继续在 KOS 设置中调整。
@@ -93,7 +93,7 @@ Home Manager 不生成配置备份；切回主桌面时直接接管 GTK4 主题�
 
 ## 故障排查
 
-- **Fcitx5 强调色变化，以为 KDE 正在运行 Matugen**：旧版本沿用主桌面留下的 Matugen 色板。当前 `kos-colors` 从 KDE 强调色生成独立的 `mellow-kde` / `mellow-kde-dark`，不改主桌面主题；模式变化只切换已生成的色板。
+- **Fcitx5 强调色变化，以为 KDE 正在运行 Matugen**：旧版本沿用主桌面留下的 Matugen 色板。当前 `kos-colors` 从 KDE 强调色生成独立的 `mellow-kde` / `mellow-kde-dark`，不改主桌面主题；两套产物完整时，模式变化只切换已生成的色板。若缺少生成文件或 Fcitx 主题素材，可运行 `kos-colors` 按当前 KDE 设置重建，无需删除整个缓存。
 - **重启后图标、装饰回到 Breeze**：当前版本补齐可覆盖的 WhiteSur 全局包默认值；先前仅选择组件或明暗主题对、没有有效全局包选择时，Plasma 可能以 Breeze 生成登录默认值。已有用户选择仍优先，重启后的实际持久性须登录验收。
 
 - **登录后没有面板或 Dock，QuickShell 未启动**：若日志出现 `kos-shell.service/start deleted to break ordering cycle`，旧配置的 PIM 服务仍依赖 `graphical-session.target`，与 Plasma 工作区启动顺序形成循环。修复版本完整替换 PIM unit 并保留 D-Bus 就绪语义；空的 `After=` 覆盖项无法删除已有依赖。安装新版并重新登录后检查 `systemctl --user status kos-shell kos-pim-service`。
@@ -103,7 +103,7 @@ Home Manager 不生成配置备份；切回主桌面时直接接管 GTK4 主题�
 - **Dolphin 出现黑白交替行、文字看不清或不跟随深浅色**：旧的 `dolphinrc` 可能固定了 Matugen 配色，与当前 KDE 配色混用。新版 NextKDE 通过 `/etc/xdg/dolphinrc` 的 `[UiSettings] ColorScheme[$i]=` 覆盖该选择；安装后重新打开 Dolphin，应用级配色应为跟随系统。
 - **WhiteSur 配色切换后变回微风**：锁定的上游 KOS 将应用配色写死为 Breeze。本变体使用 `nextkde-platform-whitesur` 修正为 WhiteSur 明暗配色，并安装 `whitesur-kde` 提供资源。安装新版并重新登录后，在 KOS 中切换一次明暗即可应用；Dolphin 保持“跟随系统”，无需单独选择 WhiteSur。这里只切换配色，不应用完整全局主题，也不替换图标、窗口装饰或控件样式。Home Manager 接管用户目录中的 WhiteSur 明暗色板，激活时替换遗留同名文件，避免旧色板覆盖系统包或阻断配置部署。
 - **系统设置、搜索中的输入法候选框一直是浅色**：新版会话改走 KWin 原生输入协议，需要重新登录使应用获得新环境；Fcitx 的 `UseDarkTheme=True` 才会跟随系统。少数旧 Qt 5 XWayland 应用若无法输入，可仅对该应用指定 `QT_IM_MODULE=fcitx`，不要重新设置整个会话。
-- **sudo 报缺少 setuid 权限**：旧版 KOS 服务的精简 PATH 会误用 `/run/current-system/sw/bin/sudo`。用 `/run/wrappers/bin/sudo nixos-rebuild boot --flake path:.#MechRevo-NixOS` 安装修复后，重启进入新版 NextKDE；已有终端不会自动获得新环境。正常情况下 `command -v sudo` 应输出 `/run/wrappers/bin/sudo`，无需修改 sudo 文件权限。
+- **sudo 报缺少 setuid 权限**：旧版 KOS 服务的精简 PATH 会误用 `/run/current-system/sw/bin/sudo`。用 `/run/wrappers/bin/sudo nixos-rebuild boot --flake .#MechRevo-NixOS` 安装修复后，重启进入新版 NextKDE；已有终端不会自动获得新环境。正常情况下 `command -v sudo` 应输出 `/run/wrappers/bin/sudo`，无需修改 sudo 文件权限。
 - **登录后界面异常**：先检查是否从启动菜单进入了 `nextkde`，并查看 `journalctl --user -b` 中 KOS 和 Plasma 的日志。系统构建成功本身不能证明桌面运行正常。
 - **效果、装饰或壁纸不符合预期**：检查上述两个用户配置文件是否已有覆盖项，并与 `/etc/xdg/` 中的默认值比较；按需自行调整。
 - **目录打开了其他程序**：用户的 `~/.config/mimeapps.list` 中已有目录关联可能优先于系统默认值。详见[文件管理器与归档工具](../productivity/files.md)。

@@ -2,12 +2,12 @@
 title: 深色模式与动态配色
 category: desktop
 tags: [darkmode, darkman, matugen, gtk, qt, portal, btop, yazi, mpv, modernz, zellij, nvim, obsidian, vscode, strata]
-updated: 2026-11-13
+updated: 2026-11-20
 ---
 
 # 深色模式与动态配色
 
-主桌面由 **Darkman** 保存唯一的深浅色状态；它同时提供 XDG Settings portal，并按成都坐标的日出日落自动调度。Mihomo 不参与定位：Darkman 使用固定坐标，不读取代理出口 IP。
+主桌面由 **Darkman** 保存唯一的深浅色状态；它同时提供 XDG Settings portal，并按成都坐标的日出日落自动调度。Mihomo 不参与定位：Darkman 使用固定坐标，不读取代理出口 IP。主桌面的 Home Manager 通过 `services.darkman.scripts` 安装 `darkman/10-theme-apply`，和 `~/.local/bin/theme-apply` 指向同一可执行文件。`services.darkman.package = null`，不另装包或声明 HM 用户服务；Settings portal 仍由系统配置提供。
 
 ```
 darkman set/toggle
@@ -29,7 +29,9 @@ darkman set/toggle
 
 主桌面继续使用 Darkman → 壁纸取色 → Matugen → `theme-apply`，缓存为 `~/.cache/wallpaper-colors/`。NextKDE 使用 KDE/KOS 壁纸取色 → `kdeglobals` 原始强调色与实际窗口底色 → systemd 文件触发 → `kos-colors` 按需调用 Matugen，缓存为 `~/.cache/kos-colors/`；两个变体不同时运行各自的分发服务。
 
-`kos-colors.path` 由已有的 systemd 监测 `~/.config/kdeglobals`，变化时运行一次 `kos-colors.service`；登录也同步一次。没有额外的常驻监听进程，不轮询壁纸，不依赖 Python D-Bus 模块。读取 `[General] AccentColor`，避免将 Portal 返回的选中背景色再次取色；未设置自定义强调色时回退到当前配色的选中背景。仅强调色或模板变化时重新生成明暗两套色板，单独切换深浅模式复用色板。输出完整后原子切换指针，只保留当前一代，不生成备份；配置尚未完整或渲染失败时保留已有输出，下一次变化或手动运行时重试。
+`kos-colors.path` 由已有的 systemd 监测 `~/.config/kdeglobals`，变化时运行一次 `kos-colors.service`；登录也同步一次。没有额外的常驻监听进程，不轮询壁纸，不依赖 Python D-Bus 模块。读取 `[General] AccentColor`，避免将 Portal 返回的选中背景色再次取色；未设置自定义强调色时回退到当前配色的选中背景。同步器拿到缓存锁后才读取 `kdeglobals`，晚拿锁的请求不会把先前读到的旧色写回来。强调色、模板未变且两套产物齐全时，单独切换深浅模式复用色板；模板产物或 Fcitx 静态资源缺失、为空时，下次同步重建两套。输出完整后原子切换指针，只保留当前一代，不生成备份；配置尚未完整或渲染失败时保留已有输出，下一次变化或手动运行时重试。
+
+Home Manager 激活预演（`DRY_RUN`）不执行这两条链的主题写入步骤：不初始化 Darkman、GTK、Kvantum 或 Waypaper，不替换 Fcitx5 主题目录，也不调用 `theme-apply` 或 `kos-colors`。`theme-activation` 检查在临时 HOME 运行这些步骤，不代表整次 HM 激活或真实桌面已验证。
 
 主 DE 和 NextKDE 的 btop、Zellij、Yazi 分别使用 `matugen`、`matugen`、`matugen-runtime`。
 
@@ -83,7 +85,7 @@ journalctl --user -u darkman -b
 - **Zellij**：`programs.zellij` 使用固定主题名 `matugen`；`theme-apply` 按当前 Darkman 模式，将缓存中的 `light/zellij/theme.kdl` 或 `dark/zellij/theme.kdl` 原子复制到 `~/.config/zellij/themes/matugen.kdl`。Zellij 0.45.1 支持从 `CONFIG_DIR/themes` 加载主题并监视主题文件，运行中的会话通常可以直接刷新；若实例未刷新，重新连接会话即可。这里不依赖终端上报的 CSI 2031 色彩状态，因为 Darkman 才是主桌面的唯一模式源。
 - **Neovim**：`home/dev/nvim/init.lua` 读取 `~/.cache/matugen/nvim-colors.lua`，用它为 Snacks dashboard、状态栏和模式色提供重点色；`theme-apply` 按当前模式从壁纸缓存发布文件。壁纸或模式变化后重启 Neovim，或在运行中的实例执行 `:MatugenReload`。
 - **Foot**：由 `home/de/foot.nix` 定义固定深色配色，不随壁纸变化。
-- **Fcitx5**：系统级 ClassicUI 配置是回退值；Home Manager 上游模块安装 `both-blur` 两套 Mellow 静态资源并管理 Matugen 模板，`theme-apply` 为用户目录生成两套完整 `theme.conf` 和 `highlight.svg`。完整配置避免用户层颜色片段遮蔽 profile 中的布局；壁纸素材变化时重启 Fcitx5，单纯模式切换优先使用 `fcitx5-remote --check -r`。
+- **Fcitx5**：系统级 ClassicUI 配置是回退值；Home Manager 上游模块安装 `both-blur` 两套 Mellow 静态资源并管理 Matugen 模板，`theme-apply` 为用户目录生成两套完整 `theme.conf` 和 `highlight.svg`。两套 `theme.conf` 必须完整；另一个文件 `classicui.conf` 只更新三个全局主题键。主桌面首次创建时默认竖排，已有文件中的横排、字体和其他偏好保留。壁纸素材变化时重启 Fcitx5，单纯模式切换优先使用 `fcitx5-remote --check -r`。
 
 Obsidian 和 VS Code 已取消 Matugen 专属色板的生成、缓存校验及分发。2026-10-29 已单独清理本机的 VS Code Matugen 扩展、色板及两者的历史生成缓存；Obsidian 的 `Matugen Palette.css`、旧版 `matugen.css` 和对应片段启用项也已移除。应用自选主题和其它插件保留。同日已按用户要求删除此次清理的临时备份，不保留持续备份机制。
 
@@ -93,7 +95,7 @@ Obsidian 和 VS Code 已取消 Matugen 专属色板的生成、缓存校验及�
 
 `theme-apply` 将壁纸文件内容的 SHA-256、Matugen 版本、模板配置和缓存格式组合成缓存键，产物存放在 `~/.cache/wallpaper-colors/cache/<key>/`。每次壁纸变化只在缓存未命中时运行 Matugen；一次运行会生成 btop 和 Yazi 深色主题、ModernZ light/dark OSC 配置（mpv 固定复制 dark）、Zellij 深浅两套主题、Neovim 深浅两套色板，以及 light/dark 两套合成器、Fcitx 和 Strata 产物。
 
-普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen。显式换壁纸时，日志会记录 `cache=hit source=wallpaper` 或 `cache=miss`；回到已有壁纸不会重新取色。Noctalia 的 palette 仅在壁纸键变化时复制，让文件监听触发一次 reload；模式变化只发送 `theme-mode-set`，并在 Papirus 重着色前优先更新 Noctalia、Hyprland 等可见消费者。`copy_atomic` 和 Fcitx 配置会先比较内容，避免模式切换无意义地重写相同文件；btop 仅在壁纸色板变化时发送刷新信号。Papirus 文件夹颜色记录已应用颜色，并按 Papirus 版本/颜色缓存 GTK `icon-theme.cache`：换色仍需首次生成该颜色的索引，之后只更新链接并恢复约 3 MB 的缓存；目标颜色不变时跳过整个 Papirus 阶段。Papirus 缓存位于 `~/.cache/wallpaper-colors/papirus/`，可安全删除，缺失时自动回退到完整重建。
+缓存完整时，普通 `darkman toggle` 使用 `current-key`，不读取或分析壁纸，也不会触发 Matugen；缓存内的必需文件缺失或为空则重新渲染。显式换壁纸时，日志会记录 `cache=hit source=wallpaper` 或 `cache=miss`；回到已有壁纸不会重新取色。每次应用都核对 Noctalia 的 palette：目标文件丢失时从缓存补回，内容相同则不重写，因而正常切模式不会额外触发文件监听。模式变化仍发送 `theme-mode-set`，并在 Papirus 重着色前优先更新 Noctalia、Hyprland 等可见消费者。`copy_atomic` 和 Fcitx 配置会先比较内容，避免模式切换无意义地重写相同文件；btop 仅在壁纸色板变化时发送刷新信号。Papirus 文件夹颜色记录已应用颜色，并按 Papirus 版本/颜色缓存 GTK `icon-theme.cache`：换色仍需首次生成该颜色的索引，之后只更新链接并恢复约 3 MB 的缓存；目标颜色不变时跳过整个 Papirus 阶段。Papirus 缓存位于 `~/.cache/wallpaper-colors/papirus/`，可安全删除，缺失时自动回退到完整重建。
 
 Home Manager 刷新 GTK 可写主题目录时，与 `theme-apply` 使用同一把锁；激活结束前再应用当前色板。GTK 色板在每次主题应用时核对，内容相同则不重写，因此并发换壁纸或刷新主题目录后不会留下旧色板。
 
@@ -141,7 +143,7 @@ zellij setup --check
 rg -n '^\s*matugen\s*\{' ~/.config/zellij/themes/matugen.kdl
 
 # Strata 应选中 Matugen 生成的主题（id = 文件名 stem），且主题文件是裸表
-rg -n '^theme = ' ~/.config/strata/settings.toml
+python3 -c 'import sys,tomllib; s=tomllib.load(sys.stdin.buffer); print(s.get("theme"), s.get("mode"))' < ~/.config/strata/settings.toml  # 预期 matugen theme
 rg -n '^name = |^accent = ' ~/.config/strata/themes/matugen.toml
 
 # 查看缓存命中、Matugen、Papirus（含 icon-theme.cache）、Fcitx 与 Noctalia 各阶段耗时

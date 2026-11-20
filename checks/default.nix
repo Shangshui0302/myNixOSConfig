@@ -1,31 +1,45 @@
-{ pkgs, nextkdeSync }:
+{
+  pkgs,
+  nextkdeSync,
+  homeManager,
+  host,
+}:
 let
   python = pkgs.python3.withPackages (ps: [ ps.pyyaml ]);
-  # path:. 包含新文件；排除本地记忆、工具状态和构建产物，保持检查可移植。
+  # Secondary input of the structure check. This cannot filter the original
+  # flake fetch: select the Git source or a reviewed candidate before evaluation.
   repositorySource = pkgs.lib.cleanSourceWith {
     src = pkgs.lib.cleanSource ../.;
-    filter =
-      path: _type:
-      !(builtins.elem (builtins.baseNameOf path) [
-        "memory"
-        ".codex"
-        ".vscode"
-        "__pycache__"
-      ]);
+    filter = pkgs.nix-gitignore.gitignoreFilter (builtins.readFile ../.gitignore) ../.;
   };
 in
 {
   theme-apply =
     pkgs.runCommand "theme-apply-tests"
-      { nativeBuildInputs = [ pkgs.python3 pkgs.bash pkgs.coreutils pkgs.util-linux pkgs.gnugrep pkgs.gnused pkgs.diffutils pkgs.gawk pkgs.kdePackages.kconfig ]; }
+      {
+        nativeBuildInputs = [
+          (pkgs.python3.withPackages (ps: [ ps.tomlkit ]))
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.util-linux
+          pkgs.gnugrep
+          pkgs.gnused
+          pkgs.diffutils
+          pkgs.kdePackages.kconfig
+        ];
+      }
       ''
         mkdir -p home/theme/scripts tests
         cp ${../home/theme/scripts/theme-apply.sh} home/theme/scripts/theme-apply.sh
+        cp ${../home/theme/scripts/select-strata-theme.py} home/theme/scripts/select-strata-theme.py
+        cp ${../home/theme/scripts/select-fcitx-theme.py} home/theme/scripts/select-fcitx-theme.py
         cp ${../tests/test_theme_apply.py} tests/test_theme_apply.py
         export PYTHONDONTWRITEBYTECODE=1
         python3 -m unittest discover -s tests -p test_theme_apply.py -v
         touch "$out"
       '';
+
+  theme-activation = import ./theme-activation.nix { inherit pkgs homeManager host; };
 
   font-sync =
     pkgs.runCommand "font-sync-tests"
@@ -122,9 +136,10 @@ in
   repository-structure =
     pkgs.runCommand "repository-structure-check"
       {
-        nativeBuildInputs = [ python ];
+        nativeBuildInputs = [ python pkgs.gitMinimal ];
       }
       ''
+        python3 ${repositorySource}/tests/test_flake_candidate.py -v
         python3 ${../scripts/check-repo-structure.py} --root ${repositorySource}
         touch "$out"
       '';

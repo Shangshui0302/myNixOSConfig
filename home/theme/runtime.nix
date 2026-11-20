@@ -7,6 +7,7 @@
 }:
 
 let
+  runAfter = import ./run-after.nix lib;
   homeDir = config.home.homeDirectory;
   defaultWallpaper = ../../assets/nixos_logo.png;
   # The upstream HM module owns the package and links selected templates here.
@@ -298,10 +299,38 @@ let
   # validate this identity without reading or hashing the current wallpaper.
   cacheIdentity = "theme-cache-v4|${pkgs.matugen}|${matugenConfig}|${toString inputs.fcitx5-matugen-theme}";
 
-  themeApply = pkgs.writeShellScript "theme-apply" (builtins.replaceStrings
-    [ "@cacheIdentity@" "@defaultWallpaper@" "@matugenConfig@" "@papirusFolderApply@" "@pkgs_coreutils@" "@pkgs_darkman@" "@pkgs_diffutils@" "@pkgs_fcitx5@" "@pkgs_gawk@" "@pkgs_glib@" "@pkgs_gnugrep@" "@pkgs_gnused@" "@pkgs_hyprland@" "@pkgs_jq@" "@pkgs_kdePackages_kconfig@" "@pkgs_libnotify@" "@pkgs_matugen@" "@pkgs_noctalia@" "@pkgs_procps@" "@pkgs_systemd@" "@pkgs_util_linux@" "@pkgs_waypaper@" ]
-    [ "${cacheIdentity}" "${defaultWallpaper}" "${matugenConfig}" "${papirusFolderApply}" "${pkgs.coreutils}" "${pkgs.darkman}" "${pkgs.diffutils}" "${pkgs.fcitx5}" "${pkgs.gawk}" "${pkgs.glib}" "${pkgs.gnugrep}" "${pkgs.gnused}" "${pkgs.hyprland}" "${pkgs.jq}" "${pkgs.kdePackages.kconfig}" "${pkgs.libnotify}" "${pkgs.matugen}" "${config.programs.noctalia.package}" "${pkgs.procps}" "${pkgs.systemd}" "${pkgs.util-linux}" "${pkgs.waypaper}" ]
-    (builtins.readFile ./scripts/theme-apply.sh));
+  themePython = pkgs.python3.withPackages (ps: [ ps.tomlkit ]);
+  themeApply = pkgs.replaceVarsWith {
+    name = "theme-apply";
+    src = ./scripts/theme-apply.sh;
+    isExecutable = true;
+    postCheck = ''${pkgs.stdenv.shellDryRun} "$target"'';
+    replacements = {
+      inherit cacheIdentity matugenConfig papirusFolderApply;
+      inherit (pkgs) runtimeShell;
+      defaultWallpaper = "${defaultWallpaper}";
+      themePython = "${themePython}/bin/python3";
+      strataSelector = "${./scripts/select-strata-theme.py}";
+      fcitxSelector = "${./scripts/select-fcitx-theme.py}";
+      pkgs_coreutils = pkgs.coreutils;
+      pkgs_darkman = pkgs.darkman;
+      pkgs_diffutils = pkgs.diffutils;
+      pkgs_fcitx5 = pkgs.fcitx5;
+      pkgs_glib = pkgs.glib;
+      pkgs_gnugrep = pkgs.gnugrep;
+      pkgs_gnused = pkgs.gnused;
+      pkgs_hyprland = pkgs.hyprland;
+      pkgs_jq = pkgs.jq;
+      pkgs_kdePackages_kconfig = pkgs.kdePackages.kconfig;
+      pkgs_libnotify = pkgs.libnotify;
+      pkgs_matugen = pkgs.matugen;
+      pkgs_noctalia = config.programs.noctalia.package;
+      pkgs_procps = pkgs.procps;
+      pkgs_systemd = pkgs.systemd;
+      pkgs_util_linux = pkgs.util-linux;
+      pkgs_waypaper = pkgs.waypaper;
+    };
+  };
 in
 {
   home.packages = [ pkgs.matugen ];
@@ -316,8 +345,8 @@ in
   xdg.configFile."fish/completions/darkman.fish".source =
     "${pkgs.darkman}/share/fish/vendor_completions.d/darkman.fish";
 
-  # Fixed Chengdu coordinates keep sunrise/sunset scheduling independent of Mihomo's
-  # proxy exit and avoid making Geoclue a runtime dependency.
+  # Fixed coordinates avoid Geoclue and proxy-dependent location. This small
+  # static file doesn't need a YAML generator at build time.
   xdg.configFile."darkman/config.yaml".text = ''
     lat: 30.57
     lng: 104.07
@@ -325,10 +354,11 @@ in
     portal: true
   '';
 
-  # Darkman runs every executable in XDG_DATA_HOME/darkman at startup and on changes.
-  xdg.dataFile."darkman/10-theme-apply" = {
-    source = themeApply;
-    executable = true;
+  services.darkman = {
+    enable = true;
+    # Install only the hook; keep D-Bus activation with the system portal package.
+    package = null;
+    scripts."10-theme-apply" = themeApply;
   };
   home.file.".local/bin/theme-apply" = {
     source = themeApply;
@@ -337,7 +367,7 @@ in
 
   # Preserve the current all-dark installation on first migration only. Darkman
   # persists later choices in this file and Home Manager must not overwrite them.
-  home.activation.setupDarkmanMode = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.setupDarkmanMode = runAfter "setupDarkmanMode" [ "writeBoundary" ] ''
     darkman_cache_dir="$HOME/.cache/darkman"
     darkman_mode_file="$darkman_cache_dir/mode.txt"
     if [ ! -e "$darkman_mode_file" ]; then
@@ -350,8 +380,7 @@ in
   # Home Manager activation may refresh writable runtime assets (notably
   # Fcitx5 themes) from their immutable packages. Reconcile them with the
   # current Matugen cache after all links/runtime copies have been installed.
-  home.activation.applyRuntimeTheme =
-  lib.hm.dag.entryAfter [
+  home.activation.applyRuntimeTheme = runAfter "applyRuntimeTheme" [
     "writeBoundary"
     "linkGeneration"
     "installFcitx5MatugenRuntimeThemes"

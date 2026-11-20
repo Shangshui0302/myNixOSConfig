@@ -3,6 +3,9 @@
   pkgs,
   ...
 }:
+let
+  runAfter = import ./run-after.nix lib;
+in
 {
   # Qt installs both engines; static theme data and runtime selection have
   # separate owners. Do not enable qt.kvantum's declarative selector module.
@@ -25,7 +28,7 @@
       "Kvantum/WhiteSur".source = "${pkgs.whitesur-kde}/share/Kvantum/WhiteSur";
     };
 
-  home.activation.initializeWhiteSurQt = lib.hm.dag.entryAfter [ "writeBoundary" "linkGeneration" ] ''
+  home.activation.initializeWhiteSurQt = runAfter "initializeWhiteSurQt" [ "writeBoundary" "linkGeneration" ] ''
     selector="$HOME/.config/Kvantum/kvantum.kvconfig"
     # Reclaim the old immutable HM selector during migration. Later activations
     # preserve the mode chosen by the active desktop's synchronizer.

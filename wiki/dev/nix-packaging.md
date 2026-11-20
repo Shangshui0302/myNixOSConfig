@@ -2,7 +2,7 @@
 title: Nix 手工打包
 category: 开发与工具
 tags: [nix, packaging, local-deriv, development]
-updated: 2026-11-18
+updated: 2026-11-20
 ---
 # Nix 手工打包
 
@@ -116,10 +116,10 @@ nix develop .#packaging
 每个手工包都要在 `flake.nix` 暴露同名构建目标：
 
 ```bash
-nix build path:.#<pname>
+nix build .#<pname>
 ```
 
-开发中的新文件可能尚未被 Git 跟踪，因此使用 `path:.`。不要为了让 flake 看见文件而擅自 `git add`。
+下文默认从仓库根使用 Git flake。若包定义或补丁尚未被跟踪，先生成[只含已跟踪内容与点名新文件的候选目录](../architecture/flake.md#未跟踪文件的候选源码)，在其中验证。不要把整个工作树作为 `path:` 输入，也不要为了让 flake 看见文件而擅自 `git add`。
 
 ## 获取和更新哈希
 
@@ -139,14 +139,14 @@ Rust 的 `cargoHash`、Go 的 `vendorHash`、npm 的 `npmDepsHash` 等是独立�
 
 ```bash
 nix-instantiate --parse local-deriv/<pname>.nix
-nix flake check path:. --no-build
+nix flake check . --no-build
 ```
 
 再独立构建并保留日志：
 
 ```bash
-nix build path:.#<pname> -L --no-link --print-out-paths
-nix log path:.#<pname>
+nix build .#<pname> -L --no-link --print-out-paths
+nix log .#<pname>
 ```
 
 根据类型检查输出：CLI 跑安全的 `--version` 或 `--help`；ELF 检查动态依赖；GUI 检查 wrapper、desktop 和 icon；字体用 `fc-scan`；插件确认 `.so`。GUI 与字体包还可运行 `desktop-file-validate "$out/share/applications/<pname>.desktop"` 与 `fc-scan --format '%{family}\n' "$out"/share/fonts/truetype/*.ttf`。不能安全启动的 GUI 或守护进程应记录为“待 switch 后人工验证”。
@@ -155,7 +155,7 @@ nix log path:.#<pname>
 
 ```bash
 git diff --check
-nixos-rebuild dry-build --flake path:.
+nixos-rebuild dry-build --flake .
 ```
 
 Codex 不自动应用配置。检查通过后由用户执行：
@@ -169,15 +169,15 @@ sudo nixos-rebuild switch --flake .
 
 | 包 | 独立构建入口 | 说明 |
 | --- | --- | --- |
-| ScrollOverview | `nix build path:.#scrolloverview` | `scrolloverview-src` 暂时固定上游 `a8dcca6`，避开 Hyprland 0.57 的装饰钩子崩溃；无本地 C++ 补丁，使用系统 Hyprland 构建；见 [工作区总览](../desktop/hyprland.md#工作区总览-scrolloverview) |
-| Hypr Dynamic Cursors | `nix build path:.#hypr-dynamic-cursors` | `hypr-dynamic-cursors-src` 跟踪上游 main，源码由 `flake.lock` 锁定并复用 nixpkgs 插件构建器；[更新流程](../desktop/hyprland.md#光标) |
-| Agent Reach | `nix build path:.#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
-| OpenCLI | `nix build path:.#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
-| DigUp | `nix build path:.#digup` | 固定官方 Linux 0.7.0-beta.3 `.deb`，修正动态库路径并保留 Vulkan 后端；见 [DigUp 本地搜索](../productivity/digup.md) |
-| DSH-X | `nix build path:.#dsh-x` | 固定 0.1.26-rc.5 AppImage，解包并适配 Nix 动态库及 tar 路径，见 [DSH-X](dsh-x.md) |
-| DSH-X 专用 Node | `nix build path:.#dsh-x-node` | 固定官方 Node 24.21.0 及同包 npm/npx，仅供 DSH-X 使用；保留私有模块探测需要的符号，运行时边界见 [DSH-X](dsh-x.md#打包要点) |
-| Mnemon | `nix build path:.#mnemon` | 固定 0.2.13 npm 启动器与 Linux x64 后端，见 [DSH-X](dsh-x.md#配套改动) |
-| WeTypeX | `nix build path:.#fcitx5-wetypex` | 直接构建 `wetypex` input 的上游默认包，`flake.lock` 固定源码；系统中的个人选项在 `host/base/input-method.nix` 通过 `.override` 设置，无本地包定义或补丁，原版引擎由用户初始化，见 [Fcitx5](../desktop/fcitx5.md#wetypex-首次使用) |
+| ScrollOverview | `nix build .#scrolloverview` | `scrolloverview-src` 暂时固定上游 `a8dcca6`，避开 Hyprland 0.57 的装饰钩子崩溃；无本地 C++ 补丁，使用系统 Hyprland 构建；见 [工作区总览](../desktop/hyprland.md#工作区总览-scrolloverview) |
+| Hypr Dynamic Cursors | `nix build .#hypr-dynamic-cursors` | `hypr-dynamic-cursors-src` 跟踪上游 main，源码由 `flake.lock` 锁定并复用 nixpkgs 插件构建器；[更新流程](../desktop/hyprland.md#光标) |
+| Agent Reach | `nix build .#agent-reach` | 固定上游提交的 Python 应用，使用方式见 [Agent Reach 与 OpenCLI](agent-reach.md) |
+| OpenCLI | `nix build .#opencli` | 使用上游 npm lock 的 2.0.0 包，不在构建时执行用户目录迁移与补全安装 |
+| DigUp | `nix build .#digup` | 固定官方 Linux 0.7.0-beta.3 `.deb`，修正动态库路径并保留 Vulkan 后端；见 [DigUp 本地搜索](../productivity/digup.md) |
+| DSH-X | `nix build .#dsh-x` | 固定 0.1.26-rc.5 AppImage，解包并适配 Nix 动态库及 tar 路径，见 [DSH-X](dsh-x.md) |
+| DSH-X 专用 Node | `nix build .#dsh-x-node` | 固定官方 Node 24.21.0 及同包 npm/npx，仅供 DSH-X 使用；保留私有模块探测需要的符号，运行时边界见 [DSH-X](dsh-x.md#打包要点) |
+| Mnemon | `nix build .#mnemon` | 固定 0.2.13 npm 启动器与 Linux x64 后端，见 [DSH-X](dsh-x.md#配套改动) |
+| WeTypeX | `nix build .#fcitx5-wetypex` | 直接构建 `wetypex` input 的上游默认包，`flake.lock` 固定源码；系统中的个人选项在 `host/base/input-method.nix` 通过 `.override` 设置，无本地包定义或补丁，原版引擎由用户初始化，见 [Fcitx5](../desktop/fcitx5.md#wetypex-首次使用) |
 
 NextKDE 的 `nextkde` 构建入口使用 `local-deriv/nextkde-shell.nix`，去掉控制中心和启动台的最低模糊限制。另提供 `nextkde-platform-whitesur`（复用锁定的平台服务，仅替换 WhiteSur 明暗配色对）、`nextkde-apps`（Qt 日历、待办、计算器与 PIM 服务）、`nextkde-spatial-models`（固定哈希的深度与前景 ONNX 模型）及 `nextkde-qdbus6`（Qt 6 qdbus 的兼容命令名）。仅在 NextKDE 变体集成，详见 [NextKDE 桌面变体](../desktop/nextkde.md)。
 
@@ -186,7 +186,7 @@ NextKDE 的 `nextkde` 构建入口使用 `local-deriv/nextkde-shell.nix`，去�
 ModernZ v0.3.3 是 mpv 的 OSC 界面，当前以 `stdenvNoCC` 数据包集成，不在构建阶段联网或编译：
 
 - 上游：固定 GitHub release `Samillion/ModernZ` `v0.3.3`，许可证为 LGPL-2.1-only。
-- flake 入口：`nix build path:.#modernz-mpv`。
+- flake 入口：`nix build .#modernz-mpv`。
 - 输出：`share/mpv/scripts/modernz.lua`、`share/mpv/script-opts/modernz-locale.json`、`share/fonts/modernz-icons.ttf` 和许可证文件。
 - 消费者：`home/leisure/player.nix` 将脚本、locale 和字体发布到 mpv 配置目录；Matugen 另行生成 ModernZ OSC 配置。
 
@@ -194,11 +194,11 @@ ModernZ v0.3.3 是 mpv 的 OSC 界面，当前以 `stdenvNoCC` 数据包集成�
 
 ```bash
 nix-instantiate --parse local-deriv/modernz.nix
-nix build path:.#modernz-mpv -L --no-link --print-out-paths
-nixos-rebuild dry-build --flake path:.
+nix build .#modernz-mpv -L --no-link --print-out-paths
+nixos-rebuild dry-build --flake .
 ```
 
-KMusic 的源码包入口为 `nix build path:.#kmusic --no-link`，由 `home/nextkde.nix` 仅在 NextKDE 安装；源码固定，依赖及辅助程序随 Nix 包提供。
+KMusic 的源码包入口为 `nix build .#kmusic --no-link`，由 `home/nextkde.nix` 仅在 NextKDE 安装；源码固定，依赖及辅助程序随 Nix 包提供。
 
 ## 已投稿包：Strata
 
@@ -206,7 +206,7 @@ Strata v1.0.0 的包定义和补丁统一在 `~/Projects/nixpkgs-maintain/nixpkg
 
 `flake.nix` 的临时 `strata-nixpkgs` input 跟随 fork 的 `feature/strata` 分支，`flake.lock` 当前固定到提交 `e9b01117f28bcb546bea973820cf307fef1e1d6b`。本仓库只获取 `legacyPackages.x86_64-linux.strata`，保留独立包集的完整依赖版本。不要将系统 `nixpkgs` 改为 fork，也不要用系统包集重新 `callPackage` 该定义后宣称复用了原构建。
 
-- 入口仍为 `nix build path:.#strata`；`home/productivity/files.nix` 只在主 DE 安装它，NextKDE 不安装。
+- 入口仍为 `nix build .#strata`；`home/productivity/files.nix` 只在主 DE 安装它，NextKDE 不安装。
 - 普通偏好由应用维护可写的 `settings.toml`；Matugen 模板和 `theme-apply` 留在本地消费者，包没有本机路径或主题依赖。
 - 包自带可信 helper、bubblewrap 与沙箱工具路径，不要求系统额外安装 `bubblewrap`。
 - [PR #570118](https://github.com/NixOS/nixpkgs/pull/570118) 被合并且当前官方频道包含该包后，消费者改为 `pkgs.strata`，删除 `strata-nixpkgs` input 和锁项。
@@ -214,9 +214,9 @@ Strata v1.0.0 的包定义和补丁统一在 `~/Projects/nixpkgs-maintain/nixpkg
 升级流程：在 nixpkgs 任务 worktree 中修改 → 先做快速检查与适用的 vet → 集中修复后执行一次最终构建、测试和 smoke → 记录并推送已验证提交 → `nix flake update strata-nixpkgs` 更新消费者锁项 → 系统 dry-build → 用户手动 switch。相同 derivation 的有效构建证据可复用，dry-build 不代表已应用。
 
 ```bash
-nix eval --raw path:.#strata.drvPath
-nix build path:.#strata --no-link --print-out-paths
-nixos-rebuild dry-build --flake path:.#MechRevo-NixOS
+nix eval --raw .#strata.drvPath
+nix build .#strata --no-link --print-out-paths
+nixos-rebuild dry-build --flake .#MechRevo-NixOS
 ```
 
 ## 更新已有包
@@ -229,7 +229,7 @@ nixos-rebuild dry-build --flake path:.#MechRevo-NixOS
 
 ### 开发 shell 能编译，正常构建失败
 
-`nix develop` 与 sandbox build 不完全等价。回到 `nix build path:.#<pname> -L`，按 unpack、patch、configure、build、check、install、fixup 的实际失败阶段处理。
+`nix develop` 与 sandbox build 不完全等价。回到 `nix build .#<pname> -L`，按 unpack、patch、configure、build、check、install、fixup 的实际失败阶段处理。
 
 ### 程序构建成功但运行时找不到命令
 
@@ -242,8 +242,8 @@ nixos-rebuild dry-build --flake path:.#MechRevo-NixOS
 ### 出现意外的大闭包
 
 ```bash
-nix path-info -S path:.#<pname>
-nix why-depends path:.#<pname> <依赖 store path>
+nix path-info -S .#<pname>
+nix why-depends .#<pname> <依赖 store path>
 ```
 
 先定位依赖路径，再调整输入或 wrapper，不要凭体积猜测。

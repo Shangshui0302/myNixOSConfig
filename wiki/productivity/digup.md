@@ -2,7 +2,7 @@
 title: DigUp 本地语义文件搜索
 category: 生产力
 tags: [digup, search, documents, wayland]
-updated: 2026-11-13
+updated: 2026-11-20
 ---
 
 # DigUp 本地语义文件搜索
@@ -79,8 +79,8 @@ Nix 包提供 Vulkan 加载库，GPU 驱动沿用本机系统配置。
 独立构建（在包含本次改动的工作区）：
 
 ```bash
-nix build path:.#digup --no-link -L
-nix run path:.#digup
+nix build .#digup --no-link -L
+nix run .#digup
 ```
 
 第二条命令会正式打开应用，并按首次设置流程下载模型。

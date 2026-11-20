@@ -27,7 +27,7 @@ docs:
     sources: [flake.nix, host/default.nix, host/base/default.nix, host/base/home-manager.nix, host/de/sessions.nix, host/de/greeter.nix, home/base.nix, home/home.nix, home/theme, home/theme/sync-ms-fonts.sh, tests/test_sync_ms_fonts.py, home/dev/default.nix, home/env/default.nix, home/productivity/default.nix, home/leisure/default.nix]
     memory:  [flake-unstable-strategy, desktop-environment-host-hm-boundary]
   architecture/flake.md:
-    sources: [flake.nix, flake.lock, host/base/input-method.nix, checks/default.nix, scripts/check-repo-structure.py, tests, host/base/nix.nix, host/base/home-manager.nix, host/default.nix]
+    sources: [flake.nix, flake.lock, host/base/input-method.nix, checks/default.nix, checks/theme-activation.nix, .gitignore, scripts/flake-candidate.py, scripts/check-repo-structure.py, tests, host/base/nix.nix, host/base/home-manager.nix, host/default.nix]
     memory:  [flake-unstable-strategy]
   architecture/host.md:
     sources: [host/default.nix, host/base/default.nix, host/de/sessions.nix, host/base/boot.nix, host/base/hardware.nix, host/base/compat.nix, host/de/greeter.nix, host/base/users.nix, host/base/locale.nix, host/base/services.nix]
@@ -43,19 +43,19 @@ docs:
     sources: [flake.nix, flake.lock, host/default.nix, host/nextkde/default.nix, host/nextkde/desktop.nix, host/nextkde/bootstrap.py, host/base/home-manager.nix, local-deriv/nextkde-apps.nix, local-deriv/kmusic.nix, local-deriv/nextkde-shell.nix, local-deriv/nextkde-sync-shell.nix, tests/test_nextkde_sync.py, local-deriv/nextkde-platform-whitesur.nix, local-deriv/nextkde-spatial-models.nix, local-deriv/nextkde-qdbus6.nix, local-deriv/nextkde-session-tools.nix, home/nextkde.nix, home/theme/qt-whitesur.nix, home/theme/kde-runtime.nix, home/theme/kde-colors.py, tests/test_kde_colors.py, home/de/foot.nix, home/base.nix, host/base/desktop.nix, home/productivity/files.nix]
     memory:  []
   desktop/fcitx5.md:
-    sources: [flake.nix, flake.lock, host/base/default.nix, host/base/input-method.nix, host/de/sessions.nix, home/home.nix, home/de/default.nix, home/theme/runtime.nix, home/theme/wallpaper.nix]
+    sources: [flake.nix, flake.lock, host/base/default.nix, host/base/input-method.nix, host/de/sessions.nix, home/home.nix, home/de/default.nix, home/theme/runtime.nix, home/theme/scripts/theme-apply.sh, home/theme/scripts/select-fcitx-theme.py, tests/test_theme_apply.py, home/theme/wallpaper.nix]
     memory:  [fcitx5-vertical-candidates, portal-gtk-dangling-symlink, darkman-theme-authority, uwsm-kmscon-session-handoff, greetd-tuigreet-tty]
   desktop/noctalia.md:
-    sources: [home/de/noctalia.nix, home/env/shell/default.nix, home/dev/ai.nix, home/de/hyprland.nix, home/de/niri.nix, home/productivity/graphics.nix, home/productivity/phone.nix, host/base/desktop.nix, home/theme/runtime.nix, host/de/greeter.nix]
-    memory:  [darkman-theme-authority, matugen-wallpaper-theming]
+    sources: [flake.lock, home/de/noctalia.nix, home/env/shell/default.nix, home/dev/ai.nix, home/de/hyprland.nix, home/de/niri.nix, home/productivity/graphics.nix, home/productivity/phone.nix, host/base/desktop.nix, home/theme/runtime.nix, host/de/greeter.nix]
+    memory:  [darkman-theme-authority, matugen-wallpaper-theming, noctalia-home-manager-module-collision]
   desktop/shell-switcher.md:
-    sources: [home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/matugen/caelestia-scheme.json.tpl]
+    sources: [flake.lock, home/de/shell-switcher.nix, home/de/caelestia-shell.nix, home/de/noctalia.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/matugen/caelestia-scheme.json.tpl]
     memory:  [shell-switcher-generic]
   desktop/shell.md:
     sources: [home/env/shell/default.nix, home/dev/ai.nix, home/env/shell/programs.nix, home/env/shell/completions.nix, home/env/systools.nix, home/de/foot.nix, home/de/hyprland.nix, home/de/niri.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/zellij-theme.kdl.tpl]
     memory:  [nixos-etc-static-fish-completion]
   desktop/darkmode.md:
-    sources: [flake.nix, home/theme/kde-runtime.nix, home/theme/kde-colors.py, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/qt-whitesur.nix, home/theme/runtime.nix, home/theme/scripts/theme-apply.sh, tests/test_theme_apply.py, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/vscode.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, home/de/polkit.nix]
+    sources: [flake.nix, home/theme/kde-runtime.nix, home/theme/kde-colors.py, home/theme/base.nix, home/theme/gtk-matugen.nix, home/theme/qt-whitesur.nix, home/theme/runtime.nix, home/theme/scripts/theme-apply.sh, home/theme/scripts/select-strata-theme.py, home/theme/scripts/select-fcitx-theme.py, tests/test_theme_apply.py, home/home.nix, home/theme/run-after.nix, checks/theme-activation.nix, tests/test_theme_activation.py, home/theme/wallpaper.nix, home/de/noctalia.nix, home/dev/vscode.nix, home/dev/nvim.nix, home/dev/nvim/init.lua, host/de/sessions.nix, local-deriv/material-gnome-theme.nix, home/theme/matugen/btop.theme.tpl, home/theme/matugen/yazi-flavor.toml.tpl, home/theme/matugen/modernz.conf.tpl, home/theme/matugen/zellij-theme.kdl.tpl, home/theme/matugen/nvim-colors.lua.tpl, home/theme/matugen/strata-theme.toml.tpl, local-deriv/material-gnome/gtk3-light.tpl, local-deriv/material-gnome/gtk3-dark.tpl, local-deriv/material-gnome/gtk3.tpl, local-deriv/material-gnome/gtk4-dual.tpl, local-deriv/material-gnome/gtk4.tpl, home/de/polkit.nix]
     memory:  [darkman-theme-authority, portal-gtk-dangling-symlink, matugen-wallpaper-theming]
   desktop/keyring.md:
     sources: [home/de/default.nix, host/base/desktop.nix, host/base/services.nix, host/de/sessions.nix, host/nextkde/desktop.nix, home/leisure/browser.nix, local-deriv/netease-cloud-music-web-player.nix]
@@ -68,7 +68,7 @@ docs:
     sources: [home/productivity/graphics.nix, home/leisure/player.nix]
     memory:  []
   productivity/files.md:
-    sources: [flake.nix, flake.lock, home/productivity/files.nix, home/leisure/gaming.nix, home/de/hyprland.nix, home/de/niri.nix, home/de/noctalia.nix, home/de/caelestia-shell.nix, host/base/desktop.nix, host/base/services.nix, home/theme/runtime.nix, home/theme/matugen/strata-theme.toml.tpl]
+    sources: [flake.nix, flake.lock, home/productivity/files.nix, home/leisure/gaming.nix, home/de/hyprland.nix, home/de/niri.nix, home/de/noctalia.nix, home/de/caelestia-shell.nix, host/base/desktop.nix, host/base/services.nix, home/theme/runtime.nix, home/theme/scripts/select-strata-theme.py, home/theme/matugen/strata-theme.toml.tpl]
     memory:  [strata-preview-sandbox-nixos, strata-matugen-theme]
   productivity/yazi.md:
     sources: [home/productivity/yazi.nix, home/productivity/graphics.nix, home/theme/runtime.nix, home/theme/wallpaper.nix, home/theme/matugen/yazi-flavor.toml.tpl]

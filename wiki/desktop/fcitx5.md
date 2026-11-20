@@ -2,7 +2,7 @@
 title: Fcitx5 输入法框架
 category: 桌面环境
 tags: [fcitx5, rime, wetypex, 输入法, wayland, 深色模式]
-updated: 2026-11-09
+updated: 2026-11-20
 ---
 
 # Fcitx5 输入法框架
@@ -58,7 +58,7 @@ journalctl --user -u app-org.fcitx.Fcitx5@autostart.service
 
 ### WeTypeX 首次使用
 
-[WeTypeX](https://github.com/panxuc/fcitx5-wetypex) 是社区兼容层。本仓库通过 `wetypex` flake input 使用上游包定义，`flake.lock` 锁定提交 `f930cd3`，包版本为 `2.2.3.657-17`。上游 `v2.2.3.657-17` 包含 [#56](https://github.com/panxuc/fcitx5-wetypex/pull/56)（默认关闭的中英/数字自动加空格）、[#60](https://github.com/panxuc/fcitx5-wetypex/pull/60)（V 前缀输入、日期候选顺序与输入状态反馈修复）和 [#61](https://github.com/panxuc/fcitx5-wetypex/pull/61)（五笔自动上屏与混输修复）；[#65](https://github.com/panxuc/fcitx5-wetypex/pull/65) 的 GNOME Wayland/IBus 成对标点光标修复在该标签之后合入，包修订号未再递增。仅支持 Linux x86_64；本机 Ryzen 7 8845HS 满足要求。本机选项在 `host/base/input-method.nix` 中通过上游包的 `.override` 设置，不再维护本地包定义或补丁。`nix build path:.#fcitx5-wetypex` 构建上游默认包；系统实际使用的包包含本机的选项覆盖。
+[WeTypeX](https://github.com/panxuc/fcitx5-wetypex) 是社区兼容层。本仓库通过 `wetypex` flake input 使用上游包定义，`flake.lock` 锁定提交 `06522ee`，包版本为 `3.0.1.684-8`。上游提供 `x86_64-linux` 与 `aarch64-linux` 两种包；本机使用前者。本机选项在 `host/base/input-method.nix` 中通过上游包的 `.override` 设置，不再维护本地包定义或补丁。`nix build .#fcitx5-wetypex` 构建上游默认包；系统实际使用的包包含本机的选项覆盖。
 
 Nix 安装 Fcitx5 插件、设置界面和引擎宿主。腾讯原版引擎、词典和界面资源由用户在首次使用时获取，初始化器会校验固定版本与哈希。先由用户应用包含该包的 NixOS 配置，再在本人接受微信输入法上游许可后执行：
 
@@ -67,7 +67,15 @@ fcitx5-wetypex-setup --download --accept-upstream-license
 fcitx5-wetypex-setup --check
 ```
 
-已有原版 `WeType_2.2.3_657.zip` 时，可改用 `fcitx5-wetypex-setup --archive /完整路径/WeType_2.2.3_657.zip`。原版文件保留其自身许可，不受社区适配层的 MIT 许可覆盖。
+从空缓存离线安装**默认版本**需要两个原版 ZIP：`3.0.1.684` 提供输入核心和词典，`2.2.3.657` 提供辅助组件和界面资源。接受原版许可后，先缓存旧资源，再用新核心安装：
+
+```bash
+fcitx5-wetypex-setup --cache-archive /完整路径/WeType_2.2.3_657.zip
+fcitx5-wetypex-setup --archive /完整路径/WeType_3.0.1_684.zip
+fcitx5-wetypex-setup --check
+```
+
+只传旧 ZIP 会选择旧核心，而不是当前默认版本。原版文件保留其自身许可，不受社区适配层的 MIT 许可覆盖。
 
 初始化成功后，注销并重新进入桌面会话，使 Fcitx5 加载新插件；打开 `fcitx5-configtool`，取消“仅显示当前语言”筛选并添加 **WeTypeX**。原有 Rime 和候选窗主题保留，可随时切回。设置界面可从应用菜单打开，也可运行 `fcitx5-wetypex-settings`。
 
@@ -76,11 +84,11 @@ fcitx5-wetypex-setup --check
 - 上游 `nix/runtime.patch` 负责 Nix store 路径、动态库、证书、DNS 与时区适配，保留后端沙箱。未配对与单机模式使用独立网络命名空间。
 - WeTypeX 自带的发行版更新器已关闭；适配层由 Nix 固定版本管理。它使用单独启用 WS/WSS 的 curl，不修改系统其他程序的 curl。
 
-上游更新不会自动改变本机锁定版本。需要升级时，运行 `nix flake update wetypex`，再执行包构建与 `nixos-rebuild dry-build --flake path:.`；检查通过后由用户手动应用系统配置。`wetypex` 的 `nixpkgs` 跟随本仓库，更新这个 input 不会顺带更新根 `nixpkgs`。功能与主题开关及其实现均由上游维护。
+上游更新不会自动改变本机锁定版本。需要升级时，运行 `nix flake update wetypex`，再执行包构建与 `nixos-rebuild dry-build --flake .`；检查通过后由用户手动应用系统配置。`wetypex` 的 `nixpkgs` 跟随本仓库，更新这个 input 不会顺带更新根 `nixpkgs`。功能与主题开关及其实现均由上游维护。
 
 ### WeTypeX 构建选项与首次默认值
 
-在 `host/base/input-method.nix` 的 `.override` 参数中设置以下选项。四个布尔参数的上游默认值均为 `true`；本机关闭 AI 助手（`enableAI = false`），保留语音、LayerShell 开启，`enableWeTypeTheme = false`、`defaultSettings = { }`。AI 助手入口、快捷键设置和查看器不再构建；已有偏好文件无需删除。
+在 `host/base/input-method.nix` 的 `.override` 参数中设置以下选项。表中四个布尔参数的上游默认值均为 `true`；本机关闭 AI 助手（`enableAI = false`），保留语音、LayerShell 开启，`enableWeTypeTheme = false`、`defaultSettings = { }`。AI 助手入口、快捷键设置和查看器不再构建；已有偏好文件无需删除。
 
 | 参数 | 默认值 | 效果 |
 | --- | --- | --- |
@@ -126,16 +134,16 @@ defaultSettings = {
 
 - 浅色主题 `Theme = "mellow-matugen"`，深色主题 `DarkTheme = "mellow-matugen-dark"`。
 - `UseDarkTheme = "True"`：让服务端 ClassicUI 通过 XDG Settings 接口跟随 Darkman。
-- GTK Wayland 客户端只读取 `Theme`，因此 `theme-apply` 会写入当前模式的完整用户配置；壁纸素材变化时重启 Fcitx5，单纯模式切换优先执行 `fcitx5-remote --check -r`，失败才回退到重启。
+- GTK Wayland 客户端只读取 `Theme`，因此 `theme-apply` 会把全局 `Theme` 选为当前明暗主题；壁纸素材变化时重启 Fcitx5，单纯模式切换优先执行 `fcitx5-remote --check -r`，失败才回退到重启。
 - [`fcitx5-mellow-themes-matugen`](https://github.com/Shangshui0302/fcitx5-mellow-themes-matugen) 保留 Mellow WeChat 的圆角布局；Matugen 将 `primary` 写入两套主题的高亮 SVG，将 `on_primary` 写入高亮文字配置。
 - 动态主题覆盖位于 `~/.local/share/fcitx5/themes/mellow-matugen[-dark]/`。每份 `theme.conf` 都是完整主题，而不是颜色片段；fcitx5-gtk 只加载 XDG 搜索顺序中的第一份配置，不会与 Nix profile 的基础主题合并。
 - 主桌面 HM 入口导入上游 `homeManagerModules.default`，并启用 `programs.fcitx5-matugen` 的 `themeSet = "both"`、`style = "blur"`；模块负责安装 `both-blur` 包并把两套 Matugen 模板链接到 `~/.config/matugen/templates/fcitx5-matugen-theme/`。
 - Hyprland 的 `decoration.blur.input_methods = true` 允许主题请求 compositor 原生模糊；不支持该协议的会话会退化为普通主题。
-- `"Vertical Candidate List" = "True"`：启用垂直候选列表，更适合长词条与高分屏。
+- 主桌面首次创建 `classicui.conf` 时默认竖排（`Vertical Candidate List=True`）。已有文件中设为 `False` 或未写此键，切主题、换壁纸都不会把它写回 `True`。
 
 主题资源由 `fcitx5-matugen-theme`（`both-blur`）提供；未选用的 Mellow 原版、Material Color 和 Catppuccin 主题包已移除。
 
-> 注意：HM 模块不写 `classicui.conf`；该文件仍由 `theme-apply` 原子生成，不要用图形配置工具手动覆盖。完整无 section header 的格式是必要的。
+> 可以在 Fcitx5 配置工具里改候选排列、字体和其他偏好。`theme-apply` 只更新第一个 section 之前的 `Theme`、`DarkTheme`、`UseDarkTheme`，保留其余设置和注释；内容一致时不重写。若自己用符号链接管理此文件，脚本会跳过并提示，不替换链接。
 
 ## 桌面集成与崩溃自恢复
 - 主桌面 GTK/Qt/SDL 应用通过环境变量接入 fcitx；NextKDE 的 Qt 应用优先使用 KWin 原生输入通道。
@@ -184,17 +192,17 @@ SESSION["UWSM / niri-session / graphical-session.target"] --> IM
 - Rime 也变成微信皮肤：两者共用 Fcitx5 的 `classicui.conf`；旧包或 `enableWeTypeTheme = true` 的包会在保存 WeTypeX 外观设置时覆盖它。将该选项设为 `false`，手动应用配置并重启 Fcitx5；需要恢复已写入的皮肤时，在桌面终端运行 `theme-apply "$(darkman get)"`，然后重启 Fcitx5 使候选窗重新读取配置。无需重新下载引擎或清理 Rime 数据。
 - rebuild 在 `theme.cpp` 出现 `Hunk FAILED`、`theme.h` 出现 `Reversed (or previously applied) patch`：检查是否还在添加旧 SVG 性能补丁 `d6552a5b52b4ff75cae3fb6dc949ef379171b2b9`。上游 5.1.23 已包含该修复，应直接使用 nixpkgs 原包，无需再次打补丁。
 - 输入法不显示：检查 IM 环境变量（`GTK_IM_MODULE`、`QT_IM_MODULE`、`XMODIFIERS`）是否生效；确认 Fcitx5 进程在运行，若崩溃查看 systemd user service 是否自动重启。
-- 候选窗位置异常/不可见：确认 `"Vertical Candidate List"` 为 `True`（键名含空格加引号、布尔值大写）；检查 XDG Portal 的 Settings 接口可用。
+- 候选排列与预期不同：在 ClassicUI 设置中选择横排或竖排。手动编辑时全局键名是 `Vertical Candidate List`，值用 `False` 或 `True`；这不是窗口可见性的开关。
 - 主题不跟随深浅色或重点色：执行 `darkman get` 确认状态，再运行 `theme-apply "$(darkman get)"`；确认 `~/.local/share/fcitx5/themes/mellow-matugen[-dark]/` 下的 `highlight.svg` 和 `theme.conf` 已更新。
 - GTK 应用内候选窗退回白色方框：检查用户主题的 `theme.conf` 是否包含 `[Metadata]`、`[InputPanel/Background]`、`Image=panel.svg` 和 `[InputPanel/Highlight]`。只有颜色字段的稀疏文件会遮蔽完整 Nix 主题并触发 GTK 默认样式。
 - 壁纸切换后候选窗仍是旧颜色：新壁纸会复制缓存中的两套 Fcitx 素材并重启服务；单纯深浅切换只 reload。检查 `systemctl --user status app-org.fcitx.Fcitx5@autostart.service`，必要时手动执行 `fcitx5-remote --check -r`。
-- 候选窗样式/透明度问题：调整 ClassicUI 的 `Theme`/`DarkTheme`，并确保字体与 DPI 设置合理。
+- 候选窗样式/透明度问题：核对当前主题资源；字体与 DPI 可在 ClassicUI 设置中调整。手动选择的主题名会在下次主题同步时恢复。
 
 ## 配置速查
 - 环境变量：`GTK_IM_MODULE`/`QT_IM_MODULE`/`XMODIFIERS`/`SDL_IM_MODULE` 指向 fcitx。
 - 插件与主题：`fcitx5-gtk`、`qt6Packages.fcitx5-chinese-addons`、HM 管理的 `both-blur` mellow-matugen 与 NextKDE 的 mellow-kde。
 - Rime 数据：`rime-ice`、`rime-moegirl`、`rime-zhwiki`。
-- 候选窗：`"Vertical Candidate List" = "True"`。
+- 主桌面候选窗：首次默认竖排，之后由用户选择。
 - 深浅色联动：`darkman set dark|light` 后由 `theme-apply` 从壁纸缓存激活当前模式、更新 GTK 客户端配置、reload Fcitx5，并同步 Settings portal；新壁纸未命中缓存时才重渲染两套 Fcitx5 重点色并重启服务。
 
 ## 相关链接

@@ -2,7 +2,7 @@
 title: 约束与惯例
 category: 顶层
 tags: [constraints, conventions, nix]
-updated: 2026-11-04
+updated: 2026-11-20
 ---
 
 # NixOS Config — 约束与惯例
@@ -53,10 +53,10 @@ assets/                # Binary assets (wallpapers, tarballs, etc.)
   (import ../local-deriv/foo.nix { inherit pkgs; src = ../assets/foo.tar.gz; })
   ```
 
-手工包同时提供独立构建入口；开发中的未跟踪文件使用 path flake：
+手工包同时提供独立构建入口。以下命令使用 Git flake；开发中需要未跟踪文件时，先生成[临时候选源码](architecture/flake.md#未跟踪文件的候选源码)。
 
 ```bash
-nix build path:.#foo
+nix build .#foo
 ```
 
 **Never put new package definitions inside `nixpkgs.overlays` in `flake.nix`.**
@@ -124,11 +124,11 @@ Both forms are acceptable; do not refactor for style consistency alone.
 nix-instantiate --parse <file>
 
 # Evaluate and independently build a local package
-nix flake check path:. --no-build
-nix build path:.#<pname> -L --no-link
+nix flake check . --no-build
+nix build .#<pname> -L --no-link
 
 # Full evaluation (catches type errors, missing args, bad imports)
-cd ~/myNixOSConfig && nixos-rebuild dry-build --flake path:.
+cd ~/myNixOSConfig && nixos-rebuild dry-build --flake .
 ```
 
 Parse passing does not guarantee evaluation success. Always run `dry-build` before

@@ -2,7 +2,7 @@
 title: Noctalia Shell
 category: desktop
 tags: [noctalia, shell, panel, wayland]
-updated: 2026-11-15
+updated: 2026-11-20
 ---
 
 # Noctalia Shell 使用指南
@@ -26,6 +26,8 @@ updated: 2026-11-15
 Noctalia 是本机的桌面 Shell 环境，替代传统的顶栏、Dock、应用启动器等组件，提供壁纸入口、配色显示、通知与锁屏等功能。
 
 **启动方式**：由 systemd user service（`noctalia.service`）承载，但不是 compositor autostart，也**不再自挂 `graphical-session.target`**——拉起哪个 shell 由 `shell-switcher-boot.service`（`shell-switcher boot`，读 `~/.config/shell-switcher/current` 标记）唯一决定。原因：uwsm 会话下 `graphical-session.target` 会并行启动所有 `WantedBy` 单元，而 shell-switcher 只停它自己启动的 shell，Noctalia 自启会与 Caelestia 并存。详见 [shell-switcher](shell-switcher.md)。
+
+**模块来源**：使用锁定的 Noctalia Home Manager 模块。该模块已经屏蔽 HM 自带模块的旧文件路径和新目录路径，本地无需再声明 `disabledModules`。
 
 ## 面板布局
 
@@ -134,7 +136,7 @@ profile 提供，保留手机操作功能；从菜单启动的 Paseo 等应用�
 
 当前主题：**matugen**——waypaper 切壁纸后生成 `~/.config/noctalia/palettes/matugen.json`，由 `theme.custom_palette = "matugen"` 消费。模板全部禁用，Noctalia 只读取 Matugen 产物。主桌面的 GTK、Hyprland 与 niri 也由同一次 Matugen 运行更新；Foot 仍使用 `home/de/foot.nix` 定义的固定深色配色。Matugen 产物按壁纸内容缓存，回到已使用过的壁纸时不再重新取色；日志中的 `cache=hit source=wallpaper` 表示显式壁纸路径复用了已有产物。
 
-深浅模式由 Darkman 管理。Noctalia 启动时和每次 Darkman 切换后都会同步当前模式，但不会反向修改系统主题；使用 `Super + Shift + D` 或 `darkman toggle` 切换。`theme-apply` 在复制 palette 后立即发送 `theme-mode-set`，再处理可能耗时数秒的 Papirus 文件夹重着色；这样壁纸重点色不会等待图标处理完成。壁纸 palette 文件变化由 Noctalia 文件监听器负责 reload，不再重复发送 `config-reload`。
+深浅模式由 Darkman 管理。Noctalia 启动时和每次 Darkman 切换后都会同步当前模式，但不会反向修改系统主题；使用 `Super + Shift + D` 或 `darkman toggle` 切换。`theme-apply` 在复制 palette 后立即发送 `theme-mode-set`，再处理可能耗时数秒的 Papirus 文件夹重着色；这样壁纸重点色不会等待图标处理完成。palette 文件变化由 Noctalia 文件监听器负责 reload，不再重复发送 `config-reload`。若 `matugen.json` 被删，下次主题应用会从完整缓存补回；文件内容一致时不会重写，也不会因深浅切换而触发文件监听。
 
 ## 锁屏与空闲
 

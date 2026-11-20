@@ -2,7 +2,7 @@
 title: Mihomo 配置修改与分发
 category: networking
 tags: [mihomo, sub-store, gist, sops, backup]
-updated: 2026-11-18
+updated: 2026-11-20
 ---
 
 # Mihomo 配置修改与分发
@@ -116,7 +116,7 @@ seed 与 update 都是 root 执行的 oneshot，平时没有更新脚本常驻�
 
 ```bash
 cd ~/myNixOSConfig
-sudo nixos-rebuild switch --flake path:.#MechRevo-NixOS
+sudo nixos-rebuild switch --flake .#MechRevo-NixOS
 sudo systemctl start mihomo-config-update.service
 ```
 

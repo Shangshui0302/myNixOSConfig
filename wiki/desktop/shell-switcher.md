@@ -2,7 +2,7 @@
 title: 桌面 Shell 切换
 category: desktop
 tags: [shell-switcher, shell, noctalia, caelestia, systemd]
-updated: 2026-11-03
+updated: 2026-11-20
 ---
 
 # 桌面 Shell 切换指南
@@ -118,7 +118,7 @@ Caelestia 独有、无通配分支的动词（Noctalia 侧 `exit 2`，按键无�
 | `set` 报"未知 shell" | 先 `shell-switcher list` 确认名字，config.toml 是否声明 |
 | 切换后双顶栏 / 通知异常 | 某 shell 未被 stop。`systemctl --user status noctalia caelestia` 查，手动 `systemctl --user stop <卡住的>` |
 | 切换失败自动回退 noctalia | `systemctl --user status <目标>` 看日志（`journalctl --user -u <service> -e`） |
-| rebuild 构建 `caelestia-cli` 时出现 `setuptools-scm was unable to detect version` | `home/de/caelestia-shell.nix` 已为 CLI 显式导出构建版本变量，并同步替换 Shell 内置的 CLI 依赖。应用修正后的 Nix 配置即可；后续的 fish 补全、Home Manager 等依赖失败会随首个构建错误解决 |
+| rebuild 构建 `caelestia-cli` 时出现 `setuptools-scm was unable to detect version` | 先核对 `flake.lock` 中 Caelestia 的 CLI 输入。当前锁定的 `9ab901f` 已用 `env.SETUPTOOLS_SCM_PRETEND_VERSION` 设置 wheel 版本；Shell 和 HM 命令默认使用同一 CLI，不需要本地 `preBuild`。若更新后再现，检查 CLI 的首个构建错误，而不是修改下游 fish 补全 |
 | Caelestia 报 `Unknown option "services.useFahrenheit"` 等旧字段 | 新版使用 `weatherUnits`、`sensorUnits` 和 `clockFormat` 枚举；Nix 配置已迁移为 `Celsius`、`Celsius`、`TwentyFourHour`。应用后重启 Caelestia，保持摄氏度和 24 小时制 |
 | Caelestia 报 `failed to write config` | 执行一次 HM/NixOS rebuild，再用 `shell-switcher set noctalia`、`shell-switcher set caelestia` 重启目标 service；无需手动删除备份文件，若仍失败检查 `systemctl --user status caelestia` 和 `journalctl --user -u caelestia -e` |
 | fish 补全出现 `KeyError: 'variant'` 或查找 `schemes/matugen` 失败 | Matugen 生成的 `~/.local/state/caelestia/scheme.json` 必须含 CLI 支持的 `name=dynamic`、`flavour=default`、`variant=content` 和当前深浅 `mode`。应用修正后的 Nix 配置，再运行 `~/.local/bin/theme-apply "$(darkman get)"` 重新生成；用 `caelestia scheme list -f`、`caelestia scheme list -m` 检查 |

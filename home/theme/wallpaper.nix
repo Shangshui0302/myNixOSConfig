@@ -6,6 +6,7 @@
 }:
 
 let
+  runAfter = import ./run-after.nix lib;
   # waypaper 缓存 post_command；此稳定 wrapper 将壁纸变化委托给主题模式模块。
   wallpaperThemeScript = pkgs.writeShellScript "wallpaper-theme" ''
     mode="$(${pkgs.darkman}/bin/darkman get 2>/dev/null || true)"
@@ -48,7 +49,7 @@ in
   # waypaper 是常驻进程，缓存 post_command 并写回 config.ini；store 路径每次 rebuild 都变，
   # 会被覆盖成旧值。固定路径 + activation 更新内容，路径稳定、内容每次执行读最新。
   home.activation.setupWaypaperTheme =
-    lib.hm.dag.entryAfter [ "writeBoundary" "linkGeneration" "setupMatugenGtkTheme" "setupDarkmanMode" ]
+    runAfter "setupWaypaperTheme" [ "writeBoundary" "linkGeneration" "setupMatugenGtkTheme" "setupDarkmanMode" ]
       ''
             mkdir -p "$HOME/.local/bin" "$HOME/.config/waypaper" \
               "$HOME/.config/zellij/themes"

@@ -2,7 +2,7 @@
 title: 系统服务
 category: 顶层
 tags: [systemd, pipewire, bluetooth, cups, flatpak, networkmanager, mihomo, sub-store, avahi, mdns, howdy, polkit, power-profiles, tlp, amdgpu]
-updated: 2026-11-18
+updated: 2026-11-20
 ---
 
 # 系统服务
@@ -174,8 +174,7 @@ TLP 源码 `func.d/10-tlp-func-cpu` 的判断是 `[ -n "$maxfreq" ] && [ "$maxfr
 
 - **离开省电档后 CPU 仍被卡在 2.4GHz**：就是 `CPU_SCALING_MAX_FREQ_*` 写成了 `0` 的旧坑，按上文改成 `powerTlp.maxFreq`。
 - **新建的 `.nix` 文件没进 git 时 rebuild 看不到**：`nixos-rebuild --flake /home/lishangshui/myNixOSConfig`
-  只读 Git 已跟踪的文件，会报 `Path 'host/base/tlp.nix' ... is not tracked by Git`。绕法是用
-  `--flake "path:/home/lishangshui/myNixOSConfig"`，或把新文件 `git add`（正式做法是走提交流程）。
+  只读 Git 已跟踪的文件，会报 `Path 'host/base/tlp.nix' ... is not tracked by Git`。验证时生成[显式点名新文件的临时候选](architecture/flake.md#未跟踪文件的候选源码)，不要直接复制整棵仓库或为验证暂存文件。
 - 回滚：启动菜单选上一个 system generation，或 `sudo nixos-rebuild switch --rollback`。
 - 软关：把 `host/base/tlp.nix` 的 `powerTlp.enable = false`（等价的 `TLP_ENABLE=0`）再 rebuild。
 
@@ -249,7 +248,7 @@ nmcli device status               # 网络连接状态
 - **扫脸成功却报 `Not authorized`**：同时检查 `journalctl -b -t pam_howdy` 和 `journalctl --user -b -u plasma-polkit-agent`。若仍看到旧 hyprpolkitagent 弹窗或其崩溃日志，先确认配置已应用、旧代理已退出；不要以放宽授权规则处理界面故障。
 - **KDE 代理报 `module "kvantum" is not installed`**：这是 Qt Quick 样式选择错误，弹窗加载失败可导致代理崩溃和 `Not authorized`，请求尚未进入人脸认证。检查 `systemctl --user show plasma-polkit-agent -p Environment` 是否包含 `QT_QUICK_CONTROLS_STYLE=org.kde.desktop`，并用 `systemctl --user show plasma-polkit-agent -p UnsetEnvironment` 确认排除了 `QT_STYLE_OVERRIDE`；修改由 Home Manager 管理的服务配置并应用，不要修改 PAM 或授权规则。
 - **GUI 授权没有认证窗口**：确认当前图形会话中 `plasma-polkit-agent.service` 正在运行，并检查 PAM 的 `polkit-1` 服务；shell 切换不应停止该会话服务。
-- **构建 Howdy 时 VTK 报 `Could not find the PEGTL external dependency`**：Howdy 的包定制关闭其不需要的 VTK 依赖以避开此故障；无需在宿主机额外安装 PEGTL。后续升级 nixpkgs 时，先验证默认包能否构建，再决定是否移除此定制。检查时构建实际服务包：`nix build path:.#nixosConfigurations.MechRevo-NixOS.config.services.howdy.package --no-link -L`。
+- **构建 Howdy 时 VTK 报 `Could not find the PEGTL external dependency`**：Howdy 的包定制关闭其不需要的 VTK 依赖以避开此故障；无需在宿主机额外安装 PEGTL。后续升级 nixpkgs 时，先验证默认包能否构建，再决定是否移除此定制。检查时构建实际服务包：`nix build .#nixosConfigurations.MechRevo-NixOS.config.services.howdy.package --no-link -L`。
 
 ## 相关链接
 

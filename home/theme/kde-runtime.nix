@@ -146,7 +146,7 @@ in
     if [ -f ${lib.escapeShellArg kdeGlobals} ]; then
       # A first Plasma login may not have populated the effective palette yet.
       # Its session service/path will retry once KDE saves those colors.
-      ${synchronize} || echo "kos-colors: palette not ready; session service will retry" >&2
+      run ${synchronize} || echo "kos-colors: palette not ready; session service will retry" >&2
     fi
   '';
 

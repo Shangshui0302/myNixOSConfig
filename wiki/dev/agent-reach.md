@@ -2,7 +2,7 @@
 title: Agent Reach 与 OpenCLI
 category: 开发与工具
 tags: [ai, agent-reach, opencli, browser, yt-dlp, home-manager]
-updated: 2026-10-19
+updated: 2026-11-20
 ---
 
 # Agent Reach 与 OpenCLI
@@ -31,16 +31,16 @@ Skill 文件应随 Nix 配置维护；不要再运行 `agent-reach skill install
 在本仓库分别构建两个本地包：
 
 ```bash
-nix build path:.#agent-reach -L --no-link --print-out-paths
-nix build path:.#opencli -L --no-link --print-out-paths
+nix build .#agent-reach -L --no-link --print-out-paths
+nix build .#opencli -L --no-link --print-out-paths
 ```
 
 构建只生成 Nix store 输出。系统检查与应用是两个独立步骤：
 
 ```bash
-nixos-rebuild dry-build --flake path:.
+nixos-rebuild dry-build --flake .
 # 用户决定应用时手动执行：
-sudo nixos-rebuild switch --flake path:.
+sudo nixos-rebuild switch --flake .
 ```
 
 Codex 不自动执行 switch。应用后在终端检查版本，并在新会话确认 Skill 已被发现：

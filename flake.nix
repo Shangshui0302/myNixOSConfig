@@ -87,7 +87,6 @@
         };
       pkgs = mkPkgs nixpkgs;
       pkgsLatest = mkPkgs inputs.nixpkgs-latest;
-      pkgsRelease = mkPkgs inputs.nixpkgs-release;
       # GTK3/4 主题基础供 Matugen 使用；不安装 GNOME Shell 主题。
       materialGnomeTheme = import ./local-deriv/material-gnome-theme.nix {
         inherit pkgs;
@@ -143,6 +142,8 @@
         (import ./checks {
           inherit pkgs;
           nextkdeSync = inputs.self.packages.${system}.nextkde-sync-shell;
+          homeManager = inputs.home-manager;
+          host = inputs.self.nixosConfigurations.MechRevo-NixOS.config;
         })
         // {
           # Actual compilation catches plugin API drift when Hyprland is upgraded.
@@ -175,7 +176,6 @@
             inputs
             materialGnomeTheme
             pkgsLatest
-            pkgsRelease
             ;
         };
         modules = [

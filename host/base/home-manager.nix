@@ -2,7 +2,6 @@
   inputs,
   materialGnomeTheme,
   pkgsLatest,
-  pkgsRelease,
   ...
 }:
 {
@@ -16,7 +15,6 @@
         inputs
         materialGnomeTheme
         pkgsLatest
-        pkgsRelease
         ;
     };
   };

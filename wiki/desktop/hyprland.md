@@ -2,7 +2,7 @@
 title: Hyprland
 category: desktop
 tags: [wm, wayland, hyprland, scrolling-layout, workspace-overview]
-updated: 2026-11-13
+updated: 2026-11-20
 ---
 
 # Hyprland 使用指南
@@ -61,8 +61,8 @@ Dynamic Cursors 可按下面流程更新；ScrollOverview 暂时固定，普通�
 
 ```bash
 nix flake update hypr-dynamic-cursors-src
-nix build path:.#scrolloverview path:.#hypr-dynamic-cursors --no-link
-nixos-rebuild dry-build --flake path:.
+nix build .#scrolloverview .#hypr-dynamic-cursors --no-link
+nixos-rebuild dry-build --flake .
 ```
 
 普通 rebuild 使用锁定版本；执行 `nix flake update` 仅更新仍跟踪分支的输入。最新源码不保证兼容当前 Hyprland，更新 nixpkgs 后也必须实际编译两个插件；完整 `nix flake check` 已包含这两项编译检查，`--no-build` 和 dry-build 不执行编译。实际加载、总览、手势及摇鼠标效果仍需在应用配置并重新登录 Hyprland 后验证。

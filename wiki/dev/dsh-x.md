@@ -2,7 +2,7 @@
 title: DSH-X 桌面启动器
 category: 开发与工具
 tags: [dsh, electron, mnemon, lsp, nix]
-updated: 2026-11-18
+updated: 2026-11-20
 ---
 
 # DSH-X（DSH 桌面启动器）
@@ -103,11 +103,11 @@ RUNPATH 会导致这个非 PIE 二进制在加载器中崩溃。该运行时仅�
 ## 验证
 
 ```bash
-nix build path:.#dsh-x -L --no-link --print-out-paths
-nix build path:.#dsh-x-node -L --no-link --print-out-paths
-nix build path:.#mnemon -L --no-link --print-out-paths
-nix flake check path:. --no-build
-nixos-rebuild dry-build --flake path:.
+nix build .#dsh-x -L --no-link --print-out-paths
+nix build .#dsh-x-node -L --no-link --print-out-paths
+nix build .#mnemon -L --no-link --print-out-paths
+nix flake check . --no-build
+nixos-rebuild dry-build --flake .
 ```
 
 `dsh-x --version` 可能触发核心下载，因此并非无副作用的版本检查；本次未运行该命令。

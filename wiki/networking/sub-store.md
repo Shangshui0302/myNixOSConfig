@@ -2,7 +2,7 @@
 title: 本机 Sub-Store
 category: networking
 tags: [sub-store, mihomo, gist, backup, systemd]
-updated: 2026-11-18
+updated: 2026-11-20
 ---
 
 # 本机 Sub-Store
@@ -84,7 +84,7 @@ sudo systemctl stop sub-store.service
 在目标配置目录应用系统配置后即可访问服务。用户可在配置目录执行：
 
 ```bash
-sudo nixos-rebuild switch --flake path:.#MechRevo-NixOS
+sudo nixos-rebuild switch --flake .#MechRevo-NixOS
 ```
 
 系统应用由用户手动执行；已有数据库会保留，新机器需从加密备份恢复。参见[部署与维护](../deployment.md)。

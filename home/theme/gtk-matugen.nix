@@ -7,6 +7,7 @@
 }:
 
 let
+  runAfter = import ./run-after.nix lib;
   matugenThemeName = "Material-Gnome-Matugen";
   matugenDarkThemeName = "${matugenThemeName}-Dark";
   matugenThemeDir = "${config.home.homeDirectory}/.themes/${matugenThemeName}";
@@ -28,8 +29,7 @@ in
   dconf.settings."org/gnome/desktop/interface".icon-theme = lib.mkForce "Papirus-Matugen";
 
   # GTK4 在一个可写主题里常驻双 palette；GTK3 使用两个稳定主题目录。
-  home.activation.setupMatugenGtkTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    (
+  home.activation.setupMatugenGtkTheme = runAfter "setupMatugenGtkTheme" [ "writeBoundary" ] ''
     # Share theme-apply's lock for the entire snapshot and directory replacement.
     cache_root="$HOME/.cache/wallpaper-colors"
     mkdir -p "$cache_root"
@@ -61,7 +61,6 @@ in
     mv "$matugen_theme_next" "$matugen_theme_dir"
     mv "$matugen_dark_theme_next" "$matugen_dark_theme_dir"
     chmod -R u+w "$matugen_theme_dir" "$matugen_dark_theme_dir"
-    )
   '';
 
   home.file.".config/gtk-4.0/gtk.css".source = lib.mkForce (

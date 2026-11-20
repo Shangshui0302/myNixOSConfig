@@ -1,3 +1,4 @@
+#!@runtimeShell@
     set -eu
 
     mode="${1:-}"
@@ -84,7 +85,7 @@
     validate_outputs() {
       root="$1"
       for relative in $required_files; do
-        [ -f "$root/$relative" ] || return 1
+        [ -f "$root/$relative" ] && [ -s "$root/$relative" ] || return 1
       done
     }
 
@@ -226,13 +227,10 @@
       esac
     fi
 
-    # Shared files are copied only when the wallpaper key changes.  In
-    # particular this prevents Noctalia's file watcher from reloading on a
-    # plain dark/light toggle.
-    if [ "$assets_changed" -eq 1 ]; then
-      copy_atomic "$cache_dir/dual/noctalia/palettes/matugen.json" \
-        "$HOME/.config/noctalia/palettes/matugen.json"
-    fi
+    # The cache key identifies the source, not the writable destination.
+    # copy_atomic restores missing files without waking Noctalia's watcher on a match.
+    copy_atomic "$cache_dir/dual/noctalia/palettes/matugen.json" \
+      "$HOME/.config/noctalia/palettes/matugen.json"
 
     # Reconcile GTK even on a mode-only apply: HM may have refreshed its
     # writable theme directories. copy_atomic skips unchanged contents.
@@ -260,60 +258,11 @@
     # Strata scans ~/.config/strata/themes/*.toml only at startup (no watcher),
     # uses the file stem as the theme id, and owns settings.toml: it rewrites the
     # whole file on any preference change.  Republish the current mode's theme and
-    # rewrite the two top-level keys, the same way Dolphin's ColorScheme is selected
-    # below.  The keys are rebuilt instead of patched in place, so a missing
-    # trailing newline or duplicate top-level keys cannot survive; file shapes this
-    # rewrite cannot handle safely (BOM, indented/quoted keys, indented table
-    # headers, multi-line strings) are refused instead of mangled, and the file is
-    # only replaced when the content actually differs.  The whole block runs in a
-    # subshell so that a failure there cannot abort the rest of theme-apply
-    # (mpv/Qt/Dolphin/gsettings/Papirus run after this point).
+    # select it in the writable settings. A refused update is local to Strata;
+    # the remaining theme consumers must still run.
     copy_atomic "$cache_dir/$mode/strata/themes/matugen.toml" \
       "$HOME/.config/strata/themes/matugen.toml"
-    strata_settings="$HOME/.config/strata/settings.toml"
-    if ! (
-      # Commands here are in an if-condition, so errexit is not inherited; every
-      # step that matters therefore fails explicitly through `exit 1`.
-      temporary="$(@pkgs_coreutils@/bin/mktemp "$HOME/.config/strata/.settings.toml.XXXXXX")" || exit 1
-      trap '@pkgs_coreutils@/bin/rm -f "$temporary"' EXIT
-      if [ -f "$strata_settings" ] && [ ! -r "$strata_settings" ]; then
-        # Rebuilding from an unreadable file would drop the user's settings.
-        exit 1
-      fi
-      {
-        printf '%s\n' 'theme = "matugen"'
-        printf '%s\n' 'mode = "theme"'
-        if [ -f "$strata_settings" ]; then
-          # Only top-level keys are dropped; table-nested ones stay untouched.
-          # Shapes this rewrite cannot judge safely (BOM, indented or quoted keys,
-          # indented table headers, multi-line strings) are refused: awk exits 3,
-          # the `|| exit 1` below keeps the original file untouched.
-          @pkgs_gawk@/bin/awk -v sq="'" '
-            NR == 1 && index($0, "\357\273\277") == 1 { unsupported = 1 }
-            /^[ \t]+\[/ { unsupported = 1 }
-            /^[ \t]+"?theme"?[ \t]*=/ { unsupported = 1 }
-            /^[ \t]+"?mode"?[ \t]*=/ { unsupported = 1 }
-            index($0, "\"\"\"") == 1 { unsupported = 1 }
-            index($0, sq sq sq) == 1 { unsupported = 1 }
-            /^["\x27](theme|mode)["\x27][ \t]*=/ { unsupported = 1 }
-            unsupported { exit 3 }
-            /^\[/ { table = 1 }
-            !table && /^theme[ \t]*=[ \t]*/ { next }
-            !table && /^mode[ \t]*=[ \t]*/ { next }
-            { print }
-          ' "$strata_settings" || exit 1
-        fi
-      } > "$temporary" || exit 1
-      if [ -f "$strata_settings" ] \
-        && @pkgs_diffutils@/bin/cmp -s "$temporary" "$strata_settings"; then
-        exit 0
-      fi
-      if [ -f "$strata_settings" ]; then
-        @pkgs_coreutils@/bin/chmod --reference="$strata_settings" "$temporary" 2>/dev/null || true
-      fi
-      @pkgs_coreutils@/bin/mv -f "$temporary" "$strata_settings" || exit 1
-      log "stage=strata status=theme-selected"
-    ); then
+    if ! @themePython@ @strataSelector@ "$HOME/.config/strata/settings.toml"; then
       log "stage=strata status=settings-assert-failed"
     fi
     copy_atomic "$cache_dir/dark/mpv/script-opts/modernz.conf" \
@@ -368,6 +317,7 @@
     fi
 
     fcitx_start="$(now_ms)"
+    fcitx_config_changed="$(@themePython@ @fcitxSelector@ "$HOME/.config/fcitx5/conf/classicui.conf" "$fcitx_theme")"
     fcitx_assets_changed=0
 
     # Sync light/dark mellow-matugen highlight.svg and theme.conf
@@ -398,27 +348,6 @@
         "$HOME/.local/share/fcitx5/themes/mellow-matugen-dark/theme.conf"
       fcitx_assets_changed=1
     fi
-
-    # Write classicui.conf atomically
-    fcitx_config_changed=0
-    fcitx_dir="$HOME/.config/fcitx5/conf"
-    mkdir -p "$fcitx_dir"
-    fcitx_tmp="$(@pkgs_coreutils@/bin/mktemp "$fcitx_dir/.classicui.conf.XXXXXX")"
-    trap '@pkgs_coreutils@/bin/rm -f "$fcitx_tmp"' EXIT
-    cat > "$fcitx_tmp" <<EOF
-Theme=$fcitx_theme
-DarkTheme=mellow-matugen-dark
-UseDarkTheme=True
-Vertical Candidate List=True
-EOF
-    if [ ! -f "$fcitx_dir/classicui.conf" ] \
-      || ! @pkgs_diffutils@/bin/cmp -s "$fcitx_tmp" "$fcitx_dir/classicui.conf"; then
-      @pkgs_coreutils@/bin/mv -f "$fcitx_tmp" "$fcitx_dir/classicui.conf"
-      fcitx_config_changed=1
-    else
-      @pkgs_coreutils@/bin/rm -f "$fcitx_tmp"
-    fi
-    trap - EXIT
 
     # Refresh decision:
     # Separate file publishing state from refresh success state. If systemctl and

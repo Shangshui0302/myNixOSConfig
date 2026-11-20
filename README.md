@@ -17,7 +17,7 @@ Noctalia 启动器保留该 PATH，供桌面应用继承。路径修改需应用
 
 | 项目 | 配置 |
 | --- | --- |
-| 系统 | NixOS 26.05，nixpkgs stable 固定提交 + latest 单包取新 |
+| 系统 | NixOS 26.11，主 `nixpkgs` 固定提交；`latest` 供单包取新，26.05 仅作备用来源 |
 | 主桌面 | Hyprland（UWSM）+ niri（niri-session），greetd + tuigreet TTY |
 | 变体 | NextKDE specialisation（Plasma Wayland + SDDM） |
 | Shell | fish、bash/ble.sh、Starship、zellij |
@@ -52,7 +52,7 @@ home/
 └── leisure/              # 浏览器、影音、游戏
 local-deriv/              # 不在 nixpkgs 的本地包
 checks/                   # flake 检查入口：已有测试与仓库结构校验
-scripts/                  # 仓库维护工具（来源映射检查）
+scripts/                  # 仓库维护工具（来源映射检查、flake 候选源码）
 tests/                    # Python 同步器测试与 Lua 事件 mock
 wiki/                     # 操作手册与来源映射
 memory/                   # 本地决策卡与硬件约束（不进 Git）
@@ -72,16 +72,16 @@ Hyprland 窗口焦点通过点击或快捷键切换，鼠标移过窗口不会�
 
 ```bash
 cd ~/myNixOSConfig
-nh os switch --hostname MechRevo-NixOS path:.
+nh os switch --hostname MechRevo-NixOS .
 ```
 
-`path:.` 包含当前工作目录中尚未被 Git 跟踪的新文件。直接运行 `nh os switch` 使用默认 Git flake，会过滤这些文件；文件正式纳入 Git 后可继续使用无参数命令。上述命令会包含工作目录中的其他已有改动。
+日常使用 Git flake `.`：读取已跟踪文件的工作树内容，包括未提交的修改。不要对仓库根目录使用 `path:.`：它不遵守 `.gitignore`，本地 `memory/`、工具状态甚至 `.git` 都可能被复制进通常本机用户可读的 Nix store。需要验证未跟踪的新文件时，先[按文件名生成临时候选](wiki/architecture/flake.md#未跟踪文件的候选源码)，不要为了验证而暂存。
 
 Codex 修改后只运行检查，不自动应用系统配置。结构性修改使用：
 
 ```bash
 nix-instantiate --parse <file>
-nixos-rebuild dry-build --flake path:.
+nixos-rebuild dry-build --flake .
 ```
 
 sudo 免密仅保留 `/run/current-system/sw/bin/nixos-rebuild`；`nix` 和通用文件操作恢复常规 sudo 认证。保留的重建入口仍具有完整系统维护权限，详见[安全说明](wiki/security/index.md#用户权限与访问控制)。
@@ -90,12 +90,13 @@ sudo 免密仅保留 `/run/current-system/sw/bin/nixos-rebuild`；`nix` 和通�
 
 - `mihomo-config-sync`：已有的 Python 同步器测试，不读取真实订阅或操作运行中的代理。
 - `hyprland-policies`：`tests/` 目录中的 Lua 事件 mock，不启动或连接桌面会话。
+- `theme-apply`、`theme-activation`：在临时 HOME 验证 Strata 与 Fcitx5 主题切换保留用户偏好，以及主桌面和 NextKDE 的 HM 主题激活预演；不连接活动桌面。
 - `repository-structure`：核对 Wiki 来源路径、文档和模块覆盖，以及重复的 YAML 条目。
 
 ```bash
-nix flake check path:.
+nix flake check .
 # 只运行来源映射检查：
-nix build path:.#checks.x86_64-linux.repository-structure --no-link -L
+nix build .#checks.x86_64-linux.repository-structure --no-link -L
 # 使用锁定版本的格式化工具检查指定文件：
 nix fmt -- --check flake.nix
 ```

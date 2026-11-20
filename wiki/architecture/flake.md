@@ -2,7 +2,7 @@
 title: Flake 配置管理
 category: 架构
 tags: [flake, nix, inputs, outputs, lock, reproducible]
-updated: 2026-11-18
+updated: 2026-11-20
 ---
 
 # Flake 配置管理
@@ -27,8 +27,8 @@ updated: 2026-11-18
 
 - `nixpkgs`：冻结在上一版配置验证过的固定提交（当前 `f9a75f4`，2026-11-05），作为系统、Home Manager 与默认包集来源；推进时只改这里的 rev。
 - `nixpkgs-latest`：跟踪 `nixos-unstable`，只用于个别包单独取新，不参与系统装配。
-- `nixpkgs-release`：跟踪官方 `nixos-26.05` 稳定频道，作为个别包的兜底来源。
-- `scrolloverview-src`、`hypr-dynamic-cursors-src`：跟踪两个 Hyprland 插件的上游 `main`，只获取源码（`flake = false`），不引入上游各自的 Hyprland 或工具链；本地包定义使用系统 Hyprland 构建。
+- `nixpkgs-release`：保留官方 `nixos-26.05` 频道作为备用输入；当前没有消费它的包，不向模块传递额外包集。
+- `scrolloverview-src` 固定在 `a8dcca6`；只有 `hypr-dynamic-cursors-src` 跟踪上游 `main`。两者都只获取源码（`flake = false`），由系统 Hyprland 构建。
 - `nextkde`：固定上游提交 `3fa1d7006869bbd3404a05d362c6e6028e0fe3da`，跟随根 `nixpkgs`，提供 KOS 模块和包。
 - `strata-nixpkgs`：临时固定 fork 提交，只消费其中的 Strata，包集与系统隔离；官方频道可用后移除。
 - `wetypex`：WeTypeX 上游 flake，提交由 `flake.lock` 固定，依赖跟随根 `nixpkgs`；`host/base/input-method.nix` 直接使用其包参数设置个人功能和主题选项。
@@ -38,21 +38,21 @@ updated: 2026-11-18
 - `nix-flatpak`：Flatpak 集成。
 - `codex-desktop-linux`：Codex Desktop 的桌面发行来源。
 
-多数输入通过 `inputs.nixpkgs.follows = "nixpkgs"` 复用冻结的稳定源，保持 Home Manager、桌面模块与系统包集版本一致；`nixpkgs-latest` 和 `nixpkgs-release` 只通过 `specialArgs` 暴露为 `pkgsLatest`/`pkgsRelease`，按包引用。
+Home Manager 等输入通过 `inputs.nixpkgs.follows = "nixpkgs"` 复用主包集；需要单包取新的模块使用 `pkgsLatest`。外部桌面 shell 的例外见下文「依赖锁定与跟随」。
 
 ## outputs：系统装配
 
 `outputs` 同时提供本地包、打包开发环境和名为 `MechRevo-NixOS` 的系统配置：
 
-- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包、WeTypeX 上游默认包别名、NextKDE 和临时 Strata 消费入口，可用 `nix build path:.#<pname>` 独立构建。NextKDE 分为 `nextkde-shell`（含天气，保留 `nextkde` 兼容别名）、`nextkde-apps`（日历/待办/计算器）、`nextkde-spatial-models`（固定空间壁纸模型）、`nextkde-platform-whitesur`（KOS 的 WhiteSur 明暗配色修正）和 `nextkde-qdbus6`（Qt 命令名兼容入口），只由对应 specialisation 消费。
+- `packages.x86_64-linux` 暴露全部 `local-deriv/` 手工包、WeTypeX 上游默认包别名、NextKDE 和临时 Strata 消费入口，可用 `nix build .#<pname>` 独立构建。NextKDE 分为 `nextkde-shell`（含天气，保留 `nextkde` 兼容别名）、`nextkde-apps`（日历/待办/计算器）、`nextkde-spatial-models`（固定空间壁纸模型）、`nextkde-platform-whitesur`（KOS 的 WhiteSur 明暗配色修正）和 `nextkde-qdbus6`（Qt 命令名兼容入口），只由对应 specialisation 消费。
 - `devShells.x86_64-linux.packaging` 提供 `$nix-packaging` 流程使用的预取、更新、格式化和 ELF 诊断工具。
 - `checks.x86_64-linux` 从 `checks/default.nix` 加载测试与仓库结构检查；`formatter.x86_64-linux` 使用锁定包集的 `nixfmt`。
 - `nixosConfigurations.MechRevo-NixOS` 使用 `nixpkgs.lib.nixosSystem` 装配系统。
 
 - `system` 指定为 `x86_64-linux`。
-- `specialArgs` 将 `inputs`、`materialGnomeTheme`、`pkgsLatest`、`pkgsRelease` 传入系统模块。
+- `specialArgs` 将 `inputs`、`materialGnomeTheme`、`pkgsLatest` 传入系统模块。
 - `modules` 列表组合本地 `host/default.nix`、sops-nix、Home Manager 与公共设置 `host/base/home-manager.nix`；NextKDE 入口也复用同一份公共设置。上游模块保持原来的导入层级，避免改变列表合并顺序。
-- Home Manager 公共设置集中在 `host/base/home-manager.nix`：开启 `useGlobalPkgs`/`useUserPackages`，传递共享参数 `inputs` 与 `materialGnomeTheme`。不设置全局备份后缀；与未受管理的同名文件发生冲突时会阻止激活，显式设置 `force = true` 的文件会直接覆盖，且不生成备份。
+- Home Manager 公共设置集中在 `host/base/home-manager.nix`：开启 `useGlobalPkgs`/`useUserPackages`，传递共享参数 `inputs`、`materialGnomeTheme` 与 `pkgsLatest`。不设置全局备份后缀；与未受管理的同名文件发生冲突时会阻止激活，显式设置 `force = true` 的文件会直接覆盖，且不生成备份。
 - `host/default.nix` 选择 `home/home.nix`，`host/nextkde/default.nix` 选择 `home/nextkde.nix`，保持两个桌面用户入口独立。
 
 ```mermaid
@@ -74,8 +74,8 @@ NextKDE --> NextHome["home/nextkde.nix"]
 ## 统一检查入口
 
 ```bash
-nix flake check path:.
-nixos-rebuild dry-build --flake path:.
+nix flake check .
+nixos-rebuild dry-build --flake .
 # 格式化检查只针对本次修改的文件，按需追加路径：
 nix fmt -- --check flake.nix
 ```
@@ -87,20 +87,42 @@ nix fmt -- --check flake.nix
 | `mihomo-config-sync` | 已有的 Python 同步器测试，不访问真实订阅或运行中的服务 |
 | `hyprland-policies` | `tests/` 目录中的 Lua 事件 mock，不启动或连接 Hyprland |
 | `hyprland-scrolloverview`、`hyprland-dynamic-cursors` | 实际编译两个插件，检查锁定源码与系统 Hyprland 的编译兼容性；不加载到桌面 |
+| `theme-apply` | 用模拟会话测试主题分发，包含 Strata TOML 改写、拒绝写入与幂等性 |
+| `theme-activation` | 从两个变体提取实际 HM 主题步骤，在临时 HOME 验证预演无写入、无会话调用，并测试非预演对照 |
 | `repository-structure` | Wiki 文档登记、来源路径存在性、home/host Nix 模块覆盖，以及重复 YAML key |
 
-单独运行一项：`nix build path:.#checks.x86_64-linux.repository-structure --no-link -L`。
+单独运行一项：`nix build .#checks.x86_64-linux.repository-structure --no-link -L`。
 
-`scripts/check-repo-structure.py` 只读 `wiki/_sources.yaml` 这一份映射。目录来源覆盖其下 Nix 模块；新增文件未进入 Git 时使用 `path:.`，无需为检查暂存。检查源排除 Git 元数据、本地 `memory/`、工具状态和构建产物。
+`scripts/check-repo-structure.py` 只读 `wiki/_sources.yaml` 这一份映射。目录来源覆盖其下 Nix 模块。结构检查使用 `cleanSource` 和根 `.gitignore` 过滤自己的输入；这发生在 Nix 获取 flake **之后**，不能从最初的 store 源副本中移除文件。
 
 需要额外核对本地记忆卡片时，复用检查所用的 Python 与 PyYAML 环境：
 
 ```bash
-nix develop path:.#checks.x86_64-linux.repository-structure -c \
+nix develop .#checks.x86_64-linux.repository-structure -c \
   python3 scripts/check-repo-structure.py --memory-root /home/lishangshui/myNixOSConfig/memory
 ```
 
 未显式指定路径且当前仓库没有 `memory/cards/` 时，会明确提示跳过；显式指定后，目录或卡片缺失都报错。纯 flake 检查不依赖本机记忆。上述测试与 dry-build 均不应用配置，Lua mock 不证明桌面运行行为。
+
+### 未跟踪文件的候选源码
+
+在 Git 工作树根目录，`.` 选择 Git 输入：读取索引中路径的**工作树内容**，不是只读 HEAD。已跟踪文件即使匹配 `.gitignore` 也可能进入 store。显式 `path:.` 则按目录取源，不按 Git 过滤，可能连 `.git`、`memory/`、`.agent-teams/` 和未忽略的草稿一起复制；单独开 worktree 也不等于已筛选。
+
+若测试需要新文件，不要暂存，也不要整体复制工作目录。先审阅已跟踪的改动，再从根目录点名**每个**允许进入 store 的未跟踪普通文件（替换下例路径，不用通配符）：
+
+```bash
+# Bash；在子 shell 中进行，失败时不会回到原目录继续执行 path:.
+(
+  set -eu
+  candidate=$(python3 scripts/flake-candidate.py home/example.nix tests/test_example.py)
+  cd -- "$candidate"
+  find . -type f -print     # 核对清单；不要在候选目录中写日志或放私密文件
+  nix flake check path:. --no-build --no-update-lock-file
+  nixos-rebuild dry-build --flake path:.#MechRevo-NixOS --no-update-lock-file
+)
+```
+
+脚本创建并输出一个私有临时目录，只复制当前已跟踪的普通文件（跳过删除项）和点名的新文件；拒绝被忽略的新文件、目录和符号链接，不操作 Git 索引。它不判断已选文件的内容是否敏感。生成时不要并行改动工作树；内容变化后重新生成。验证结束后可删除该临时目录；删除它不会撤回已进入 store 的副本。正式应用前，将需要的新文件按正常流程纳入 Git，再由用户从 Git flake 应用。
 
 ## 依赖锁定与跟随
 
@@ -108,7 +130,7 @@ nix develop path:.#checks.x86_64-linux.repository-structure -c \
 - **依赖跟随**：`home-manager`、`sops-nix` 等通过 `follows` 复用根 `nixpkgs`（stable）；桌面 shell（`noctalia`、`caelestia`、`shell-switcher`）与 AI 工具（`codex-desktop-linux`）跟随 `nixpkgs-latest`；compositor、内核和系统服务留在 stable。
 - **投稿包例外**：`strata-nixpkgs` 保留已验证 revision 的包集，只取 `strata`；不替换系统包集、不配置 `follows` 或本地 overlay。
 - **升级路径**：`nix flake update nixpkgs-latest nixpkgs-release` 单独推进最新源；推进整机时改 `nixpkgs` 的固定 rev 并 `nix flake update nixpkgs`，配合 rebuild 验证，失败可回退上一个 rev。
-- **Hyprland 插件**：可用 `nix flake update scrolloverview-src hypr-dynamic-cursors-src` 单独更新源码，无需手改 `rev` 或哈希。更新 nixpkgs 或插件后都要实际构建两个插件；最新提交并不保证兼容性，具体步骤见 [Hyprland 插件更新](../desktop/hyprland.md#光标)。
+- **Hyprland 插件**：`nix flake update hypr-dynamic-cursors-src` 可更新光标插件。ScrollOverview 的 revision 写在 input URL 中，单独更新锁不会越过 `a8dcca6`；要升级须先更改该 URL。更新 nixpkgs 或插件后都要实际构建两个插件；最新提交并不保证兼容性，具体步骤见 [Hyprland 插件更新](../desktop/hyprland.md#光标)。
 
 ```mermaid
 graph LR

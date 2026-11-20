@@ -123,8 +123,23 @@ class Renderer:
             if manifest.get(field) and not Path(manifest[field]).is_absolute():
                 raise ValueError(f"{field} must be absolute")
         for mode in MODES:
-            if not Path(manifest["fcitxAssets"][mode]).is_absolute():
+            assets = Path(manifest["fcitxAssets"][mode])
+            if not assets.is_absolute():
                 raise ValueError("fcitxAssets paths must be absolute")
+            outputs.update(f"{mode}/fcitx5/{p.relative_to(assets)}"
+                           for p in assets.rglob("*") if p.is_file())
+        self.outputs = sorted(outputs)
+
+    def incomplete_output(self, generation):
+        for relative in self.outputs:
+            path = generation / relative
+            try:
+                info = path.lstat()
+            except (FileNotFoundError, NotADirectoryError):
+                return path
+            if not stat.S_ISREG(info.st_mode) or info.st_size == 0:
+                return path
+        return None
 
     def previous(self):
         try:
@@ -136,7 +151,7 @@ class Renderer:
             selected = os.readlink(self.root / "selected")
             if selected in ("current/light", "current/dark"):
                 mode = selected.split("/")[-1]
-        return metadata, mode
+        return (metadata if isinstance(metadata, dict) else {}), mode
 
     def signature(self, seed):
         # Nix store paths are immutable. Contents also cover temporary test inputs.
@@ -164,6 +179,8 @@ class Renderer:
                         continue
                     destination = stage / template["output"]
                     destination.parent.mkdir(parents=True, exist_ok=True)
+                    # Packaged Fcitx defaults must not mask skipped template outputs.
+                    destination.unlink(missing_ok=True)
                     entries.append(f"[templates.t{index}]\ninput_path = "
                                    f"{json.dumps(template['input'])}\noutput_path = "
                                    f"{json.dumps(str(destination))}\n")
@@ -177,10 +194,9 @@ class Renderer:
                 theme_text = theme.read_text()
                 name = "Mellow KDE" + (" Dark" if mode == "dark" else "")
                 theme.write_text(re.sub(r"(?m)^Name=.*$", f"Name={name}", theme_text))
-            for template in self.templates:
-                destination = stage / template["output"]
-                if not destination.is_file() or not destination.stat().st_size:
-                    raise ValueError(f"missing or empty rendered output: {destination}")
+            missing = self.incomplete_output(stage)
+            if missing is not None:
+                raise ValueError(f"missing or empty palette output: {missing}")
             (stage / ".metadata.json").write_text(json.dumps({"seed": seed, "signature": signature}))
             return stage
         except BaseException:
@@ -196,15 +212,16 @@ class Renderer:
             except (OSError, subprocess.SubprocessError) as error:
                 LOG.debug("%s notification skipped: %s", field, error)
 
-    def apply(self, seed, mode):
-        if not re.fullmatch(r"#[0-9a-f]{6}", seed) or mode not in MODES:
-            raise ValueError("invalid normalized appearance")
+    def synchronize(self):
         self.root.mkdir(parents=True, exist_ok=True)
         with (self.root / ".lock").open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
+            # Read after waiting: the event that woke this caller can already be stale.
+            seed, mode = read_appearance(self.manifest["kdeGlobals"])
             previous, old_mode = self.previous()
             signature = self.signature(seed)
-            changed = previous.get("signature") != signature
+            changed = (previous.get("signature") != signature or
+                       self.incomplete_output(self.root / "current") is not None)
             if changed:
                 generation = self.render(seed, signature)
                 atomic_link(self.root / "current", generation.name)
@@ -232,9 +249,8 @@ class Renderer:
                     config_changed = True
             if changed or config_changed or mode != old_mode:
                 self.notify("fcitxReload", ["-r"])
-            if previous.get("seed") != seed:
-                self.notify("btopReload", ["-USR2", "-x", "btop"])
             if changed:
+                self.notify("btopReload", ["-USR2", "-x", "btop"])
                 current = (self.root / "current").resolve()
                 for obsolete in self.root.glob("generation-*"):
                     if obsolete != current and obsolete.is_dir() and not obsolete.is_symlink():
@@ -243,8 +259,7 @@ class Renderer:
 
 
 def synchronize(manifest):
-    seed, mode = read_appearance(manifest["kdeGlobals"])
-    return Renderer(manifest).apply(seed, mode)
+    return Renderer(manifest).synchronize()
 
 
 def main():

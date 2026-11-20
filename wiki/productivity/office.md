@@ -2,7 +2,7 @@
 title: 办公软件套件
 category: 生产力
 tags: [office, libreoffice, fonts, cjk, zotero, agentero]
-updated: 2026-11-10
+updated: 2026-11-20
 ---
 
 # 办公软件套件
@@ -37,7 +37,7 @@ Agentero 是面向文档与代理的 AI 工作区。它从上游 v0.15.4 的 amd
 包装方式与构建入口：
 
 - `local-deriv/agentero.nix` 校验上游 release 包哈希后重打包（MIT），并在 flake 暴露 `packages.x86_64-linux.agentero`。
-- 独立构建检查：`nix build path:.#agentero --no-link -L`。
+- 独立构建检查：`nix build .#agentero --no-link -L`。
 - 选择二进制路线而非源码构建：上游源码构建期有多个 `build.rs` 需要联网下载，难以复现；deb 内已包含 plugin host、ACP adapters 与 PDFium，重打包更可控。
 - 许可证与第三方 notices 固定到 release commit `fdacc2bc` 的原文，安装到 `share/licenses/agentero/`。
 
@@ -123,7 +123,7 @@ libreoffice --headless --convert-to pdf --outdir out/ *.docx
 | Office 内输入法不可用 | 确认 Fcitx5 环境变量已设，GTK/Qt 输入模块启用 |
 | 首次部署找不到字体 | 重新 rebuild，让 activation 复制字体并刷新缓存 |
 | 找不到 Zotero 或命令不存在 | 确认已手动应用包含 Zotero 的配置，再重新打开应用启动器 |
-| 找不到 Agentero 或命令不存在 | 确认已应用包含本次改动的配置；用 `nix build path:.#agentero --no-link -L` 单独检查产物 |
+| 找不到 Agentero 或命令不存在 | 确认已应用包含本次改动的配置；用 `nix build .#agentero --no-link -L` 单独检查产物 |
 | Agentero 首次 OCR 卡住或失败 | traineddata 可能首次联网获取；离线环境预置语言数据并设 `TESSDATA_PREFIX` |
 | Agentero 提示“Install CLI” | 不要点：该 CLI 与应用同名 `agentero`，Nix 安装已提供桌面入口 |
 | Agentero 内自更新无效 | Nix 下 dpkg 自更新不适用；升级改 derivation 的版本与哈希后重建 |
